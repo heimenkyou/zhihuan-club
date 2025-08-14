@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: club-recruitment
+  datasource:
+    url: jdbc:mysql://${rec.datasource.host}:${rec.datasource.port:3306}/${rec.datasource.database:club-recruitment}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: ${rec.datasource.username}
+    password: ${rec.datasource.password}
+    driver-class-name: ${rec.datasource.driver-class-name}
+    druid:
+      connect-timeout: 3000
+      max-pool-prepared-statement-per-connection-size: 20
+server:
+  port: 12321
+mybatis-plus:
+  mapper-locations: classpath:*/mapper/*.xml  #指定sql映射文件
+  configuration:
+    map-underscore-to-camel-case: true # 开启驼峰命名

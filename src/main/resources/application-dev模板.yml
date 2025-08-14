@@ -1,0 +1,10 @@
+# 自行将改文件复制一份名为application-dev.yml的文件, 并修改里面的数据库信息
+# 启动项需要添加有效配置文件为dev, 或直接添加JVM参数: -Dspring.profiles.active=dev
+rec:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host:
+    port: 3306
+    database: club_recruitment
+    username:
+    password:

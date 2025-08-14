@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>测试成功</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            color: #333;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .card {
+            background: white;
+            max-width: 500px;
+            margin: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        .info {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .info p {
+            margin: 10px 0;
+            padding: 8px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>✅ 测试成功</h1>
+    <p>下面是服务器捕获到的一些信息：</p>
+    <div class="info">
+        <p><strong>当前时间：</strong>{{currentTime}}</p>
+        <p><strong>客户端 IP：</strong>{{clientIP}}</p>
+        <p><strong>User-Agent：</strong>{{userAgent}}</p>
+    </div>
+</div>
+</body>
+</html>
