@@ -13,3 +13,7 @@ rec:
     port: 6379
     password:
     database: 2
+logging:
+  level:
+    cn.luowb.clubrecruitment.controller: debug
+    cn.luowb.clubrecruitment.dao.mapper: debug
