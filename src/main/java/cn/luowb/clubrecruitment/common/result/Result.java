@@ -1,5 +1,6 @@
 package cn.luowb.clubrecruitment.common.result;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -28,6 +29,7 @@ public class Result<T> implements Serializable {
     /**
      * 返回消息
      */
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String message;
 
     /**
@@ -38,6 +40,7 @@ public class Result<T> implements Serializable {
     /**
      * 请求ID
      */
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String requestId;
 
     public boolean isSuccess() {

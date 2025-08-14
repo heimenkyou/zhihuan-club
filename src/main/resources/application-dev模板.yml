@@ -8,3 +8,8 @@ rec:
     database: club_recruitment
     username:
     password:
+  redis:
+    host:
+    port: 6379
+    password:
+    database: 2

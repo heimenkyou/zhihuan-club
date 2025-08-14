@@ -9,9 +9,40 @@ spring:
     druid:
       connect-timeout: 3000
       max-pool-prepared-statement-per-connection-size: 20
+  data:
+    redis:
+      host: ${rec.redis.host}
+      port: ${rec.redis.port:6379}
+      password: ${rec.redis.password}
+      database: ${rec.redis.database:2}
+  web:
+    resources:
+      add-mappings: false # 禁止默认的静态资源映射
 server:
   port: 12321
 mybatis-plus:
   mapper-locations: classpath:*/mapper/*.xml  #指定sql映射文件
   configuration:
     map-underscore-to-camel-case: true # 开启驼峰命名
+
+springdoc:
+  # 默认展开参数
+  default-flat-param-object: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: cn.luowb.clubrecruitment
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+rec:
+  project-prefix: club-recruitment

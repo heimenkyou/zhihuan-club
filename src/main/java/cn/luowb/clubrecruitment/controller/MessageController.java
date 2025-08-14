@@ -1,18 +1,18 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
-import cn.luowb.clubrecruitment.dao.entity.MessageDO;
+import cn.luowb.clubrecruitment.dto.req.MessagePageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import cn.luowb.clubrecruitment.service.MessageService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,19 +26,23 @@ public class MessageController {
     @Operation(summary = "添加留言")
     @PostMapping
     public Result<Void> createMessage(@RequestBody MessageReqDTO requestParam) {
+        log.debug("添加留言: {}", requestParam);
         messageService.createMessage(requestParam);
         return Results.success();
     }
 
     @Operation(summary = "分页获取留言列表")
     @GetMapping
-    public Result<IPage<MessagePageRespDTO>> getMessageList(Page<MessageDO> requestParam) {
-        return Results.success(messageService.getMessageList(requestParam));
+    public Result<PageData<MessagePageRespDTO>> getMessageList(@ParameterObject MessagePageReqDTO requestParam) {
+        log.debug("分页获取留言: {}", requestParam);
+        PageData<MessagePageRespDTO> messageList = messageService.getMessageList(requestParam);
+        return Results.success(messageList);
     }
 
     @Operation(summary = "点赞留言")
     @PostMapping("/{id}/like")
     public Result<Void> likeMessage(@PathVariable Long id) {
+        log.debug("点赞留言：{}", id);
         messageService.likeMessage(id);
         return Results.success();
     }
@@ -46,7 +50,16 @@ public class MessageController {
     @Operation(summary = "删除留言")
     @DeleteMapping("/{id}")
     public Result<Void> deleteMessage(@Schema(description = "留言ID") @PathVariable Long id) {
+        log.debug("删除留言：{}", id);
         messageService.removeById(id);
         return Results.success();
+    }
+
+    @Operation(summary = "判断用户是否已经点赞")
+    @GetMapping("/{id}/liked")
+    public Result<Boolean> hasLiked(@PathVariable Long id) {
+        log.debug("判断用户是否已经点赞：{}", id);
+        boolean liked = messageService.hasLiked(id);
+        return Results.success(liked);
     }
 }

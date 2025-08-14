@@ -33,15 +33,15 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--        &lt;!&ndash;        redis依赖&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-data-redis</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-web</artifactId>-->
-        <!--        </dependency>-->
+        <!--        redis依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <!--        &lt;!&ndash;        redisson依赖&ndash;&gt;-->
         <!--        <dependency>-->
         <!--            <groupId>org.redisson</groupId>-->
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <version>4.5.0</version>
+            <version>4.4.0</version>
         </dependency>
         <!--        线程池能用的threadLocal-->
         <dependency>

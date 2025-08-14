@@ -14,6 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Optional;
 
@@ -37,6 +38,15 @@ public class GlobalExceptionHandler {
                 .orElse(StrUtil.EMPTY);
         log.error("[{}] {} [ex] {}", request.getMethod(), getUrl(request), exceptionStr);
         return Results.failure(BaseErrorCode.CLIENT_ERROR.code(), exceptionStr);
+    }
+
+    /**
+     * 拦截404异常
+     */
+    @ExceptionHandler(value = NoHandlerFoundException.class)
+    public Result noHandlerFoundException(HttpServletRequest request, NoHandlerFoundException ex) {
+        log.error("[{}] {} [ex] {}", request.getMethod(), getUrl(request), ex.getMessage());
+        return Results.failure(BaseErrorCode.NO_HANDLE_ERROR.code(), BaseErrorCode.NO_HANDLE_ERROR.message());
     }
 
     /**
