@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, onUnmounted } from 'vue'
 import { useMessageStore } from '../stores/messageStore'
+import { showSuccessNotification } from '../main'
 
 const messageStore = useMessageStore()
 const debugInfo = ref('')
@@ -132,23 +133,18 @@ const handleJumpPage = async () => {
 
 // 获取留言数据的方法
 const fetchMessages = async () => {
-  try {
-    debugInfo.value = `正在获取第 ${currentPage.value} 页数据...`
-    const response = await messageStore.fetchMessages({
-      current: currentPage.value,
-      size: pageSize.value
-    })
+  debugInfo.value = `正在获取第 ${currentPage.value} 页数据...`
+  const response = await messageStore.fetchMessages({
+    current: currentPage.value,
+    size: pageSize.value
+  })
 
-    // 从API响应中获取分页数据
-    if (response && response.current && response.total) {
-      totalCount.value = response.total
-      totalPages.value = response.pages
-      currentPage.value = response.current
-      debugInfo.value = `成功获取第 ${currentPage.value} 页，共 ${totalCount.value} 条留言`
-    }
-  } catch (error) {
-    debugInfo.value = `获取留言失败: ${error}`
-    console.error('获取留言失败:', error)
+  // 从API响应中获取分页数据
+  if (response && response.current && response.total) {
+    totalCount.value = response.total
+    totalPages.value = response.pages
+    currentPage.value = response.current
+    debugInfo.value = `成功获取第 ${currentPage.value} 页，共 ${totalCount.value} 条留言`
   }
 }
 
@@ -163,8 +159,11 @@ onMounted(async () => {
     document.addEventListener('touchmove', handleTouchMove, { passive: false })
     document.addEventListener('touchend', handleTouchEnd, { passive: false })
   } catch (error) {
+    // 这里仍然保持try-catch，因为这是组件初始化时的异常处理
     debugInfo.value = `获取留言失败: ${error}`
     console.error('组件中获取留言失败:', error)
+    // 让错误继续传播给全局处理器
+    throw error
   }
 })
 
@@ -175,45 +174,61 @@ onUnmounted(() => {
   document.removeEventListener('touchend', handleTouchEnd)
 })
 
-// 模拟点赞功能（仅样式变化）
 // 点赞功能
 const handleLike = async (messageId: number) => {
-  try {
-    debugInfo.value = `正在处理点赞...`
-    
-    // 调用store中的点赞方法
-    const result = await messageStore.handleLike(messageId)
-    
-    // 显示操作结果
-    debugInfo.value = result === 'LIKED' ? `点赞成功` : `取消点赞成功`
-    console.log(`👍 ${result === 'LIKED' ? '点赞' : '取消点赞'}成功:`, messageId)
-  } catch (error) {
-    debugInfo.value = `点赞操作失败: ${error}`
-    console.error('❌ 点赞操作失败:', error)
-    // 可以在这里添加用户提示，如toast提示等
-  }
+  debugInfo.value = `正在处理点赞...`
+  
+  // 调用store中的点赞方法
+  const result = await messageStore.handleLike(messageId)
+  
+  // 显示操作结果
+  debugInfo.value = result === 'LIKED' ? `点赞成功` : `取消点赞成功`
+  console.log(`👍 ${result === 'LIKED' ? '点赞' : '取消点赞'}成功:`, messageId)
+  
+  // 显示成功提示
+  showSuccessNotification(result === 'LIKED' ? '已点赞' : '已取消点赞')
 }
 
-// 模拟删除功能（仅样式变化）
-const handleDelete = (messageId: number) => {
-  console.log('删除功能待实现:', messageId)
+// 实现删除功能
+const handleDelete = async (messageId: number) => {
+  // 弹出确认对话框
+  const confirmed = window.confirm('确定要删除这条留言吗？此操作不可恢复。')
+  if (!confirmed) {
+    return // 用户取消删除
+  }
+  
+  debugInfo.value = `正在删除留言...`
+  
+  // 调用store中的删除方法
+  await messageStore.handleDeleteMessage(messageId)
+  
+  // 显示操作结果
+  debugInfo.value = `留言删除成功`
+  console.log(`🗑️ 留言删除成功:`, messageId)
+  
+  // 显示成功提示
+  showSuccessNotification('删除成功')
 }
 
 // 新增留言
-const handleAddMessage = () => {
+const handleAddMessage = async () => {
   if (newMessage.value.nickname && newMessage.value.content) {
     console.log('新增留言:', newMessage.value)
     newMessage.value = { nickname: '', content: '' }
     console.log('新增留言成功')
+    
+    // 显示成功提示
+    showSuccessNotification('新增留言成功')
   } else {
     console.warn('昵称或留言内容不能为空')
+    throw new Error('昵称或留言内容不能为空')
   }
 }
 
 // 刷新留言
 const handleRefresh = () => {
   debugInfo.value = '正在刷新留言数据...'
-  fetchMessages()
+  return fetchMessages()
 }
 
 // 格式化时间显示

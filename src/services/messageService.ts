@@ -76,3 +76,20 @@ export const toggleLike = async (messageId: number): Promise<LikeActionResult> =
     throw error
   }
 }
+
+// 删除留言接口请求函数
+export const deleteMessage = async (messageId: number): Promise<void> => {
+  try {
+    console.log('🗑️ 发送删除请求:', messageId)
+    
+    // 调用删除接口
+    const response = await api.delete<ApiResponse<null>>(`/messages/${messageId}`)
+    
+    console.log('🗑️ 删除响应:', response)
+    
+    // 不需要返回值
+  } catch (error) {
+    console.error('❌ 删除留言失败:', error)
+    throw error
+  }
+}

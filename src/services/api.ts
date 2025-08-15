@@ -21,12 +21,32 @@ axiosInstance.interceptors.request.use(
 // 响应拦截器
 axiosInstance.interceptors.response.use(
   <T>(response: AxiosResponse<T>) => {
-    // 直接返回响应数据，而不是整个response对象
-    return response.data
+    // 检查response.data是否有success字段
+    const responseData = response.data as any
+    if ('success' in responseData && !responseData.success && responseData.message) {
+      // 直接返回被拒绝的Promise，让全局异常处理器处理
+      return Promise.reject(new Error(responseData.message))
+    }
+    
+    // 如果success为true或没有success字段，直接返回响应数据
+    return responseData
   },
   (error) => {
     // 错误处理
     console.error('API请求错误:', error.response?.status || error.message)
+    
+    // 检查是否有response和data
+    if (error.response && error.response.data) {
+      const responseData = error.response.data as any
+      
+      // 检查是否有message字段
+      if (responseData.message) {
+        // 使用响应中的message创建新的Error
+        return Promise.reject(new Error(responseData.message))
+      }
+    }
+    
+    // 没有特定错误信息，使用原始错误
     return Promise.reject(error)
   }
 )
