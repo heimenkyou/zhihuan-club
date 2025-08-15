@@ -1,0 +1,356 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "社团招新",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/messages": {
+      "post": {
+        "summary": "添加留言",
+        "deprecated": false,
+        "description": "添加留言",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageReqDTO",
+                "description": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                },
+                "example": {
+                  "code": "",
+                  "message": "",
+                  "data": null,
+                  "requestId": ""
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "get": {
+        "summary": "分页获取留言列表",
+        "deprecated": false,
+        "description": "分页获取留言列表",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "current",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "example": 1,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 1,
+              "example": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页大小",
+            "required": false,
+            "example": 10,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10,
+              "example": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultPageDataMessagePageRespDTO"
+                },
+                "example": {
+                  "code": "",
+                  "message": "",
+                  "data": {
+                    "current": 0,
+                    "size": 0,
+                    "total": 0,
+                    "pages": 0,
+                    "records": [
+                      {
+                        "id": 0,
+                        "nickname": "",
+                        "content": "",
+                        "likeCount": 0,
+                        "createTime": "",
+                        "liked": false,
+                        "canDelete": false
+                      }
+                    ]
+                  },
+                  "requestId": ""
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/messages/{id}/like": {
+      "post": {
+        "summary": "点赞/取消点赞",
+        "deprecated": false,
+        "description": "点赞/取消点赞",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultLikeAction"
+                },
+                "example": {
+                  "code": "",
+                  "message": "",
+                  "data": "",
+                  "requestId": ""
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/messages/{id}": {
+      "delete": {
+        "summary": "删除留言",
+        "deprecated": false,
+        "description": "删除留言\n只有留言对应的 IP 才能删除留言",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "留言ID",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                },
+                "example": {
+                  "code": "",
+                  "message": "",
+                  "data": null,
+                  "requestId": ""
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MessageReqDTO": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "用户昵称",
+            "example": "张三(测试用户)"
+          },
+          "content": {
+            "type": "string",
+            "description": "留言内容",
+            "example": "大家好, 这是一条测试留言"
+          }
+        }
+      },
+      "ResultVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "返回码"
+          },
+          "message": {
+            "type": "string",
+            "description": "返回消息"
+          },
+          "data": {
+            "description": "响应数据",
+            "type": "null"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "请求ID"
+          }
+        }
+      },
+      "ResultLikeAction": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "返回码"
+          },
+          "message": {
+            "type": "string",
+            "description": "返回消息"
+          },
+          "data": {
+            "type": "string",
+            "description": "响应数据",
+            "enum": [
+              "LIKED",
+              "UNLIKED"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "description": "请求ID"
+          }
+        }
+      },
+      "MessagePageRespDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "留言ID",
+            "format": "int64"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "用户昵称"
+          },
+          "content": {
+            "type": "string",
+            "description": "留言内容"
+          },
+          "likeCount": {
+            "type": "integer",
+            "description": "点赞数量"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间"
+          },
+          "liked": {
+            "type": "boolean",
+            "description": "当前IP是否已点赞"
+          },
+          "canDelete": {
+            "type": "boolean",
+            "description": "当前IP是否可删除此留言"
+          }
+        },
+        "description": "留言分页查询返回实体"
+      },
+      "PageDataMessagePageRespDTO": {
+        "type": "object",
+        "properties": {
+          "current": {
+            "type": "integer",
+            "description": "当前页码",
+            "format": "int64"
+          },
+          "size": {
+            "type": "integer",
+            "description": "每页大小",
+            "format": "int64"
+          },
+          "total": {
+            "type": "integer",
+            "description": "总记录数",
+            "format": "int64"
+          },
+          "pages": {
+            "type": "integer",
+            "description": "总页数",
+            "format": "int64"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessagePageRespDTO",
+              "description": "cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO"
+            },
+            "description": "当前页数据"
+          }
+        },
+        "description": "响应数据"
+      },
+      "ResultPageDataMessagePageRespDTO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "返回码"
+          },
+          "message": {
+            "type": "string",
+            "description": "返回消息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PageDataMessagePageRespDTO",
+            "description": "响应数据"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "请求ID"
+          }
+        }
+      }
+    },
+    "securitySchemes": {}
+  },
+  "servers": [],
+  "security": []
+}
