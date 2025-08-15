@@ -34,6 +34,12 @@ export interface ApiResponse<T> {
   requestId: string
 }
 
+// 创建留言参数类型
+export interface CreateMessageParams {
+  nickname: string
+  content: string
+}
+
 // 分页查询留言接口请求函数
 export const getMessages = async (
   params: GetMessagesParams = { current: 1, size: 10 }
@@ -90,6 +96,24 @@ export const deleteMessage = async (messageId: number): Promise<void> => {
     // 不需要返回值
   } catch (error) {
     console.error('❌ 删除留言失败:', error)
+    throw error
+  }
+}
+
+// 创建留言接口请求函数
+export const createMessage = async (params: CreateMessageParams): Promise<MessageItem> => {
+  try {
+    console.log('📝 发送创建留言请求:', params)
+    
+    // 调用创建留言接口
+    const response = await api.post<ApiResponse<MessageItem>>('/messages', params)
+    
+    console.log('📝 创建留言响应:', response)
+    console.log('📝 创建留言结果:', response.data)
+    
+    return response.data
+  } catch (error) {
+    console.error('❌ 创建留言失败:', error)
     throw error
   }
 }

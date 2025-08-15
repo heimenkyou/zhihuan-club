@@ -151,6 +151,13 @@ const fetchMessages = async () => {
 // 在组件挂载时获取消息数据
 onMounted(async () => {
   try {
+    // 从localStorage读取保存的昵称
+    const savedNickname = localStorage.getItem('message_board_nickname')
+    if (savedNickname) {
+      newMessage.value.nickname = savedNickname
+      console.log('👤 已加载保存的昵称:', savedNickname)
+    }
+    
     debugInfo.value = '开始获取留言数据...'
     await fetchMessages()
 
@@ -213,14 +220,37 @@ const handleDelete = async (messageId: number) => {
 // 新增留言
 const handleAddMessage = async () => {
   if (newMessage.value.nickname && newMessage.value.content) {
-    console.log('新增留言:', newMessage.value)
-    newMessage.value = { nickname: '', content: '' }
-    console.log('新增留言成功')
-    
-    // 显示成功提示
-    showSuccessNotification('新增留言成功')
+    debugInfo.value = '正在发送留言...'
+    try {
+      // 调用store中的创建留言方法
+      await messageStore.handleCreateMessage({
+        nickname: newMessage.value.nickname,
+        content: newMessage.value.content
+      })
+      
+      // 保存昵称到localStorage（在清空表单之前）
+      const nicknameToSave = newMessage.value.nickname
+      localStorage.setItem('message_board_nickname', nicknameToSave)
+      console.log('💾 已保存昵称到本地存储:', nicknameToSave)
+      
+      // 清空表单, 不清空昵称
+      newMessage.value = { nickname: newMessage.value.nickname, content: '' }
+      
+      // 显示操作结果
+      debugInfo.value = '留言发布成功'
+      console.log('📝 留言发布成功')
+      
+      // 显示成功提示
+      showSuccessNotification('新增留言成功')
+    } catch (error) {
+      debugInfo.value = `留言发布失败: ${error instanceof Error ? error.message : '未知错误'}`
+      console.error('❌ 留言发布失败:', error)
+      // 让错误继续传播给全局处理器
+      throw error
+    }
   } else {
-    console.warn('昵称或留言内容不能为空')
+    debugInfo.value = '昵称或留言内容不能为空'
+    console.warn('⚠️ 昵称或留言内容不能为空')
     throw new Error('昵称或留言内容不能为空')
   }
 }

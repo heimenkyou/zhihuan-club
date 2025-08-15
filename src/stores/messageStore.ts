@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { getMessages, toggleLike, deleteMessage } from '../services/messageService'
-import type { MessageItem, GetMessagesParams, PageData, LikeActionResult } from '../services/messageService'
+import { getMessages, toggleLike, deleteMessage, createMessage } from '../services/messageService'
+import type { MessageItem, GetMessagesParams, PageData, LikeActionResult, CreateMessageParams } from '../services/messageService'
 
 export const useMessageStore = defineStore('message', {
   state: () => ({
@@ -98,11 +98,36 @@ export const useMessageStore = defineStore('message', {
         const response = await getMessages({ current: currentPage, size: pageSize })
         this.messages = response.records
         this.pagination = response
+      } finally {
+        this.loading = false
+      }
+    },
+    
+    // 处理创建留言操作
+    async handleCreateMessage(params: CreateMessageParams): Promise<MessageItem> {
+      this.loading = true
+      this.error = null
+      
+      try {
+        // 调用创建留言接口
+        const newMessage = await createMessage(params)
         
+        // 创建成功后，刷新列表
+        const currentPage = this.pagination?.current || 1
+        const pageSize = this.pagination?.size || 10
+        
+        // 重新获取留言列表数据
+        const response = await getMessages({ current: currentPage, size: pageSize })
+        this.messages = response.records
+        this.pagination = response
+        
+        return newMessage
+      } catch (error) {
+        this.error = error instanceof Error ? error.message : '创建留言失败'
+        throw error
       } finally {
         this.loading = false
       }
     }
-    
   }
 })
