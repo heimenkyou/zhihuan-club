@@ -598,7 +598,9 @@ const formatTime = (timeString: string) => {
 .floating-refresh {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -616,7 +618,7 @@ const formatTime = (timeString: string) => {
 
 .floating-refresh:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -1199,8 +1201,9 @@ const formatTime = (timeString: string) => {
   }
 
   .floating-refresh {
-    bottom: 16px;
+    top: 50%;
     right: 16px;
+    transform: translateY(-50%);
     width: 56px;
     height: 56px;
   }
@@ -1313,8 +1316,9 @@ const formatTime = (timeString: string) => {
   }
 
   .floating-refresh {
-    bottom: 12px;
+    top: 50%;
     right: 12px;
+    transform: translateY(-50%);
     width: 52px;
     height: 52px;
   }
