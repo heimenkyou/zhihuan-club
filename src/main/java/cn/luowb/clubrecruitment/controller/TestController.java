@@ -23,7 +23,7 @@ public class TestController {
 
     {
         String path = "static/test.html";
-        ClassPathResource resource = null;
+        ClassPathResource resource;
         try {
             resource = new ClassPathResource(path);
             html = resource.readUtf8Str();

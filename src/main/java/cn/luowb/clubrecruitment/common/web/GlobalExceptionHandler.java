@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
      */
     @SneakyThrows
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public Result validExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException ex) {
+    public Result<Void> validExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         FieldError firstFieldError = CollectionUtil.getFirst(bindingResult.getFieldErrors());
         String exceptionStr = Optional.ofNullable(firstFieldError)
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
      * 拦截404异常
      */
     @ExceptionHandler(value = NoResourceFoundException.class)
-    public Result noHandlerFoundException(HttpServletRequest request, NoResourceFoundException ex) {
+    public Result<Void> noHandlerFoundException(HttpServletRequest request, NoResourceFoundException ex) {
         log.error("[{}] {} [ex] {}", request.getMethod(), getUrl(request), ex.getMessage());
         return Results.failure(BaseErrorCode.NO_HANDLE_ERROR.code(), BaseErrorCode.NO_HANDLE_ERROR.message());
     }
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
      * 拦截应用内抛出的异常
      */
     @ExceptionHandler(value = {AbstractException.class})
-    public Result abstractException(HttpServletRequest request, AbstractException ex) {
+    public Result<Void> abstractException(HttpServletRequest request, AbstractException ex) {
         if (ex.getCause() != null) {
             log.error("[{}] {} [ex] {}", request.getMethod(), request.getRequestURL().toString(), ex, ex.getCause());
             return Results.failure(ex);
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
      * 拦截未捕获异常
      */
     @ExceptionHandler(value = Throwable.class)
-    public Result defaultErrorHandler(HttpServletRequest request, Throwable throwable) {
+    public Result<Void> defaultErrorHandler(HttpServletRequest request, Throwable throwable) {
         log.error("[{}] {} ", request.getMethod(), getUrl(request), throwable);
         return Results.failure();
     }

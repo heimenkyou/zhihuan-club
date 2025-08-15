@@ -26,14 +26,14 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Component
     static class IPInterceptor implements HandlerInterceptor {
         @Override
-        public boolean preHandle(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable Object handler) throws Exception {
+        public boolean preHandle(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable Object handler) {
             String clientIP = IPUtil.getClientIP(request);
             IPContext.setIp(clientIP);
             return true;
         }
 
         @Override
-        public void afterCompletion(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable Object handler, Exception ex) throws Exception {
+        public void afterCompletion(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable Object handler, Exception ex) {
             IPContext.removeIp();
         }
     }

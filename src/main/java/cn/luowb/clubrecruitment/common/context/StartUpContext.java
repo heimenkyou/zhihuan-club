@@ -15,7 +15,7 @@ public class StartUpContext implements ApplicationRunner {
     private String contextPath;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         log.info("测试页面:: http://127.0.0.1:{}{}/test", serverPort, contextPath);
     }
 
