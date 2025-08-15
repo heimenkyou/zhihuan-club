@@ -1,7 +1,7 @@
 package cn.luowb.clubrecruitment.config;
 
 import cn.luowb.clubrecruitment.common.context.IPContext;
-import cn.luowb.clubrecruitment.common.util.IpUtil;
+import cn.luowb.clubrecruitment.common.util.IPUtil;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     static class IPInterceptor implements HandlerInterceptor {
         @Override
         public boolean preHandle(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable Object handler) throws Exception {
-            String clientIP = IpUtil.getClientIP(request);
+            String clientIP = IPUtil.getClientIP(request);
             IPContext.setIp(clientIP);
             return true;
         }

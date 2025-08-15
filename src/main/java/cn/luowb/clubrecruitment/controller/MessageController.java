@@ -1,5 +1,6 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -39,27 +40,19 @@ public class MessageController {
         return Results.success(messageList);
     }
 
-    @Operation(summary = "点赞留言")
+    @Operation(summary = "点赞/取消点赞")
     @PostMapping("/{id}/like")
-    public Result<Void> likeMessage(@PathVariable Long id) {
+    public Result<LikeAction> likeMessage(@PathVariable Long id) {
         log.debug("点赞留言：{}", id);
-        messageService.likeMessage(id);
-        return Results.success();
+        LikeAction action = messageService.toggleLikeMessage(id);
+        return Results.success(action);
     }
 
-    @Operation(summary = "删除留言")
+    @Operation(summary = "删除留言", description = "只有留言对应的 IP 才能删除留言")
     @DeleteMapping("/{id}")
     public Result<Void> deleteMessage(@Schema(description = "留言ID") @PathVariable Long id) {
         log.debug("删除留言：{}", id);
-        messageService.removeById(id);
+        messageService.deleteMessage(id);
         return Results.success();
-    }
-
-    @Operation(summary = "判断用户是否已经点赞")
-    @GetMapping("/{id}/liked")
-    public Result<Boolean> hasLiked(@PathVariable Long id) {
-        log.debug("判断用户是否已经点赞：{}", id);
-        boolean liked = messageService.hasLiked(id);
-        return Results.success(liked);
     }
 }

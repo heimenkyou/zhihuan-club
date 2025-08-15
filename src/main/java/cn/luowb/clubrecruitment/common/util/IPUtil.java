@@ -4,7 +4,7 @@ import cn.hutool.core.net.NetUtil;
 import cn.hutool.core.util.ArrayUtil;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class IpUtil {
+public class IPUtil {
     /**
      * 获取客户端IP
      *

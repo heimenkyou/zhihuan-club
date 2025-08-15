@@ -24,29 +24,33 @@ public class Result<T> implements Serializable {
     /**
      * 返回码
      */
+    @Schema(description = "返回码")
     private String code;
 
     /**
      * 返回消息
      */
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "返回消息", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String message;
 
     /**
      * 响应数据
      */
+    @Schema(description = "响应数据", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private T data;
 
     /**
      * 请求ID
      */
-    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "请求ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String requestId;
 
+    @Schema(description = "是否成功")
     public boolean isSuccess() {
         return SUCCESS_CODE.equals(code);
     }
 
+    @Schema(description = "是否失败")
     public boolean isFail() {
         return !isSuccess();
     }

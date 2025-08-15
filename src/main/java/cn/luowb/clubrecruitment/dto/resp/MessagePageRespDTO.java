@@ -38,4 +38,15 @@ public class MessagePageRespDTO {
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
+    /**
+     * 当前IP是否已点赞
+     */
+    @Schema(description = "当前IP是否已点赞")
+    private Boolean liked;
+
+    /**
+     * 当前IP是否可删除此留言
+     */
+    @Schema(description = "当前IP是否可删除此留言")
+    private Boolean canDelete;
 }

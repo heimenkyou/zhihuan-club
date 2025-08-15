@@ -1,6 +1,7 @@
 package cn.luowb.clubrecruitment.common.result;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -20,22 +21,27 @@ public final class PageData<T> implements Serializable {
     /**
      * 当前页码
      */
+    @Schema(description = "当前页码")
     private final long current;
     /**
      * 每页大小
      */
+    @Schema(description = "每页大小")
     private final long size;
     /**
      * 总记录数
      */
+    @Schema(description = "总记录数")
     private final long total;
     /**
      * 总页数
      */
+    @Schema(description = "总页数")
     private final long pages;
     /**
      * 当前页数据
      */
+    @Schema(description = "当前页数据")
     private final List<T> records;
 
     private PageData(long current, long size, long total, long pages, List<T> records) {

@@ -5,10 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.luowb.clubrecruitment.common.errorcode.BaseErrorCode;
 import cn.luowb.clubrecruitment.common.exception.AbstractException;
 import cn.luowb.clubrecruitment.common.result.Result;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
     }
 
     private String getUrl(HttpServletRequest request) {
-        if (StringUtils.isEmpty(request.getQueryString())) {
+        if (StringUtils.isBlank(request.getQueryString())) {
             return request.getRequestURL().toString();
         }
         return request.getRequestURL().toString() + "?" + request.getQueryString();

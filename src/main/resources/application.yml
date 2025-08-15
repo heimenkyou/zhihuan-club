@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: prod
   application:
     name: club-recruitment
   datasource:
@@ -40,6 +42,3 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
-
-rec:
-  project-prefix: club-recruitment
