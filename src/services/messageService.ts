@@ -55,3 +55,24 @@ export const getMessages = async (
     throw error
   }
 }
+
+// 点赞操作的响应类型
+export type LikeActionResult = 'LIKED' | 'UNLIKED'
+
+// 点赞/取消点赞接口请求函数
+export const toggleLike = async (messageId: number): Promise<LikeActionResult> => {
+  try {
+    console.log('👍 发送点赞请求:', messageId)
+    
+    // 调用点赞接口
+    const response = await api.post<ApiResponse<LikeActionResult>>(`/messages/${messageId}/like`)
+    
+    console.log('👍 点赞响应:', response)
+    console.log('👍 点赞结果:', response.data)
+    
+    return response.data
+  } catch (error) {
+    console.error('❌ 点赞操作失败:', error)
+    throw error
+  }
+}

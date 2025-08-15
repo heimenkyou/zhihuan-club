@@ -176,8 +176,22 @@ onUnmounted(() => {
 })
 
 // 模拟点赞功能（仅样式变化）
-const handleLike = (messageId: number) => {
-  console.log('点赞功能待实现:', messageId)
+// 点赞功能
+const handleLike = async (messageId: number) => {
+  try {
+    debugInfo.value = `正在处理点赞...`
+    
+    // 调用store中的点赞方法
+    const result = await messageStore.handleLike(messageId)
+    
+    // 显示操作结果
+    debugInfo.value = result === 'LIKED' ? `点赞成功` : `取消点赞成功`
+    console.log(`👍 ${result === 'LIKED' ? '点赞' : '取消点赞'}成功:`, messageId)
+  } catch (error) {
+    debugInfo.value = `点赞操作失败: ${error}`
+    console.error('❌ 点赞操作失败:', error)
+    // 可以在这里添加用户提示，如toast提示等
+  }
 }
 
 // 模拟删除功能（仅样式变化）
