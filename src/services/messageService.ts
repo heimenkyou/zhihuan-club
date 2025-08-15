@@ -37,14 +37,21 @@ export interface ApiResponse<T> {
 // 分页查询留言接口请求函数
 export const getMessages = async (
   params: GetMessagesParams = { current: 1, size: 10 }
-): Promise<ApiResponse<PageData<MessageItem>>> => {
+): Promise<PageData<MessageItem>> => {
   try {
-    const response = await api.get<ApiResponse<PageData<MessageItem>>>('/messages', {
-      params
-    })
+    console.log('🚀 发送请求参数:', params)
+
+    // 现在api.get返回正确的类型
+    const response = await api.get<ApiResponse<PageData<MessageItem>>>('/messages', { params })
+
+    console.log('📡 响应数据:', response)
+    console.log('🔍 响应数据结构:', JSON.stringify(response, null, 2))
+    console.log('✅ API响应结构:', response)
+    console.log('📄 分页数据:', response.data)
+
     return response.data
   } catch (error) {
-    console.error('获取留言列表失败:', error)
+    console.error('❌ 获取留言列表失败:', error)
     throw error
   }
 }
