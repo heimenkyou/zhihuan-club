@@ -1,6 +1,9 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
+import cn.hutool.system.RuntimeInfo;
+import cn.hutool.system.SystemUtil;
 import cn.luowb.clubrecruitment.common.util.IPUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,11 +42,20 @@ public class TestController {
         String clientIP = IPUtil.getClientIP(request);
         String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String userAgent = request.getHeader("User-Agent");
-
+        // 系统信息
+        RuntimeInfo runtimeInfo = SystemUtil.getRuntimeInfo();
+        String maxMemory = FileUtil.readableFileSize(runtimeInfo.getMaxMemory());
+        String totalMemory = FileUtil.readableFileSize(runtimeInfo.getTotalMemory());
+        String freeMemory = FileUtil.readableFileSize(runtimeInfo.getFreeMemory());
+        String usableMemory = FileUtil.readableFileSize(runtimeInfo.getUsableMemory());
         // 替换占位符
         return html.replace("{{currentTime}}", currentTime)
                 .replace("{{clientIP}}", clientIP)
-                .replace("{{userAgent}}", userAgent);
+                .replace("{{userAgent}}", userAgent)
+                .replace("{{maxMemory}}", maxMemory)
+                .replace("{{totalMemory}}", totalMemory)
+                .replace("{{freeMemory}}", freeMemory)
+                .replace("{{usableMemory}}", usableMemory);
     }
 
     private static final String ERROR_HTML = """

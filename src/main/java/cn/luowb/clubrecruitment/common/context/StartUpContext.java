@@ -13,10 +13,12 @@ public class StartUpContext implements ApplicationRunner {
     private String serverPort;
     @Value("${server.servlet.context-path:}")
     private String contextPath;
+    public static String hostAddress = "127.0.0.1";
 
     @Override
     public void run(ApplicationArguments args) {
-        log.info("测试页面:: http://127.0.0.1:{}{}/test", serverPort, contextPath);
+//        hostAddress = SystemUtil.getHostInfo().getAddress();
+        log.info("测试页面:: http://{}:{}{}/test", hostAddress, serverPort, contextPath);
     }
 
 }

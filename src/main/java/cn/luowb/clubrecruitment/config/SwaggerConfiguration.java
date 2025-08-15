@@ -1,5 +1,6 @@
 package cn.luowb.clubrecruitment.config;
 
+import cn.luowb.clubrecruitment.common.context.StartUpContext;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -44,6 +45,7 @@ public class SwaggerConfiguration implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("API Document: http://127.0.0.1:{}{}/doc.html", serverPort, contextPath);
+        String hostAddress = StartUpContext.hostAddress;
+        log.info("API Document: http://{}:{}{}/doc.html", hostAddress, serverPort, contextPath);
     }
 }

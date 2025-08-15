@@ -38,6 +38,35 @@
             border-radius: 8px;
         }
 
+        /* 系统信息样式 */
+        .system-info {
+            margin-top: 10px;
+            border-radius: 8px;
+            background: #f7f7f7;
+            padding: 10px 15px;
+        }
+
+        .system-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .system-row:last-child {
+            border-bottom: none;
+        }
+
+        .system-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .system-value {
+            color: #333;
+            text-align: right;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -58,6 +87,27 @@
         <p><strong>当前时间：</strong>{{currentTime}}</p>
         <p><strong>客户端 IP：</strong>{{clientIP}}</p>
         <p><strong>User-Agent：</strong>{{userAgent}}</p>
+        <div>
+            <strong>系统信息：</strong>
+            <div class="system-info">
+                <div class="system-row">
+                    <div class="system-label">最大内存</div>
+                    <div class="system-value">{{maxMemory}}</div>
+                </div>
+                <div class="system-row">
+                    <div class="system-label">已分配内存</div>
+                    <div class="system-value">{{totalMemory}}</div>
+                </div>
+                <div class="system-row">
+                    <div class="system-label">已分配内存中的剩余空间</div>
+                    <div class="system-value">{{freeMemory}}</div>
+                </div>
+                <div class="system-row">
+                    <div class="system-label">最大可用内存</div>
+                    <div class="system-value">{{usableMemory}}</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
