@@ -14,6 +14,7 @@ import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import cn.luowb.clubrecruitment.service.MessageService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
 
     @Override
     public void createMessage(MessageReqDTO requestParam) {
+        if (StringUtils.isBlank(requestParam.getNickname())) {
+            throw new ClientException("昵称不能为空");
+        }
+        if (StringUtils.isBlank(requestParam.getContent())) {
+            throw new ClientException("留言内容不能为空");
+        }
         String ip = IPContext.getIp();
         MessageDO messageDO = new MessageDO()
                 .setContent(requestParam.getContent())
@@ -78,7 +85,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         } else {
             // 未点赞 -> 点赞
             messageMapper.likeMessage(id);
-            redisTemplate.opsForValue().set(redisKey, "1", RedisKeyUtil.LIKE_INTERVAL_SECONDS, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(redisKey, "1", redisKeyUtil.likeIntervalSeconds, TimeUnit.SECONDS);
             return LikeAction.LIKED;
         }
     }
@@ -96,6 +103,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         if (!this.removeById(id)) {
             throw new ServiceException("删除留言失败");
         }
+        // todo 删除redis中的点赞记录
     }
 
     public boolean hasLiked(Long id) {

@@ -14,7 +14,8 @@ public class RedisKeyUtil {
     private static final String MESSAGE_LIKE = "like:message:";
 
     // 点赞防刷时间
-    public static final long LIKE_INTERVAL_SECONDS = 60 * 60; // 秒
+    @Value("${rec.like-interval-seconds:3600}")
+    public long likeIntervalSeconds;
 
     // 构建 key
     public String buildMessageLikeKey(Long messageId, String ip) {

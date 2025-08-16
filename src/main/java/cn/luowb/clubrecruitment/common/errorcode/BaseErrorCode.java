@@ -24,7 +24,7 @@ public enum BaseErrorCode implements IErrorCode {
 
     // ========== 二级宏观错误码 查询参数错误 ==========
     SEARCH_AMOUNT_EXCEEDS_LIMIT("A000300", "查询数据量超过最大限制"),
-    NO_HANDLE_ERROR("A000400", "非法请求"),
+    NO_HANDLE_ERROR("A000400", "无效请求"),
     NOT_FOUND_ERROR("A000400", "未找到数据"),
 
     // ========== 一级宏观错误码 系统执行出错 ==========

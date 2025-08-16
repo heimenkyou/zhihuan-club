@@ -42,3 +42,7 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+rec:
+  # 点赞防刷时间间隔(秒)
+  like-interval-seconds: 86400
