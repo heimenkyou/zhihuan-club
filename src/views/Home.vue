@@ -4,26 +4,54 @@
     <el-header class="navbar">
       <div class="container">
         <div class="logo-container">
-          <el-link :underline="false" href="#home" class="logo-link" @click.prevent="scrollTo('#home')">
+          <el-link
+            :underline="false"
+            href="#home"
+            class="logo-link"
+            @click.prevent="scrollTo('#home')"
+          >
             <div class="logo-icon">
-              <span>C</span>
+              <span
+                ><img src="/apple-touch-icon.png"
+              /></span>
             </div>
-            <span class="logo-text">CodePulse</span>
+            <span class="logo-text">智</span>
           </el-link>
         </div>
 
         <!-- 桌面导航 -->
         <div class="desktop-nav">
-          <el-link v-for="item in navItems" :key="item.id" :href="item.href" class="nav-link" :underline="false"
-            @click.prevent="scrollTo(item.href)">
+          <el-link
+            v-for="item in navItems"
+            :key="item.id"
+            :href="item.href"
+            class="nav-link"
+            :underline="false"
+            @click.prevent="scrollTo(item.href)"
+          >
             {{ item.text }}
           </el-link>
-          <el-button type="primary" class="join-btn" round @click="goToMessageWall">留言墙</el-button>
-          <el-button type="primary" class="join-btn" round @click="scrollTo('#join')">加入我们</el-button>
+          <el-button
+            type="primary"
+            class="join-btn"
+            round
+            @click="goToMessageWall"
+            >留言墙</el-button
+          >
+          <el-button
+            type="primary"
+            class="join-btn"
+            round
+            @click="scrollTo('#join')"
+            >加入我们</el-button
+          >
         </div>
 
         <!-- 移动端菜单按钮 -->
-        <el-button class="mobile-menu-btn" @click="showMobileMenu = !showMobileMenu">
+        <el-button
+          class="mobile-menu-btn"
+          @click="showMobileMenu = !showMobileMenu"
+        >
           <el-icon>
             <Menu />
           </el-icon>
@@ -33,12 +61,30 @@
       <!-- 移动端导航菜单 -->
       <el-collapse-transition>
         <div v-show="showMobileMenu" class="mobile-menu">
-          <el-link v-for="item in navItems" :key="item.id" :href="item.href" class="mobile-nav-link" :underline="false"
-            @click.prevent="scrollTo(item.href)">
+          <el-link
+            v-for="item in navItems"
+            :key="item.id"
+            :href="item.href"
+            class="mobile-nav-link"
+            :underline="false"
+            @click.prevent="scrollTo(item.href)"
+          >
             {{ item.text }}
           </el-link>
-          <el-button type="primary" class="mobile-join-btn" round @click="goToMessageWall">留言墙</el-button>
-          <el-button type="primary" class="mobile-join-btn" round @click="scrollTo('#join')">加入我们</el-button>
+          <el-button
+            type="primary"
+            class="mobile-join-btn"
+            round
+            @click="goToMessageWall"
+            >留言墙</el-button
+          >
+          <el-button
+            type="primary"
+            class="mobile-join-btn"
+            round
+            @click="scrollTo('#join')"
+            >加入我们</el-button
+          >
         </div>
       </el-collapse-transition>
     </el-header>
@@ -52,19 +98,19 @@
       <div class="banner-content">
         <div class="title-container">
           <h1 class="main-title">
-            <span class="code-text">Code</span>
-            <span class="pulse-text">Pulse</span>
+            <span class="code-text">智环学创融合协会</span>
           </h1>
-          <p class="subtitle">用代码驱动创新，以技术连接未来</p>
+          <p class="subtitle">🤓 ：Hello, World？</p>
         </div>
 
         <p class="description">
-          我们是充满活力的计算机社团，致力于为热爱技术的学子提供学习、交流与实践的平台
+          告别单机学习！告别单机学习，组队升级打怪！你的技术合伙人都在这里💥
         </p>
 
         <div class="action-buttons">
           <el-button class="learn-more-btn" round @click="scrollTo('#about')">
-            了解更多 <el-icon>
+            了解更多
+            <el-icon>
               <ArrowRight />
             </el-icon>
           </el-button>
@@ -75,7 +121,11 @@
 
         <!-- 向下滚动指示 -->
         <div class="scroll-down">
-          <el-link href="#about" :underline="false" @click.prevent="scrollTo('#about')">
+          <el-link
+            href="#about"
+            :underline="false"
+            @click.prevent="scrollTo('#about')"
+          >
             <el-icon class="scroll-icon">
               <ArrowDown />
             </el-icon>
@@ -96,13 +146,16 @@
           <div class="about-text">
             <h3 class="about-subtitle">关于 CodePulse</h3>
             <p class="about-paragraph">
-              CodePulse 计算机社团成立于2016年，是校内最具影响力的科技类社团之一。我们致力于为对计算机科学与技术感兴趣的同学提供一个交流、学习和实践的平台。
+              CodePulse
+              计算机社团成立于2016年，是校内最具影响力的科技类社团之一。我们致力于为对计算机科学与技术感兴趣的同学提供一个交流、学习和实践的平台。
             </p>
             <p class="about-paragraph">
               成立背景源于一群热爱编程的学生希望打破课堂界限，在实践中提升技能、分享知识。多年来，社团不断发展壮大，已形成完善的组织架构和丰富的活动体系。
             </p>
             <p class="about-paragraph">
-              我们的宗旨是：<span class="highlight-text">"探索技术前沿，培养创新思维，提升实践能力，连接志同道合的伙伴"</span>。
+              我们的宗旨是：<span class="highlight-text"
+                >"探索技术前沿，培养创新思维，提升实践能力，连接志同道合的伙伴"</span
+              >。
             </p>
 
             <div class="stats-grid">
@@ -130,8 +183,10 @@
           <div class="about-image">
             <div class="image-decoration top-left"></div>
             <div class="image-decoration bottom-right"></div>
-            <img src="https://picsum.photos/id/180/800/600" style="width: 100%; height: 100%;">
-
+            <img
+              src="https://picsum.photos/id/180/800/600"
+              style="width: 100%; height: 100%"
+            />
 
             <div class="image-badge">
               <div class="badge-icon">
@@ -169,7 +224,7 @@
         <div class="text-center mb-12">
           <h1 class="section-title">部门介绍</h1>
           <div class="section-divider"></div>
-          <p class="section-subtitle" style="margin-bottom: 20px;">
+          <p class="section-subtitle" style="margin-bottom: 20px">
             社团下设三个核心部门，各有侧重又相互协作，共同推动社团发展
           </p>
         </div>
@@ -197,8 +252,12 @@
                 主要研究方向包括数据结构、机器学习算法、深度学习框架应用等，培养成员的逻辑思维和问题解决能力。
               </p>
 
-              <el-button class="department-details-btn" @click="toggleDepartment('algorithm')">
-                查看成员 <el-icon>
+              <el-button
+                class="department-details-btn"
+                @click="toggleDepartment('algorithm')"
+              >
+                查看成员
+                <el-icon>
                   <ArrowDown v-if="!expandedDepartments.algorithm" />
                   <ArrowUp v-else />
                 </el-icon>
@@ -206,25 +265,25 @@
 
               <!-- 成员列表 -->
               <el-collapse-transition>
-                <div v-show="expandedDepartments.algorithm" class="department-members">
+                <div
+                  v-show="expandedDepartments.algorithm"
+                  class="department-members"
+                >
                   <h4 class="members-title">核心成员</h4>
                   <div class="members-list">
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">张明</h5>
                         <p class="member-position">部长 | 计算机科学与技术</p>
                       </div>
                     </div>
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">李华</h5>
                         <p class="member-position">副部长 | 软件工程</p>
                       </div>
                     </div>
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">王芳</h5>
                         <p class="member-position">核心成员 | 人工智能</p>
@@ -257,8 +316,12 @@
                 提供竞赛培训、模拟赛和经验分享，帮助成员提升实战能力和团队协作能力，争取优异成绩。
               </p>
 
-              <el-button class="department-details-btn" @click="toggleDepartment('competition')">
-                查看成员 <el-icon>
+              <el-button
+                class="department-details-btn"
+                @click="toggleDepartment('competition')"
+              >
+                查看成员
+                <el-icon>
                   <ArrowDown v-if="!expandedDepartments.competition" />
                   <ArrowUp v-else />
                 </el-icon>
@@ -266,25 +329,25 @@
 
               <!-- 成员列表 -->
               <el-collapse-transition>
-                <div v-show="expandedDepartments.competition" class="department-members">
+                <div
+                  v-show="expandedDepartments.competition"
+                  class="department-members"
+                >
                   <h4 class="members-title">核心成员</h4>
                   <div class="members-list">
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">刘强</h5>
                         <p class="member-position">部长 | 计算机科学与技术</p>
                       </div>
                     </div>
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">陈晨</h5>
                         <p class="member-position">副部长 | 数据科学</p>
                       </div>
                     </div>
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">杨帆</h5>
                         <p class="member-position">核心成员 | 软件工程</p>
@@ -317,8 +380,12 @@
                 主要工作包括活动组织、宣传推广、经费管理、校企合作对接等，培养成员的组织和沟通能力。
               </p>
 
-              <el-button class="department-details-btn" @click="toggleDepartment('management')">
-                查看成员 <el-icon>
+              <el-button
+                class="department-details-btn"
+                @click="toggleDepartment('management')"
+              >
+                查看成员
+                <el-icon>
                   <ArrowDown v-if="!expandedDepartments.management" />
                   <ArrowUp v-else />
                 </el-icon>
@@ -326,28 +393,30 @@
 
               <!-- 成员列表 -->
               <el-collapse-transition>
-                <div v-show="expandedDepartments.management" class="department-members">
+                <div
+                  v-show="expandedDepartments.management"
+                  class="department-members"
+                >
                   <h4 class="members-title">核心成员</h4>
                   <div class="members-list">
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">周敏</h5>
                         <p class="member-position">部长 | 信息管理</p>
                       </div>
                     </div>
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">吴迪</h5>
                         <p class="member-position">副部长 | 电子商务</p>
                       </div>
                     </div>
                     <div class="member-item">
-
                       <div class="member-info">
                         <h5 class="member-name">郑亮</h5>
-                        <p class="member-position">核心成员 | 计算机科学与技术</p>
+                        <p class="member-position">
+                          核心成员 | 计算机科学与技术
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -409,7 +478,7 @@
         <div class="text-center mb-12">
           <h1 class="section-title">活动风采</h1>
           <div class="section-divider"></div>
-          <p class="section-subtitle" style="margin-bottom: 20px;">
+          <p class="section-subtitle" style="margin-bottom: 20px">
             回顾我们过往的精彩活动瞬间，感受技术交流的热烈氛围与实践的乐趣
           </p>
         </div>
@@ -417,7 +486,6 @@
         <!-- 重点活动回顾 -->
         <div class="activities-grid">
           <div class="featured-activity">
-
             <div class="activity-overlay">
               <el-tag class="activity-tag" type="warning">品牌活动</el-tag>
               <h3 class="activity-title">第七届校园编程大赛</h3>
@@ -447,29 +515,46 @@
 
             <div class="highlights-grid">
               <div class="highlight-item">
-
-                <div class="highlight-overlay"
-                  style="background-image: url('https://picsum.photos/id/180/400/300');background-size: cover;">
+                <div
+                  class="highlight-overlay"
+                  style="
+                    background-image: url('https://picsum.photos/id/180/400/300');
+                    background-size: cover;
+                  "
+                >
                   <span>技术讲座</span>
                 </div>
               </div>
               <div class="highlight-item">
-
-                <div class="highlight-overlay"
-                  style="background-image: url('https://picsum.photos/id/48/400/300');background-size: cover;">
+                <div
+                  class="highlight-overlay"
+                  style="
+                    background-image: url('https://picsum.photos/id/48/400/300');
+                    background-size: cover;
+                  "
+                >
                   <span>开发工作坊</span>
                 </div>
               </div>
               <div class="highlight-item">
-
-                <div class="highlight-overlay"
-                  style="background-image: url('https://picsum.photos/id/160/400/300');background-size: cover;">
+                <div
+                  class="highlight-overlay"
+                  style="
+                    background-image: url('https://picsum.photos/id/160/400/300');
+                    background-size: cover;
+                  "
+                >
                   <span>24小时黑客松</span>
                 </div>
               </div>
               <div class="highlight-item">
-                <div class="highlight-overlay"
-                  style="background-image: url('https://picsum.photos/id/119/400/300');background-size: cover;">
+                <div
+                  class="highlight-overlay"
+                  style="
+                    background-image: url('https://picsum.photos/id/119/400/300');
+                    background-size: cover;
+                  "
+                >
                   <span>企业参观</span>
                 </div>
               </div>
@@ -520,7 +605,6 @@
             </div>
 
             <div class="video-item">
-
               <div class="video-overlay">
                 <el-icon class="play-icon">
                   <VideoPlay />
@@ -530,7 +614,6 @@
             </div>
 
             <div class="video-item">
-
               <div class="video-overlay">
                 <el-icon class="play-icon">
                   <VideoPlay />
@@ -559,7 +642,11 @@
           <!-- 项目1 -->
           <div class="project-card">
             <div class="project-image-container">
-              <img src="https://picsum.photos/id/160/600/400" alt="校园二手交易平台" style="width: 100%; height: 100%;">
+              <img
+                src="https://picsum.photos/id/160/600/400"
+                alt="校园二手交易平台"
+                style="width: 100%; height: 100%"
+              />
               <el-tag class="project-tag" type="primary">Web开发</el-tag>
             </div>
             <div class="project-content">
@@ -574,10 +661,11 @@
               </div>
               <div class="project-footer">
                 <div class="project-author">
-
                   <span class="author-name">张明团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false"
+                  >查看详情</el-link
+                >
               </div>
             </div>
           </div>
@@ -585,7 +673,11 @@
           <!-- 项目2 -->
           <div class="project-card">
             <div class="project-image-container">
-              <img src="https://picsum.photos/id/119/600/400" alt="智能校园导航系统" style="width: 100%; height: 100%;">
+              <img
+                src="https://picsum.photos/id/119/600/400"
+                alt="智能校园导航系统"
+                style="width: 100%; height: 100%"
+              />
               <el-tag class="project-tag" type="warning">移动应用</el-tag>
             </div>
             <div class="project-content">
@@ -600,10 +692,11 @@
               </div>
               <div class="project-footer">
                 <div class="project-author">
-
                   <span class="author-name">陈晨团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false"
+                  >查看详情</el-link
+                >
               </div>
             </div>
           </div>
@@ -611,7 +704,11 @@
           <!-- 项目3 -->
           <div class="project-card">
             <div class="project-image-container">
-              <img src="https://picsum.photos/id/2/600/400" alt="学生成绩分析系统" style="width: 100%; height: 100%;">
+              <img
+                src="https://picsum.photos/id/2/600/400"
+                alt="学生成绩分析系统"
+                style="width: 100%; height: 100%"
+              />
               <el-tag class="project-tag">数据分析</el-tag>
             </div>
             <div class="project-content">
@@ -626,10 +723,11 @@
               </div>
               <div class="project-footer">
                 <div class="project-author">
-
                   <span class="author-name">王芳团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false"
+                  >查看详情</el-link
+                >
               </div>
             </div>
           </div>
@@ -637,7 +735,11 @@
           <!-- 项目4 -->
           <div class="project-card">
             <div class="project-image-container">
-              <img src="https://picsum.photos/id/96/600/400" alt="校园活动推荐系统" style="width: 100%; height: 100%;">
+              <img
+                src="https://picsum.photos/id/96/600/400"
+                alt="校园活动推荐系统"
+                style="width: 100%; height: 100%"
+              />
               <el-tag class="project-tag" type="primary">人工智能</el-tag>
             </div>
             <div class="project-content">
@@ -652,10 +754,11 @@
               </div>
               <div class="project-footer">
                 <div class="project-author">
-
                   <span class="author-name">刘强团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false"
+                  >查看详情</el-link
+                >
               </div>
             </div>
           </div>
@@ -664,7 +767,8 @@
         <!-- 查看更多按钮 -->
         <div class="more-projects">
           <el-button class="more-btn" round>
-            查看更多项目 <el-icon>
+            查看更多项目
+            <el-icon>
               <ArrowRight />
             </el-icon>
           </el-button>
@@ -697,7 +801,9 @@
                 </div>
                 <div class="reason-content">
                   <h4 class="reason-title">提升技术能力</h4>
-                  <p class="reason-description">参与技术分享和实践项目，在实践中快速提升编程和开发技能</p>
+                  <p class="reason-description">
+                    参与技术分享和实践项目，在实践中快速提升编程和开发技能
+                  </p>
                 </div>
               </div>
 
@@ -709,7 +815,9 @@
                 </div>
                 <div class="reason-content">
                   <h4 class="reason-title">结识志同道合的伙伴</h4>
-                  <p class="reason-description">与来自不同专业的技术爱好者交流，拓展人脉圈，找到志同道合的朋友</p>
+                  <p class="reason-description">
+                    与来自不同专业的技术爱好者交流，拓展人脉圈，找到志同道合的朋友
+                  </p>
                 </div>
               </div>
 
@@ -721,7 +829,9 @@
                 </div>
                 <div class="reason-content">
                   <h4 class="reason-title">参与竞赛拿奖</h4>
-                  <p class="reason-description">有机会参加各类编程竞赛，获得荣誉和奖励，为简历增添亮点</p>
+                  <p class="reason-description">
+                    有机会参加各类编程竞赛，获得荣誉和奖励，为简历增添亮点
+                  </p>
                 </div>
               </div>
 
@@ -733,7 +843,9 @@
                 </div>
                 <div class="reason-content">
                   <h4 class="reason-title">获取实习机会</h4>
-                  <p class="reason-description">优秀成员有机会获得合作企业的实习推荐，提前规划职业发展</p>
+                  <p class="reason-description">
+                    优秀成员有机会获得合作企业的实习推荐，提前规划职业发展
+                  </p>
                 </div>
               </div>
             </div>
@@ -777,35 +889,61 @@
 
           <!-- 报名表单 -->
           <div class="join-form-container">
-            <el-form class="join-form" :model="joinForm" :rules="joinRules" ref="joinFormRef">
+            <el-form
+              class="join-form"
+              :model="joinForm"
+              :rules="joinRules"
+              ref="joinFormRef"
+            >
               <h3 class="form-title">填写报名信息</h3>
 
               <el-form-item prop="name">
-                <el-input v-model="joinForm.name" placeholder="请输入您的姓名" />
+                <el-input
+                  v-model="joinForm.name"
+                  placeholder="请输入您的姓名"
+                />
               </el-form-item>
 
               <el-form-item prop="studentId">
-                <el-input v-model="joinForm.studentId" placeholder="请输入您的学号" />
+                <el-input
+                  v-model="joinForm.studentId"
+                  placeholder="请输入您的学号"
+                />
               </el-form-item>
 
               <el-form-item prop="class">
-                <el-input v-model="joinForm.class" placeholder="请输入您的班级，例如：计科2101" />
+                <el-input
+                  v-model="joinForm.class"
+                  placeholder="请输入您的班级，例如：计科2101"
+                />
               </el-form-item>
 
               <el-form-item prop="major">
-                <el-input v-model="joinForm.major" placeholder="请输入您的专业" />
+                <el-input
+                  v-model="joinForm.major"
+                  placeholder="请输入您的专业"
+                />
               </el-form-item>
 
               <el-form-item prop="phone">
-                <el-input v-model="joinForm.phone" placeholder="请输入您的联系电话" />
+                <el-input
+                  v-model="joinForm.phone"
+                  placeholder="请输入您的联系电话"
+                />
               </el-form-item>
 
               <el-form-item prop="email">
-                <el-input v-model="joinForm.email" placeholder="请输入您的电子邮箱" />
+                <el-input
+                  v-model="joinForm.email"
+                  placeholder="请输入您的电子邮箱"
+                />
               </el-form-item>
 
               <el-form-item prop="department">
-                <el-select v-model="joinForm.department" placeholder="请选择您想加入的部门">
+                <el-select
+                  v-model="joinForm.department"
+                  placeholder="请选择您想加入的部门"
+                >
                   <el-option label="算法部" value="algorithm"></el-option>
                   <el-option label="竞赛部" value="competition"></el-option>
                   <el-option label="管理部" value="management"></el-option>
@@ -814,18 +952,33 @@
               </el-form-item>
 
               <el-form-item prop="introduction">
-                <el-input v-model="joinForm.introduction" type="textarea" :rows="4"
-                  placeholder="请简要介绍一下自己，包括兴趣爱好、技能特长等（至少50字）" :validate-event="false" />
+                <el-input
+                  v-model="joinForm.introduction"
+                  type="textarea"
+                  :rows="4"
+                  placeholder="请简要介绍一下自己，包括兴趣爱好、技能特长等（至少50字）"
+                  :validate-event="false"
+                />
               </el-form-item>
 
               <el-form-item prop="reason">
-                <el-input v-model="joinForm.reason" type="textarea" :rows="3" placeholder="请说明您想加入社团的原因和期望"
-                  :validate-event="false" />
+                <el-input
+                  v-model="joinForm.reason"
+                  type="textarea"
+                  :rows="3"
+                  placeholder="请说明您想加入社团的原因和期望"
+                  :validate-event="false"
+                />
               </el-form-item>
 
               <el-form-item>
-                <el-button class="submit-btn" type="primary" @click="submitJoinForm">
-                  提交报名 <el-icon>
+                <el-button
+                  class="submit-btn"
+                  type="primary"
+                  @click="submitJoinForm"
+                >
+                  提交报名
+                  <el-icon>
                     <Promotion />
                   </el-icon>
                 </el-button>
@@ -839,28 +992,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive } from "vue";
 import {
-  Menu, ArrowRight, ArrowDown, User, Calendar, Trophy,
-  Document, Setting, Lightning, Check, VideoPlay, InfoFilled,
-  Briefcase, Promotion, ArrowUp
-} from '@element-plus/icons-vue'
+  Menu,
+  ArrowRight,
+  ArrowDown,
+  User,
+  Calendar,
+  Trophy,
+  Document,
+  Setting,
+  Lightning,
+  Check,
+  VideoPlay,
+  InfoFilled,
+  Briefcase,
+  Promotion,
+  ArrowUp,
+} from "@element-plus/icons-vue";
 
 // 留言墙
 // 从 vue-router 导入 useRouter 钩子
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
 // 获取路由实例
-const router = useRouter()
+const router = useRouter();
 
 // 跳转路由的方法
 const goToMessageWall = () => {
   // 1. 直接通过路径跳转
-  router.push('/messages')
-}
+  router.push("/messages");
+};
 
-
-const showMobileMenu = ref(false)
+const showMobileMenu = ref(false);
 // 定义部门展开状态类型
 interface DepartmentExpanded {
   algorithm: boolean;
@@ -871,83 +1035,87 @@ interface DepartmentExpanded {
 const expandedDepartments = reactive<DepartmentExpanded>({
   algorithm: false,
   competition: false,
-  management: false
-})
+  management: false,
+});
 
-const joinFormRef = ref()
+const joinFormRef = ref();
 const joinForm = reactive({
-  name: '',
-  studentId: '',
-  class: '',
-  major: '',
-  phone: '',
-  email: '',
-  department: '',
-  introduction: '',
-  reason: ''
-})
+  name: "",
+  studentId: "",
+  class: "",
+  major: "",
+  phone: "",
+  email: "",
+  department: "",
+  introduction: "",
+  reason: "",
+});
 
 const joinRules = reactive({
-  name: [{ required: true, message: '请输入您的姓名', trigger: 'blur' }],
-  studentId: [{ required: true, message: '请输入您的学号', trigger: 'blur' }],
-  class: [{ required: true, message: '请输入您的班级', trigger: 'blur' }],
-  major: [{ required: true, message: '请输入您的专业', trigger: 'blur' }],
-  phone: [{ required: true, message: '请输入您的联系电话', trigger: 'blur' }],
+  name: [{ required: true, message: "请输入您的姓名", trigger: "blur" }],
+  studentId: [{ required: true, message: "请输入您的学号", trigger: "blur" }],
+  class: [{ required: true, message: "请输入您的班级", trigger: "blur" }],
+  major: [{ required: true, message: "请输入您的专业", trigger: "blur" }],
+  phone: [{ required: true, message: "请输入您的联系电话", trigger: "blur" }],
   email: [
-    { required: true, message: '请输入您的电子邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: ['blur', 'change'] }
+    { required: true, message: "请输入您的电子邮箱", trigger: "blur" },
+    {
+      type: "email",
+      message: "请输入正确的邮箱格式",
+      trigger: ["blur", "change"],
+    },
   ],
-  department: [{ required: true, message: '请选择意向部门', trigger: 'change' }],
+  department: [
+    { required: true, message: "请选择意向部门", trigger: "change" },
+  ],
   introduction: [
-    { required: true, message: '请填写个人介绍', trigger: 'blur' },
-    { min: 1, message: '个人介绍至少50字', trigger: 'blur' }
+    { required: true, message: "请填写个人介绍", trigger: "blur" },
+    { min: 1, message: "个人介绍至少50字", trigger: "blur" },
   ],
-  reason: [{ required: true, message: '请填写加入原因', trigger: 'blur' }]
-})
+  reason: [{ required: true, message: "请填写加入原因", trigger: "blur" }],
+});
 
 const navItems = [
-  { id: 1, text: '首页', href: '#home' },
-  { id: 2, text: '社团简介', href: '#about' },
-  { id: 3, text: '部门介绍', href: '#departments' },
-  { id: 4, text: '活动风采', href: '#activities' },
-  { id: 5, text: '项目展示', href: '#projects' },
-  { id: 6, text: '学生会', href: '#student-council' },
-]
+  { id: 1, text: "首页", href: "#home" },
+  { id: 2, text: "社团简介", href: "#about" },
+  { id: 3, text: "部门介绍", href: "#departments" },
+  { id: 4, text: "活动风采", href: "#activities" },
+  { id: 5, text: "项目展示", href: "#projects" },
+  { id: 6, text: "学生会", href: "#student-council" },
+];
 
 const scrollTo = (id: string) => {
-  showMobileMenu.value = false
-  const element = document.querySelector(id)
+  showMobileMenu.value = false;
+  const element = document.querySelector(id);
   if (element) {
     element.scrollIntoView({
-      behavior: 'smooth'
-    })
+      behavior: "smooth",
+    });
   }
-}
+};
 
 const toggleDepartment = (department: keyof DepartmentExpanded) => {
-  expandedDepartments[department] = !expandedDepartments[department]
-}
-
-
+  expandedDepartments[department] = !expandedDepartments[department];
+};
 
 const submitJoinForm = () => {
   joinFormRef.value.validate((valid: boolean) => {
     if (valid) {
       // 这里可以添加表单提交逻辑
-      alert('报名信息提交成功！我们将尽快与您联系，请留意邮件通知。')
+      alert("报名信息提交成功！我们将尽快与您联系，请留意邮件通知。");
       // 实际项目中这里应该调用API提交表单
       // submitInformation(joinForm)
-      joinFormRef.value.resetFields()
+      joinFormRef.value.resetFields();
     } else {
-      return false
+      return false;
     }
-  })
-}
+  });
+};
 </script>
 
 <style scoped lang="scss">
 .code-pulse-container {
-  font-family: 'Inter', 'system-ui', 'sans-serif';
+  font-family: "Inter", "system-ui", "sans-serif";
   color: #333;
 }
 
@@ -984,7 +1152,7 @@ const submitJoinForm = () => {
       width: 40px;
       height: 40px;
       border-radius: 8px;
-      background: linear-gradient(135deg, #165DFF, #FF7D00);
+      background: linear-gradient(135deg, #165dff, #ff7d00);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -999,7 +1167,7 @@ const submitJoinForm = () => {
     .logo-text {
       font-size: 20px;
       font-weight: bold;
-      background: linear-gradient(90deg, #165DFF, #FF7D00);
+      background: linear-gradient(90deg, #165dff, #ff7d00);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -1018,17 +1186,17 @@ const submitJoinForm = () => {
       transition: color 0.3s;
 
       &:hover {
-        color: #165DFF;
+        color: #165dff;
       }
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -4px;
         left: 0;
         width: 0;
         height: 2px;
-        background-color: #165DFF;
+        background-color: #165dff;
         transition: width 0.3s;
       }
 
@@ -1038,7 +1206,7 @@ const submitJoinForm = () => {
     }
 
     .join-btn {
-      background: linear-gradient(90deg, #165DFF, #FF7D00);
+      background: linear-gradient(90deg, #165dff, #ff7d00);
       border: none;
       color: white;
       padding: 8px 24px;
@@ -1076,7 +1244,7 @@ const submitJoinForm = () => {
       transition: color 0.3s;
 
       &:hover {
-        color: #165DFF;
+        color: #165dff;
       }
     }
 
@@ -1084,7 +1252,7 @@ const submitJoinForm = () => {
       display: block;
       width: 100%;
       margin-top: 12px;
-      background: linear-gradient(90deg, #165DFF, #FF7D00);
+      background: linear-gradient(90deg, #165dff, #ff7d00);
       border: none;
       color: white;
       padding: 12px 0;
@@ -1114,7 +1282,7 @@ const submitJoinForm = () => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(to bottom, #0F172A, #1E293B);
+  background: linear-gradient(to bottom, #0f172a, #1e293b);
   padding-top: 80px;
   color: white;
   text-align: center;
@@ -1156,7 +1324,7 @@ const submitJoinForm = () => {
         line-height: 1.2;
 
         .code-text {
-          background: linear-gradient(90deg, #165DFF, #FF7D00);
+          background: linear-gradient(90deg, #165dff, #ff7d00);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
@@ -1170,14 +1338,14 @@ const submitJoinForm = () => {
 
       .subtitle {
         font-size: clamp(1rem, 4vw, 1.3rem);
-        color: #CBD5E1;
+        color: #cbd5e1;
         max-width: 800px;
         margin: 0 auto;
       }
     }
 
     .description {
-      color: #CBD5E1;
+      color: #cbd5e1;
       max-width: 700px;
       margin: 0 auto 40px;
       font-size: 16px;
@@ -1191,7 +1359,7 @@ const submitJoinForm = () => {
 
       .learn-more-btn {
         background-color: white;
-        color: #0F172A;
+        color: #0f172a;
         font-weight: 500;
         padding: 12px 24px;
         transition: all 0.3s;
@@ -1246,7 +1414,7 @@ const submitJoinForm = () => {
 .section-divider {
   width: 80px;
   height: 2px;
-  background: linear-gradient(to right, #165DFF, #FF7D00);
+  background: linear-gradient(to right, #165dff, #ff7d00);
   margin: 0 auto 24px;
 }
 
@@ -1299,7 +1467,7 @@ const submitJoinForm = () => {
 
     .highlight-text {
       font-weight: bold;
-      color: #165DFF;
+      color: #165dff;
     }
 
     .stats-grid {
@@ -1310,7 +1478,7 @@ const submitJoinForm = () => {
     }
 
     .stat-card {
-      background-color: #F8FAFC;
+      background-color: #f8fafc;
       padding: 24px;
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -1334,7 +1502,7 @@ const submitJoinForm = () => {
 
       .el-icon {
         font-size: 24px;
-        color: #165DFF;
+        color: #165dff;
       }
     }
 
@@ -1403,7 +1571,7 @@ const submitJoinForm = () => {
         justify-content: center;
 
         .el-icon {
-          color: #FF7D00;
+          color: #ff7d00;
           font-size: 20px;
         }
       }
@@ -1433,7 +1601,7 @@ const submitJoinForm = () => {
     }
 
     .chart-container {
-      background-color: #F8FAFC;
+      background-color: #f8fafc;
       border-radius: 12px;
       padding: 24px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -1453,7 +1621,7 @@ const submitJoinForm = () => {
       .el-icon {
         font-size: 48px;
         margin-bottom: 16px;
-        color: #165DFF;
+        color: #165dff;
       }
     }
   }
@@ -1506,15 +1674,15 @@ const submitJoinForm = () => {
 
       /* 不同部门的颜色主题 */
       &.algorithm {
-        background: linear-gradient(135deg, #165DFF 0%, #4080FF 100%);
+        background: linear-gradient(135deg, #165dff 0%, #4080ff 100%);
       }
 
       &.competition {
-        background: linear-gradient(135deg, #FF7D00 0%, #FFA940 100%);
+        background: linear-gradient(135deg, #ff7d00 0%, #ffa940 100%);
       }
 
       &.management {
-        background: linear-gradient(135deg, #4B5563 0%, #6B7280 100%);
+        background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
       }
 
       /* 部门图标样式 */
@@ -1696,7 +1864,7 @@ const submitJoinForm = () => {
           top: 0;
           left: 50%;
           transform: translateX(-50%);
-          background: linear-gradient(135deg, #165DFF 0%, #4080FF 100%);
+          background: linear-gradient(135deg, #165dff 0%, #4080ff 100%);
           color: white;
           width: 180px;
         }
@@ -1818,7 +1986,7 @@ const submitJoinForm = () => {
     height: 400px;
     border-radius: 12px;
     overflow: hidden;
-    background-color: #0F172A;
+    background-color: #0f172a;
     background-size: cover;
     background-position: center;
 
@@ -1913,7 +2081,7 @@ const submitJoinForm = () => {
     }
 
     .activity-features {
-      background-color: #F8FAFC;
+      background-color: #f8fafc;
       border-radius: 12px;
       padding: 16px;
       margin-top: 24px;
@@ -1924,7 +2092,7 @@ const submitJoinForm = () => {
         margin-bottom: 16px;
 
         .feature-icon {
-          color: #165DFF;
+          color: #165dff;
           font-size: 24px;
           margin-right: 12px;
         }
@@ -1946,7 +2114,7 @@ const submitJoinForm = () => {
           margin-bottom: 12px;
 
           .feature-check {
-            color: #165DFF;
+            color: #165dff;
             font-size: 16px;
             margin-right: 8px;
             margin-top: 2px;
@@ -2033,7 +2201,7 @@ const submitJoinForm = () => {
 /* 项目展示部分样式 */
 .projects-section {
   padding: 80px 0;
-  background-color: #F8FAFC;
+  background-color: #f8fafc;
 
   .projects-container {
     max-width: 1200px;
@@ -2106,7 +2274,7 @@ const submitJoinForm = () => {
 
       .tech-tag {
         font-size: 0.75rem;
-        background-color: #F8FAFC;
+        background-color: #f8fafc;
         color: #666;
         border: none;
       }
@@ -2139,7 +2307,7 @@ const submitJoinForm = () => {
 
       .project-link {
         font-size: 0.875rem;
-        color: #165DFF;
+        color: #165dff;
       }
     }
   }
@@ -2151,8 +2319,8 @@ const submitJoinForm = () => {
     .more-btn {
       padding: 12px 24px;
       background-color: white;
-      color: #165DFF;
-      border: 1px solid #165DFF;
+      color: #165dff;
+      border: 1px solid #165dff;
 
       &:hover {
         background-color: rgba(22, 93, 255, 0.1);
@@ -2164,7 +2332,7 @@ const submitJoinForm = () => {
 /* 加入我们部分样式 */
 .join-section {
   padding: 80px 0;
-  background: linear-gradient(to bottom right, #0F172A, #1E293B);
+  background: linear-gradient(to bottom right, #0f172a, #1e293b);
   color: white;
 
   .join-container {
@@ -2179,7 +2347,7 @@ const submitJoinForm = () => {
   }
 
   .section-divider {
-    background: linear-gradient(to right, #165DFF, #FF7D00);
+    background: linear-gradient(to right, #165dff, #ff7d00);
   }
 
   .join-content {
@@ -2220,7 +2388,7 @@ const submitJoinForm = () => {
         flex-shrink: 0;
 
         .el-icon {
-          color: #165DFF;
+          color: #165dff;
           font-size: 24px;
         }
       }
@@ -2233,7 +2401,7 @@ const submitJoinForm = () => {
         }
 
         .reason-description {
-          color: #CBD5E1;
+          color: #cbd5e1;
           font-size: 0.875rem;
           line-height: 1.6;
         }
@@ -2253,7 +2421,7 @@ const submitJoinForm = () => {
         margin-bottom: 16px;
 
         .notice-icon {
-          color: #FF7D00;
+          color: #ff7d00;
           font-size: 24px;
           margin-right: 12px;
         }
@@ -2273,11 +2441,11 @@ const submitJoinForm = () => {
           display: flex;
           align-items: flex-start;
           margin-bottom: 12px;
-          color: #CBD5E1;
+          color: #cbd5e1;
           font-size: 0.875rem;
 
           .notice-check {
-            color: #FF7D00;
+            color: #ff7d00;
             font-size: 16px;
             margin-right: 8px;
             margin-top: 2px;
@@ -2320,7 +2488,7 @@ const submitJoinForm = () => {
         width: 100%;
         padding: 16px;
         font-size: 1rem;
-        background: linear-gradient(to right, #165DFF, #FF7D00);
+        background: linear-gradient(to right, #165dff, #ff7d00);
         border: none;
         transition: all 0.3s ease;
 
@@ -2347,7 +2515,6 @@ const submitJoinForm = () => {
 }
 
 @keyframes bounce {
-
   0%,
   20%,
   50%,
