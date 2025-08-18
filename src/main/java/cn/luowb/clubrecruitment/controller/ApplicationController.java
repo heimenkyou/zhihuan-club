@@ -31,7 +31,7 @@ public class ApplicationController {
 
     @Operation(summary = "分页查询报名信息")
     @GetMapping
-    public Result getApplicationList(@ParameterObject PageReqDTO requestParam) {
+    public Result<PageData<ApplicationPageDTO>> getApplicationList(@ParameterObject PageReqDTO requestParam) {
         log.debug("分页查询报名信息, 第{}页{}条", requestParam.getCurrent(), requestParam.getSize());
         PageData<ApplicationPageDTO> applicationList = applicationService.getApplicationList(requestParam);
         return Results.success(applicationList);

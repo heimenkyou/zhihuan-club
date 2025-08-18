@@ -1,14 +1,9 @@
 package cn.luowb.clubrecruitment.dto.resp;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
-
 
 @Data
 @Schema(description = "报名分页查询返回实体")
