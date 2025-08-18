@@ -9,8 +9,8 @@ import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.util.RedisKeyUtil;
 import cn.luowb.clubrecruitment.dao.entity.MessageDO;
 import cn.luowb.clubrecruitment.dao.mapper.MessageMapper;
-import cn.luowb.clubrecruitment.dto.req.MessagePageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
+import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import cn.luowb.clubrecruitment.service.MessageService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -54,13 +54,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
     }
 
     @Override
-    public PageData<MessagePageRespDTO> getMessageList(MessagePageReqDTO requestParam) {
+    public PageData<MessagePageRespDTO> getMessageList(PageReqDTO requestParam) {
         String ip = IPContext.getIp();
         Page<MessageDO> page = new Page<>(requestParam.getCurrent(), requestParam.getSize());
-        Page<MessageDO> messageDOPage = messageMapper.selectPage(page,
-                new LambdaQueryWrapper<MessageDO>().orderByDesc(MessageDO::getCreateTime)); // 时间倒序排序
+        // 时间倒序排序
+        page = this.page(page, new LambdaQueryWrapper<MessageDO>().orderByDesc(MessageDO::getCreateTime));
         // 转换成返回参数
-        return PageData.of(messageDOPage, each -> {
+        return PageData.of(page, each -> {
             MessagePageRespDTO respDTO = BeanUtil.toBean(each, MessagePageRespDTO.class);
             respDTO.setLiked(this.hasLiked(each.getId())); // 判断当前用户是否已点赞
             respDTO.setCanDelete(each.getIpAddress().equals(ip)); // 判断当前用户是否可删除此留言

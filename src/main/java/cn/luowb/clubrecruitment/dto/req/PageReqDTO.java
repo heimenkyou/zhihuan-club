@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "留言分页查询参数")
-public class MessagePageReqDTO {
+@Schema(description = "分页查询参数")
+public class PageReqDTO {
     /**
      * 当前页码
      */

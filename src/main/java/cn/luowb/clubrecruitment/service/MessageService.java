@@ -3,7 +3,7 @@ package cn.luowb.clubrecruitment.service;
 import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.MessageDO;
-import cn.luowb.clubrecruitment.dto.req.MessagePageReqDTO;
+import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,7 +26,7 @@ public interface MessageService extends IService<MessageDO> {
      * @param requestParam 请求参数
      * @return 留言列表
      */
-    PageData<MessagePageRespDTO> getMessageList(MessagePageReqDTO requestParam);
+    PageData<MessagePageRespDTO> getMessageList(PageReqDTO requestParam);
 
     /**
      * 切换留言点赞状态

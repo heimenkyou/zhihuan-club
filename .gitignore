@@ -1,4 +1,5 @@
 application-dev.yml
+*.log
 
 HELP.md
 target/

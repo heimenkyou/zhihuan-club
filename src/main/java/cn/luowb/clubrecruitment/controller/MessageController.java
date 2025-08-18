@@ -4,7 +4,7 @@ import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
-import cn.luowb.clubrecruitment.dto.req.MessagePageReqDTO;
+import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import cn.luowb.clubrecruitment.service.MessageService;
@@ -34,7 +34,7 @@ public class MessageController {
 
     @Operation(summary = "分页获取留言列表")
     @GetMapping
-    public Result<PageData<MessagePageRespDTO>> getMessageList(@ParameterObject MessagePageReqDTO requestParam) {
+    public Result<PageData<MessagePageRespDTO>> getMessageList(@ParameterObject PageReqDTO requestParam) {
         log.debug("分页获取留言: {}", requestParam);
         PageData<MessagePageRespDTO> messageList = messageService.getMessageList(requestParam);
         return Results.success(messageList);
