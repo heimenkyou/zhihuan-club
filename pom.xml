@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -114,7 +115,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.20.Final</version>
+            <version>7.0.0.CR1</version>
         </dependency>
         <!-- 接口文档相关依赖 -->
         <dependency>
@@ -170,17 +171,17 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.22.1</version>
-<!--                <configuration>-->
-<!--                    <java>-->
-<!--                        &lt;!&ndash;<eclipse>-->
-<!--                            <file>${maven.multiModuleProjectDirectory}/format/one-coupon_spotless_formatter.xml</file>-->
-<!--                        </eclipse>&ndash;&gt;-->
-<!--                        <licenseHeader>-->
-<!--                            &lt;!&ndash; ${maven.multiModuleProjectDirectory} 爆红属于正常，并不影响编译或者运行，忽略就好 &ndash;&gt;-->
-<!--                            <file>${maven.multiModuleProjectDirectory}/copyright/copyright.txt</file>-->
-<!--                        </licenseHeader>-->
-<!--                    </java>-->
-<!--                </configuration>-->
+                <!--                <configuration>-->
+                <!--                    <java>-->
+                <!--                        &lt;!&ndash;<eclipse>-->
+                <!--                            <file>${maven.multiModuleProjectDirectory}/format/one-coupon_spotless_formatter.xml</file>-->
+                <!--                        </eclipse>&ndash;&gt;-->
+                <!--                        <licenseHeader>-->
+                <!--                            &lt;!&ndash; ${maven.multiModuleProjectDirectory} 爆红属于正常，并不影响编译或者运行，忽略就好 &ndash;&gt;-->
+                <!--                            <file>${maven.multiModuleProjectDirectory}/copyright/copyright.txt</file>-->
+                <!--                        </licenseHeader>-->
+                <!--                    </java>-->
+                <!--                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
