@@ -8,7 +8,7 @@
             <div class="logo-icon">
               <span><img src="/apple-touch-icon.png" /></span>
             </div>
-            <span class="logo-text">智</span>
+            <span class="logo-text">智环学创融合协会</span>
           </el-link>
         </div>
 
@@ -574,7 +574,7 @@
                 <div class="project-author">
                   <span class="author-name">张明团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" @click="goProjectDetail()" :underline="false">查看详情</el-link>
               </div>
             </div>
           </div>
@@ -599,7 +599,7 @@
                 <div class="project-author">
                   <span class="author-name">陈晨团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false" @click="goProjectDetail()">查看详情</el-link>
               </div>
             </div>
           </div>
@@ -624,7 +624,7 @@
                 <div class="project-author">
                   <span class="author-name">王芳团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false" @click="goProjectDetail()">查看详情</el-link>
               </div>
             </div>
           </div>
@@ -649,7 +649,7 @@
                 <div class="project-author">
                   <span class="author-name">刘强团队</span>
                 </div>
-                <el-link class="project-link" :underline="false">查看详情</el-link>
+                <el-link class="project-link" :underline="false" @click="goProjectDetail()">查看详情</el-link>
               </div>
             </div>
           </div>
@@ -875,6 +875,10 @@ const goToMessageWall = () => {
   router.push("/messages");
 };
 
+const goProjectDetail = () => {
+  router.push("/project/detail");
+}
+
 const showMobileMenu = ref(false);
 // 定义部门展开状态类型
 interface DepartmentExpanded {
@@ -1018,10 +1022,10 @@ const submitJoinForm = () => {
       width: 40px;
       height: 40px;
       border-radius: 8px;
-      background: linear-gradient(135deg, #165dff, #ff7d00);
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 50%;
 
       span {
         color: white;

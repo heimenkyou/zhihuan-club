@@ -5,7 +5,8 @@ import { createPinia } from 'pinia'
 import ElementPlus, { ElNotification } from 'element-plus'
 import 'element-plus/dist/index.css'
 import { createApp } from 'vue'
-
+import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+// main.ts
 // 创建应用实例
 const app = createApp(App)
 
@@ -53,6 +54,10 @@ window.addEventListener('unhandledrejection', (event) => {
   event.preventDefault()
 })
 
+
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component);
+}
 // 使用插件并挂载应用
 app.use(router)
 app.use(createPinia())

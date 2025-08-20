@@ -2,6 +2,7 @@
 import { onMounted, ref, computed, onUnmounted } from 'vue'
 import { useMessageStore } from '../stores/messageStore'
 import { showSuccessNotification } from '../main'
+import { Refresh } from '@element-plus/icons-vue'
 
 const messageStore = useMessageStore()
 const debugInfo = ref('')
@@ -337,7 +338,9 @@ const formatTime = (timeString: string) => {
               </div>
               <div class="button-group">
                 <button class="submit-btn" @click="handleAddMessage">
-                  <span class="submit-icon">📝</span>
+                  <el-icon :size="20">
+                    <Edit />
+                  </el-icon>
                   <span class="submit-text">发布留言</span>
                 </button>
               </div>
@@ -347,8 +350,10 @@ const formatTime = (timeString: string) => {
 
         <!-- 悬浮刷新按钮 -->
         <div class="floating-refresh" :class="{ 'refreshing': isRefreshing }">
-          <button class="refresh-btn" @click="handleRefresh" :disabled="isRefreshing">
-            <span class="refresh-icon">🔄</span>
+          <button class="refresh-btn" style="background: transparent;" @click="handleRefresh" :disabled="isRefreshing">
+            <el-icon :size="20">
+              <Refresh />
+            </el-icon>
           </button>
         </div>
 
@@ -468,10 +473,9 @@ const formatTime = (timeString: string) => {
 
 .message-board {
   min-height: 100vh;
-  /* background: linear-gradient(135deg, rgb(25,35,54) 0%, #060300 100%); */
-  background-image: url("@/assets/images/loginBg.jpg");
-    background-size: cover;
-    background-position: center;
+  background-image: url("@/assets/images/messageBg.jpg");
+  background-size: cover;
+  background-position: center;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -624,7 +628,7 @@ const formatTime = (timeString: string) => {
 .refresh-btn,
 .submit-btn {
   background: linear-gradient(135deg, #acb5e0, #e6deee);
-  color: white;
+  color: rgb(202, 99, 233);
   border: none;
   border-radius: 12px;
   padding: 0.8rem 1.5rem;
@@ -643,6 +647,7 @@ const formatTime = (timeString: string) => {
 .submit-btn:hover {
   background: linear-gradient(135deg, #764ba2, #667eea);
   transform: translateY(-2px);
+  color: white;
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
@@ -838,7 +843,7 @@ const formatTime = (timeString: string) => {
 .avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #ced4f0, #b8aac7);
+  background: linear-gradient(135deg, #8d9ad7, #ae7de2);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -929,7 +934,7 @@ const formatTime = (timeString: string) => {
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #667eea;
+  color: #3d59d7;
   font-weight: 500;
   font-size: 0.9rem;
 }
