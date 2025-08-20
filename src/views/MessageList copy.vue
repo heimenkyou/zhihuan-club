@@ -468,10 +468,7 @@ const formatTime = (timeString: string) => {
 
 .message-board {
   min-height: 100vh;
-  /* background: linear-gradient(135deg, rgb(25,35,54) 0%, #060300 100%); */
-  background-image: url("@/assets/images/loginBg.jpg");
-    background-size: cover;
-    background-position: center;
+  background: linear-gradient(135deg, rgb(247, 202, 202) 0%, #f39393 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -566,7 +563,7 @@ const formatTime = (timeString: string) => {
 .nickname-input,
 .content-input {
   padding: 0.8rem 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.9);
   color: #333;
@@ -623,7 +620,7 @@ const formatTime = (timeString: string) => {
 
 .refresh-btn,
 .submit-btn {
-  background: linear-gradient(135deg, #acb5e0, #e6deee);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
   border-radius: 12px;
@@ -838,7 +835,7 @@ const formatTime = (timeString: string) => {
 .avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #ced4f0, #b8aac7);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -975,14 +972,14 @@ const formatTime = (timeString: string) => {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .pagination-info {
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: black;
+  color: white;
   font-size: 0.9rem;
   opacity: 0.9;
 }
@@ -999,7 +996,7 @@ const formatTime = (timeString: string) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: black;
+  color: white;
   font-size: 0.9rem;
   opacity: 0.9;
 }
@@ -1014,7 +1011,7 @@ const formatTime = (timeString: string) => {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: black;
+  color: white;
   font-weight: 500;
 }
 
@@ -1026,7 +1023,7 @@ const formatTime = (timeString: string) => {
 .page-btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  color: black;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .page-numbers {
@@ -1041,7 +1038,7 @@ const formatTime = (timeString: string) => {
   padding: 0.5rem 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: black;
+  color: white;
   font-weight: 500;
   font-size: 0.9rem;
 }
@@ -1068,7 +1065,7 @@ const formatTime = (timeString: string) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: black;
+  color: white;
   font-size: 0.9rem;
   opacity: 0.9;
 }
@@ -1102,7 +1099,7 @@ const formatTime = (timeString: string) => {
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: black;
+  color: white;
   font-weight: 500;
   font-size: 0.9rem;
 }
@@ -1119,7 +1116,7 @@ const formatTime = (timeString: string) => {
   left: 0;
   right: 0;
   height: var(--pull-distance, 0px);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(42, 30, 53, 0.8));
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1132,9 +1129,9 @@ const formatTime = (timeString: string) => {
 }
 
 /* 下拉刷新指示器 - 达到阈值时 */
-/* .pull-indicator.release {
+.pull-indicator.release {
   background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(238, 90, 36, 0.8));
-} */
+}
 
 .pull-indicator.release::before {
   content: '释放刷新';
