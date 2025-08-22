@@ -12,8 +12,11 @@ export default defineConfig({
     },
   },
   server: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: 3000,
+    allowedHosts: [
+      '.f.luowb.cn', // 用于内网穿透服务器
+    ],
     proxy: {
       "/api": {
         target: "https://club.luowb.cn/api",
