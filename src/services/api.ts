@@ -1,6 +1,11 @@
 import axios from 'axios'
 import type { AxiosResponse, AxiosRequestConfig } from 'axios'
 
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
 // 创建axios实例
 const axiosInstance = axios.create({
   baseURL: '/api',
@@ -10,13 +15,15 @@ const axiosInstance = axios.create({
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (config) => {
+    // 添加日志以查看请求路径
+    console.log('请求路径:', (config.baseURL || '') + (config.url || ''));
     // 可以在这里添加请求头，如认证token
-    return config
+    return config;
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
 // 响应拦截器
 axiosInstance.interceptors.response.use(

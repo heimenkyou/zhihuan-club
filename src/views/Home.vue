@@ -1,47 +1,8 @@
 <template>
   <div class="code-pulse-container">
     <!-- 导航栏 -->
-    <el-header class="navbar">
-      <div class="container">
-        <div class="logo-container">
-          <el-link :underline="false" href="#home" class="logo-link" @click.prevent="scrollTo('#home')">
-            <div class="logo-icon">
-              <span><img src="/apple-touch-icon.png" /></span>
-            </div>
-            <span class="logo-text">智环学创融合协会</span>
-          </el-link>
-        </div>
-
-        <!-- 桌面导航 -->
-        <div class="desktop-nav">
-          <el-link v-for="item in navItems" :key="item.id" :href="item.href" class="nav-link" :underline="false"
-            @click.prevent="scrollTo(item.href)">
-            {{ item.text }}
-          </el-link>
-          <el-button type="primary" class="join-btn" round @click="goToMessageWall">留言墙</el-button>
-          <el-button type="primary" class="join-btn" round @click="scrollTo('#join')">加入我们</el-button>
-        </div>
-
-        <!-- 移动端菜单按钮 -->
-        <el-button class="mobile-menu-btn" @click="showMobileMenu = !showMobileMenu">
-          <el-icon>
-            <Menu />
-          </el-icon>
-        </el-button>
-      </div>
-
-      <!-- 移动端导航菜单 -->
-      <el-collapse-transition>
-        <div v-show="showMobileMenu" class="mobile-menu">
-          <el-link v-for="item in navItems" :key="item.id" :href="item.href" class="mobile-nav-link" :underline="false"
-            @click.prevent="scrollTo(item.href)">
-            {{ item.text }}
-          </el-link>
-          <el-button type="primary" class="mobile-join-btn" round @click="goToMessageWall">留言墙</el-button>
-          <el-button type="primary" class="mobile-join-btn" round @click="scrollTo('#join')">加入我们</el-button>
-        </div>
-      </el-collapse-transition>
-    </el-header>
+    <!-- 使用新的导航栏组件 -->
+    <CommonNavbar />
 
     <!-- 首页Banner -->
     <el-main class="home-banner" id="home">
@@ -54,7 +15,6 @@
           <h1 class="main-title">
             <span class="code-text">智环学创融合协会</span>
           </h1>
-          <p class="subtitle">🤓 ：Hello, World？</p>
         </div>
 
         <p class="description">
@@ -62,23 +22,70 @@
         </p>
 
         <div class="action-buttons">
-          <el-button class="learn-more-btn" round @click="scrollTo('#about')">
+          <el-button
+            @click="toabout"
+            class="learn-more-btn"
+            round
+            style="
+              font-weight: 600;
+              font-size: 1.125rem;
+              line-height: 1.75rem;
+              padding: 1.45rem 1.75rem;
+              background-color: white;
+              color: rgb(59 130 246 / var(--tw-bg-opacity, 1));
+              border-radius: 9999px;
+              border: none;
+              outline: none;
+              overflow: hidden;
+            "
+          >
             了解更多
-            <el-icon>
-              <ArrowRight />
-            </el-icon>
           </el-button>
-          <el-button class="join-us-btn" round plain @click="scrollTo('#join')">
+          <el-button
+            class="join-us-btn"
+            @click="tojoin"
+            round
+            style="
+              font-weight: 600;
+              font-size: 1.125rem;
+              line-height: 1.75rem;
+              padding: 1.45rem 1.75rem;
+              background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1));
+              color: white;
+              border-radius: 9999px;
+              border: none;
+              outline: none;
+              overflow: hidden;
+            "
+          >
             加入我们
           </el-button>
         </div>
 
         <!-- 向下滚动指示 -->
-        <div class="scroll-down">
-          <el-link href="#about" :underline="false" @click.prevent="scrollTo('#about')">
-            <el-icon class="scroll-icon">
-              <ArrowDown />
-            </el-icon>
+        <div class="scroll-down fixed-bottom flex-center">
+          <el-link href="#about" :underline="false" class="text-center">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                font-weight: 500;
+              "
+              class="text-center"
+            >
+              <span
+                class="text-center-text d-block mb-1"
+                style="text-align: center; color: white; font-size: 16px"
+                >向下滚动</span
+              >
+              <el-icon
+                class="scroll-icon"
+                style="margin: 0 auto; color: white; font-size: 24px"
+              >
+                <ArrowDown />
+              </el-icon>
+            </div>
           </el-link>
         </div>
       </div>
@@ -88,7 +95,7 @@
     <el-main class="about-section" id="about">
       <div class="about-container">
         <div class="text-center mb-12">
-          <h1 class="section-title">社团简介</h1>
+          <h1 class="section-title">我们是谁？</h1>
           <div class="section-divider"></div>
         </div>
 
@@ -103,884 +110,601 @@
               成立背景源于一群热爱编程的学生希望打破课堂界限，在实践中提升技能、分享知识。多年来，社团不断发展壮大，已形成完善的组织架构和丰富的活动体系。
             </p>
             <p class="about-paragraph">
-              我们的宗旨是：<span class="highlight-text">"探索技术前沿，培养创新思维，提升实践能力，连接志同道合的伙伴"</span>。
+              我们的宗旨是：<span class="highlight-text"
+                >"探索技术前沿，培养创新思维，提升实践能力，连接志同道合的伙伴"</span
+              >。
             </p>
-
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <el-icon>
-                    <User />
-                  </el-icon>
-                </div>
-                <h4 class="stat-number">800+</h4>
-                <p class="stat-label">注册成员</p>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <el-icon>
-                    <Calendar />
-                  </el-icon>
-                </div>
-                <h4 class="stat-number">60+</h4>
-                <p class="stat-label">年度活动</p>
-              </div>
-            </div>
           </div>
 
           <div class="about-image">
             <div class="image-decoration top-left"></div>
             <div class="image-decoration bottom-right"></div>
-            <img src="https://picsum.photos/id/180/800/600" style="width: 100%; height: 100%" />
+            <img
+              src="https://picsum.photos/id/180/800/600"
+              style="width: 100%; height: 100%"
+            />
 
-            <div class="image-badge">
-              <div class="badge-icon">
-                <el-icon>
-                  <Trophy />
-                </el-icon>
-              </div>
+            <div
+              class="image-badge"
+              style="
+                background: rgb(245 158 11 / var(--tw-bg-opacity, 1));
+                transform: skew(-20deg);
+              "
+            >
               <div>
-                <h4 class="badge-title">连续三年</h4>
-                <p class="badge-subtitle">校级优秀社团称号</p>
+                <h4
+                  class="badge-title"
+                  style="
+                    color: white;
+                    font-size: 1.25rem;
+                    transform: skew(20deg);
+                  "
+                >
+                  期待你的加入
+                </h4>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 社团数据统计 -->
-        <!-- <div class="stats-chart">
-          <h3 class="chart-title">社团发展数据</h3>
-
-          <div class="chart-container">
-            <div class="chart-placeholder">
-              <el-icon>
-                <PieChart />
-              </el-icon>
-              <p>社团发展数据图表</p>
-            </div>
-          </div>
-        </div> -->
-      </div>
-    </el-main>
-
-    <!-- 部门介绍 -->
-    <el-main class="departments-section" id="departments">
-      <div class="departments-container">
-        <div class="text-center mb-12">
-          <h1 class="section-title">部门介绍</h1>
-          <div class="section-divider"></div>
-          <p class="section-subtitle" style="margin-bottom: 20px">
-            社团下设三个核心部门，各有侧重又相互协作，共同推动社团发展
-          </p>
-        </div>
-
-        <!-- 部门卡片 -->
-        <div class="departments-grid">
-          <!-- 算法部 -->
-          <div class="department-card">
-            <div class="department-header algorithm">
-              <el-icon class="department-icon">
-                <Document />
-              </el-icon>
-            </div>
-            <div class="department-content">
-              <h3 class="department-title">
-                <el-icon class="department-title-icon">
-                  <Document />
-                </el-icon>
-                算法部
-              </h3>
-              <p class="department-description">
-                专注于算法研究与编程能力提升，定期组织算法学习小组、编程训练和技术分享会。
-              </p>
-              <p class="department-description">
-                主要研究方向包括数据结构、机器学习算法、深度学习框架应用等，培养成员的逻辑思维和问题解决能力。
-              </p>
-
-              <el-button class="department-details-btn" @click="toggleDepartment('algorithm')">
-                查看成员
-                <el-icon>
-                  <ArrowDown v-if="!expandedDepartments.algorithm" />
-                  <ArrowUp v-else />
-                </el-icon>
-              </el-button>
-
-              <!-- 成员列表 -->
-              <el-collapse-transition>
-                <div v-show="expandedDepartments.algorithm" class="department-members">
-                  <h4 class="members-title">核心成员</h4>
-                  <div class="members-list">
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">张明</h5>
-                        <p class="member-position">部长 | 计算机科学与技术</p>
-                      </div>
-                    </div>
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">李华</h5>
-                        <p class="member-position">副部长 | 软件工程</p>
-                      </div>
-                    </div>
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">王芳</h5>
-                        <p class="member-position">核心成员 | 人工智能</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </el-collapse-transition>
-            </div>
-          </div>
-
-          <!-- 竞赛部 -->
-          <div class="department-card">
-            <div class="department-header competition">
-              <el-icon class="department-icon">
-                <Trophy />
-              </el-icon>
-            </div>
-            <div class="department-content">
-              <h3 class="department-title">
-                <el-icon class="department-title-icon">
-                  <Trophy />
-                </el-icon>
-                竞赛部
-              </h3>
-              <p class="department-description">
-                负责组织和参与各类编程竞赛，包括ACM、蓝桥杯、程序设计大赛等校内外赛事。
-              </p>
-              <p class="department-description">
-                提供竞赛培训、模拟赛和经验分享，帮助成员提升实战能力和团队协作能力，争取优异成绩。
-              </p>
-
-              <el-button class="department-details-btn" @click="toggleDepartment('competition')">
-                查看成员
-                <el-icon>
-                  <ArrowDown v-if="!expandedDepartments.competition" />
-                  <ArrowUp v-else />
-                </el-icon>
-              </el-button>
-
-              <!-- 成员列表 -->
-              <el-collapse-transition>
-                <div v-show="expandedDepartments.competition" class="department-members">
-                  <h4 class="members-title">核心成员</h4>
-                  <div class="members-list">
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">刘强</h5>
-                        <p class="member-position">部长 | 计算机科学与技术</p>
-                      </div>
-                    </div>
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">陈晨</h5>
-                        <p class="member-position">副部长 | 数据科学</p>
-                      </div>
-                    </div>
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">杨帆</h5>
-                        <p class="member-position">核心成员 | 软件工程</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </el-collapse-transition>
-            </div>
-          </div>
-
-          <!-- 管理部 -->
-          <div class="department-card">
-            <div class="department-header management">
-              <el-icon class="department-icon">
-                <Setting />
-              </el-icon>
-            </div>
-            <div class="department-content">
-              <h3 class="department-title">
-                <el-icon class="department-title-icon">
-                  <Setting />
-                </el-icon>
-                管理部
-              </h3>
-              <p class="department-description">
-                负责社团日常运营、活动策划、成员管理和对外联络，是社团高效运转的保障。
-              </p>
-              <p class="department-description">
-                主要工作包括活动组织、宣传推广、经费管理、校企合作对接等，培养成员的组织和沟通能力。
-              </p>
-
-              <el-button class="department-details-btn" @click="toggleDepartment('management')">
-                查看成员
-                <el-icon>
-                  <ArrowDown v-if="!expandedDepartments.management" />
-                  <ArrowUp v-else />
-                </el-icon>
-              </el-button>
-
-              <!-- 成员列表 -->
-              <el-collapse-transition>
-                <div v-show="expandedDepartments.management" class="department-members">
-                  <h4 class="members-title">核心成员</h4>
-                  <div class="members-list">
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">周敏</h5>
-                        <p class="member-position">部长 | 信息管理</p>
-                      </div>
-                    </div>
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">吴迪</h5>
-                        <p class="member-position">副部长 | 电子商务</p>
-                      </div>
-                    </div>
-                    <div class="member-item">
-                      <div class="member-info">
-                        <h5 class="member-name">郑亮</h5>
-                        <p class="member-position">
-                          核心成员 | 计算机科学与技术
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </el-collapse-transition>
-            </div>
-          </div>
-        </div>
-
-        <!-- 组织架构图 -->
-        <div class="organization-chart">
-          <h3 class="chart-title">组织架构</h3>
-
-          <div class="chart-container">
-            <!-- 社团主席 -->
-            <div class="org-node president">
-              <h4 class="org-node-title">社团主席</h4>
-              <p>陈晓峰</p>
-            </div>
-
-            <!-- 连接线 -->
-            <div class="org-line vertical"></div>
-
-            <!-- 部门总监 -->
-            <div class="org-node director">
-              <h4 class="org-node-title">部门总监</h4>
-              <p>林小雨</p>
-            </div>
-
-            <!-- 连接线 -->
-            <div class="org-line vertical"></div>
-            <div class="org-line horizontal"></div>
-
-            <!-- 三个部门 -->
-            <div class="org-node department algorithm">
-              <h4 class="org-node-title">算法部</h4>
-              <p>部长: 张明</p>
-            </div>
-
-            <div class="org-node department competition">
-              <h4 class="org-node-title">竞赛部</h4>
-              <p>部长: 刘强</p>
-            </div>
-
-            <div class="org-node department management">
-              <h4 class="org-node-title">管理部</h4>
-              <p>部长: 周敏</p>
-            </div>
-          </div>
-
-          <p class="chart-note">点击节点查看详情</p>
-        </div>
-      </div>
-    </el-main>
-
-    <!-- 活动风采 -->
-    <el-main class="activities-section" id="activities">
-      <div class="activities-container">
-        <div class="text-center mb-12">
-          <h1 class="section-title">活动风采</h1>
-          <div class="section-divider"></div>
-          <p class="section-subtitle" style="margin-bottom: 20px">
-            回顾我们过往的精彩活动瞬间，感受技术交流的热烈氛围与实践的乐趣
-          </p>
-        </div>
-
-        <!-- 重点活动回顾 -->
-        <div class="activities-grid">
-          <div class="featured-activity">
-            <div class="activity-overlay">
-              <el-tag class="activity-tag" type="warning">品牌活动</el-tag>
-              <h3 class="activity-title">第七届校园编程大赛</h3>
-              <p class="activity-description">
-                吸引全校200+选手参与，历经初赛、复赛和决赛的激烈角逐，最终12支队伍脱颖而出
-              </p>
-              <div class="activity-meta">
-                <div class="meta-item">
-                  <el-icon>
-                    <Calendar />
-                  </el-icon>
-                  <span>2023-05-20</span>
-                </div>
-                <div class="meta-item">
-                  <el-icon>
-                    <Trophy />
-                  </el-icon>
-                  <span>12支获奖队伍</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 活动集锦 -->
-          <div class="activity-highlights">
-            <h3 class="highlights-title">活动集锦</h3>
-
-            <div class="highlights-grid">
-              <div class="highlight-item">
-                <div class="highlight-overlay" style="
-                    background-image: url('https://picsum.photos/id/180/400/300');
-                    background-size: cover;
-                  ">
-                  <span>技术讲座</span>
-                </div>
-              </div>
-              <div class="highlight-item">
-                <div class="highlight-overlay" style="
-                    background-image: url('https://picsum.photos/id/48/400/300');
-                    background-size: cover;
-                  ">
-                  <span>开发工作坊</span>
-                </div>
-              </div>
-              <div class="highlight-item">
-                <div class="highlight-overlay" style="
-                    background-image: url('https://picsum.photos/id/160/400/300');
-                    background-size: cover;
-                  ">
-                  <span>24小时黑客松</span>
-                </div>
-              </div>
-              <div class="highlight-item">
-                <div class="highlight-overlay" style="
-                    background-image: url('https://picsum.photos/id/119/400/300');
-                    background-size: cover;
-                  ">
-                  <span>企业参观</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="activity-features">
-              <div class="feature-header">
-                <el-icon class="feature-icon">
-                  <Lightning />
-                </el-icon>
-                <h4 class="feature-title">活动亮点</h4>
-              </div>
-              <ul class="feature-list">
-                <li class="feature-item">
-                  <el-icon class="feature-check">
-                    <Check />
-                  </el-icon>
-                  <span>与5家科技企业建立合作，提供实践机会</span>
-                </li>
-                <li class="feature-item">
-                  <el-icon class="feature-check">
-                    <Check />
-                  </el-icon>
-                  <span>邀请行业专家开展12场技术前沿讲座</span>
-                </li>
-                <li class="feature-item">
-                  <el-icon class="feature-check">
-                    <Check />
-                  </el-icon>
-                  <span>举办各类技术竞赛，累计发放奖金超5万元</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- 活动视频集锦 -->
-        <div class="activity-videos">
-          <h3 class="videos-title">活动视频集锦</h3>
-          <div class="videos-grid">
-            <div class="video-item">
-              <div class="video-overlay">
-                <el-icon class="play-icon">
-                  <VideoPlay />
-                </el-icon>
-              </div>
-              <div class="video-caption">编程大赛精彩瞬间</div>
-            </div>
-
-            <div class="video-item">
-              <div class="video-overlay">
-                <el-icon class="play-icon">
-                  <VideoPlay />
-                </el-icon>
-              </div>
-              <div class="video-caption">人工智能技术讲座</div>
-            </div>
-
-            <div class="video-item">
-              <div class="video-overlay">
-                <el-icon class="play-icon">
-                  <VideoPlay />
-                </el-icon>
-              </div>
-              <div class="video-caption">24小时黑客松活动记录</div>
             </div>
           </div>
         </div>
       </div>
     </el-main>
-
-    <!-- 项目展示 -->
-    <el-main class="projects-section" id="projects">
-      <div class="projects-container">
-        <div class="text-center mb-12">
-          <h1 class="section-title">项目展示</h1>
-          <div class="section-divider"></div>
-          <p class="section-subtitle">
-            探索我们的优秀项目成果，这些都是社团成员共同努力的结晶
+    <!-- 高光时刻 -->
+    <el-main id="achievements" class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
+            我们的高光时刻
+          </h2>
+          <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+          <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
+            2025年首次招新，期待与你一起创造属于我们的第一个高光时刻
           </p>
         </div>
 
-        <!-- 项目卡片 -->
-        <div class="projects-grid">
-          <!-- 项目1 -->
-          <div class="project-card">
-            <div class="project-image-container">
-              <img src="https://picsum.photos/id/160/600/400" alt="校园二手交易平台" style="width: 100%; height: 100%" />
-              <el-tag class="project-tag" type="primary">Web开发</el-tag>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">校园二手交易平台</h3>
-              <p class="project-description">
-                基于React和Node.js开发的校园二手交易平台，方便学生之间的物品交易，支持在线聊天和支付功能。
-              </p>
-              <div class="project-tags">
-                <el-tag class="tech-tag">React</el-tag>
-                <el-tag class="tech-tag">Node.js</el-tag>
-                <el-tag class="tech-tag">MongoDB</el-tag>
-              </div>
-              <div class="project-footer">
-                <div class="project-author">
-                  <span class="author-name">张明团队</span>
+        <!-- 精选成果滚动区域 -->
+        <div class="relative">
+          <div class="overflow-x-auto pb-8 scrollbar-hide">
+            <div class="flex gap-6 w-max px-2">
+              <!-- 项目卡片 1 -->
+              <div
+                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1740&auto=format&fit=crop"
+                  alt="智能环境监测"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">智能环境监测</h3>
+                    <span
+                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
+                    >
+                      即将开始
+                    </span>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    基于物联网技术的智能环境监测项目，计划在新学期启动，欢迎零基础同学参与学习。
+                  </p>
+                  <button
+                    @click="$router.push({ name: 'Projects' })"
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    了解项目
+                  </button>
                 </div>
-                <el-link class="project-link" @click="goProjectDetail()" :underline="false">查看详情</el-link>
+              </div>
+
+              <!-- 项目卡片 2 -->
+              <div
+                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1581091226033-d5c42263db6a?q=80&w=1740&auto=format&fit=crop"
+                  alt="竞赛培训计划"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">竞赛培训计划</h3>
+                    <span
+                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
+                    >
+                      招新后启动
+                    </span>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    针对蓝桥杯、挑战杯等竞赛的系统性培训计划，从零基础到参赛水平的完整指导。
+                  </p>
+                  <button
+                    @click="$router.push({ name: 'Projects' })"
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    了解项目
+                  </button>
+                </div>
+              </div>
+
+              <!-- 项目卡片 3 -->
+              <div
+                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=1740&auto=format&fit=crop"
+                  alt="技术学习小组"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">技术学习小组</h3>
+                    <span
+                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
+                    >
+                      持续进行中
+                    </span>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    涵盖Web开发、人工智能、移动开发等多个领域的技术学习小组，每周定期组织研讨和实践。
+                  </p>
+                  <button
+                    @click="$router.push({ name: 'Projects' })"
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    了解项目
+                  </button>
+                </div>
+              </div>
+
+              <!-- 项目卡片 4 -->
+              <div
+                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1740&auto=format&fit=crop"
+                  alt="校园技术节"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">校园技术节</h3>
+                    <span
+                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
+                    >
+                      下学期活动
+                    </span>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    计划举办的校园技术节活动，包括技术展览、讲座和互动体验区，展示社团成果和技术创新。
+                  </p>
+                  <button
+                    @click="$router.push({ name: 'Projects' })"
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    了解项目
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 项目2 -->
-          <div class="project-card">
-            <div class="project-image-container">
-              <img src="https://picsum.photos/id/119/600/400" alt="智能校园导航系统" style="width: 100%; height: 100%" />
-              <el-tag class="project-tag" type="warning">移动应用</el-tag>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">智能校园导航系统</h3>
-              <p class="project-description">
-                基于Flutter开发的校园导航APP，支持校内建筑导航、教室查询、课程提醒等功能，提升校园生活效率。
-              </p>
-              <div class="project-tags">
-                <el-tag class="tech-tag">Flutter</el-tag>
-                <el-tag class="tech-tag">高德地图API</el-tag>
-                <el-tag class="tech-tag">Firebase</el-tag>
-              </div>
-              <div class="project-footer">
-                <div class="project-author">
-                  <span class="author-name">陈晨团队</span>
-                </div>
-                <el-link class="project-link" :underline="false" @click="goProjectDetail()">查看详情</el-link>
-              </div>
-            </div>
-          </div>
-
-          <!-- 项目3 -->
-          <div class="project-card">
-            <div class="project-image-container">
-              <img src="https://picsum.photos/id/2/600/400" alt="学生成绩分析系统" style="width: 100%; height: 100%" />
-              <el-tag class="project-tag">数据分析</el-tag>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">学生成绩分析系统</h3>
-              <p class="project-description">
-                基于Python和Django开发的成绩分析平台，通过数据可视化展示学习情况，提供个性化学习建议。
-              </p>
-              <div class="project-tags">
-                <el-tag class="tech-tag">Python</el-tag>
-                <el-tag class="tech-tag">Django</el-tag>
-                <el-tag class="tech-tag">Matplotlib</el-tag>
-              </div>
-              <div class="project-footer">
-                <div class="project-author">
-                  <span class="author-name">王芳团队</span>
-                </div>
-                <el-link class="project-link" :underline="false" @click="goProjectDetail()">查看详情</el-link>
-              </div>
-            </div>
-          </div>
-
-          <!-- 项目4 -->
-          <div class="project-card">
-            <div class="project-image-container">
-              <img src="https://picsum.photos/id/96/600/400" alt="校园活动推荐系统" style="width: 100%; height: 100%" />
-              <el-tag class="project-tag" type="primary">人工智能</el-tag>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">校园活动推荐系统</h3>
-              <p class="project-description">
-                基于协同过滤算法的校园活动智能推荐系统，根据学生兴趣和历史参与记录精准推送合适活动。
-              </p>
-              <div class="project-tags">
-                <el-tag class="tech-tag">Python</el-tag>
-                <el-tag class="tech-tag">TensorFlow</el-tag>
-                <el-tag class="tech-tag">Flask</el-tag>
-              </div>
-              <div class="project-footer">
-                <div class="project-author">
-                  <span class="author-name">刘强团队</span>
-                </div>
-                <el-link class="project-link" :underline="false" @click="goProjectDetail()">查看详情</el-link>
-              </div>
-            </div>
+          <!-- 滚动指示器 -->
+          <div
+            class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2"
+          >
+            <div class="w-12 h-1 bg-primary rounded-full"></div>
+            <div class="w-3 h-1 bg-gray-300 rounded-full"></div>
+            <div class="w-3 h-1 bg-gray-300 rounded-full"></div>
           </div>
         </div>
 
         <!-- 查看更多按钮 -->
-        <div class="more-projects">
-          <el-button class="more-btn" round>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+          <button
+            @click="toproject"
+            class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
+          >
             查看更多项目
-            <el-icon>
-              <ArrowRight />
-            </el-icon>
-          </el-button>
+          </button>
+          <button
+            @click="toawards"
+            class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
+          >
+            查看更多奖项
+          </button>
         </div>
       </div>
     </el-main>
-
-    <!-- 加入我们 -->
-    <el-main class="join-section" id="join">
-      <div class="join-container">
-        <div class="text-center mb-12">
-          <h1 class="section-title">加入我们</h1>
-          <div class="section-divider"></div>
-          <p class="section-subtitle">
-            无论你是编程新手还是技术达人，只要对计算机技术充满热情，我们都欢迎你的加入
-          </p>
+    <!-- 热门赛事 -->
+    <el-main class="competitions-section" id="competitions">
+      <div style="max-width: 80rem; margin: 0 auto; padding: 5rem 1rem">
+        <!-- 标题区 -->
+        <div style="text-align: center; margin-bottom: 4rem">
+          <h2
+            style="
+              font-size: clamp(1.5rem, 3vw, 2.5rem);
+              font-weight: bold;
+              color: #1e293b;
+              margin-bottom: 1rem;
+            "
+          >
+            我们征战的热门赛事
+          </h2>
+          <div
+            style="
+              width: 5rem;
+              height: 0.25rem;
+              background-color: #3b82f6;
+              margin: 0 auto;
+              border-radius: 9999px;
+            "
+          ></div>
         </div>
 
-        <div class="join-content">
-          <!-- 加入理由 -->
-          <div class="join-reasons">
-            <h3 class="reasons-title">为什么加入我们？</h3>
-
-            <div class="reasons-list">
-              <div class="reason-item">
-                <div class="reason-icon">
-                  <el-icon>
-                    <Document />
-                  </el-icon>
-                </div>
-                <div class="reason-content">
-                  <h4 class="reason-title">提升技术能力</h4>
-                  <p class="reason-description">
-                    参与技术分享和实践项目，在实践中快速提升编程和开发技能
-                  </p>
-                </div>
-              </div>
-
-              <div class="reason-item">
-                <div class="reason-icon">
-                  <el-icon>
-                    <User />
-                  </el-icon>
-                </div>
-                <div class="reason-content">
-                  <h4 class="reason-title">结识志同道合的伙伴</h4>
-                  <p class="reason-description">
-                    与来自不同专业的技术爱好者交流，拓展人脉圈，找到志同道合的朋友
-                  </p>
-                </div>
-              </div>
-
-              <div class="reason-item">
-                <div class="reason-icon">
-                  <el-icon>
-                    <Trophy />
-                  </el-icon>
-                </div>
-                <div class="reason-content">
-                  <h4 class="reason-title">参与竞赛拿奖</h4>
-                  <p class="reason-description">
-                    有机会参加各类编程竞赛，获得荣誉和奖励，为简历增添亮点
-                  </p>
-                </div>
-              </div>
-
-              <div class="reason-item">
-                <div class="reason-icon">
-                  <el-icon>
-                    <Briefcase />
-                  </el-icon>
-                </div>
-                <div class="reason-content">
-                  <h4 class="reason-title">获取实习机会</h4>
-                  <p class="reason-description">
-                    优秀成员有机会获得合作企业的实习推荐，提前规划职业发展
-                  </p>
-                </div>
-              </div>
+        <!-- 竞赛列表（行内Grid，简化响应式） -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+          "
+        >
+          <!-- 竞赛1：蓝桥杯 -->
+          <div
+            style="
+              background-color: #f9fafb;
+              border-radius: 0.75rem;
+              padding: 1.5rem;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                width: 6rem;
+                height: 6rem;
+                background-color: #eff6ff;
+                border-radius: 9999px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1.5rem;
+              "
+            >
+              <i
+                class="fa fa-code"
+                style="font-size: 2.5rem; color: #3b82f6"
+              ></i>
             </div>
-
-            <!-- 报名须知 -->
-            <div class="join-notice">
-              <div class="notice-header">
-                <el-icon class="notice-icon">
-                  <InfoFilled />
-                </el-icon>
-                <h4 class="notice-title">报名须知</h4>
-              </div>
-              <ul class="notice-list">
-                <li class="notice-item">
-                  <el-icon class="notice-check">
-                    <Check />
-                  </el-icon>
-                  <span>报名截止日期：2023年11月30日</span>
-                </li>
-                <li class="notice-item">
-                  <el-icon class="notice-check">
-                    <Check />
-                  </el-icon>
-                  <span>面向对象：全体在校学生，专业不限</span>
-                </li>
-                <li class="notice-item">
-                  <el-icon class="notice-check">
-                    <Check />
-                  </el-icon>
-                  <span>无需编程基础，有兴趣即可报名</span>
-                </li>
-                <li class="notice-item">
-                  <el-icon class="notice-check">
-                    <Check />
-                  </el-icon>
-                  <span>报名后将收到面试通知，请注意查收邮件</span>
-                </li>
-              </ul>
-            </div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: bold;
+                color: #1e293b;
+                margin-bottom: 0.75rem;
+              "
+            >
+              蓝桥杯
+            </h3>
+            <p style="color: #6b7280; margin-bottom: 1rem">
+              国内规模最大的算法竞赛之一，面向全国高校学生
+            </p>
+            <a href="#" style="color: #3b82f6; font-weight: 500"
+              >了解更多
+              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
+            ></a>
           </div>
 
-          <!-- 报名表单 -->
-          <div class="join-form-container">
-            <el-form class="join-form" :model="joinForm" :rules="joinRules" ref="joinFormRef">
-              <h3 class="form-title">填写报名信息</h3>
-
-              <el-form-item prop="name">
-                <el-input v-model="joinForm.name" placeholder="请输入您的姓名" />
-              </el-form-item>
-
-              <el-form-item prop="studentId">
-                <el-input v-model="joinForm.studentId" placeholder="学号，相同学号的信息再次提交会被覆盖" />
-              </el-form-item>
-
-              <el-form-item prop="className">
-                <el-input v-model="joinForm.className" placeholder="请输入您的班级，例：B222" />
-              </el-form-item>
-
-              <el-form-item prop="major">
-                <el-input v-model="joinForm.major" placeholder="请输入您的专业全名，例：软件工程" />
-              </el-form-item>
-
-              <el-form-item prop="phone">
-                <el-input v-model="joinForm.phone" placeholder="请输入您的联系电话" />
-              </el-form-item>
-
-              <el-form-item prop="QQNumber">
-                <el-input v-model="joinForm.QQNumber" placeholder="请输入您的QQ号" />
-              </el-form-item>
-
-              <el-form-item prop="department">
-                <el-select v-model="joinForm.department" placeholder="请选择您想加入的部门">
-                  <el-option label="算法部" value="算法部"></el-option>
-                  <el-option label="竞赛部" value="竞赛部"></el-option>
-                  <el-option label="管理部" value="管理部"></el-option>
-                  <el-option label="暂未确定" value="暂未确定"></el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item prop="introduction">
-                <el-input v-model="joinForm.introduction" type="textarea" :rows="4"
-                  placeholder="请简要介绍一下自己，包括兴趣爱好、技能特长等（至少50字）" :validate-event="false" />
-              </el-form-item>
-
-              <el-form-item prop="reason">
-                <el-input v-model="joinForm.reason" type="textarea" :rows="3" placeholder="请说明您想加入社团的原因和期望"
-                  :validate-event="false" />
-              </el-form-item>
-
-              <el-form-item>
-                <el-button class="submit-btn" type="primary" @click="submitJoinForm">
-                  提交报名
-                  <el-icon>
-                    <Promotion />
-                  </el-icon>
-                </el-button>
-              </el-form-item>
-            </el-form>
+          <!-- 竞赛2：ACM-ICPC -->
+          <div
+            style="
+              background-color: #f9fafb;
+              border-radius: 0.75rem;
+              padding: 1.5rem;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                width: 6rem;
+                height: 6rem;
+                background-color: #f3f0ff;
+                border-radius: 9999px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1.5rem;
+              "
+            >
+              <i
+                class="fa fa-trophy"
+                style="font-size: 2.5rem; color: #6366f1"
+              ></i>
+            </div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: bold;
+                color: #1e293b;
+                margin-bottom: 0.75rem;
+              "
+            >
+              ACM-ICPC
+            </h3>
+            <p style="color: #6b7280; margin-bottom: 1rem">
+              国际大学生程序设计竞赛，计算机领域的奥林匹克
+            </p>
+            <a href="#" style="color: #3b82f6; font-weight: 500"
+              >了解更多
+              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
+            ></a>
           </div>
+
+          <!-- 竞赛3：挑战杯 -->
+          <div
+            style="
+              background-color: #f9fafb;
+              border-radius: 0.75rem;
+              padding: 1.5rem;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                width: 6rem;
+                height: 6rem;
+                background-color: #fee2e2;
+                border-radius: 9999px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1.5rem;
+              "
+            >
+              <i
+                class="fa fa-lightbulb-o"
+                style="font-size: 2.5rem; color: #ef4444"
+              ></i>
+            </div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: bold;
+                color: #1e293b;
+                margin-bottom: 0.75rem;
+              "
+            >
+              挑战杯
+            </h3>
+            <p style="color: #6b7280; margin-bottom: 1rem">
+              全国大学生课外学术科技作品竞赛，科技创新的舞台
+            </p>
+            <a href="#" style="color: #3b82f6; font-weight: 500"
+              >了解更多
+              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
+            ></a>
+          </div>
+
+          <!-- 竞赛4：计算机设计大赛 -->
+          <div
+            style="
+              background-color: #f9fafb;
+              border-radius: 0.75rem;
+              padding: 1.5rem;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                width: 6rem;
+                height: 6rem;
+                background-color: #dcfce7;
+                border-radius: 9999px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1.5rem;
+              "
+            >
+              <i
+                class="fa fa-desktop"
+                style="font-size: 2.5rem; color: #22c55e"
+              ></i>
+            </div>
+            <h3
+              style="
+                font-size: 1.25rem;
+                font-weight: bold;
+                color: #1e293b;
+                margin-bottom: 0.75rem;
+              "
+            >
+              计算机设计大赛
+            </h3>
+            <p style="color: #6b7280; margin-bottom: 1rem">
+              培养创新能力，展示计算机应用成果的重要平台
+            </p>
+            <a href="#" style="color: #3b82f6; font-weight: 500"
+              >了解更多
+              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
+            ></a>
+          </div>
+        </div>
+
+        <!-- 探索按钮（静态样式） -->
+        <div style="text-align: center; margin-top: 3rem">
+          <button
+            @click="tocompetitions"
+            style="
+              background-color: #3b82f6;
+              color: white;
+              padding: 0.75rem 2rem;
+              border-radius: 9999px;
+              font-weight: 600;
+              border: none;
+              cursor: pointer;
+            "
+          >
+            探索全部竞赛
+          </button>
         </div>
       </div>
     </el-main>
+    <!-- CTA 区域 -->
+    <el-main
+      class="cta-section"
+      id="cta"
+      style="position: relative; overflow: hidden; padding: 5rem 1rem"
+    >
+      <!-- 背景层 -->
+      <div style="position: absolute; inset: 0; z-index: 0">
+        <img
+          src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1740&auto=format&fit=crop"
+          alt="团队合作"
+          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3"
+        />
+        <div
+          style="
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, #3b82f6, #10b981);
+          "
+        ></div>
+      </div>
+
+      <!-- CTA 内容层 -->
+      <div
+        style="
+          position: relative;
+          z-index: 10;
+          text-align: center;
+          padding: 0 1rem;
+          max-width: 48rem;
+          margin: 0 auto;
+        "
+      >
+        <h2
+          style="
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1.5rem;
+          "
+        >
+          期待你的代码，在这里闪耀
+        </h2>
+        <p style="color: white; font-size: 1.125rem; margin-bottom: 2.5rem">
+          加入我们，与优秀的伙伴一起成长，挑战自我，创造精彩
+        </p>
+        <button
+          @click="tojoin"
+          style="
+            background-color: white;
+            color: #3b82f6;
+            padding: 1rem 2.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            border: none;
+            cursor: pointer;
+          "
+        >
+          加入我们
+        </button>
+      </div>
+    </el-main>
+
+    <!-- 页脚 -->
+    <footer
+      style="background-color: #1e293b; color: white; padding: 2.5rem 1rem"
+    >
+      <div style="max-width: 80rem; margin: 0 auto">
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+          "
+        >
+          <!-- 社团信息 -->
+          <div style="text-align: center; margin-bottom: 1rem">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <i
+                class="fa fa-code"
+                style="font-size: 1.5rem; color: #3b82f6; margin-right: 0.5rem"
+              ></i>
+              <span style="font-size: 1.25rem; font-weight: bold"
+                >智环学创融合协会</span
+              >
+            </div>
+            <p style="color: #9ca3af; margin-top: 0.5rem">
+              零门槛技术社团 · 欢迎大一新生
+            </p>
+          </div>
+
+          <!-- 社交图标 -->
+          <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem">
+            <a href="#" style="color: #9ca3af">
+              <i class="fa fa-weixin" style="font-size: 1.5rem"></i>
+            </a>
+            <a href="#" style="color: #9ca3af">
+              <i class="fa fa-qq" style="font-size: 1.5rem"></i>
+            </a>
+            <a href="#" style="color: #9ca3af">
+              <i class="fa fa-github" style="font-size: 1.5rem"></i>
+            </a>
+            <a href="#" style="color: #9ca3af">
+              <i class="fa fa-envelope" style="font-size: 1.5rem"></i>
+            </a>
+          </div>
+
+          <!-- 版权信息 -->
+          <div style="color: #9ca3af; text-align: center">
+            <p>© 2024-2025 智环学创融合协会. 保留所有权利.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import {
-  Menu,
-  ArrowRight,
-  ArrowDown,
-  User,
-  Calendar,
-  Trophy,
-  Document,
-  Setting,
-  Lightning,
-  Check,
-  VideoPlay,
-  InfoFilled,
-  Briefcase,
-  Promotion,
-  ArrowUp,
-} from "@element-plus/icons-vue";
+// import { ref, reactive } from "vue"
+import { ArrowDown } from "@element-plus/icons-vue"
+import CommonNavbar from "../components/CommonNavbar.vue"
 
 // 留言墙
 // 从 vue-router 导入 useRouter 钩子
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"
 
 // 获取路由实例
-const router = useRouter();
-
-// 跳转路由的方法
-const goToMessageWall = () => {
-  // 1. 直接通过路径跳转
-  router.push("/messages");
-};
-
-const goProjectDetail = () => {
-  router.push("/project/detail");
+const router = useRouter()
+// 加入我们点击
+const tojoin = () => {
+  router.push("/join")
+}
+// 了解更多点击
+const toabout = () => {
+  router.push("/about")
 }
 
-const showMobileMenu = ref(false);
-// 定义部门展开状态类型
-interface DepartmentExpanded {
-  algorithm: boolean;
-  competition: boolean;
-  management: boolean;
+// 查看更多项目点击
+const toproject = () => {
+  router.push("/projects")
 }
-
-const expandedDepartments = reactive<DepartmentExpanded>({
-  algorithm: false,
-  competition: false,
-  management: false,
-});
-
-const joinFormRef = ref();
-const joinForm = reactive({
-  name: "",
-  studentId: "",
-  className: "",
-  major: "",
-  phone: "",
-  QQNumber: "",
-  department: "",
-  introduction: "",
-  reason: "",
-});
-
-const joinRules = reactive({
-  name: [
-    { required: true, message: "请输入您的姓名", trigger: "blur" },
-    { pattern: /^[\u4e00-\u9fa5]{2,10}$/, message: "姓名必须是2-10个中文字符", trigger: "blur" }
-  ],
-  studentId: [
-    { required: true, message: "请输入您的学号", trigger: "blur" },
-    { pattern: /^\d{11}$/, message: "学号必须是11位数字", trigger: "blur" }
-  ],
-  className: [
-    { required: true, message: "请输入您的班级", trigger: "blur" },
-    { pattern: /^[\u4e00-\u9fa5a-zA-Z0-9]+$/, message: "班级格式不正确", trigger: "blur" }
-  ],
-  major: [
-    { required: true, message: "请输入您的专业", trigger: "blur" },
-    { pattern: /^[\u4e00-\u9fa5a-zA-Z]+$/, message: "专业必须是文字", trigger: "blur" }
-  ],
-  phone: [
-    { required: true, message: "请输入您的联系电话", trigger: "blur" },
-    { pattern: /^1[3-9]\d{9}$/, message: "联系电话必须是11位有效手机号", trigger: "blur" }
-  ],
-  QQNumber: [
-    { required: true, message: "请输入您的QQ号", trigger: "blur" },
-    { pattern: /^\d{5,11}$/, message: "QQ号必须是5-11位数字", trigger: "blur" }
-  ],
-  department: [
-    { required: true, message: "请选择意向部门", trigger: "change" },
-  ],
-  introduction: [
-    { required: true, message: "请填写个人介绍", trigger: "blur" },
-    { min: 50, message: "个人介绍至少50字", trigger: "blur" }
-  ],
-  reason: [
-    { required: true, message: "请填写加入原因", trigger: "blur" }
-  ],
-});
-
-const navItems = [
-  { id: 1, text: "首页", href: "#home" },
-  { id: 2, text: "社团简介", href: "#about" },
-  { id: 3, text: "部门介绍", href: "#departments" },
-  { id: 4, text: "活动风采", href: "#activities" },
-  { id: 5, text: "项目展示", href: "#projects" },
-  { id: 6, text: "学生会", href: "#student-council" },
-];
-
-const scrollTo = (id: string) => {
-  showMobileMenu.value = false;
-  const element = document.querySelector(id);
-  if (element) {
-    element.scrollIntoView({
-      behavior: "smooth",
-    });
-  }
-};
-
-const toggleDepartment = (department: keyof DepartmentExpanded) => {
-  expandedDepartments[department] = !expandedDepartments[department];
-};
-
-import { submitApplication } from "../services/applicationsService";
-
-const submitJoinForm = () => {
-  joinFormRef.value.validate((valid: boolean) => {
-    if (valid) {
-      // 这里可以添加表单提交逻辑
-      alert("报名信息提交成功！我们将尽快与您联系，请留意邮件通知。");
-      // 实际项目中这里应该调用API提交表单
-      submitApplication(joinForm)
-      joinFormRef.value.resetFields();
-    } else {
-      return false;
-    }
-  });
-};
+// 查看更多奖项点击
+const toawards = () => {
+  router.push("/awards")
+}
+//搜索全部竞赛点击
+const tocompetitions = () => {
+  router.push("/competitions")
+}
 </script>
 
 <style scoped lang="scss">
@@ -1255,7 +979,7 @@ const submitJoinForm = () => {
 
     .scroll-down {
       position: absolute;
-      bottom: -40px;
+      top: 450px;
       left: 50%;
       transform: translateX(-50%);
       animation: bounce 2s infinite;
@@ -1496,7 +1220,24 @@ const submitJoinForm = () => {
     }
   }
 }
+// 高光时刻
+.bg-primary\/10 {
+  background-color: rgb(59 130 246 / 0.1);
+}
+.text-primary {
+  --tw-text-opacity: 1;
+  color: rgb(59 130 246 / var(--tw-text-opacity, 1));
+}
 
+.border-primary {
+  --tw-border-opacity: 1;
+  border-color: rgb(59 130 246 / var(--tw-border-opacity, 1));
+}
+
+.text-accent {
+  --tw-text-opacity: 1;
+  color: rgb(245 158 11 / var(--tw-text-opacity, 1));
+}
 /* 部门介绍部分样式 */
 .departments-section {
   padding: 80px 0;
@@ -2198,6 +1939,16 @@ const submitJoinForm = () => {
     }
   }
 }
+// 高光
+.achievements-section {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 /* 加入我们部分样式 */
 .join-section {
@@ -2402,11 +2153,42 @@ const submitJoinForm = () => {
   }
 }
 
+.fixed-bottom {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  z-index: 100;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scroll-text {
+  color: #333;
+  font-size: 14px;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
   .home-banner .banner-content .action-buttons {
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* 调整移动端按钮宽度 */
+  .home-banner .banner-content .action-buttons .el-button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  /* 移除按钮之间的左边距 */
+  .home-banner .banner-content .action-buttons .el-button + .el-button {
+    margin-left: 0 !important;
   }
 
   .navbar .container {

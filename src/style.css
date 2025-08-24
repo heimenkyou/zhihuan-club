@@ -217,6 +217,46 @@ p {
 }
 
 /* 响应式工具类 */
+.mobile-hidden {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+}
+
+.mobile-visible {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-visible {
+    display: block;
+  }
+}
+
+.mobile-text-sm {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .mobile-text-sm {
+    font-size: 0.875rem;
+  }
+}
+
+.mobile-padding {
+  padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .mobile-padding {
+    padding: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .hide-mobile {
     display: none !important;
@@ -281,4 +321,63 @@ p {
 
 .shadow-xl {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* 添加响应式字体大小设置 */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+/* 移动端容器调整 */
+@media (max-width: 768px) {
+  .container,
+  main {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* 移动端图片调整 */
+@media (max-width: 768px) {
+  img {
+    border-radius: 0.5rem !important;
+  }
+}
+
+/* 移动端按钮调整 */
+@media (max-width: 768px) {
+  button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* 移动端卡片调整 */
+@media (max-width: 768px) {
+  .card,
+  .bg-white.rounded-xl {
+    padding: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* 移动端标题调整 */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem !important;
+  }
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  h3 {
+    font-size: 1.3rem !important;
+  }
 }
