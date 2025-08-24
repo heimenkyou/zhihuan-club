@@ -1,7 +1,10 @@
 package cn.luowb.clubrecruitment.dto.req;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Schema(description = "报名参数")
@@ -20,12 +23,6 @@ public class ApplicationReqDTO {
     private String studentId;
 
     /**
-     * 班级名称
-     */
-    @Schema(description = "班级名称")
-    private String className;
-
-    /**
      * 专业名称
      */
     @Schema(description = "专业名称")
@@ -41,13 +38,26 @@ public class ApplicationReqDTO {
      * QQ号
      */
     @Schema(description = "QQ号")
+    @JsonProperty("QQNumber")
     private String QQNumber;
 
     /**
-     * 意向部门
+     * 第一意向部门
      */
-    @Schema(description = "意向部门")
+    @Schema(description = "第一意向部门")
     private String department;
+
+    /**
+     * 第二意向部门
+     */
+    @Schema(description = "第二意向部门")
+    private String secondDepartment;
+
+    /**
+     * 兴趣方向
+     */
+    @Schema(description = "兴趣方向")
+    private List<String> interests;
 
     /**
      * 个人介绍

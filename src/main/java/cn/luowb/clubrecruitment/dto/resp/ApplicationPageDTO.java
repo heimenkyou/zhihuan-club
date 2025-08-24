@@ -1,9 +1,11 @@
 package cn.luowb.clubrecruitment.dto.resp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Schema(description = "报名分页查询返回实体")
@@ -45,16 +47,29 @@ public class ApplicationPageDTO {
     private String phone;
 
     /**
-     * 电子邮箱
+     * QQ号
      */
-    @Schema(description = "电子邮箱")
+    @Schema(description = "QQ号")
+    @JsonProperty("QQNumber")
     private String QQNumber;
 
     /**
-     * 意向部门
+     * 第一意向部门
      */
-    @Schema(description = "意向部门")
+    @Schema(description = "第一意向部门")
     private String department;
+
+    /**
+     * 第二意向部门
+     */
+    @Schema(description = "第二意向部门")
+    private String secondDepartment;
+
+    /**
+     * 兴趣方向
+     */
+    @Schema(description = "兴趣方向")
+    private List<String> interests;
 
     /**
      * 个人介绍

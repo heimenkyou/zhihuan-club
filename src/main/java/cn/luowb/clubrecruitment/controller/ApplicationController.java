@@ -24,7 +24,7 @@ public class ApplicationController {
 
     @Operation(summary = "提交报名")
     @PostMapping
-    public Result<Void> createApplication(ApplicationReqDTO requestParam) {
+    public Result<Void> createApplication(@RequestBody ApplicationReqDTO requestParam) {
         applicationService.createApplication(requestParam);
         return Results.success();
     }

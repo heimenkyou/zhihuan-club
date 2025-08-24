@@ -61,10 +61,22 @@ public class ApplicationDO {
     private String QQNumber;
 
     /**
-     * 意向部门
+     * 第一意向部门
      */
     @TableField(value = "department")
     private String department;
+
+    /**
+     * 第二意向部门
+     */
+    @TableField(value = "second_department")
+    private String secondDepartment;
+
+    /**
+     * 兴趣方向
+     */
+    @TableField(value = "interests")
+    private String interests;
 
     /**
      * 个人介绍
