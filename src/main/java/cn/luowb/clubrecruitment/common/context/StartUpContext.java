@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class StartUpContext implements ApplicationRunner {
+    public static String hostAddress = "127.0.0.1";
     @Value("${server.port:8080}")
     private String serverPort;
     @Value("${server.servlet.context-path:}")
     private String contextPath;
-    public static String hostAddress = "127.0.0.1";
 
     @Override
     public void run(ApplicationArguments args) {

@@ -3,8 +3,8 @@ package cn.luowb.clubrecruitment.service;
 import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.MessageDO;
-import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
+import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -38,6 +38,7 @@ public interface MessageService extends IService<MessageDO> {
 
     /**
      * 删除留言
+     *
      * @param id 留言id
      */
     void deleteMessage(Long id);

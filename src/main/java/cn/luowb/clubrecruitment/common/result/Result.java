@@ -14,13 +14,12 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class Result<T> implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 5679018624309023727L;
-
     /**
      * 正确返回码
      */
     public static final String SUCCESS_CODE = "0";
+    @Serial
+    private static final long serialVersionUID = 5679018624309023727L;
     /**
      * 返回码
      */

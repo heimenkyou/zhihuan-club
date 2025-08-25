@@ -12,6 +12,10 @@ public class IPContext {
      */
     private static final ThreadLocal<String> IP_THREAD_LOCAL = new TransmittableThreadLocal<>();
 
+    public static String getIp() {
+        return IP_THREAD_LOCAL.get();
+    }
+
     /**
      * 设置用户 IP
      *
@@ -19,10 +23,6 @@ public class IPContext {
      */
     public static void setIp(String ip) {
         IP_THREAD_LOCAL.set(ip);
-    }
-
-    public static String getIp() {
-        return IP_THREAD_LOCAL.get();
     }
 
     /**

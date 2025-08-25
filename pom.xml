@@ -131,6 +131,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.38</version>
         </dependency>
+        <!-- minio对象存储服务 -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.17</version>
+        </dependency>
     </dependencies>
 
     <build>

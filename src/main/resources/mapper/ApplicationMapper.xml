@@ -5,18 +5,18 @@
 <mapper namespace="cn.luowb.clubrecruitment.dao.mapper.ApplicationMapper">
 
     <resultMap id="BaseResultMap" type="cn.luowb.clubrecruitment.dao.entity.ApplicationDO">
-            <id property="id" column="id" />
-            <result property="name" column="name" />
-            <result property="studentId" column="student_id" />
-            <result property="className" column="class_name" />
-            <result property="major" column="major" />
-            <result property="phone" column="phone" />
-            <result property="QQNumber" column="qq_number" />
-            <result property="department" column="department" />
-            <result property="introduction" column="introduction" />
-            <result property="reason" column="reason" />
-            <result property="createTime" column="create_time" />
-            <result property="updateTime" column="update_time" />
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="studentId" column="student_id"/>
+        <result property="className" column="class_name"/>
+        <result property="major" column="major"/>
+        <result property="phone" column="phone"/>
+        <result property="QQNumber" column="qq_number"/>
+        <result property="department" column="department"/>
+        <result property="introduction" column="introduction"/>
+        <result property="reason" column="reason"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="Base_Column_List">
