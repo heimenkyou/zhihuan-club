@@ -374,7 +374,7 @@
 import { ref, computed, onMounted, nextTick } from "vue"
 import CommonNavbar from "../components/CommonNavbar.vue"
 import { useRouter } from "vue-router"
-import axios from "axios"
+// 移除未使用的 api 导入
 
 // 定义奖项数据结构
 interface Award {
@@ -394,16 +394,39 @@ const awards = ref<Award[]>([]) // 奖项数据
 const loading = ref(true) // 加载状态
 const error = ref<string | null>(null) // 错误信息
 
-// 从json-server获取奖项数据
+// 首先需要导入adminService中的getAwards函数
+import { getAwards } from "../services/adminService"
+
+// 从API获取奖项数据
 const fetchAwards = async () => {
   loading.value = true
   error.value = null
   try {
-    const response = await axios.get("http://localhost:3200/awards")
-    awards.value = response.data
+    // 参考AwardManagement.vue中的请求方式
+    // 设置参数，这里我们只获取所有奖项，不做分页和搜索
+    const params = {
+      current: 1,
+      size: 1000, // 设置一个较大的值以获取所有奖项
+      keyword: "",
+    }
+
+    // 使用adminService中的getAwards函数
+    const data = await getAwards(params)
+
+    // 确保数据格式正确
+    if (data && typeof data === "object" && Array.isArray(data.records)) {
+      // 从返回的分页数据中提取records数组
+      awards.value = data.records
+    } else {
+      // 如果响应不是预期格式，使用空数组
+      awards.value = []
+      console.warn("API响应格式不符合预期，使用空数组")
+    }
   } catch (err) {
-    error.value = "获取奖项数据失败，请检查json-server是否运行"
+    error.value = "获取奖项数据失败，请检查API服务是否运行"
     console.error("Failed to fetch awards:", err)
+    // 发生错误时，确保awards.value是数组
+    awards.value = []
   } finally {
     loading.value = false
   }
@@ -433,8 +456,11 @@ const groupedAwards = computed(() => {
         school: [] as Award[],
       }
     }
-    acc[award.year][award.level].push(award)
-    return acc
+    // 检查level是否为有效类型
+    const validLevels = ['national', 'provincial', 'school'];
+    const level = validLevels.includes(award.level) ? award.level : 'school'; // 默认使用school
+    acc[award.year][level].push(award);
+    return acc;
   }, {} as Record<string, { national: Award[]; provincial: Award[]; school: Award[] }>)
 })
 

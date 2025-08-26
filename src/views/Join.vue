@@ -14,7 +14,7 @@
           加入我们，<span class="text-primary">共创未来</span>
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
-          这里是培养技术人才的摇篮，我们期待有激情、有梦想的你加入！
+          这里是培养技术人才摇篮，我们期待有激情、有梦想的你加入！
         </p>
         <a
           href="#form"
@@ -284,7 +284,7 @@
                 <h4 class="font-semibold text-dark mb-2">招新要求：</h4>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
                   <li>具备良好的沟通能力</li>
-                  <li>有责任心和服务意识</li>
+                  <li>有responsibility and execution</li>
                   <li>擅长组织策划活动</li>
                 </ul>
               </div>
@@ -363,24 +363,7 @@
                   v-model="formData.major"
                 />
               </div>
-              <div>
-                <label for="grade" class="block text-gray-700 font-medium mb-2"
-                  >年级</label
-                >
-                <select
-                  id="grade"
-                  name="grade"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                  required
-                  v-model="formData.grade"
-                >
-                  <option value="">请选择年级</option>
-                  <option value="freshman">大一</option>
-                  <option value="sophomore">大二</option>
-                  <option value="junior">大三</option>
-                  <option value="senior">大四</option>
-                </select>
-              </div>
+              <!-- 年级字段已删除 -->
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -399,34 +382,42 @@
                 />
               </div>
               <div>
-                <label for="email" class="block text-gray-700 font-medium mb-2"
-                  >邮箱</label
+                <label
+                  for="QQNumber"
+                  class="block text-gray-700 font-medium mb-2"
+                  >QQ号</label
                 >
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
+                  type="text"
+                  id="QQNumber"
+                  name="QQNumber"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                   required
-                  placeholder="请输入您的邮箱"
-                  v-model="formData.email"
+                  placeholder="请输入您的QQ号"
+                  v-model="formData.QQNumber"
+                  @input="validateQQNumber"
                 />
+                <p v-if="qqNumberError" class="text-red-500 text-sm mt-1">
+                  {{ qqNumberError }}
+                </p>
               </div>
             </div>
+
+            <!-- 邮箱字段已删除 -->
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label
-                  for="firstChoice"
+                  for="department"
                   class="block text-gray-700 font-medium mb-2"
-                  >意向部门</label
+                  >第一意向部门</label
                 >
                 <select
-                  id="firstChoice"
-                  name="firstChoice"
+                  id="department"
+                  name="department"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                   required
-                  v-model="formData.firstChoice"
+                  v-model="formData.department"
                 >
                   <option value="">请选择意向部门</option>
                   <option value="algorithm">算法部</option>
@@ -436,15 +427,15 @@
               </div>
               <div>
                 <label
-                  for="secondChoice"
+                  for="secondDepartment"
                   class="block text-gray-700 font-medium mb-2"
                   >第二意向部门</label
                 >
                 <select
-                  id="secondChoice"
-                  name="secondChoice"
+                  id="secondDepartment"
+                  name="secondDepartment"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                  v-model="formData.secondChoice"
+                  v-model="formData.secondDepartment"
                 >
                   <option value="">无</option>
                   <option value="algorithm">算法部</option>
@@ -455,57 +446,59 @@
             </div>
 
             <div class="mb-6">
-              <label class="block text-gray-700 font-medium mb-2"
-                >技术特长（可多选）</label
+              <label
+                class="block text-gray-700 font-medium mb-2"
+                for="interests"
+                >兴趣方向（可多选）</label
               >
-              <div class="flex flex-wrap gap-4">
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 <label
-                  class="inline-flex items-center"
-                  v-for="skill in skills"
-                  :key="skill.value"
+                  class="inline-flex items-center p-2 border rounded-lg hover:bg-gray-50 transition-colors"
+                  v-for="interest in interests"
+                  :key="interest.value"
                 >
                   <input
                     type="checkbox"
-                    name="skills"
-                    :value="skill.value"
+                    name="interests"
+                    :value="interest.value"
                     class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                    v-model="formData.skills"
+                    v-model="formData.interests"
                   />
-                  <span class="ml-2 text-gray-600">{{ skill.label }}</span>
+                  <span class="ml-2 text-gray-600 text-sm">{{
+                    interest.label
+                  }}</span>
                 </label>
               </div>
             </div>
 
             <div class="mb-6">
-              <label
-                for="experience"
-                class="block text-gray-700 font-medium mb-2"
-                >项目经历</label
+              <label for="reason" class="block text-gray-700 font-medium mb-2"
+                >加入原因</label
               >
               <textarea
-                id="experience"
-                name="experience"
+                id="reason"
+                name="reason"
                 rows="4"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                placeholder="请简要描述您的项目经历，没有可以填写无"
-                v-model="formData.experience"
+                placeholder="请简要描述您加入我们的原因"
+                v-model="formData.reason"
               ></textarea>
             </div>
 
             <div class="mb-8">
               <label
-                for="selfIntroduction"
+                for="introduction"
                 class="block text-gray-700 font-medium mb-2"
                 >自我介绍</label
               >
               <textarea
-                id="selfIntroduction"
-                name="selfIntroduction"
+                id="introduction"
+                name="introduction"
                 rows="4"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                 required
                 placeholder="请简要介绍您自己，包括兴趣爱好、特长等"
-                v-model="formData.selfIntroduction"
+                v-model="formData.introduction"
               ></textarea>
             </div>
 
@@ -565,9 +558,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-type ElementRef = HTMLElement | null
 import CommonNavbar from "../components/CommonNavbar.vue" // 引入通用导航栏
+import { ref, onMounted } from "vue"
+// 导入 submitApplication 函数
+import { submitApplication } from "../services/applicationsService"
+type ElementRef = HTMLElement | null
 
 // 1. 响应式状态定义
 // 表单数据状态（类型化管理）-------------申请表收集
@@ -575,39 +570,55 @@ interface FormData {
   name: string
   studentId: string
   major: string
-  grade: string // freshman/sophomore/junior/senior
   phone: string
-  email: string
-  firstChoice: string // algorithm/project/management
-  secondChoice: string // algorithm/project/management/""
-  skills: string[] // 技术特长（多选）
-  experience: string
-  selfIntroduction: string
+  QQNumber: string
+  department: string // algorithm/project/management
+  secondDepartment: string // algorithm/project/management/""
+  interests: string[] // 兴趣方向（多选）
+  reason: string
+  introduction: string
 }
 const formData = ref<FormData>({
   name: "",
   studentId: "",
   major: "",
-  grade: "",
   phone: "",
-  email: "",
-  firstChoice: "",
-  secondChoice: "",
-  skills: [],
-  experience: "",
-  selfIntroduction: "",
+  QQNumber: "",
+  department: "",
+  secondDepartment: "",
+  interests: [],
+  reason: "",
+  introduction: "",
 })
 
-// 技术特长选项（统一管理）
-const skills = ref([
+// 兴趣方向选项（统一管理）
+const interests = ref([
   { label: "编程", value: "programming" },
   { label: "设计", value: "design" },
   { label: "算法", value: "algorithm" },
   { label: "数据库", value: "database" },
   { label: "前端开发", value: "frontend" },
   { label: "后端开发", value: "backend" },
+  { label: "PPT", value: "ppt" },
+  { label: "演讲", value: "speech" },
+  { label: "视频剪辑", value: "video_editing" },
   { label: "无", value: "none" },
 ])
+
+// QQ号校验状态
+const qqNumberError = ref("")
+
+// QQ号校验方法
+const validateQQNumber = () => {
+  const qq = formData.value.QQNumber
+  if (!/^\d+$/.test(qq)) {
+    qqNumberError.value = "QQ号必须为纯数字"
+  } else if (qq.length < 5 || qq.length > 11) {
+    qqNumberError.value = "QQ号长度必须在5-11位之间"
+  } else {
+    qqNumberError.value = ""
+  }
+}
 
 // FAQ状态（类型化管理）---------问题
 interface FaqItem {
@@ -619,7 +630,7 @@ const faqList = ref<FaqItem[]>([
   {
     question: "加入有什么条件？",
     answer:
-      "我们对技术水平没有严格要求，只要你对技术有兴趣，有学习的意愿和热情，能够积极参与团队活动和项目开发，都可以加入我们。我们更看重的是学习态度和自主学习能力。",
+      "我们对技术水平没有严格要求，只要你对技术有兴趣，有学习的意愿和热情，都可以加入我们。我们更看重的是学习态度和自主学习能力。",
     isOpen: false,
   },
   {
@@ -698,34 +709,73 @@ const toggleFaq = (index: number) => {
 }
 
 // 表单提交处理（类型化表单数据）
-const handleSubmit = () => {
-  // 1. 表单数据校验（可扩展）
+const handleSubmit = async () => {
+  // 1. 表单数据校验
   if (
     !formData.value.name ||
     !formData.value.studentId ||
-    !formData.value.grade
+    !formData.value.major ||
+    !formData.value.phone ||
+    !formData.value.QQNumber ||
+    !formData.value.department ||
+    !formData.value.introduction
   ) {
     alert("请填写必填字段！")
     return
   }
 
-  // 2. 实际项目中可发送API请求（示例：打印表单数据）
-  console.log("表单提交数据：", formData.value)
+  // 2. QQ号校验
+  validateQQNumber()
+  if (qqNumberError.value) {
+    alert(qqNumberError.value)
+    return
+  }
 
-  // 3. 提交成功提示 + 重置表单
-  alert("报名信息提交成功！我们将尽快与您联系，请保持手机畅通。")
-  formData.value = {
-    name: "",
-    studentId: "",
-    major: "",
-    grade: "",
-    phone: "",
-    email: "",
-    firstChoice: "",
-    secondChoice: "",
-    skills: [],
-    experience: "",
-    selfIntroduction: "",
+  try {
+    // 3. 显示加载状态
+    const submitButton = document.querySelector('button[type="submit"]')
+    if (submitButton) {
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = true
+      }
+      submitButton.innerHTML =
+        '<i class="fa fa-spinner fa-spin mr-2"></i> 提交中...'
+    }
+
+    // 4. 使用封装的 axios 请求提交表单
+    await submitApplication(formData.value)
+
+    // 5. 处理成功响应
+    alert("报名信息提交成功！我们将尽快与您联系，请保持手机畅通。")
+    // 重置表单
+    formData.value = {
+      name: "",
+      studentId: "",
+      major: "",
+      phone: "",
+      QQNumber: "",
+      department: "",
+      secondDepartment: "",
+      interests: [],
+      reason: "",
+      introduction: "",
+    }
+  } catch (error) {
+    console.error("提交失败:", error)
+    alert(
+      `提交失败: ${
+        error instanceof Error ? error.message : '网络请求错误，请稍后重试。'
+      }`
+    )
+  } finally {
+    // 恢复按钮状态
+    const submitButton = document.querySelector('button[type="submit"]')
+    if (submitButton) {
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = false
+      }
+      submitButton.innerHTML = '<i class="fa fa-paper-plane mr-2"></i> 提交报名'
+    }
   }
 }
 
@@ -753,6 +803,12 @@ onMounted(() => {
 section {
   opacity: 0;
   transform: translateY(20px);
+}
+
+/* 加载中按钮样式 */
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* 移动端内容区适配：避开CommonNavbar的移动端高度 */

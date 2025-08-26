@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <el-card class="welcome-card">
+    <el-card class="welcome-card shadow-card">
       <template #header>
         <div class="card-header">
           <span>欢迎使用社团管理后台</span>
@@ -11,59 +11,27 @@
         <p>在这里，您可以管理社团的报名信息、留言板和奖项数据。</p>
       </div>
     </el-card>
+
     <el-row :gutter="20" class="stats-row">
-      <el-col :span="8">
-        <el-card class="stat-card">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :md="8"
+        v-for="(stat, index) in stats"
+        :key="index"
+      >
+        <el-card class="stat-card shadow-card hover-scale">
           <div class="stat-content">
-            <div class="stat-title">报名总数</div>
-            <div class="stat-value">{{ applicationCount }}</div>
-            <div class="stat-desc">最近7天新增: {{ newApplications }}</div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-title">留言总数</div>
-            <div class="stat-value">{{ messageCount }}</div>
-            <div class="stat-desc">最近7天新增: {{ newMessages }}</div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-title">奖项总数</div>
-            <div class="stat-value">{{ awardCount }}</div>
-            <div class="stat-desc">最近添加: {{ lastAward }}</div>
+            <div class="stat-icon" :style="{ backgroundColor: stat.color }">
+              {{ stat.icon }}
+            </div>
+            <div class="stat-title">{{ stat.title }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-desc">{{ stat.desc }}</div>
           </div>
         </el-card>
       </el-col>
     </el-row>
-    <!-- 添加数据趋势图表 -->
-    <el-card class="chart-card">
-      <template #header>
-        <div class="card-header">
-          <span>数据趋势</span>
-        </div>
-      </template>
-      <div class="chart-content">
-        <el-select
-          v-model="chartType"
-          class="chart-select"
-          @change="loadChartData"
-        >
-          <el-option label="报名趋势" value="applications" />
-          <el-option label="留言趋势" value="messages" />
-        </el-select>
-        <el-chart :height="300">
-          <el-line-series :data="chartData" x-field="date" y-field="count" />
-          <el-axis type="x" />
-          <el-axis type="y" />
-          <el-tooltip />
-        </el-chart>
-      </div>
-    </el-card>
   </div>
 </template>
 
@@ -72,10 +40,6 @@ import { ref, onMounted } from "vue"
 import { useAdminStore } from "../../stores/adminStore"
 import { getApplications, getAwards } from "../../services/adminService"
 import { getMessages } from "../../services/messageService"
-import ElLineSeries from "element-plus"
-import ElAxis from "element-plus"
-import { ElTooltip, ElSelect, ElOption } from "element-plus"
-import ElChart from "element-plus"
 
 const adminStore = useAdminStore()
 const userInfo = ref(adminStore.userInfo)
@@ -85,8 +49,7 @@ const messageCount = ref(0)
 const newMessages = ref(0)
 const awardCount = ref(0)
 const lastAward = ref("暂无")
-const chartType = ref("applications")
-const chartData = ref<any[]>([])
+const stats = ref<any[]>([])
 
 onMounted(async () => {
   // 获取统计数据
@@ -108,84 +71,123 @@ onMounted(async () => {
       lastAward.value = awardResponse.records[0].title ?? "暂无"
     }
 
-    // 加载图表数据
-    loadChartData()
+    // 设置统计数据
+    stats.value = [
+      {
+        title: "报名总数",
+        value: applicationCount.value,
+        desc: `最近7天新增: ${newApplications.value}`,
+        icon: "📝",
+        color: "#4096ff",
+      },
+      {
+        title: "留言总数",
+        value: messageCount.value,
+        desc: `最近7天新增: ${newMessages.value}`,
+        icon: "💬",
+        color: "#10b981",
+      },
+      {
+        title: "奖项总数",
+        value: awardCount.value,
+        desc: `最近添加: ${lastAward.value}`,
+        icon: "🏆",
+        color: "#f59e0b",
+      },
+    ]
   } catch (error) {
     console.error("获取统计数据失败:", error)
   }
 })
-
-// 加载图表数据
-const loadChartData = async () => {
-  // 模拟近7天数据
-  const today = new Date()
-  const data = []
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
-    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`
-    let count = 0
-    if (chartType.value === "applications") {
-      count = Math.floor(Math.random() * 15) + 5
-    } else {
-      count = Math.floor(Math.random() * 25) + 10
-    }
-    data.push({ date: formattedDate, count })
-  }
-  chartData.value = data
-}
 </script>
 
 <style scoped>
-/* 保留原有样式，并添加新样式 */
-.chart-card {
-  margin-top: 20px;
-}
-.chart-content {
-  padding: 20px 0;
-}
-.chart-select {
-  margin-bottom: 20px;
-  width: 150px;
-}
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  padding: 20px;
 }
+
 .welcome-card {
-  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
 }
+
 .card-header {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
 }
+
 .welcome-content {
-  padding: 20px 0;
+  padding: 24px 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #666;
 }
+
 .stats-row {
-  margin-top: 20px;
+  margin-top: 10px;
 }
+
 .stat-card {
+  border-radius: 12px;
+  transition: all 0.3s ease;
   height: 100%;
+  overflow: hidden;
 }
+
 .stat-content {
   text-align: center;
-  padding: 20px 0;
+  padding: 24px 16px;
+  position: relative;
 }
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .stat-title {
-  font-size: 16px;
+  font-size: 18px;
   color: #606266;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
+
 .stat-value {
   font-size: 36px;
-  font-weight: bold;
-  color: #1890ff;
-  margin-bottom: 10px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #4096ff, #73c0fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
 .stat-desc {
   font-size: 14px;
   color: #909399;
+}
+
+.shadow-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 </style>

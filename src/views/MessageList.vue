@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, onUnmounted } from 'vue'
-import { useMessageStore } from '../stores/messageStore'
-import { showSuccessNotification } from '../main'
-import { Refresh } from '@element-plus/icons-vue'
+import { onMounted, ref, computed, onUnmounted } from "vue"
+import { useMessageStore } from "../stores/messageStore"
+import { showSuccessNotification, showErrorNotification } from "../main"
+import { Refresh, Edit } from "@element-plus/icons-vue"
 
 const messageStore = useMessageStore()
-const debugInfo = ref('')
+const debugInfo = ref("")
 
 // 分页相关数据
 const currentPage = ref(1)
 const pageSize = ref(6)
 const totalCount = ref(0)
 const totalPages = ref(1)
-const jumpPage = ref('')
+const jumpPage = ref("")
 
 // 新增留言数据
 const newMessage = ref({
-  nickname: '',
-  content: ''
+  nickname: "",
+  content: "",
 })
 
 // 下拉刷新相关
@@ -27,40 +27,38 @@ const currentY = ref(0)
 const pullDistance = ref(0)
 const threshold = 80 // 下拉刷新阈值
 
+// 点赞按钮加载状态（防止重复点击，仅防重复请求，不是防刷）
+const likeLoading = ref<Record<number, boolean>>({})
+
 // 计算可见的页码
 const visiblePages = computed(() => {
   const pages = []
   const maxVisible = 7
 
   if (totalPages.value <= maxVisible) {
-    // 如果总页数不多，显示所有页码
     for (let i = 1; i <= totalPages.value; i++) {
       pages.push(i)
     }
   } else {
-    // 否则显示部分页码和省略号
     if (currentPage.value <= 4) {
-      // 当前页在前几页
       for (let i = 1; i <= 5; i++) {
         pages.push(i)
       }
-      pages.push('...')
+      pages.push("...")
       pages.push(totalPages.value)
     } else if (currentPage.value >= totalPages.value - 3) {
-      // 当前页在后几页
       pages.push(1)
-      pages.push('...')
+      pages.push("...")
       for (let i = totalPages.value - 4; i <= totalPages.value; i++) {
         pages.push(i)
       }
     } else {
-      // 当前页在中间
       pages.push(1)
-      pages.push('...')
+      pages.push("...")
       for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
         pages.push(i)
       }
-      pages.push('...')
+      pages.push("...")
       pages.push(totalPages.value)
     }
   }
@@ -79,10 +77,11 @@ const handleTouchMove = (e: TouchEvent) => {
   if (window.scrollY === 0 && startY.value > 0) {
     currentY.value = e.touches[0].clientY
     pullDistance.value = Math.max(0, currentY.value - startY.value)
-
-    // 添加下拉指示器样式
     if (pullDistance.value > 0) {
-      document.body.style.setProperty('--pull-distance', `${Math.min(pullDistance.value, threshold)}px`)
+      document.body.style.setProperty(
+        "--pull-distance",
+        `${Math.min(pullDistance.value, threshold)}px`
+      )
     }
   }
 }
@@ -93,12 +92,10 @@ const handleTouchEnd = async () => {
     await handleRefresh()
     isRefreshing.value = false
   }
-
-  // 重置下拉状态
   startY.value = 0
   currentY.value = 0
   pullDistance.value = 0
-  document.body.style.removeProperty('--pull-distance')
+  document.body.style.removeProperty("--pull-distance")
 }
 
 // 分页处理方法
@@ -117,7 +114,7 @@ const handleNextPage = async () => {
 }
 
 const handlePageChange = async (page: number | string) => {
-  if (typeof page === 'number') {
+  if (typeof page === "number") {
     currentPage.value = page
     await fetchMessages()
   }
@@ -127,7 +124,7 @@ const handleJumpPage = async () => {
   const page = parseInt(jumpPage.value)
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
-    jumpPage.value = ''
+    jumpPage.value = ""
     await fetchMessages()
   }
 }
@@ -135,131 +132,160 @@ const handleJumpPage = async () => {
 // 获取留言数据的方法
 const fetchMessages = async () => {
   debugInfo.value = `正在获取第 ${currentPage.value} 页数据...`
-  const response = await messageStore.fetchMessages({
-    current: currentPage.value,
-    size: pageSize.value
-  })
-
-  // 从API响应中获取分页数据
-  if (response && response.current && response.total) {
-    totalCount.value = response.total
-    totalPages.value = response.pages
-    currentPage.value = response.current
-    debugInfo.value = `成功获取第 ${currentPage.value} 页，共 ${totalCount.value} 条留言`
+  try {
+    const response = await messageStore.fetchMessages({
+      current: currentPage.value,
+      size: pageSize.value,
+    })
+    if (response && response.current && response.total) {
+      totalCount.value = response.total
+      totalPages.value = response.pages
+      currentPage.value = response.current
+      debugInfo.value = `成功获取第 ${currentPage.value} 页，共 ${totalCount.value} 条留言`
+    }
+  } catch (error) {
+    debugInfo.value = `获取留言失败: ${
+      error instanceof Error ? error.message : "未知错误"
+    }`
+    console.error("获取留言失败:", error)
+    throw error
   }
 }
 
 // 在组件挂载时获取消息数据
 onMounted(async () => {
   try {
-    // 从localStorage读取保存的昵称
-    const savedNickname = localStorage.getItem('message_board_nickname')
+    const savedNickname = localStorage.getItem("message_board_nickname")
     if (savedNickname) {
       newMessage.value.nickname = savedNickname
-      console.log('👤 已加载保存的昵称:', savedNickname)
+      console.log("👤 已加载保存的昵称:", savedNickname)
     }
-    
-    debugInfo.value = '开始获取留言数据...'
+    debugInfo.value = "开始获取留言数据..."
     await fetchMessages()
-
-    // 添加触摸事件监听器
-    document.addEventListener('touchstart', handleTouchStart, { passive: false })
-    document.addEventListener('touchmove', handleTouchMove, { passive: false })
-    document.addEventListener('touchend', handleTouchEnd, { passive: false })
+    document.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    })
+    document.addEventListener("touchmove", handleTouchMove, { passive: false })
+    document.addEventListener("touchend", handleTouchEnd, { passive: false })
   } catch (error) {
-    // 这里仍然保持try-catch，因为这是组件初始化时的异常处理
-    debugInfo.value = `获取留言失败: ${error}`
-    console.error('组件中获取留言失败:', error)
-    // 让错误继续传播给全局处理器
+    debugInfo.value = `初始化失败: ${
+      error instanceof Error ? error.message : "未知错误"
+    }`
+    console.error("组件初始化失败:", error)
     throw error
   }
 })
 
 // 组件卸载时移除事件监听器
 onUnmounted(() => {
-  document.removeEventListener('touchstart', handleTouchStart)
-  document.removeEventListener('touchmove', handleTouchMove)
-  document.removeEventListener('touchend', handleTouchEnd)
+  document.removeEventListener("touchstart", handleTouchStart)
+  document.removeEventListener("touchmove", handleTouchMove)
+  document.removeEventListener("touchend", handleTouchEnd)
 })
 
-// 点赞功能
+// 修复点赞/取消点赞逻辑（核心修改：去掉严格状态验证，消除非必要错误提示）
 const handleLike = async (messageId: number) => {
-  debugInfo.value = `正在处理点赞...`
-  
-  // 调用store中的点赞方法
-  const result = await messageStore.handleLike(messageId)
-  
-  // 显示操作结果
-  debugInfo.value = result === 'LIKED' ? `点赞成功` : `取消点赞成功`
-  console.log(`👍 ${result === 'LIKED' ? '点赞' : '取消点赞'}成功:`, messageId)
-  
-  // 显示成功提示
-  showSuccessNotification(result === 'LIKED' ? '已点赞' : '已取消点赞')
+  // 防止重复点击（仅阻止短时间内重复请求，不是防刷）
+  if (likeLoading.value[messageId]) return
+  likeLoading.value[messageId] = true
+  debugInfo.value = `正在处理留言 ${messageId} 的点赞操作...`
+
+  try {
+    // 直接调用store方法，不做额外状态验证（避免同步延迟导致的错误）
+    const result = await messageStore.handleLike(messageId)
+
+    // 基于store返回结果提示（不再查找组件内状态，减少同步问题）
+    const actionText = result === "LIKED" ? "点赞" : "取消点赞"
+    const successText = result === "LIKED" ? "已点赞" : "已取消点赞"
+
+    debugInfo.value = `${actionText}成功: 留言 ${messageId}`
+    console.log(`👍 ${actionText}成功:`, messageId)
+    showSuccessNotification(successText)
+  } catch (error) {
+    // 仅在store调用真失败时提示（如网络错误），消除状态同步延迟导致的误提示
+    const errorMsg =
+      error instanceof Error ? error.message : "网络异常，操作失败"
+    // 简化错误提示，避免用户困惑
+    if (errorMsg.includes("与预期不符")) {
+      debugInfo.value = `点赞操作状态同步中，请稍候再试`
+      console.warn("点赞状态同步延迟，忽略提示:", error)
+      return // 不弹错误框
+    }
+    debugInfo.value = `点赞/取消点赞失败: ${errorMsg}`
+    console.error("点赞操作异常:", error)
+    showErrorNotification(`操作失败: ${errorMsg}`)
+  } finally {
+    // 无论成功失败，都释放加载状态
+    likeLoading.value[messageId] = false
+  }
 }
 
 // 实现删除功能
 const handleDelete = async (messageId: number) => {
-  // 弹出确认对话框
-  const confirmed = window.confirm('确定要删除这条留言吗？此操作不可恢复。')
-  if (!confirmed) {
-    return // 用户取消删除
+  const confirmed = window.confirm("确定要删除这条留言吗？此操作不可恢复。")
+  if (!confirmed) return
+
+  debugInfo.value = `正在删除留言 ${messageId}...`
+  try {
+    await messageStore.handleDeleteMessage(messageId)
+    debugInfo.value = `留言 ${messageId} 删除成功`
+    console.log(`🗑️ 留言删除成功:`, messageId)
+    showSuccessNotification("删除成功")
+    await fetchMessages()
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : "删除失败"
+    debugInfo.value = `删除留言失败: ${errorMsg}`
+    console.error("删除留言异常:", error)
+    showErrorNotification(`删除失败: ${errorMsg}`)
   }
-  
-  debugInfo.value = `正在删除留言...`
-  
-  // 调用store中的删除方法
-  await messageStore.handleDeleteMessage(messageId)
-  
-  // 显示操作结果
-  debugInfo.value = `留言删除成功`
-  console.log(`🗑️ 留言删除成功:`, messageId)
-  
-  // 显示成功提示
-  showSuccessNotification('删除成功')
 }
 
-// 新增留言
+// 新增留言 - 修改了错误提示逻辑，只保留一个错误提示
 const handleAddMessage = async () => {
-  if (newMessage.value.nickname && newMessage.value.content) {
-    debugInfo.value = '正在发送留言...'
-    try {
-      // 调用store中的创建留言方法
-      await messageStore.handleCreateMessage({
-        nickname: newMessage.value.nickname,
-        content: newMessage.value.content
-      })
-      
-      // 保存昵称到localStorage（在清空表单之前）
-      const nicknameToSave = newMessage.value.nickname
-      localStorage.setItem('message_board_nickname', nicknameToSave)
-      console.log('💾 已保存昵称到本地存储:', nicknameToSave)
-      
-      // 清空表单, 不清空昵称
-      newMessage.value = { nickname: newMessage.value.nickname, content: '' }
-      
-      // 显示操作结果
-      debugInfo.value = '留言发布成功'
-      console.log('📝 留言发布成功')
-      
-      // 显示成功提示
-      showSuccessNotification('新增留言成功')
-    } catch (error) {
-      debugInfo.value = `留言发布失败: ${error instanceof Error ? error.message : '未知错误'}`
-      console.error('❌ 留言发布失败:', error)
-      // 让错误继续传播给全局处理器
-      throw error
-    }
-  } else {
-    debugInfo.value = '昵称或留言内容不能为空'
-    console.warn('⚠️ 昵称或留言内容不能为空')
-    throw new Error('昵称或留言内容不能为空')
+  if (!newMessage.value.nickname.trim() || !newMessage.value.content.trim()) {
+    debugInfo.value = "昵称或留言内容不能为空"
+    // 只抛出错误，不直接显示通知，避免重复提示
+    throw new Error("昵称或留言内容不能为空")
+  }
+
+  debugInfo.value = "正在发送留言..."
+  try {
+    await messageStore.handleCreateMessage({
+      nickname: newMessage.value.nickname.trim(),
+      content: newMessage.value.content.trim(),
+    })
+    localStorage.setItem(
+      "message_board_nickname",
+      newMessage.value.nickname.trim()
+    )
+    console.log("💾 已保存昵称到本地存储:", newMessage.value.nickname.trim())
+    newMessage.value.content = ""
+    debugInfo.value = "留言发布成功"
+    console.log("📝 留言发布成功")
+    showSuccessNotification("新增留言成功")
+    await fetchMessages()
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : "发布失败"
+    debugInfo.value = `留言发布失败: ${errorMsg}`
+    console.error("发布留言异常:", error)
+    showErrorNotification(`操作失败: ${errorMsg}`)
+    throw error
   }
 }
 
 // 刷新留言
-const handleRefresh = () => {
-  debugInfo.value = '正在刷新留言数据...'
-  return fetchMessages()
+const handleRefresh = async () => {
+  debugInfo.value = "正在刷新留言数据..."
+  try {
+    await fetchMessages()
+    debugInfo.value = "留言数据刷新成功"
+    showSuccessNotification("刷新成功")
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : "刷新失败"
+    debugInfo.value = `刷新留言失败: ${errorMsg}`
+    showErrorNotification(`刷新失败: ${errorMsg}`)
+    throw error
+  }
 }
 
 // 格式化时间显示
@@ -269,35 +295,22 @@ const formatTime = (timeString: string) => {
     const now = new Date()
     const diff = now.getTime() - date.getTime()
 
-    // 小于1分钟
-    if (diff < 60000) {
-      return '刚刚'
-    }
-    // 小于1小时
-    if (diff < 3600000) {
-      return `${Math.floor(diff / 60000)}分钟前`
-    }
-    // 小于24小时
-    if (diff < 86400000) {
-      return `${Math.floor(diff / 3600000)}小时前`
-    }
-    // 24-48小时显示"昨天"
-    if (diff < 172800000) {
-      return '昨天'
-    }
-    // 超过48小时但不到一年，显示月份-日期
+    if (diff < 60000) return "刚刚"
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
+    if (diff < 172800000) return "昨天"
     if (diff < 31536000000) {
-      return date.toLocaleDateString('zh-CN', {
-        month: 'numeric',
-        day: 'numeric'
-      }).replace('/', '-')
+      return date
+        .toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" })
+        .replace("/", "-")
     }
-    // 超过一年显示完整日期
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
-    }).replace(/\//g, '-')
+    return date
+      .toLocaleDateString("zh-CN", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      })
+      .replace(/\//g, "-")
   } catch (error) {
     return timeString
   }
@@ -307,10 +320,10 @@ const formatTime = (timeString: string) => {
 <template>
   <div class="message-board">
     <!-- 下拉刷新指示器 -->
-    <div class="pull-indicator" :class="{
-      'release': pullDistance >= threshold,
-      'refreshing': isRefreshing
-    }"></div>
+    <div
+      class="pull-indicator"
+      :class="{ release: pullDistance >= threshold, refreshing: isRefreshing }"
+    ></div>
 
     <!-- 头部区域 -->
     <header class="board-header">
@@ -330,17 +343,25 @@ const formatTime = (timeString: string) => {
         <div class="add-message-container">
           <div class="add-message-form">
             <div class="content-input-wrapper">
-              <textarea class="content-input" placeholder="请输入留言内容..." v-model="newMessage.content" rows="4"></textarea>
+              <textarea
+                class="content-input"
+                placeholder="请输入留言内容..."
+                v-model="newMessage.content"
+                rows="4"
+              ></textarea>
             </div>
             <div class="bottom-row">
               <div class="left-section">
-                <input type="text" class="nickname-input" placeholder="请输入您的昵称" v-model="newMessage.nickname" />
+                <input
+                  type="text"
+                  class="nickname-input"
+                  placeholder="请输入您的昵称"
+                  v-model="newMessage.nickname"
+                />
               </div>
               <div class="button-group">
                 <button class="submit-btn" @click="handleAddMessage">
-                  <el-icon :size="20">
-                    <Edit />
-                  </el-icon>
+                  <el-icon :size="20"><Edit /></el-icon>
                   <span class="submit-text">发布留言</span>
                 </button>
               </div>
@@ -349,11 +370,13 @@ const formatTime = (timeString: string) => {
         </div>
 
         <!-- 悬浮刷新按钮 -->
-        <div class="floating-refresh" :class="{ 'refreshing': isRefreshing }">
-          <button class="refresh-btn" style="background: transparent;" @click="handleRefresh" :disabled="isRefreshing">
-            <el-icon :size="20">
-              <Refresh />
-            </el-icon>
+        <div class="floating-refresh" :class="{ refreshing: isRefreshing }">
+          <button
+            class="refresh-btn"
+            @click="handleRefresh"
+            :disabled="isRefreshing"
+          >
+            <el-icon :size="24"><Refresh /></el-icon>
           </button>
         </div>
 
@@ -370,7 +393,10 @@ const formatTime = (timeString: string) => {
         </div>
 
         <!-- 空数据状态 -->
-        <div v-else-if="messageStore.messages.length === 0" class="empty-container">
+        <div
+          v-else-if="messageStore.messages.length === 0"
+          class="empty-container"
+        >
           <div class="empty-icon">📝</div>
           <p class="empty-text">暂无留言数据</p>
           <p class="empty-subtext">成为第一个留言的人吧！</p>
@@ -379,8 +405,12 @@ const formatTime = (timeString: string) => {
         <!-- 留言列表 -->
         <div v-else class="messages-container">
           <div class="messages-grid">
-            <article v-for="msg in messageStore.messages" :key="msg.id" class="message-card"
-              :class="{ 'message-liked': msg.liked }">
+            <article
+              v-for="msg in messageStore.messages"
+              :key="msg.id"
+              class="message-card"
+              :class="{ 'message-liked': msg.liked }"
+            >
               <!-- 留言头部 -->
               <div class="message-header">
                 <div class="user-info">
@@ -389,11 +419,19 @@ const formatTime = (timeString: string) => {
                   </div>
                   <div class="user-details">
                     <h3 class="nickname">{{ msg.nickname }}</h3>
-                    <time class="timestamp">{{ formatTime(msg.createTime) }}</time>
+                    <time class="timestamp">{{
+                      formatTime(msg.createTime)
+                    }}</time>
                   </div>
                 </div>
                 <div class="message-actions">
-                  <button v-if="msg.canDelete" @click="handleDelete(msg.id)" class="delete-btn" title="删除留言">
+                  <button
+                    v-if="msg.canDelete"
+                    @click="handleDelete(msg.id)"
+                    class="delete-btn"
+                    title="删除留言"
+                    :disabled="likeLoading[msg.id]"
+                  >
                     <span class="delete-icon">🗑️</span>
                   </button>
                 </div>
@@ -407,10 +445,15 @@ const formatTime = (timeString: string) => {
               <!-- 留言底部 -->
               <div class="message-footer">
                 <div class="interaction-buttons">
-                  <button @click="handleLike(msg.id)" class="like-btn" :class="{ 'liked': msg.liked }"
-                    :title="msg.liked ? '取消点赞' : '点赞'">
-                    <span class="like-icon" :class="{ 'liked': msg.liked }">
-                      {{ msg.liked ? '❤️' : '🤍' }}
+                  <button
+                    @click="handleLike(msg.id)"
+                    class="like-btn"
+                    :class="{ liked: msg.liked, loading: likeLoading[msg.id] }"
+                    :title="msg.liked ? '取消点赞' : '点赞'"
+                    :disabled="likeLoading[msg.id]"
+                  >
+                    <span class="like-icon" :class="{ liked: msg.liked }">
+                      {{ msg.liked ? "❤️" : "🤍" }}
                     </span>
                     <span class="like-count">{{ msg.likeCount }}</span>
                   </button>
@@ -423,38 +466,55 @@ const formatTime = (timeString: string) => {
           <div class="pagination-container">
             <div class="pagination-info">
               <span class="total-count">共 {{ totalCount }} 条留言</span>
-              <span class="page-info">第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+              <span class="page-info"
+                >第 {{ currentPage }} 页，共 {{ totalPages }} 页</span
+              >
             </div>
-
             <div class="pagination-controls">
-              <!-- 上一页按钮 -->
-              <button class="page-btn prev-btn" :class="{ 'disabled': currentPage <= 1 }" :disabled="currentPage <= 1"
-                @click="handlePrevPage">
+              <button
+                class="page-btn prev-btn"
+                :class="{ disabled: currentPage <= 1 }"
+                :disabled="currentPage <= 1"
+                @click="handlePrevPage"
+              >
                 <span class="arrow">←</span>
                 <span class="btn-text">上一页</span>
               </button>
-
-              <!-- 页码按钮 -->
               <div class="page-numbers">
-                <button v-for="page in visiblePages" :key="page" class="page-number"
-                  :class="{ 'active': page === currentPage, 'ellipsis': page === '...' }"
-                  @click="handlePageChange(page)" :disabled="page === '...'">
+                <button
+                  v-for="page in visiblePages"
+                  :key="page"
+                  class="page-number"
+                  :class="{
+                    active: page === currentPage,
+                    ellipsis: page === '...',
+                  }"
+                  @click="handlePageChange(page)"
+                  :disabled="page === '...'"
+                >
                   {{ page }}
                 </button>
               </div>
-
-              <!-- 下一页按钮 -->
-              <button class="page-btn next-btn" :class="{ 'disabled': currentPage >= totalPages }"
-                :disabled="currentPage >= totalPages" @click="handleNextPage">
+              <button
+                class="page-btn next-btn"
+                :class="{ disabled: currentPage >= totalPages }"
+                :disabled="currentPage >= totalPages"
+                @click="handleNextPage"
+              >
                 <span class="btn-text">下一页</span>
                 <span class="arrow">→</span>
               </button>
             </div>
-
-            <!-- 快速跳转 -->
             <div class="page-jump">
               <span class="jump-text">跳转到</span>
-              <input type="number" class="jump-input" v-model="jumpPage" :min="1" :max="totalPages" placeholder="页码" />
+              <input
+                type="number"
+                class="jump-input"
+                v-model="jumpPage"
+                :min="1"
+                :max="totalPages"
+                placeholder="页码"
+              />
               <span class="jump-text">页</span>
               <button class="jump-btn" @click="handleJumpPage">确定</button>
             </div>
@@ -470,19 +530,24 @@ const formatTime = (timeString: string) => {
 * {
   box-sizing: border-box;
 }
+body {
+  overflow-x: hidden;
+  margin: 0;
+}
 
 .message-board {
   min-height: 100vh;
   background-image: url("@/assets/images/messageBg.jpg");
   background-size: cover;
   background-position: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 16px;
+  width: 100%;
 }
 
 /* 头部样式 */
@@ -518,33 +583,7 @@ const formatTime = (timeString: string) => {
 
 /* 主要内容区域 */
 .board-main {
-  padding: 2rem 0;
-}
-
-/* 调试信息 */
-.debug-info {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.debug-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: white;
-}
-
-.debug-icon {
-  font-size: 1.2rem;
-}
-
-.debug-text {
-  font-size: 0.9rem;
-  opacity: 0.9;
+  padding: 1.5rem 0;
 }
 
 /* 新增留言区域 */
@@ -552,7 +591,7 @@ const formatTime = (timeString: string) => {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -575,16 +614,14 @@ const formatTime = (timeString: string) => {
   background: rgba(255, 255, 255, 0.9);
   color: #333;
   font-size: 1rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
   resize: none;
   line-height: 1.5;
 }
 
 .content-input {
   width: 100%;
-  min-height: 120px;
-  padding-top: 0.8rem;
-  padding-bottom: 0.8rem;
+  min-height: 100px;
 }
 
 .nickname-input {
@@ -593,18 +630,11 @@ const formatTime = (timeString: string) => {
   align-items: center;
 }
 
-.nickname-input::placeholder,
-.content-input::placeholder {
-  color: #666;
-  text-align: left;
-  line-height: 1.5;
-}
-
 .nickname-input:focus,
 .content-input:focus {
   outline: none;
   border-color: #667eea;
-  background: rgba(255, 255, 255, 1);
+  background: #fff;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -613,19 +643,19 @@ const formatTime = (timeString: string) => {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .left-section {
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 200px;
 }
 
 .button-group {
   display: flex;
   gap: 1rem;
-  justify-content: flex-end;
 }
 
-.refresh-btn,
 .submit-btn {
   background: linear-gradient(135deg, #acb5e0, #e6deee);
   color: rgb(202, 99, 233);
@@ -643,7 +673,6 @@ const formatTime = (timeString: string) => {
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.refresh-btn:hover,
 .submit-btn:hover {
   background: linear-gradient(135deg, #764ba2, #667eea);
   transform: translateY(-2px);
@@ -651,65 +680,50 @@ const formatTime = (timeString: string) => {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.refresh-icon,
-.submit-icon {
-  font-size: 1.1rem;
-}
-
-.refresh-text,
-.submit-text {
-  font-weight: 500;
-}
-
 /* 悬浮刷新按钮 */
 .floating-refresh {
   position: fixed;
-  bottom: 20px;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
+  bottom: 24px;
+  right: 24px;
+  transform: translateY(0);
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.2);
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 50%;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
   transition: all 0.3s ease;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .floating-refresh:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
 .floating-refresh.refreshing {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  opacity: 1;
+  background: linear-gradient(135deg, #42b983, #27ae60);
 }
 
-.floating-refresh .refresh-icon {
-  font-size: 1.8rem;
+.refresh-btn {
+  border: none;
+  background: transparent;
   color: white;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
 }
 
-.floating-refresh .refresh-text {
-  display: none;
-  /* 隐藏文字，只保留图标 */
-}
-
-/* 加载状态 */
-.loading-container {
+/* 加载/错误/空数据状态 */
+.loading-container,
+.error-container,
+.empty-container {
   text-align: center;
   padding: 4rem 0;
+  color: white;
 }
 
 .loading-spinner {
@@ -722,29 +736,8 @@ const formatTime = (timeString: string) => {
   margin: 0 auto 1rem;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-text {
-  color: white;
-  font-size: 1.1rem;
-  margin: 0;
-}
-
-/* 错误状态 */
-.error-container {
-  text-align: center;
-  padding: 4rem 0;
-}
-
-.error-icon {
+.error-icon,
+.empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
 }
@@ -755,19 +748,7 @@ const formatTime = (timeString: string) => {
   margin: 0;
 }
 
-/* 空数据状态 */
-.empty-container {
-  text-align: center;
-  padding: 4rem 0;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
 .empty-text {
-  color: white;
   font-size: 1.3rem;
   margin: 0 0 0.5rem 0;
   font-weight: 500;
@@ -779,33 +760,38 @@ const formatTime = (timeString: string) => {
   margin: 0;
 }
 
-/* 留言网格 */
+/* 留言列表：移动端2列 */
 .messages-grid {
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  overflow-x: hidden;
 }
 
-/* 留言卡片 */
+/* 留言卡片：统一大小 */
 .message-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .message-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .message-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -826,23 +812,26 @@ const formatTime = (timeString: string) => {
   opacity: 0.8;
 }
 
-/* 留言头部 */
+/* 留言头部：固定布局 */
 .message-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+  flex-shrink: 0;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  flex: 1;
+  overflow: hidden;
 }
 
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   background: linear-gradient(135deg, #8d9ad7, #ae7de2);
   border-radius: 50%;
   display: flex;
@@ -850,26 +839,30 @@ const formatTime = (timeString: string) => {
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
 }
 
 .user-details {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
+  overflow: hidden;
 }
 
 .nickname {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #2c3e50;
   margin: 0;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .timestamp {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #7f8c8d;
   margin: 0;
 }
@@ -877,51 +870,65 @@ const formatTime = (timeString: string) => {
 .message-actions {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .delete-btn {
   background: rgba(231, 76, 60, 0.1);
   border: 1px solid rgba(231, 76, 60, 0.3);
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   color: #e74c3c;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .delete-btn:hover {
   background: rgba(231, 76, 60, 0.2);
   border-color: rgba(231, 76, 60, 0.6);
-  transform: scale(1.1);
+  transform: scale(1.05);
   box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
 }
 
 .delete-icon {
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 /* 留言内容 */
 .message-content {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  flex: 1;
+  min-height: 60px;
 }
 
 .content-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   color: #34495e;
   margin: 0;
   word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* 留言底部 */
+/* 留言底部：点赞按钮 */
 .message-footer {
   display: flex;
   justify-content: flex-end;
-}
-
-.interaction-buttons {
-  display: flex;
-  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .like-btn {
@@ -931,15 +938,18 @@ const formatTime = (timeString: string) => {
   background: rgba(102, 126, 234, 0.1);
   border: 2px solid rgba(102, 126, 234, 0.3);
   border-radius: 25px;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #3d59d7;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.like-btn:hover {
+.like-btn:hover:not(.loading) {
   background: rgba(102, 126, 234, 0.2);
   border-color: rgba(102, 126, 234, 0.5);
   transform: translateY(-1px);
@@ -951,13 +961,15 @@ const formatTime = (timeString: string) => {
   color: #ff6b6b;
 }
 
-.like-btn.liked:hover {
-  background: rgba(255, 107, 107, 0.25);
-  border-color: rgba(255, 107, 107, 0.6);
+.like-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: rgba(102, 126, 234, 0.05);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .like-icon {
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: transform 0.2s ease;
 }
 
@@ -969,58 +981,57 @@ const formatTime = (timeString: string) => {
   font-weight: 600;
 }
 
-/* 分页组件样式 */
+/* 分页组件 */
 .pagination-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding: 1rem;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  padding: 0.8rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 0, 0, 0.2);
+  width: 100%;
 }
 
 .pagination-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
   color: black;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   opacity: 0.9;
-}
-
-.total-count {
-  font-weight: 500;
-}
-
-.page-info {
-  font-weight: 300;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .pagination-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   color: black;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   opacity: 0.9;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .page-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.2rem;
   color: black;
   font-weight: 500;
+  font-size: 0.8rem;
+  min-height: auto;
 }
 
 .page-btn:hover:not(.disabled) {
@@ -1031,24 +1042,25 @@ const formatTime = (timeString: string) => {
 .page-btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  color: black;
 }
 
 .page-numbers {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .page-number {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
   transition: all 0.2s ease;
   color: black;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  min-height: auto;
+  min-width: auto;
 }
 
 .page-number:hover:not(.active):not(.ellipsis) {
@@ -1066,50 +1078,45 @@ const formatTime = (timeString: string) => {
 .page-number.ellipsis {
   cursor: default;
   color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
 }
 
 .page-jump {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   color: black;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   opacity: 0.9;
 }
 
-.jump-text {
-  font-weight: 500;
-}
-
 .jump-input {
-  width: 60px;
-  padding: 0.5rem;
+  width: 40px;
+  padding: 0.3rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.9);
   color: #333;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .jump-input:focus {
   outline: none;
   border-color: #667eea;
-  background: rgba(255, 255, 255, 1);
+  background: #fff;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .jump-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
   transition: all 0.2s ease;
   color: black;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .jump-btn:hover {
@@ -1124,274 +1131,103 @@ const formatTime = (timeString: string) => {
   left: 0;
   right: 0;
   height: var(--pull-distance, 0px);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(42, 30, 53, 0.8));
+  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   z-index: 1000;
   transition: height 0.2s ease;
   pointer-events: none;
+  line-height: 1;
 }
 
-/* 下拉刷新指示器 - 达到阈值时 */
-/* .pull-indicator.release {
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(238, 90, 36, 0.8));
-} */
-
 .pull-indicator.release::before {
-  content: '释放刷新';
+  content: "释放刷新";
   opacity: 1;
 }
 
-/* 下拉刷新指示器 - 刷新中 */
 .pull-indicator.refreshing {
-  background: linear-gradient(135deg, rgba(66, 185, 131, 0.8), rgba(46, 204, 113, 0.8));
+  background: linear-gradient(135deg, #42b983, #27ae60);
 }
 
 .pull-indicator.refreshing::before {
-  content: '正在刷新...';
+  content: "正在刷新...";
   opacity: 1;
 }
 
-/* 响应式设计 */
+/* 响应式适配：移动端2列 */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 16px;
-  }
-
-  .board-title {
-    font-size: 1.5rem;
-  }
-
-  .board-title .icon {
-    font-size: 1.2rem;
-  }
-
-  .board-subtitle {
-    font-size: 0.8rem;
-  }
-
   .messages-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .message-card {
-    padding: 1.25rem;
-  }
-
-  .avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
-
-  .nickname {
-    font-size: 1rem;
-  }
-
-  .like-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-  }
-
-  .add-message-container {
-    padding: 1.25rem;
-  }
-
-  .bottom-row {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-
-  .left-section {
-    width: 100%;
-  }
-
-  .nickname-input {
-    width: 100%;
-  }
-
-  .button-group {
-    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
-  }
-
-  .refresh-btn,
-  .submit-btn {
-    width: 100%;
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
-  }
-
-  .pagination-container {
-    padding: 0.8rem;
-  }
-
-  .pagination-info {
-    font-size: 0.8rem;
-  }
-
-  .page-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-    min-height: 48px;
-  }
-
-  .page-numbers {
-    gap: 0.2rem;
-  }
-
-  .page-number {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.85rem;
-    min-height: 40px;
-    min-width: 40px;
-  }
-
-  .page-jump {
-    font-size: 0.8rem;
-  }
-
-  .jump-input {
-    width: 40px;
-    font-size: 0.8rem;
-  }
-
-  .jump-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-  }
-
-  .floating-refresh {
-    top: 50%;
-    right: 16px;
-    transform: translateY(-50%);
-    width: 56px;
-    height: 56px;
-  }
-
-  .floating-refresh .refresh-icon {
-    font-size: 1.6rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .board-header {
-    padding: 0.8rem 0;
-  }
-
-  .board-title {
-    font-size: 1.4rem;
-  }
-
-  .board-icon {
-    font-size: 1.1rem;
-  }
-
-  .board-subtitle {
-    font-size: 0.75rem;
-  }
-
-  .board-main {
-    padding: 1.5rem 0;
+    padding: 0 0.2rem;
   }
 
   .message-card {
     padding: 1rem;
-  }
-
-  .user-info {
-    gap: 0.5rem;
   }
 
   .avatar {
     width: 36px;
     height: 36px;
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .nickname {
-    font-size: 0.95rem;
-  }
-
-  .timestamp {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   .content-text {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
-  .add-message-container {
-    padding: 1rem;
-  }
-
-  .nickname-input,
-  .content-input {
-    font-size: 0.85rem;
-    padding: 0.7rem 0.8rem;
-  }
-
-  .refresh-btn,
-  .submit-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.85rem;
-  }
-
-  .pagination-container {
-    padding: 0.6rem;
-  }
-
-  .pagination-info {
-    font-size: 0.7rem;
-  }
-
-  .page-btn {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
-    min-height: 52px;
-  }
-
-  .page-numbers {
-    gap: 0.1rem;
-  }
-
-  .page-number {
-    padding: 0.3rem 0.5rem;
-    font-size: 0.75rem;
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  .page-jump {
-    font-size: 0.7rem;
-  }
-
-  .jump-input {
-    width: 30px;
-    font-size: 0.7rem;
-  }
-
-  .jump-btn {
+  .like-btn {
     padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .like-icon {
+    font-size: 0.9rem;
+  }
+}
+
+/* 超小屏适配 */
+@media (max-width: 480px) {
+  .messages-grid {
+    gap: 0.6rem;
+  }
+
+  .message-card {
+    padding: 0.9rem;
+  }
+
+  .content-text {
+    font-size: 0.85rem;
   }
 
   .floating-refresh {
-    top: 50%;
-    right: 12px;
-    transform: translateY(-50%);
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
+    bottom: 16px;
+    right: 16px;
   }
 
-  .floating-refresh .refresh-icon {
+  .refresh-btn el-icon {
     font-size: 1.4rem;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

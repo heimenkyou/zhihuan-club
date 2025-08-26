@@ -1,5 +1,5 @@
 <template>
-  <el-container class="admin-container">
+  <div class="admin-container">
     <el-header class="admin-header">
       <div class="header-left">
         <span class="admin-title">社团管理后台</span>
@@ -12,7 +12,7 @@
     <el-container>
       <el-aside class="admin-aside" width="200px">
         <el-menu
-          default-active="/admin/dashboard"
+          :default-active="currentRoutePath"
           class="el-menu-vertical-demo"
           @select="handleMenuSelect"
         >
@@ -46,7 +46,7 @@
         <router-view></router-view>
       </el-main>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -58,7 +58,7 @@ import { Trophy } from "@element-plus/icons-vue"
 
 import { useRouter } from "vue-router"
 import { useAdminStore } from "../../../stores/adminStore"
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { ElMessage } from "element-plus"
 
 const router = useRouter()
@@ -83,6 +83,8 @@ const handleLogout = () => {
   ElMessage.success("退出登录成功")
   router.push("/admin/login")
 }
+// 获取当前路由路径
+const currentRoutePath = computed(() => router.currentRoute.value.path)
 </script>
 
 <style scoped>

@@ -44,6 +44,19 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
+            <el-form-item label="第二志愿部门">
+              <el-select
+                v-model="searchForm.secondDepartment"
+                placeholder="请选择部门"
+              >
+                <el-option label="技术部" value="技术部" />
+                <el-option label="宣传部" value="宣传部" />
+                <el-option label="组织部" value="组织部" />
+                <el-option label="外联部" value="外联部" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-button type="primary" @click="handleSearch" class="search-btn">
               搜索
             </el-button>
@@ -69,11 +82,17 @@
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" label="姓名" width="100" />
         <el-table-column prop="studentId" label="学号" width="120" />
-        <el-table-column prop="className" label="班级" width="150" />
+        <!-- 移除 className 列 -->
         <el-table-column prop="major" label="专业" width="180" />
         <el-table-column prop="phone" label="电话" width="150" />
         <el-table-column prop="QQNumber" label="QQ号" width="150" />
         <el-table-column prop="department" label="部门" width="100" />
+        <!-- 添加第二志愿部门列 -->
+        <el-table-column
+          prop="secondDepartment"
+          label="第二志愿部门"
+          width="120"
+        />
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
             <el-button
@@ -115,9 +134,7 @@
         <el-form-item label="学号">
           <span>{{ currentApplication?.studentId }}</span>
         </el-form-item>
-        <el-form-item label="班级">
-          <span>{{ currentApplication?.className }}</span>
-        </el-form-item>
+        <!-- 移除班级字段 -->
         <el-form-item label="专业">
           <span>{{ currentApplication?.major }}</span>
         </el-form-item>
@@ -130,11 +147,17 @@
         <el-form-item label="部门">
           <span>{{ currentApplication?.department }}</span>
         </el-form-item>
-        <el-form-item label="个人介绍">
-          <span>{{ currentApplication?.introduction }}</span>
+        <el-form-item label="第二志愿部门">
+          <span>{{ currentApplication?.secondDepartment || "无" }}</span>
+        </el-form-item>
+        <el-form-item label="兴趣方向">
+          <span>{{ currentApplication?.interests?.join("、") || "无" }}</span>
         </el-form-item>
         <el-form-item label="申请理由">
           <span>{{ currentApplication?.reason }}</span>
+        </el-form-item>
+        <el-form-item label="个人介绍">
+          <span>{{ currentApplication?.introduction }}</span>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -153,15 +176,19 @@ import {
   type ApplicationPageData,
 } from "../../../services/adminService"
 import type { joinForm } from "../../../services/applicationsService"
+// 导入xlsx库
+import * as XLSX from "xlsx"
 
 const searchForm = reactive<{
   name: string
   studentId: string
   department: string
+  secondDepartment: string // 添加第二志愿部门搜索字段
 }>({
   name: "",
   studentId: "",
   department: "",
+  secondDepartment: "",
 })
 const applicationsData = ref<ApplicationPageData<joinForm>>({
   current: 1,
@@ -184,6 +211,8 @@ const loadApplications = async () => {
       size: applicationsData.value.size,
       name: searchForm.name,
       studentId: searchForm.studentId,
+      department: searchForm.department,
+      secondDepartment: searchForm.secondDepartment, // 添加到搜索参数
     }
     const data = await getApplications(params)
     applicationsData.value = data
@@ -206,6 +235,7 @@ const resetForm = () => {
   searchForm.name = ""
   searchForm.studentId = ""
   searchForm.department = ""
+  searchForm.secondDepartment = "" // 重置第二志愿部门
   applicationsData.value.current = 1
   loadApplications()
 }
@@ -281,9 +311,70 @@ const handleBatchDelete = async () => {
 }
 
 // 导出数据
-const exportApplications = () => {
-  // 实现导出逻辑，可以调用后端API或前端生成Excel
-  ElMessage.info("导出功能开发中")
+const exportApplications = async () => {
+  try {
+    loading.value = true
+    ElMessage.info("正在导出数据，请稍候...")
+    
+    // 获取所有数据（不分页）
+    const allData = await getApplications({
+      current: 1,
+      size: applicationsData.value.total,
+      name: searchForm.name,
+      studentId: searchForm.studentId,
+      // 假设 GetApplicationsParams 中没有 department 属性，暂时移除该字段
+      // 如果确实需要该字段，请检查并更新 GetApplicationsParams 类型定义
+      // department: searchForm.department,
+      // 假设 GetApplicationsParams 中没有 secondDepartment 属性，暂时移除该字段
+      // 如果确实需要该字段，请检查并更新 GetApplicationsParams 类型定义
+      // secondDepartment: searchForm.secondDepartment
+    })
+    
+    // 准备导出数据
+    const exportData = allData.records.map((item) => ({
+      姓名: item.name,
+      学号: item.studentId,
+      专业: item.major,
+      电话: item.phone,
+      QQ号: item.QQNumber,
+      部门: item.department,
+      第二志愿部门: item.secondDepartment || "无",
+      兴趣方向: item.interests?.join("、") || "无",
+      申请理由: item.reason,
+      个人介绍: item.introduction,
+    }))
+    
+    // 创建工作表
+    const ws = XLSX.utils.json_to_sheet(exportData)
+    
+    // 设置列宽 - 根据内容长度调整各列宽度
+    ws['!cols'] = [
+      { wch: 10 },  // 姓名
+      { wch: 15 },  // 学号
+      { wch: 20 },  // 专业
+      { wch: 15 },  // 电话
+      { wch: 15 },  // QQ号
+      { wch: 10 },  // 部门
+      { wch: 15 },  // 第二志愿部门
+      { wch: 30 },  // 兴趣方向（设置较宽以显示多个兴趣）
+      { wch: 40 },  // 申请理由
+      { wch: 60 }   // 个人介绍（设置最宽以显示完整内容）
+    ]
+    
+    // 创建工作簿
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, "报名信息")
+    
+    // 导出文件
+    XLSX.writeFile(wb, `报名信息_${new Date().toLocaleDateString()}.xlsx`)
+    
+    ElMessage.success("导出成功")
+  } catch (error) {
+    ElMessage.error("导出失败，请重试")
+    console.error("导出失败:", error)
+  } finally {
+    loading.value = false
+  }
 }
 
 // 初始加载数据

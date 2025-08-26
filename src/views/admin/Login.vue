@@ -11,12 +11,14 @@
         :model="loginForm"
         :rules="rules"
         class="login-form"
+        label-width="0px"
       >
         <el-form-item prop="username">
           <el-input
             v-model="loginForm.username"
             placeholder="请输入用户名"
             prefix-icon="User"
+            :disabled="loading"
           />
         </el-form-item>
         <el-form-item prop="password">
@@ -26,6 +28,7 @@
             placeholder="请输入密码"
             prefix-icon="Lock"
             show-password
+            :disabled="loading"
           />
         </el-form-item>
         <el-form-item>
@@ -48,11 +51,11 @@ import { ref, reactive } from "vue"
 import { ElMessage } from "element-plus"
 import { useRouter } from "vue-router"
 import { useAdminStore } from "../../stores/adminStore"
+import { login } from "../../services/adminService"
+import type { ElForm } from "element-plus"
 
 const router = useRouter()
 const adminStore = useAdminStore()
-// 创建表单引用
-import { ElForm } from "element-plus"
 const loginFormRef = ref<InstanceType<typeof ElForm> | null>(null)
 const loginForm = reactive<{ username: string; password: string }>({
   username: "",
@@ -60,10 +63,19 @@ const loginForm = reactive<{ username: string; password: string }>({
 })
 const loading = ref(false)
 const rules = {
-  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  username: [
+    { required: true, message: "请输入用户名", trigger: "blur" },
+    {
+      min: 3,
+      max: 20,
+      message: "用户名长度应在3-20个字符之间",
+      trigger: "blur",
+    },
+  ],
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 5, message: "密码长度不能少于5位", trigger: "blur" }, // 修改为5位
+    { min: 5, message: "密码长度不能少于5位", trigger: "blur" },
+    { max: 20, message: "密码长度不能超过20位", trigger: "blur" },
   ],
 }
 
@@ -73,17 +85,37 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
       try {
-        // 实际项目中应调用真实的登录API
-        // 这里为了演示，假设用户名和密码都是'admin'
-        if (loginForm.username === "admin" && loginForm.password === "admin") {
-          adminStore.login({ username: loginForm.username })
-          ElMessage.success("登录成功")
+        // 调用真实登录API
+        const adminInfo = await login(loginForm)
+
+        // 登录成功后存储管理员信息
+        adminStore.login({
+          ...adminInfo,
+          role: adminInfo.role as "super" | "normal",
+        })
+
+        ElMessage.success("登录成功，正在跳转...")
+
+        // 延迟跳转，让用户看到成功提示
+        setTimeout(() => {
           router.push("/admin/dashboard")
-        } else {
-          ElMessage.error("用户名或密码错误")
-        }
+        }, 1000)
       } catch (error) {
-        ElMessage.error("登录失败，请重试")
+        // 优化错误处理，区分不同类型的错误
+        let errorMessage = "登录失败，请重试"
+        if (error instanceof Error) {
+          // 检查错误消息中是否包含特定关键词
+          if (error.message.includes("401")) {
+            errorMessage = "用户名或密码错误"
+          } else if (error.message.includes("403")) {
+            errorMessage = "账号被禁用，请联系管理员"
+          } else if (error.message.includes("timeout")) {
+            errorMessage = "网络超时，请检查网络连接"
+          } else {
+            errorMessage = error.message
+          }
+        }
+        ElMessage.error(errorMessage)
         console.error("Login error:", error)
       } finally {
         loading.value = false
@@ -100,21 +132,29 @@ const handleLogin = async () => {
   align-items: center;
   height: 100vh;
   background-color: #f5f7fa;
+  background-image: linear-gradient(120deg, #f5f7fa 0%, #e4e8f0 100%);
 }
 .login-card {
   width: 400px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
 }
 .card-header {
   display: flex;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
+  color: #333;
+  padding: 16px 0;
 }
 .login-form {
-  padding: 20px;
+  padding: 30px 20px;
 }
 .login-btn {
   width: 100%;
+  height: 40px;
+  font-size: 16px;
+  margin-top: 10px;
 }
 </style>

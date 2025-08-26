@@ -55,7 +55,7 @@ export const getMessages = async (
     console.log('✅ API响应结构:', response)
     console.log('📄 分页数据:', response.data)
 
-    return response.data
+    return response.data.data
   } catch (error) {
     console.error('❌ 获取留言列表失败:', error)
     throw error
@@ -76,12 +76,16 @@ export const toggleLike = async (messageId: number): Promise<LikeActionResult> =
     console.log('👍 点赞响应:', response)
     console.log('👍 点赞结果:', response.data)
     
-    return response.data
+    return response.data.data
   } catch (error) {
     console.error('❌ 点赞操作失败:', error)
     throw error
   }
 }
+
+// 在文件末尾添加
+// 为 toggleLike 添加别名 toggleMessageLike
+export { toggleLike as toggleMessageLike };
 
 // 删除留言接口请求函数
 export const deleteMessage = async (messageId: number): Promise<void> => {
@@ -111,7 +115,7 @@ export const createMessage = async (params: CreateMessageParams): Promise<Messag
     console.log('📝 创建留言响应:', response)
     console.log('📝 创建留言结果:', response.data)
     
-    return response.data
+    return response.data.data
   } catch (error) {
     console.error('❌ 创建留言失败:', error)
     throw error

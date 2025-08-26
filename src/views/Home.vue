@@ -594,21 +594,47 @@
         <p style="color: white; font-size: 1.125rem; margin-bottom: 2.5rem">
           加入我们，与优秀的伙伴一起成长，挑战自我，创造精彩
         </p>
-        <button
-          @click="tojoin"
+        <div
           style="
-            background-color: white;
-            color: #3b82f6;
-            padding: 1rem 2.5rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 1.25rem;
-            border: none;
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
           "
         >
-          加入我们
-        </button>
+          <button
+            @click="tojoin"
+            style="
+              background-color: white;
+              color: #3b82f6;
+              padding: 1rem 2.5rem;
+              border-radius: 9999px;
+              font-weight: 600;
+              font-size: 1.25rem;
+              border: none;
+              cursor: pointer;
+              width: 280px;
+            "
+          >
+            加入我们
+          </button>
+          <button
+            @click="toMessageBoard"
+            style="
+              background-color: #8b5cf6;
+              color: white;
+              padding: 1rem 2.5rem;
+              border-radius: 9999px;
+              font-weight: 600;
+              font-size: 1.25rem;
+              border: none;
+              cursor: pointer;
+              width: 280px;
+            "
+          >
+            我要留言
+          </button>
+        </div>
       </div>
     </el-main>
 
@@ -704,6 +730,11 @@ const toawards = () => {
 //搜索全部竞赛点击
 const tocompetitions = () => {
   router.push("/competitions")
+}
+
+// 新增：跳转到留言板的方法
+const toMessageBoard = () => {
+  router.push("/messages")
 }
 </script>
 

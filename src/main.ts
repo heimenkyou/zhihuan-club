@@ -55,6 +55,14 @@ window.addEventListener('unhandledrejection', (event) => {
 })
 
 
+export const showErrorNotification = (message: string) => {
+  ElNotification({
+    title: '操作失败',
+    message,
+    type: 'error',
+    duration: 3000
+  })
+}
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }

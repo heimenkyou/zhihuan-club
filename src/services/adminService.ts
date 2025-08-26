@@ -37,10 +37,10 @@ export const getApplications = async (
 ): Promise<ApplicationPageData<joinForm>> => {
   try {
     const response = await api.get<ApiResponse<ApplicationPageData<joinForm>>>(
-      '/admin/applications',
+      '/applications', // 修复路径，添加/admin前缀
       { params }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('获取报名信息失败:', error);
     throw error;
@@ -50,7 +50,7 @@ export const getApplications = async (
 // 删除报名信息
 export const deleteApplication = async (id: number): Promise<void> => {
   try {
-    await api.delete<ApiResponse<null>>(`/admin/applications/${id}`);
+    await api.delete<ApiResponse<null>>(`/applications/${id}`);
   } catch (error) {
     console.error('删除报名信息失败:', error);
     throw error;
@@ -70,17 +70,31 @@ export const mapLevelToDisplay = (level: string): string => {
 // 获取奖项列表
 export const getAwards = async (
   params: { current?: number; size?: number; keyword?: string } = { current: 1, size: 10 }
-): Promise<ApplicationPageData<AwardItem>> => {
+): Promise<ApplicationPageData<AwardItem> | undefined> => {
   try {
-    // 从json-server获取原始奖项数据
-    const response = await api.get<AwardItem[]>(`/awards`);
-    const rawAwards = response;
+    // 从API获取奖项数据
+    const response = await api.get<ApiResponse<{ awards: AwardItem[] }>>(`/awards`, {
+      params
+    });
     
+    // 检查响应格式
+    if (!response.data || !response.data.data || !response.data.data.awards || !Array.isArray(response.data.data.awards)) {
+      throw new Error('API响应格式不正确，缺少awards数组');
+    }
+    
+    const rawAwards = response.data.data?.awards || [];
+    
+    // 处理id类型转换（字符串转数字）
+    const parsedAwards = rawAwards.map((award: AwardItem) => ({
+      ...award,
+      id: parseInt(award.id as unknown as string, 10) || 0
+    }));
+
     // 关键词搜索过滤
-    let filteredAwards = rawAwards;
+    let filteredAwards = parsedAwards;
     if (params.keyword) {
       const keyword = params.keyword.toLowerCase();
-      filteredAwards = rawAwards.filter(award => 
+      filteredAwards = parsedAwards.filter((award: AwardItem) =>
         award.title?.toLowerCase().includes(keyword) ||
         award.workName?.toLowerCase().includes(keyword) ||
         award.level?.toLowerCase().includes(keyword)
@@ -111,11 +125,15 @@ export const getAwards = async (
 // 创建奖项
 export const createAward = async (params: Omit<AwardItem, 'id'>): Promise<AwardItem> => {
   try {
-    const response = await api.post<{id: number}>(`/awards`, params);
+    const response = await api.post<ApiResponse<{id: number}>>(`/awards`, params);
+    
+    if (!response.data) {
+      throw new Error(response?.data? String(response.data) : '创建奖项失败');
+    }
     
     // 返回完整的奖项对象
     return {
-      id: response.id,
+      id: response.data.data.id,
       ...params
     };
   } catch (error) {
@@ -149,6 +167,124 @@ export const deleteAward = async (id: number): Promise<void> => {
     await api.delete(`/awards/${id}`);
   } catch (error) {
     console.error('删除奖项失败:', error);
+    throw error;
+  }
+};
+
+// 获取所有奖项
+export const getAllAwards = async (): Promise<AwardItem[]> => {
+  try {
+    // 从json-server获取所有奖项数据
+    const response = await api.get<ApiResponse<AwardItem[]>>(`/awards`);
+    
+    if (!response.data) {
+      throw new Error(response?.data ? String(response.data) : '获取奖项失败');
+    }
+    
+    return response.data.data;
+  } catch (error) {
+    console.error('获取所有奖项失败:', error);
+    throw error;
+  }
+};
+
+// 管理员类型定义
+export interface Admin {
+  id: number;
+  username: string;
+  password: string; // 实际项目中应存储加密后的密码
+  role: 'super' | 'normal'; // super为超级管理员，normal为普通管理员
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 获取所有管理员列表
+export const getAdmins = async (): Promise<Admin[]> => {
+  try {
+    const response = await api.get<ApiResponse<Admin[]>>(`/admins`);
+    return response.data.data;
+  } catch (error) {
+    console.error('获取管理员列表失败:', error);
+    throw error;
+  }
+};
+
+// 添加管理员
+export const createAdmin = async (params: Omit<Admin, 'id' | 'createdAt' | 'updatedAt'>): Promise<Admin> => {
+  try {
+    const response = await api.post<ApiResponse<Admin>>(`/admins`, params);
+    return response.data.data;
+  } catch (error) {
+    console.error('添加管理员失败:', error);
+    throw error;
+  }
+};
+
+// 删除管理员
+export const deleteAdmin = async (id: number): Promise<void> => {
+  try {
+    await api.delete<ApiResponse<null>>(`/admins/${id}`);
+  } catch (error) {
+    console.error('删除管理员失败:', error);
+    throw error;
+  }
+};
+
+// 更新管理员信息
+export const updateAdmin = async (
+  id: number,
+  params: Partial<Omit<Admin, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<Admin> => {
+  try {
+    const response = await api.put<ApiResponse<Admin>>(`/admins/${id}`, params);
+    return response.data.data;
+  } catch (error) {
+    console.error('更新管理员信息失败:', error);
+    throw error;
+  }
+};
+
+// 获取当前登录管理员信息
+export const getCurrentAdmin = async (): Promise<Admin> => {
+  try {
+    const response = await api.get<ApiResponse<Admin>>(`/admins/current`);
+    return response.data.data;
+  } catch (error) {
+    console.error('获取当前管理员信息失败:', error);
+    throw error;
+  }
+};
+
+// 登录
+export const login = async (params: { username: string; password: string }): Promise<Admin> => {
+  try {
+    const response = await api.post<ApiResponse<Admin>>('/admin/login', params);
+    
+    // 验证响应格式
+    if (!response.data) {
+      throw new Error('登录失败，服务器响应异常');
+    }
+    
+    if (!response.data || !('success' in response.data) || !response.data.success) {
+      throw new Error(response.data.message || '登录失败');
+    }
+    
+    // 存储token到本地
+    if (response.headers && response.headers.authorization) {
+      localStorage.setItem('adminToken', response.headers.authorization);
+    }
+    
+    return response.data.data;
+  } catch (error) {
+    console.error('登录失败:', error);
+    // 增强错误信息
+    if (error instanceof Error) {
+      if (error.message.includes('401')) {
+        throw new Error('用户名或密码错误');
+      } else if (error.message.includes('403')) {
+        throw new Error('账号被禁用，请联系管理员');
+      }
+    }
     throw error;
   }
 };

@@ -1,12 +1,12 @@
 {
   "awards": [
     {
-      "id": "2",
-      "title": "\"挑战杯\"全国大学生课外学术科技作品竞赛银奖",
+      "title": "\"星球杯\"全国大学生课外学术科技作品竞赛银奖修改测试666",
       "workName": "智能机器人平台",
       "level": "national",
       "year": "2023",
-      "date": "2023年10月"
+      "date": "2023年10月",
+      "id": "2"
     },
     {
       "id": "3",
@@ -111,6 +111,77 @@
       "level": "school",
       "year": "2021",
       "date": "2021年5月"
+    },
+    {
+      "id": "bafd",
+      "title": "测试1",
+      "workName": "好",
+      "level": "national",
+      "year": "2023",
+      "date": "2025-08-24"
+    }
+  ],
+  "projects": [],
+  "applications": [
+    {
+      "id": "ca6b",
+      "name": "我的",
+      "studentId": "12345678",
+      "major": "物联网工程",
+      "phone": "13730196199",
+      "QQNumber": "228155151",
+      "department": "project",
+      "secondDepartment": "project",
+      "interests": [
+        "programming"
+      ],
+      "reason": "CEQEv ",
+      "introduction": "QEF取"
+    },
+    {
+      "id": "8f3c",
+      "name": "我的",
+      "studentId": "12345678",
+      "major": "物联网工程",
+      "phone": "13730196199",
+      "QQNumber": "228155151",
+      "department": "project",
+      "secondDepartment": "project",
+      "interests": [
+        "programming"
+      ],
+      "reason": "CEQEvQ全方位QF我v千万富翁缺乏W",
+      "introduction": "QEF取请问服务器访问"
+    },
+    {
+      "id": "cb9d",
+      "name": "hg",
+      "studentId": "349518414",
+      "major": "其4t",
+      "phone": "123556",
+      "QQNumber": "7495952952",
+      "department": "algorithm",
+      "secondDepartment": "project",
+      "interests": [
+        "frontend"
+      ],
+      "reason": "",
+      "introduction": "各位5过玩5g"
+    },
+    {
+      "id": "37f1",
+      "name": "hg",
+      "studentId": "349518414",
+      "major": "其4t",
+      "phone": "123556",
+      "QQNumber": "7495952952",
+      "department": "algorithm",
+      "secondDepartment": "project",
+      "interests": [
+        "frontend"
+      ],
+      "reason": "",
+      "introduction": "各位5过玩5g"
     }
   ]
 }
