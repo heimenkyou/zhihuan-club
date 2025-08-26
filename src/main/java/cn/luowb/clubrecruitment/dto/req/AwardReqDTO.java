@@ -19,6 +19,12 @@ public class AwardReqDTO {
     private String competitionName;
 
     /**
+     * 赛道/组别
+     */
+    @Schema(description = "赛道/组别")
+    private String competitionTrack;
+
+    /**
      * 竞赛级别(校级/省级/国家级)
      */
     @Schema(description = "竞赛级别(校级/省级/国家级)")

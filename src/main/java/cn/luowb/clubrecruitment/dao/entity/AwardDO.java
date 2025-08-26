@@ -27,13 +27,19 @@ public class AwardDO {
     private String competitionName;
 
     /**
-     * 竞赛级别（校级/省级/国家级）
+     * 赛道/组别
+     */
+    @TableField(value = "competition_track")
+    private String competitionTrack;
+
+    /**
+     * 竞赛级别(校级/省级/国家级)
      */
     @TableField(value = "competition_level")
     private String competitionLevel;
 
     /**
-     * 奖项级别（一等奖/二等奖/优胜奖等）
+     * 奖项级别(一等奖/二等奖/优胜奖等)
      */
     @TableField(value = "award_level")
     private String awardLevel;
