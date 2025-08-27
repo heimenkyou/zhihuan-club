@@ -1,7 +1,11 @@
 package cn.luowb.clubrecruitment;
 
+import cn.luowb.clubrecruitment.dao.entity.AdminDO;
 import cn.luowb.clubrecruitment.dao.entity.MessageDO;
+import cn.luowb.clubrecruitment.dao.mapper.AdminMapper;
 import cn.luowb.clubrecruitment.dao.mapper.MessageMapper;
+import cn.luowb.clubrecruitment.dto.req.AdminReqDTO;
+import cn.luowb.clubrecruitment.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,6 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 class ClubRecruitmentApplicationTests {
     @Autowired
     private MessageMapper messageMapper;
+    @Autowired
+    private AdminService adminService;
+    @Autowired
+    private AdminMapper adminMapper;
 
     @Test
     void contextLoads() {
@@ -38,6 +46,17 @@ class ClubRecruitmentApplicationTests {
         log.info("删除数据成功：{}", messageDO);
         messageDO = messageMapper.selectById(messageDO.getId());
         Assertions.assertNull(messageDO);
+    }
+
+    @Test
+    void addAdminTest() {
+        AdminReqDTO adminReqDTO = new AdminReqDTO();
+        adminReqDTO.setUsername("admin");
+        adminReqDTO.setPassword("123456");
+        adminReqDTO.setRole("super");
+        adminService.add(adminReqDTO);
+        AdminDO adminDO = adminMapper.selectByUsername("admin");
+        Assertions.assertNotNull(adminDO);
     }
 
 }

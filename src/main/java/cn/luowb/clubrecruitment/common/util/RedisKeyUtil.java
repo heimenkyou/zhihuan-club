@@ -5,20 +5,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RedisKeyUtil {
+    // 点赞防刷时间
+    @Value("${rec.like-interval-seconds:3600}")
+    public long likeIntervalSeconds;
+    // 管理员token过期时间
+    @Value("${rec.token-expire-minutes:30}")
+    public long tokenExpireMinutes;
     // 自动注入 spring.application.name 项目前缀, 避免不同项目冲突
     @Value("${spring.application.name}")
     private String projectPrefix;
 
-    // 点赞 key 前缀
-    private static final String MESSAGE_LIKE = "like:message:";
-    // 点赞防刷时间
-    @Value("${rec.like-interval-seconds:3600}")
-    public long likeIntervalSeconds;
+    // 管理员token
+    public String buildAdminTokenKey(String token) {
+        return projectPrefix + ":admin:token:" + token;
+    }
 
-//    private static final String LOGIN_USER_
-
-    // 构建 key
+    // 留言点赞
     public String buildMessageLikeKey(Long messageId, String ip) {
-        return projectPrefix + ":" + MESSAGE_LIKE + messageId + ":ip:" + ip;
+        return projectPrefix + ":like:message:" + messageId + ":ip:" + ip;
     }
 }

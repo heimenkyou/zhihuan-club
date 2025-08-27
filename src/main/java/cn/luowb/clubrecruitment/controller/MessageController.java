@@ -17,8 +17,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/messages")
 @Slf4j
+@RequestMapping("/public/messages")
 @RequiredArgsConstructor
 @Tag(name = "留言")
 public class MessageController {

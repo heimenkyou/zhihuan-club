@@ -15,7 +15,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/applications")
+@RequestMapping("/public/applications")
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "报名")

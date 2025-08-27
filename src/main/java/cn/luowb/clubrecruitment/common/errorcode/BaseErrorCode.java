@@ -18,6 +18,10 @@ public enum BaseErrorCode implements IErrorCode {
     PASSWORD_SHORT_ERROR("A000121", "密码长度不够"),
     PHONE_VERIFY_ERROR("A000151", "手机格式校验失败"),
 
+    // ========== 二级宏观错误码 认证错误 ==========
+    TOKEN_NULL_ERROR("A000130", "Token为空"),
+    TOKEN_VERIFY_ERROR("A000131", "Token无效或已过期"),
+
     // ========== 二级宏观错误码 系统请求缺少幂等Token ==========
     IDEMPOTENT_TOKEN_NULL_ERROR("A000200", "幂等Token为空"),
     IDEMPOTENT_TOKEN_DELETE_ERROR("A000201", "幂等Token已被使用或失效"),

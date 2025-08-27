@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/awards")
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "奖项")
@@ -24,7 +23,7 @@ public class AwardController {
     private final AwardService awardService;
 
     @Operation(summary = "查询所有奖项")
-    @GetMapping()
+    @GetMapping("/public/awards")
     public Result<List<AwardRespDTO>> list() {
         List<AwardRespDTO> awardRespDTOS = awardService.list().stream()
                 .map(each -> {
@@ -39,7 +38,7 @@ public class AwardController {
     }
 
     @Operation(summary = "添加奖项")
-    @PostMapping()
+    @PostMapping("/admin/awards")
     public Result<Void> add(@RequestBody AwardReqDTO awardReqDTO) {
         log.debug("添加奖项, awardReqDTO={}", awardReqDTO);
         awardService.add(awardReqDTO);
@@ -47,7 +46,7 @@ public class AwardController {
     }
 
     @Operation(summary = "删除奖项")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/awards/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         log.debug("删除奖项, id={}", id);
         awardService.removeById(id);
@@ -55,7 +54,7 @@ public class AwardController {
     }
 
     @Operation(summary = "更新奖项")
-    @PutMapping("/{id}")
+    @PutMapping("/admin/awards/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody AwardReqDTO awardReqDTO) {
         log.debug("更新奖项, id={}, awardReqDTO={}", id, awardReqDTO);
         awardService.update(id, awardReqDTO);

@@ -46,3 +46,5 @@ knife4j:
 rec:
   # 点赞防刷时间间隔(秒)
   like-interval-seconds: 86400
+  # 管理员登录token有效期
+  admin-token-expire-minutes: 30
