@@ -31,7 +31,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="部门">
+            <el-form-item label="第一志愿部门">
               <el-select
                 v-model="searchForm.department"
                 placeholder="请选择部门"
@@ -176,21 +176,20 @@ import {
   type ApplicationPageData,
 } from "../../../services/adminService"
 import type { joinForm } from "../../../services/applicationsService"
-// 导入xlsx库
 import * as XLSX from "xlsx"
 
 const searchForm = reactive<{
   name: string
   studentId: string
   department: string
-  secondDepartment: string // 添加第二志愿部门搜索字段
+  secondDepartment: string
 }>({
   name: "",
   studentId: "",
   department: "",
   secondDepartment: "",
 })
-const applicationsData = ref<ApplicationPageData<joinForm>>({
+const applicationsData = ref<ApplicationPageData<joinForm & { id: number }>>({
   current: 1,
   size: 10,
   total: 0,
@@ -198,9 +197,9 @@ const applicationsData = ref<ApplicationPageData<joinForm>>({
   records: [],
 })
 const dialogVisible = ref(false)
-const currentApplication = ref<joinForm | null>(null)
+const currentApplication = ref<(joinForm & { id: number }) | null>(null)
 const loading = ref(false)
-const selectedRows = ref<joinForm[]>([])
+const selectedRows = ref<(joinForm & { id: number })[]>([])
 
 // 加载报名数据
 const loadApplications = async () => {
@@ -212,7 +211,7 @@ const loadApplications = async () => {
       name: searchForm.name,
       studentId: searchForm.studentId,
       department: searchForm.department,
-      secondDepartment: searchForm.secondDepartment, // 添加到搜索参数
+      secondDepartment: searchForm.secondDepartment,
     }
     const data = await getApplications(params)
     applicationsData.value = data
@@ -254,7 +253,7 @@ const handleCurrentChange = (current: number) => {
 
 // 查看详情
 const viewDetail = (row: joinForm) => {
-  currentApplication.value = { ...row }
+  currentApplication.value = { ...row, id: (row as any).id }
   dialogVisible.value = true
 }
 
@@ -281,7 +280,7 @@ const deleteApplication = async (id: number) => {
 
 // 处理选择变化
 const handleSelectionChange = (rows: joinForm[]) => {
-  selectedRows.value = rows
+  selectedRows.value = rows.map((row) => ({ ...row, id: (row as any).id }))
 }
 
 // 批量删除
@@ -315,21 +314,17 @@ const exportApplications = async () => {
   try {
     loading.value = true
     ElMessage.info("正在导出数据，请稍候...")
-    
+
     // 获取所有数据（不分页）
     const allData = await getApplications({
       current: 1,
-      size: applicationsData.value.total,
+      size: 1000, // 设置一个足够大的值以获取所有数据
       name: searchForm.name,
       studentId: searchForm.studentId,
-      // 假设 GetApplicationsParams 中没有 department 属性，暂时移除该字段
-      // 如果确实需要该字段，请检查并更新 GetApplicationsParams 类型定义
-      // department: searchForm.department,
-      // 假设 GetApplicationsParams 中没有 secondDepartment 属性，暂时移除该字段
-      // 如果确实需要该字段，请检查并更新 GetApplicationsParams 类型定义
-      // secondDepartment: searchForm.secondDepartment
+      department: searchForm.department,
+      secondDepartment: searchForm.secondDepartment,
     })
-    
+
     // 准备导出数据
     const exportData = allData.records.map((item) => ({
       姓名: item.name,
@@ -343,31 +338,31 @@ const exportApplications = async () => {
       申请理由: item.reason,
       个人介绍: item.introduction,
     }))
-    
+
     // 创建工作表
     const ws = XLSX.utils.json_to_sheet(exportData)
-    
+
     // 设置列宽 - 根据内容长度调整各列宽度
-    ws['!cols'] = [
-      { wch: 10 },  // 姓名
-      { wch: 15 },  // 学号
-      { wch: 20 },  // 专业
-      { wch: 15 },  // 电话
-      { wch: 15 },  // QQ号
-      { wch: 10 },  // 部门
-      { wch: 15 },  // 第二志愿部门
-      { wch: 30 },  // 兴趣方向（设置较宽以显示多个兴趣）
-      { wch: 40 },  // 申请理由
-      { wch: 60 }   // 个人介绍（设置最宽以显示完整内容）
+    ws["!cols"] = [
+      { wch: 10 }, // 姓名
+      { wch: 15 }, // 学号
+      { wch: 20 }, // 专业
+      { wch: 15 }, // 电话
+      { wch: 15 }, // QQ号
+      { wch: 10 }, // 部门
+      { wch: 15 }, // 第二志愿部门
+      { wch: 30 }, // 兴趣方向（设置较宽以显示多个兴趣）
+      { wch: 40 }, // 申请理由
+      { wch: 60 }, // 个人介绍（设置最宽以显示完整内容）
     ]
-    
+
     // 创建工作簿
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, "报名信息")
-    
+
     // 导出文件
     XLSX.writeFile(wb, `报名信息_${new Date().toLocaleDateString()}.xlsx`)
-    
+
     ElMessage.success("导出成功")
   } catch (error) {
     ElMessage.error("导出失败，请重试")
@@ -377,7 +372,6 @@ const exportApplications = async () => {
   }
 }
 
-// 初始加载数据
 onMounted(() => {
   loadApplications()
 })

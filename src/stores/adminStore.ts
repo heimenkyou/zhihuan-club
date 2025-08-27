@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { Admin } from '../services/adminService';
 import { getCurrentAdmin } from '../services/adminService';
-import api from '../services/api'; // 请根据实际项目路径调整导入路径
+import api from '../services/api'; 
 import { useRouter } from 'vue-router';
 
 export const useAdminStore = defineStore('admin', () => {
@@ -10,11 +10,12 @@ export const useAdminStore = defineStore('admin', () => {
   const userInfo = ref<Admin | null>(null);
   const isLoading = ref(false); // 添加加载状态
 
-  const login = (userData: Admin) => {
+  const login = (userData: Admin,token?:string) => {
     isLoggedIn.value = true;
     userInfo.value = userData;
-    // 移除硬编码的dummy-token
-    // 实际项目中token应来自服务器响应
+    if (token) {
+      localStorage.setItem('adminToken', token);
+    }
   };
 
   const logout = () => {

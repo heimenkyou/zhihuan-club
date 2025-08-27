@@ -3,9 +3,16 @@ import { onMounted, ref, computed, onUnmounted } from "vue"
 import { useMessageStore } from "../stores/messageStore"
 import { showSuccessNotification, showErrorNotification } from "../main"
 import { Refresh, Edit } from "@element-plus/icons-vue"
+import { useRouter } from "vue-router"
 
 const messageStore = useMessageStore()
 const debugInfo = ref("")
+const router = useRouter() // 初始化router
+
+// 返回首页函数
+const goToHome = () => {
+  router.push("/")
+}
 
 // 分页相关数据
 const currentPage = ref(1)
@@ -328,9 +335,13 @@ const formatTime = (timeString: string) => {
     <!-- 头部区域 -->
     <header class="board-header">
       <div class="container">
+        <!-- 返回首页按钮 -->
+        <button class="back-home-btn" @click="goToHome" title="返回首页">
+          <i class="fa fa-arrow-left"></i>
+        </button>
         <h1 class="board-title">
           <span class="icon">💬</span>
-          社团招新留言板
+          社团留言板
         </h1>
         <p class="board-subtitle">分享你的想法，为社团注入新活力</p>
       </div>
@@ -537,7 +548,7 @@ body {
 
 .message-board {
   min-height: 100vh;
-  background-image: url("@/assets/images/messageBg.jpg");
+  background-image: url("@/assets/images/messageBg.webp");
   background-size: cover;
   background-position: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -556,7 +567,52 @@ body {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1rem 0;
+  position: relative; /* 添加相对定位 */
   text-align: center;
+}
+
+/* 返回首页按钮样式 */
+.back-home-btn {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.back-home-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-home-btn i {
+  font-size: 16px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .board-title {
+    font-size: 1.5rem;
+    margin-left: 40px; /* 为按钮留出空间 */
+  }
+
+  .back-home-btn {
+    width: 36px;
+    height: 36px;
+    left: 15px;
+  }
 }
 
 .board-title {

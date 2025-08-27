@@ -27,7 +27,7 @@ export const submitApplication = async (params: joinForm): Promise<ApiResponse<n
 
     // 使用JSON格式发送请求
     const response = await api.post<ApiResponse<null>>(
-      '/m1/6949200-6665662-default/applications',
+      '/public/applications',
       params // 直接传递参数对象，axios会自动转为JSON
     );
     

@@ -85,14 +85,18 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
       try {
-        // 调用真实登录API
+        // 调用登录API
         const adminInfo = await login(loginForm)
-
+        // 从localStorage获取token
+        const token = localStorage.getItem("adminToken")
         // 登录成功后存储管理员信息
-        adminStore.login({
-          ...adminInfo,
-          role: adminInfo.role as "super" | "normal",
-        })
+        adminStore.login(
+          {
+            ...adminInfo,
+            role: adminInfo.role as "super" | "normal",
+          },
+          token || undefined
+        )
 
         ElMessage.success("登录成功，正在跳转...")
 

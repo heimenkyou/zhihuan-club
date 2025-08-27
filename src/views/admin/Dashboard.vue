@@ -38,8 +38,9 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue"
 import { useAdminStore } from "../../stores/adminStore"
-import { getApplications, getAwards } from "../../services/adminService"
+import { getAwards, getApplications } from "../../services/adminService"
 import { getMessages } from "../../services/messageService"
+import { ElMessage } from "element-plus"
 
 const adminStore = useAdminStore()
 const userInfo = ref(adminStore.userInfo)
@@ -50,26 +51,58 @@ const newMessages = ref(0)
 const awardCount = ref(0)
 const lastAward = ref("暂无")
 const stats = ref<any[]>([])
+const loading = ref(true)
 
 onMounted(async () => {
   // 获取统计数据
+  loading.value = true
   try {
-    // 获取报名总数
-    const appResponse = await getApplications({ size: 1 })
-    applicationCount.value = appResponse.total
-    newApplications.value = Math.floor(Math.random() * 10) + 1
-
-    // 获取留言总数
-    const msgResponse = await getMessages({ size: 1 })
-    messageCount.value = msgResponse.total
-    newMessages.value = Math.floor(Math.random() * 20) + 1
+    // 先验证登录状态
+    if (!adminStore.isLoggedIn) {
+      await adminStore.checkLoginStatus()
+      userInfo.value = adminStore.userInfo
+      if (!adminStore.isLoggedIn) {
+        ElMessage.error("登录状态无效，请重新登录")
+        return
+      }
+    }
 
     // 获取奖项总数
-    const awardResponse = await getAwards({ size: 1 })
-    awardCount.value = awardResponse.total
-    if (awardResponse.records.length > 0) {
-      lastAward.value = awardResponse.records[0].title ?? "暂无"
+    try {
+      const awardData = await getAwards()
+      awardCount.value = awardData.length
+      if (awardData.length > 0) {
+        lastAward.value = awardData[0].competitionName ?? "暂无"
+      }
+    } catch (e) {
+      console.warn("获取奖项数据失败，使用默认值", e)
+      awardCount.value = Math.floor(Math.random() * 50) + 10
+      ElMessage.warning("获取奖项数据失败，使用模拟数据")
     }
+
+    // 获取留言总数
+    try {
+      const msgResponse = await getMessages({ size: 1 })
+      messageCount.value = msgResponse.total
+    } catch (e) {
+      console.warn("获取留言数据失败，使用默认值", e)
+      messageCount.value = Math.floor(Math.random() * 100) + 50
+      ElMessage.warning("获取留言数据失败，使用模拟数据")
+    }
+
+    // 获取报名总数
+    try {
+      const appResponse = await getApplications({ size: 1 })
+      applicationCount.value = appResponse.total
+      newApplications.value = Math.floor(Math.random() * 10) + 1
+    } catch (e) {
+      console.warn("获取报名数据失败", e)
+      applicationCount.value = Math.floor(Math.random() * 100) + 30
+      newApplications.value = Math.floor(Math.random() * 10) + 1
+      ElMessage.warning("获取报名数据失败，使用模拟数据")
+    }
+
+    newMessages.value = Math.floor(Math.random() * 20) + 1
 
     // 设置统计数据
     stats.value = [
@@ -90,13 +123,16 @@ onMounted(async () => {
       {
         title: "奖项总数",
         value: awardCount.value,
-        desc: `最近添加: ${lastAward.value}`,
+        desc: `最新奖项: ${lastAward.value}`,
         icon: "🏆",
         color: "#f59e0b",
       },
     ]
   } catch (error) {
-    console.error("获取统计数据失败:", error)
+    console.error("获取统计数据失败", error)
+    ElMessage.error("加载数据失败，请稍后重试")
+  } finally {
+    loading.value = false
   }
 })
 </script>
@@ -170,6 +206,7 @@ onMounted(async () => {
   margin-bottom: 8px;
   background: linear-gradient(135deg, #4096ff, #73c0fc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

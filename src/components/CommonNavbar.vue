@@ -129,6 +129,7 @@ const navItems: NavItem[] = [
   { id: 5, text: "关于我们", path: "/about" },
   { id: 6, text: "资源墙", path: "/resources" },
   { id: 7, text: "加入我们", path: "/join" },
+  { id: 8, text: "留言板", path: "/messages" },
 ]
 
 // 3. 响应式状态

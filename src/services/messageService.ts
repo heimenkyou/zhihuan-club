@@ -48,7 +48,7 @@ export const getMessages = async (
     console.log('🚀 发送请求参数:', params)
 
     // 现在api.get返回正确的类型
-    const response = await api.get<ApiResponse<PageData<MessageItem>>>('/messages', { params })
+    const response = await api.get<ApiResponse<PageData<MessageItem>>>('/public/messages', { params })
 
     console.log('📡 响应数据:', response)
     console.log('🔍 响应数据结构:', JSON.stringify(response, null, 2))
@@ -71,7 +71,7 @@ export const toggleLike = async (messageId: number): Promise<LikeActionResult> =
     console.log('👍 发送点赞请求:', messageId)
     
     // 调用点赞接口
-    const response = await api.post<ApiResponse<LikeActionResult>>(`/messages/${messageId}/like`)
+    const response = await api.post<ApiResponse<LikeActionResult>>(`/public/messages/${messageId}/like`)
     
     console.log('👍 点赞响应:', response)
     console.log('👍 点赞结果:', response.data)
@@ -93,7 +93,7 @@ export const deleteMessage = async (messageId: number): Promise<void> => {
     console.log('🗑️ 发送删除请求:', messageId)
     
     // 调用删除接口
-    const response = await api.delete<ApiResponse<null>>(`/messages/${messageId}`)
+    const response = await api.delete<ApiResponse<null>>(`/public/messages/${messageId}`)
     
     console.log('🗑️ 删除响应:', response)
     
@@ -110,7 +110,7 @@ export const createMessage = async (params: CreateMessageParams): Promise<Messag
     console.log('📝 发送创建留言请求:', params)
     
     // 调用创建留言接口
-    const response = await api.post<ApiResponse<MessageItem>>('/messages', params)
+    const response = await api.post<ApiResponse<MessageItem>>('/public/messages', params)
     
     console.log('📝 创建留言响应:', response)
     console.log('📝 创建留言结果:', response.data)
