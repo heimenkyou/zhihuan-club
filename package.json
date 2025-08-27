@@ -26,7 +26,9 @@
     "autoprefixer": "^10.4.21",
     "json-server": "^1.0.0-beta.3",
     "postcss": "^8.5.6",
+    "sass": "^1.91.0",
     "sass-embedded": "^1.90.0",
+    "sass-loader": "^16.0.5",
     "typescript": "~5.8.3",
     "vite": "^7.1.2",
     "vue-tsc": "^3.0.5"
