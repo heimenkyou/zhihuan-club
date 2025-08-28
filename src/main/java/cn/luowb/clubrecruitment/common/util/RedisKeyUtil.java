@@ -9,8 +9,8 @@ public class RedisKeyUtil {
     @Value("${rec.like-interval-seconds:3600}")
     public long likeIntervalSeconds;
     // 管理员token过期时间
-    @Value("${rec.token-expire-minutes:30}")
-    public long tokenExpireMinutes;
+    @Value("${rec.admin-token-expire-minutes:30}")
+    public long adminTokenExpireMinutes;
     // 自动注入 spring.application.name 项目前缀, 避免不同项目冲突
     @Value("${spring.application.name}")
     private String projectPrefix;

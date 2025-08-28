@@ -61,7 +61,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
                 .role(adminDO.getRole())
                 .build();
         stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(userInfoDTO),
-                Duration.ofMinutes(redisKeyUtil.tokenExpireMinutes));
+                Duration.ofMinutes(redisKeyUtil.adminTokenExpireMinutes));
         // 返回数据
         AdminLoginRespDTO loginRespDTO = BeanUtil.toBean(adminDO, AdminLoginRespDTO.class);
         loginRespDTO.setToken(token);
