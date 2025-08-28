@@ -2,6 +2,7 @@ package cn.luowb.clubrecruitment.dao.mapper;
 
 import cn.luowb.clubrecruitment.dao.entity.ProjectDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * @author heimenkyou
@@ -11,6 +12,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ProjectDetailMapper extends BaseMapper<ProjectDetailDO> {
 
+    /**
+     * 根据项目ID查询项目详情
+     *
+     * @param projectId 项目ID
+     * @return 项目详情
+     */
+    @Select("select * from project_detail where project_id = #{projectId}")
+    ProjectDetailDO selectByProjectId(Long projectId);
 }
 
 

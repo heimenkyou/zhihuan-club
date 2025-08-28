@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class AwardRespDTO {
     /**
-     * 主键ID
+     * 奖项ID
      */
     @Schema(description = "主键ID")
     private Long id;

@@ -8,6 +8,7 @@ import cn.luowb.clubrecruitment.common.util.IPUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping()
 @Slf4j
 @Tag(name = "测试")
+@Profile({"dev", "test"})
 public class TestController {
     // 异常页面字面量
 

@@ -35,12 +35,6 @@ public class ProjectDetailDO {
     private String timeRange;
 
     /**
-     * 媒体资源[{"type": "image", "url": "xxx"}, {"type": "video", "url": "yyy"}]
-     */
-    @TableField(value = "media_resources")
-    private String mediaResources;
-
-    /**
      * 详细技术栈标签
      */
     @TableField(value = "tech_stack_detail")

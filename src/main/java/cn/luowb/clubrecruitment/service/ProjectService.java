@@ -3,6 +3,7 @@ package cn.luowb.clubrecruitment.service;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDO;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
+import cn.luowb.clubrecruitment.dto.resp.ProjectDetailRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -20,4 +21,12 @@ public interface ProjectService extends IService<ProjectDO> {
      * @return 项目分页数据
      */
     PageData<ProjectRespDTO> getPage(PageReqDTO requestParam);
+
+    /**
+     * 查询指定项目详情
+     *
+     * @param projectId 项目id
+     * @return 项目详情
+     */
+    ProjectDetailRespDTO getProjectDetail(Long projectId);
 }
