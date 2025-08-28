@@ -3,6 +3,7 @@ package cn.luowb.clubrecruitment.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.util.MinioService;
 import cn.luowb.clubrecruitment.dao.entity.MediaResourceDO;
 import cn.luowb.clubrecruitment.dao.mapper.MediaResourceMapper;
@@ -32,7 +33,9 @@ public class MediaResourceServiceImpl extends ServiceImpl<MediaResourceMapper, M
     private final MinioService minioService;
 
     @Override
-    public MediaResourceRespDTO requestParam(MediaUploadReqDTO requestParam) {
+    public MediaResourceRespDTO uploadMedia(MediaUploadReqDTO requestParam) {
+        // todo 转成webp 压缩图片
+        // todo 校验文件类型
         MultipartFile file = requestParam.getFile();
         // 实现文件上传逻辑，保存到存储服务（如本地存储、OSS等）
         // 生成唯一文件名
@@ -42,7 +45,6 @@ public class MediaResourceServiceImpl extends ServiceImpl<MediaResourceMapper, M
         String folder = "media";
         String fileUrl = minioService.upload(file, fileName, folder);
         if (fileUrl == null) {
-            // todo, 实现minio上传
             throw new RuntimeException("文件上传失败, 接口还未完成");
         }
 
@@ -83,6 +85,17 @@ public class MediaResourceServiceImpl extends ServiceImpl<MediaResourceMapper, M
         return mediaList.stream()
                 .map(media -> BeanUtil.toBean(media, MediaResourceRespDTO.class))
                 .toList();
+    }
+
+    @Override
+    public void delete(Long id) {
+        MediaResourceDO mediaResourceDO = mediaResourceMapper.selectById(id);
+        if (mediaResourceDO == null) {
+            throw new ClientException("媒体资源不存在");
+        }
+        minioService.delete(mediaResourceDO.getUrl());
+        // 删除数据库记录
+        mediaResourceMapper.deleteById(id);
     }
 }
 

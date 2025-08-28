@@ -20,7 +20,7 @@ public interface MediaResourceService extends IService<MediaResourceDO> {
      * @param file 媒体资源文件
      * @return 媒体资源响应DTO
      */
-    MediaResourceRespDTO requestParam(MediaUploadReqDTO file);
+    MediaResourceRespDTO uploadMedia(MediaUploadReqDTO file);
 
     /**
      * 获取未引用的媒体资源
@@ -28,4 +28,11 @@ public interface MediaResourceService extends IService<MediaResourceDO> {
      * @return 未引用的媒体资源响应DTO列表
      */
     List<MediaResourceRespDTO> getUnreferencedMedia();
+
+    /**
+     * 删除媒体资源
+     *
+     * @param id 媒体资源ID
+     */
+    void delete(Long id);
 }

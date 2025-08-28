@@ -1,4 +1,4 @@
-# 自行将改文件复制一份名为application-dev.yml的文件, 并修改里面的数据库信息
+# 自行将改文件复制一份名为application-dev.yml的文件, 并修改里面的数据库信息, minio信息
 # 启动项需要添加有效配置文件为dev, 或直接添加JVM参数: -Dspring.profiles.active=dev
 rec:
   datasource:
@@ -17,3 +17,8 @@ logging:
   level:
     cn.luowb.clubrecruitment.controller: debug
     cn.luowb.clubrecruitment.dao.mapper: debug
+minio:
+  endpoint:
+  access-key:
+  secret-key:
+  bucket-name:

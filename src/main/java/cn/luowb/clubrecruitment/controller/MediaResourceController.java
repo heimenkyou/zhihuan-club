@@ -23,8 +23,8 @@ public class MediaResourceController {
 
     @PostMapping("/upload")
     @Operation(summary = "上传媒体资源")
-    public Result<MediaResourceRespDTO> uploadMedia(@RequestPart("dto") MediaUploadReqDTO requestParam) {
-        MediaResourceRespDTO mediaResourceRespDTO = mediaResourceService.requestParam(requestParam);
+    public Result<MediaResourceRespDTO> uploadMedia(@ModelAttribute MediaUploadReqDTO requestParam) {
+        MediaResourceRespDTO mediaResourceRespDTO = mediaResourceService.uploadMedia(requestParam);
         return Results.success(mediaResourceRespDTO);
     }
 
@@ -33,5 +33,12 @@ public class MediaResourceController {
     public Result<List<MediaResourceRespDTO>> getUnreferencedMedia() {
         List<MediaResourceRespDTO> mediaResourceRespDTOS = mediaResourceService.getUnreferencedMedia();
         return Results.success(mediaResourceRespDTOS);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "删除媒体资源")
+    public Result<Void> deleteMedia(@PathVariable Long id) {
+        mediaResourceService.delete(id);
+        return Results.success();
     }
 }

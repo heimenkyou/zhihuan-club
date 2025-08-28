@@ -10,9 +10,9 @@ public class MediaUploadReqDTO {
     @Schema(description = "媒体文件", requiredMode = Schema.RequiredMode.REQUIRED)
     private MultipartFile file;
 
-    @Schema(description = "资源标题")
+    @Schema(description = "资源标题(可选)")
     private String title;
 
-    @Schema(description = "资源描述")
+    @Schema(description = "资源描述(可选)")
     private String description;
 }
