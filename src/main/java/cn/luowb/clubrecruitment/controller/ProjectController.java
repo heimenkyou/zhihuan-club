@@ -4,17 +4,18 @@ import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
+import cn.luowb.clubrecruitment.dto.req.ProjectSaveReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectDetailRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectRespDTO;
 import cn.luowb.clubrecruitment.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -38,4 +39,21 @@ public class ProjectController {
         ProjectDetailRespDTO projectDetailRespDTO = projectService.getProjectDetail(projectId);
         return Results.success(projectDetailRespDTO);
     }
+
+    @PostMapping("/admin/projects")
+    @Operation(summary = "创建新项目")
+    @Transactional
+    public Result<Long> createProject(@RequestBody @Valid ProjectSaveReqDTO reqDTO) {
+        return Results.success(projectService.saveProject(null, reqDTO));
+    }
+
+    @PutMapping("/admin/projects/{id}")
+    @Operation(summary = "更新项目")
+    @Transactional
+    public Result<Void> updateProject(@PathVariable Long id,
+                                      @RequestBody @Valid ProjectSaveReqDTO reqDTO) {
+        projectService.saveProject(id, reqDTO);
+        return Results.success();
+    }
+
 }

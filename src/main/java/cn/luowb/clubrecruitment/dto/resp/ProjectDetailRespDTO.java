@@ -1,5 +1,6 @@
 package cn.luowb.clubrecruitment.dto.resp;
 
+import cn.luowb.clubrecruitment.dto.TeamDivisionDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -51,7 +52,7 @@ public class ProjectDetailRespDTO {
      * 团队成员分工[{"name": "张三", "role": "前端开发"}]
      */
     @Schema(description = "团队成员分工")
-    private List<TeamDivision> teamDivision;
+    private List<TeamDivisionDTO> teamDivisionDTO;
 
     /**
      * 奖项列表
@@ -70,20 +71,4 @@ public class ProjectDetailRespDTO {
      */
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
-
-    /**
-     * 团队成员分工
-     */
-    @Data
-    public static class TeamDivision {
-        /**
-         * 成员姓名
-         */
-        private String name;
-
-        /**
-         * 成员角色
-         */
-        private String role;
-    }
 }

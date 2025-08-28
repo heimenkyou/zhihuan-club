@@ -20,7 +20,7 @@ spring:
 server:
   port: 12321
 mybatis-plus:
-  mapper-locations: classpath:*/mapper/*.xml  #指定sql映射文件
+  mapper-locations: classpath:mapper/*.xml  #指定sql映射文件
   configuration:
     map-underscore-to-camel-case: true # 开启驼峰命名
 

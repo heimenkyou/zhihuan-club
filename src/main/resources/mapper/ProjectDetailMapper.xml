@@ -8,7 +8,6 @@
         <id property="id" column="id"/>
         <result property="projectId" column="project_id"/>
         <result property="timeRange" column="time_range"/>
-        <result property="mediaResources" column="media_resources"/>
         <result property="techStackDetail" column="tech_stack_detail"/>
         <result property="descriptionMd" column="description_md"/>
         <result property="teamDivision" column="team_division"/>

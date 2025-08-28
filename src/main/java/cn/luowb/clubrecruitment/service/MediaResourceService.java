@@ -1,7 +1,11 @@
 package cn.luowb.clubrecruitment.service;
 
 import cn.luowb.clubrecruitment.dao.entity.MediaResourceDO;
+import cn.luowb.clubrecruitment.dto.req.MediaUploadReqDTO;
+import cn.luowb.clubrecruitment.dto.resp.MediaResourceRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * @author heimenkyou
@@ -10,4 +14,18 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MediaResourceService extends IService<MediaResourceDO> {
 
+    /**
+     * 上传媒体资源
+     *
+     * @param file 媒体资源文件
+     * @return 媒体资源响应DTO
+     */
+    MediaResourceRespDTO requestParam(MediaUploadReqDTO file);
+
+    /**
+     * 获取未引用的媒体资源
+     *
+     * @return 未引用的媒体资源响应DTO列表
+     */
+    List<MediaResourceRespDTO> getUnreferencedMedia();
 }

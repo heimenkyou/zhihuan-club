@@ -48,10 +48,10 @@ public class ProjectRespDTO {
     private List<String> techStackTags;
 
     /**
-     * 开发团队成员[{"name": "张三", "role": "前端开发"}]
+     * 开发团队成员["张三", "李四"]
      */
     @Schema(description = "开发团队成员")
-    private List<TeamMemberDTO> teamMembers;
+    private List<String> teamMembers;
 
     /**
      * 创建时间
@@ -65,9 +65,4 @@ public class ProjectRespDTO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @Data
-    public static class TeamMemberDTO {
-        private String name;
-        private String role;
-    }
 }

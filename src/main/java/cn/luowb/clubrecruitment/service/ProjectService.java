@@ -3,9 +3,11 @@ package cn.luowb.clubrecruitment.service;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDO;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
+import cn.luowb.clubrecruitment.dto.req.ProjectSaveReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectDetailRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.validation.Valid;
 
 /**
  * @author heimenkyou
@@ -29,4 +31,12 @@ public interface ProjectService extends IService<ProjectDO> {
      * @return 项目详情
      */
     ProjectDetailRespDTO getProjectDetail(Long projectId);
+
+    /**
+     * 添加或更新项目信息
+     *
+     * @param projectId 项目id
+     * @param reqDTO    项目信息
+     */
+    Long saveProject(Long projectId, @Valid ProjectSaveReqDTO reqDTO);
 }
