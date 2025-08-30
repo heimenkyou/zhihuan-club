@@ -61,8 +61,28 @@
         </div>
       </div>
 
-      <!-- 项目列表：循环「分页后的项目」（关键修改） -->
+      <!-- 加载状态 -->
+      <div v-if="loading" class="col-span-full text-center py-16">
+        <div
+          class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"
+        ></div>
+        <p class="mt-4 text-gray-600">正在加载项目列表...</p>
+      </div>
+
+      <!-- 错误状态 -->
+      <div v-else-if="error" class="col-span-full text-center py-16">
+        <p class="text-red-600">{{ error }}</p>
+        <button
+          @click="fetchProjects"
+          class="mt-4 text-primary hover:underline"
+        >
+          重试
+        </button>
+      </div>
+
+      <!-- 项目列表：循环「分页后的项目」 -->
       <div
+        v-else
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
       >
         <!-- 无匹配项目提示 -->
@@ -80,7 +100,7 @@
         >
           <p>当前页暂无项目</p>
           <button
-            @click="currentPage = totalPages"
+            @click="current = totalPages"
             class="mt-2 text-primary hover:underline"
           >
             跳至最后一页
@@ -94,29 +114,32 @@
           class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300 animate-fade-in"
           :style="{ animationDelay: `${0.1 + index * 0.1}s` }"
         >
+          <!-- 修复 coverImage 可能为 undefined 的问题 -->
           <img
-            :src="project.image"
-            :alt="project.name"
+            :src="
+              project.coverImage ? project.coverImage.replace(/[`\s]/g, '') : ''
+            "
+            :alt="project.title"
             class="w-full h-48 object-cover"
             loading="lazy"
           />
           <div class="p-6">
             <div class="flex justify-between items-start mb-4">
               <h3 class="text-xl font-bold text-gray-800">
-                {{ project.name }}
+                {{ project.title }}
               </h3>
               <span
                 class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
               >
-                {{ project.award }}
+                {{ project.category || "未分类" }}
               </span>
             </div>
             <p class="text-gray-600 mb-6 line-clamp-3">
-              {{ project.description }}
+              {{ project.briefIntro || "暂无项目简介" }}
             </p>
             <div class="flex flex-wrap gap-2 mb-6">
               <span
-                v-for="tag in project.tags"
+                v-for="tag in project.techStackTags || []"
                 :key="tag"
                 class="bg-[var(--tag-bg)] text-[var(--tag-text)] text-xs px-2 py-1 rounded-full"
                 :style="{
@@ -137,13 +160,16 @@
         </div>
       </div>
 
-      <!-- 动态分页（关键修改：关联真实项目数） -->
-      <div class="mt-12 text-center" v-if="totalPages > 0">
+      <!-- 动态分页 -->
+      <div
+        class="mt-12 text-center"
+        v-if="!loading && !error && totalPages > 0"
+      >
         <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
           <!-- 上一页：当前页>1时可点击 -->
           <button
-            @click="currentPage--"
-            :disabled="currentPage === 1"
+            @click="current--"
+            :disabled="current === 1"
             class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span class="sr-only">上一页</span>
@@ -157,12 +183,12 @@
               v-if="
                 page === 1 ||
                 page === totalPages ||
-                (page >= currentPage - 1 && page <= currentPage + 1)
+                (page >= current - 1 && page <= current + 1)
               "
-              @click="currentPage = page"
+              @click="current = page"
               :class="[
                 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium',
-                currentPage === page
+                current === page
                   ? 'bg-primary text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50',
               ]"
@@ -173,8 +199,8 @@
             <!-- 省略号：第1页和当前页-2之间，或最后1页和当前页+2之间 -->
             <span
               v-else-if="
-                (page === currentPage - 2 && currentPage > 3) ||
-                (page === currentPage + 2 && currentPage < totalPages - 2)
+                (page === current - 2 && current > 3) ||
+                (page === current + 2 && current < totalPages - 2)
               "
               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
             >
@@ -184,8 +210,8 @@
 
           <!-- 下一页：当前页<总页数时可点击 -->
           <button
-            @click="currentPage++"
-            :disabled="currentPage === totalPages"
+            @click="current++"
+            :disabled="current === totalPages"
             class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span class="sr-only">下一页</span>
@@ -195,7 +221,7 @@
 
         <!-- 分页信息：显示当前页/总页数/总项目数 -->
         <p class="mt-4 text-sm text-gray-500">
-          第 {{ currentPage }} 页 / 共 {{ totalPages }} 页（总计
+          第 {{ current }} 页 / 共 {{ totalPages }} 页（总计
           {{ filteredProjects.length }} 个项目）
         </p>
       </div>
@@ -204,21 +230,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import CommonNavbar from "../components/CommonNavbar.vue"
-
-// 类型定义
-interface Project {
-  id: number
-  name: string
-  image: string
-  award: string
-  description: string
-  tags: string[]
-  competitionType: "all" | "algorithm" | "innovation" | "hardware"
-  techStack: "all" | "frontend" | "backend" | "mobile" | "ai"
-}
+import { getProjects } from "../services/projectService"
+import type {
+  Project,
+  ProjectListParams,
+  ProjectListResponse,
+} from "../services/projectService"
 
 // 筛选选项
 const competitionTypes = ref([
@@ -236,152 +256,126 @@ const techStacks = ref([
   { label: "人工智能", value: "ai" },
 ])
 
-// 响应式状态：筛选+分页（关键新增分页状态）
+// 响应式状态：筛选+分页
 const selectedCompetition = ref("all")
 const selectedTech = ref("all")
 const router = useRouter()
-const pageSize = ref(4) // 每页显示4个项目（可自定义）
-const currentPage = ref(1) // 当前页码（默认第1页）
-
-// 项目数据：补全8个项目（关键修改：之前只写了2个）
-const projects = ref<Project[]>([
-  {
-    id: 1,
-    name: "智能物联网系统",
-    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    award: "挑战杯校赛金奖",
-    description:
-      "基于物联网技术的智能环境监测与控制系统，可实时监测温度、湿度、空气质量等环境参数，并实现远程控制。",
-    tags: ["物联网", "传感器", "嵌入式"],
-    competitionType: "hardware",
-    techStack: "backend",
-  },
-  {
-    id: 2,
-    name: "智能机器人平台",
-    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    award: "计算机设计大赛省奖",
-    description:
-      "集成语音识别、计算机视觉和运动控制的智能机器人平台，可实现人机交互、环境感知和自主导航。",
-    tags: ["机器人", "计算机视觉", "语音识别"],
-    competitionType: "hardware",
-    techStack: "ai",
-  },
-  {
-    id: 3,
-    name: "校园助手App",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04",
-    award: "互联网+校赛银奖",
-    description:
-      "为大学生打造的一站式校园服务平台，集成课程表、成绩查询、校园活动、失物招领等功能。",
-    tags: ["移动端", "React Native", "Node.js"],
-    competitionType: "innovation",
-    techStack: "mobile",
-  },
-  {
-    id: 4,
-    name: "智能推荐系统",
-    image: "https://images.unsplash.com/photo-1542744094-3a31f272c490",
-    award: "人工智能大赛校奖",
-    description:
-      "基于机器学习算法的个性化推荐系统，可根据用户行为和偏好进行智能推荐，提高用户体验和转化率。",
-    tags: ["机器学习", "Python", "TensorFlow"],
-    competitionType: "algorithm",
-    techStack: "ai",
-  },
-  {
-    id: 5,
-    name: "轻量级Web框架",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    award: "开源项目",
-    description:
-      "自主开发的轻量级Web应用框架，具有高性能、易扩展、开发效率高等特点，适用于各类Web应用开发。",
-    tags: ["后端", "Java", "开源"],
-    competitionType: "innovation",
-    techStack: "backend",
-  },
-  {
-    id: 6,
-    name: "智能硬件开发平台",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    award: "硬件创新大赛省奖",
-    description:
-      "面向教育和创客群体的智能硬件开发平台，集成多种传感器和执行器，支持图形化编程和代码编程。",
-    tags: ["硬件", "Arduino", "教育"],
-    competitionType: "hardware",
-    techStack: "backend",
-  },
-  {
-    id: 7,
-    name: "VR教育应用",
-    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4",
-    award: "创意设计大赛校奖",
-    description:
-      "基于虚拟现实技术的沉浸式教育应用，为用户提供身临其境的学习体验，提高学习效率和兴趣。",
-    tags: ["VR", "Unity", "教育"],
-    competitionType: "innovation",
-    techStack: "frontend",
-  },
-  {
-    id: 8,
-    name: "数据可视化平台",
-    image: "https://images.unsplash.com/photo-1591696205602-2f950c417cb9",
-    award: "大数据大赛省奖",
-    description:
-      "面向企业和科研机构的数据可视化分析平台，支持多种数据格式和图表类型，提供交互式分析功能。",
-    tags: ["Web前端", "大数据", "可视化"],
-    competitionType: "algorithm",
-    techStack: "frontend",
-  },
-])
+const pageSize = ref(4) // 每页显示4个项目
+const current = ref(1) // 当前页码
+const projects = ref<Project[]>([])
+const totalProjects = ref(0)
+const totalPages = ref(0)
+const loading = ref(false)
+const error = ref("")
 
 // 1. 筛选逻辑：获取所有匹配的项目
 const filteredProjects = computed<Project[]>(() => {
   return projects.value.filter((project) => {
-    const matchCompetition =
-      selectedCompetition.value === "all"
-        ? true
-        : project.competitionType === selectedCompetition.value
+    const matchCompetition = true // 暂时不按竞赛类型筛选，因为后端返回的数据中没有这个字段
     const matchTech =
       selectedTech.value === "all"
         ? true
-        : project.techStack === selectedTech.value
+        : (project.techStackTags || []).some((tag) =>
+            tag.toLowerCase().includes(selectedTech.value.toLowerCase())
+          )
     return matchCompetition && matchTech
   })
 })
 
-// 2. 分页逻辑：截取当前页的项目（关键新增）
+// 2. 分页逻辑：截取当前页的项目
 const paginatedProjects = computed<Project[]>(() => {
-  // 移除未使用的 total 变量声明
-  // 计算当前页的起始/结束索引（避免索引越界）
-  const startIndex = Math.max(0, (currentPage.value - 1) * pageSize.value)
+  const startIndex = Math.max(0, (current.value - 1) * pageSize.value)
   const endIndex = startIndex + pageSize.value
   return filteredProjects.value.slice(startIndex, endIndex)
 })
 
-// 3. 计算总页数（关键新增）
-const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(filteredProjects.value.length / pageSize.value))
-})
+// 获取项目列表数据 - 完全适配最新数据格式
+const fetchProjects = async () => {
+  loading.value = true
+  error.value = ""
 
-// 筛选切换时重置页码为1（避免筛选后页码超出总页数）
+  try {
+    // 使用正确的参数格式
+    const params: ProjectListParams = {
+      current: current.value,
+      size: pageSize.value,
+    }
+
+    // 添加筛选参数
+    if (selectedCompetition.value !== "all") {
+      params.competitionType = selectedCompetition.value
+    }
+    if (selectedTech.value !== "all") {
+      params.techStack = selectedTech.value
+    }
+
+    // 修改函数调用并调整响应处理逻辑
+    const response = await getProjects(params)
+
+    // 增强型响应处理，适配不同格式的返回数据
+    if (response) {
+      // 情况1: 标准分页响应格式（带data.records）
+      if (response.data && response.data.records) {
+        projects.value = response.data.records || []
+        totalProjects.value = response.data.total || 0
+        totalPages.value = response.data.pages || 0
+        current.value = response.data.current || 1
+        // console.log(response)
+      }
+      //   // 情况2: 直接返回项目数组
+      //   else if (Array.isArray(response)) {
+      //     projects.value = response
+      //     totalProjects.value = response.length
+      //     totalPages.value = Math.ceil(response.length / pageSize.value)
+      //   }
+      //   // 情况3: 错误响应
+      //   else if (response.code !== "0" && !response.success) {
+      //     error.value = response.message || "获取项目列表失败"
+      //     projects.value = []
+      //     totalProjects.value = 0
+      //     totalPages.value = 0
+      //   }
+      // } else {
+      //   // 无数据情况
+      //   projects.value = []
+      //   totalProjects.value = 0
+      //   totalPages.value = 0
+      //   error.value = "未获取到项目数据"
+    }
+  } catch (err) {
+    error.value =
+      err instanceof Error ? err.message : "获取项目列表失败，请稍后重试"
+    console.error("获取项目列表失败:", err)
+    // 重置状态以确保UI正常显示
+    projects.value = []
+    totalProjects.value = 0
+    totalPages.value = 0
+  } finally {
+    loading.value = false
+  }
+}
+
+// 筛选切换时重置页码为1
 const handleCompetitionChange = (value: string) => {
   selectedCompetition.value = value
-  currentPage.value = 1
+  current.value = 1
+  fetchProjects()
 }
+
 const handleTechChange = (value: string) => {
   selectedTech.value = value
-  currentPage.value = 1
+  current.value = 1
+  fetchProjects()
 }
 
 // 监听总页数变化：若当前页码>总页数，自动跳至最后一页
 watch(totalPages, (newTotal) => {
-  if (currentPage.value > newTotal) {
-    currentPage.value = newTotal
+  if (current.value > newTotal && newTotal > 0) {
+    current.value = newTotal
   }
 })
 
-// 标签颜色映射（不变）
+// 标签颜色映射
 const getTagBg = (tag: string): string => {
   const tagBgMap: Record<string, string> = {
     物联网: "bg-blue-100",
@@ -440,10 +434,15 @@ const getTagText = (tag: string): string => {
   return tagTextMap[tag] || "text-gray-800"
 }
 
-// 跳转详情页（不变）
+// 跳转详情页 - 确保正确传递ID
 const goToDetail = (projectId: number) => {
-  router.push({ path: "/projectdetail", query: { id: projectId } })
+  router.push({ path: `/projectdetail`, query: { id: projectId } })
 }
+
+// 组件挂载时获取数据
+onMounted(() => {
+  fetchProjects()
+})
 </script>
 
 <style scoped>

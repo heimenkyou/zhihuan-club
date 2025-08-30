@@ -40,6 +40,12 @@
               <span>奖项管理</span>
             </template>
           </el-menu-item>
+          <el-menu-item index="/admin/projects">
+            <template #title>
+              <el-icon><Box /></el-icon>
+              <span>项目管理</span>
+            </template>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main class="admin-main">
@@ -55,6 +61,7 @@ import { House } from "@element-plus/icons-vue"
 import { User } from "@element-plus/icons-vue"
 import { Message } from "@element-plus/icons-vue"
 import { Trophy } from "@element-plus/icons-vue"
+import { Box } from "@element-plus/icons-vue" // 导入Box图标
 
 import { useRouter } from "vue-router"
 import { useAdminStore } from "../../../stores/adminStore"

@@ -1,192 +1,263 @@
 <template>
   <div class="project-showcase">
-    <!-- 1. 顶部标题区（导航栏）：修复高度过高+与下方间距问题 -->
-    <div class="top-header">
-      <div class="top-header__container">
-        <h1 class="main-title">智能校园导航系统</h1>
-        <div class="top-meta">
-          <div class="dev-time">开发时间：2022年09月 - 2023年03月</div>
-          <div class="team-members-text">
-            团队成员：张明（项目负责人）、李华（前端开发）、王芳（后端开发）、刘强（算法工程师）
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">正在加载项目详情...</p>
+    </div>
+
+    <!-- 错误状态 -->
+    <div v-else-if="error" class="error-container">
+      <div class="error-icon">⚠️</div>
+      <p class="error-text">{{ error }}</p>
+      <button class="retry-btn" @click="fetchProjectDetail">重试</button>
+    </div>
+
+    <!-- 项目详情内容 -->
+    <template v-else-if="projectDetail">
+      <!-- 1. 顶部标题区 -->
+      <div class="top-header">
+        <div class="top-header__container">
+          <h1 class="main-title">{{ projectDetail.title || "项目详情" }}</h1>
+          <div class="top-meta">
+            <div class="dev-time">
+              开发时间：{{ projectDetail.timeRange || "-" }}
+            </div>
+            <div class="team-members-text">
+              团队成员：{{
+                formatTeamMembers(projectDetail.teamDivision || [])
+              }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 2. 核心轮播图区 - 全新设计 -->
-    <div class="project-container">
-      <!-- 轮播图模块 -->
-      <div class="project-section carousel-section">
-        <h2 class="section-title">
-          <el-icon><Picture /></el-icon>
-          项目展示
-        </h2>
-        <!-- 轮播图全新配置 -->
-        <div class="carousel-container">
-          <el-carousel
-            :interval="3000"
-            :duration="800"
-            :type="isMobile ? '' : 'card'"
-            :height="isMobile ? '240px' : '450px'"
-            indicator-position="none"
-            indicator-class="custom-indicator"
-            arrow="always"
-            class="modern-carousel"
-            @resize="handleCarouselResize"
-          >
-            <el-carousel-item
-              v-for="item in carouselImages"
-              :key="item.id"
-              class="carousel-slide"
+      <!-- 2. 核心轮播图区 -->
+      <div class="project-container">
+        <div class="project-section carousel-section">
+          <h2 class="section-title">
+            <el-icon><Picture /></el-icon>
+            项目展示
+          </h2>
+          <div class="carousel-container">
+            <el-carousel
+              :interval="3000"
+              :duration="800"
+              :type="isMobile ? '' : 'card'"
+              :height="isMobile ? '240px' : '450px'"
+              indicator-position="none"
+              indicator-class="custom-indicator"
+              arrow="always"
+              class="project-carousel"
+              @resize="handleCarouselResize"
             >
-              <div class="carousel-content-wrapper">
-                <div class="carousel-image-container">
-                  <img
-                    :src="item.url"
-                    :alt="item.caption"
-                    class="carousel-image"
-                    loading="lazy"
-                  />
-                </div>
-                <div class="carousel-caption">
-                  <h3 class="caption-title">
-                    {{ item.title || item.caption }}
-                  </h3>
-                  <p class="caption-description">
-                    {{ item.description || item.caption }}
-                  </p>
-                </div>
+              <template
+                v-if="
+                  projectDetail.mediaResources &&
+                  projectDetail.mediaResources.length > 0
+                "
+              >
+                <el-carousel-item
+                  v-for="item in projectDetail.mediaResources"
+                  :key="item.id"
+                  class="carousel-item"
+                >
+                  <div class="carousel-image-wrap">
+                    <img
+                      :src="item.url"
+                      :alt="item.title || '项目图片'"
+                      class="carousel-image"
+                      loading="lazy"
+                    />
+                    <div class="carousel-caption">
+                      <h3 class="caption-title">
+                        {{ item.title || "项目图片" }}
+                      </h3>
+                      <p class="caption-description">
+                        {{ item.description || "" }}
+                      </p>
+                    </div>
+                  </div>
+                </el-carousel-item>
+              </template>
+              <template v-else-if="projectDetail.coverImage">
+                <el-carousel-item class="carousel-item">
+                  <div class="carousel-image-wrap">
+                    <img
+                      :src="projectDetail.coverImage"
+                      :alt="projectDetail.title || '项目封面'"
+                      class="carousel-image"
+                      loading="lazy"
+                    />
+                    <div class="carousel-caption">
+                      <h3 class="caption-title">
+                        {{ projectDetail.title || "项目封面" }}
+                      </h3>
+                      <p class="caption-description">
+                        {{ projectDetail.briefIntro || "" }}
+                      </p>
+                    </div>
+                  </div>
+                </el-carousel-item>
+              </template>
+              <template v-else>
+                <el-carousel-item class="carousel-item">
+                  <div class="empty-image">
+                    <span class="empty-text">暂无项目图片</span>
+                  </div>
+                </el-carousel-item>
+              </template>
+            </el-carousel>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主体内容区 -->
+      <div class="project-container">
+        <!-- 3.1 技术栈模块 -->
+        <div class="project-section">
+          <h2 class="section-title">
+            <el-icon><Cpu /></el-icon>
+            技术栈
+          </h2>
+          <div class="tech-tags-container">
+            <template
+              v-if="
+                projectDetail &&
+                projectDetail.techStackDetail &&
+                projectDetail.techStackDetail.length > 0
+              "
+            >
+              <el-tag
+                v-for="(tech, index) in projectDetail.techStackDetail"
+                :key="index"
+                :type="tagTypes[index % tagTypes.length] as 'primary' | 'success' | 'warning' | 'info' | 'danger'"
+                size="large"
+                effect="light"
+                class="tech-tag"
+              >
+                {{ tech }}
+              </el-tag>
+            </template>
+            <template v-else>
+              <p class="text-gray-500">暂无技术栈信息</p>
+            </template>
+          </div>
+        </div>
+
+        <!-- 3.2 项目介绍模块 -->
+        <div class="project-section">
+          <h2 class="section-title">
+            <el-icon><Document /></el-icon>
+            项目介绍
+          </h2>
+          <div class="project-intro-content">
+            <template v-if="projectDetail.descriptionMd">
+              <div v-html="parseMarkdown(projectDetail.descriptionMd)"></div>
+            </template>
+            <template v-else-if="projectDetail.briefIntro">
+              <p class="intro-paragraph">{{ projectDetail.briefIntro }}</p>
+            </template>
+            <template v-else>
+              <p class="text-gray-500">暂无项目介绍</p>
+            </template>
+          </div>
+        </div>
+
+        <!-- 3.3 团队成员模块 -->
+        <div class="project-section">
+          <h2 class="section-title">
+            <el-icon><User /></el-icon>
+            团队分工
+          </h2>
+          <div class="team-members-container">
+            <template
+              v-if="
+                projectDetail.teamDivision &&
+                projectDetail.teamDivision.length > 0
+              "
+            >
+              <div
+                class="team-member-card"
+                v-for="(member, index) in projectDetail.teamDivision"
+                :key="`${member.name || 'member'}-${index}`"
+              >
+                <span class="member-card__badge"></span>
+                <h3 class="member-name">{{ member.name || "匿名成员" }}</h3>
+                <p class="member-role">{{ member.role || "暂无职责描述" }}</p>
               </div>
-            </el-carousel-item>
-          </el-carousel>
+            </template>
+            <template v-else>
+              <p class="text-gray-500">暂无团队成员信息</p>
+            </template>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 主体内容区和底部CTA区保持不变 -->
-    <div class="project-container">
-      <!-- 3.1 技术栈模块 -->
-      <div class="project-section">
-        <h2 class="section-title">
-          <el-icon><Cpu /></el-icon>
-          技术栈
-        </h2>
-        <div class="tech-tags-container">
-          <el-tag
-            v-for="(tech, index) in technologies"
-            :key="tech.name"
-            :type="tagTypes[index % tagTypes.length] as 'primary' | 'success' | 'warning' | 'info' | 'danger'"
-            size="large"
-            effect="light"
-            class="tech-tag"
-          >
-            {{ tech.name }}
-          </el-tag>
-        </div>
-      </div>
-
-      <!-- 3.2 项目介绍模块 -->
-      <div class="project-section">
-        <h2 class="section-title">
-          <el-icon><Document /></el-icon>
-          项目介绍
-        </h2>
-        <div class="project-intro-content">
-          <p class="intro-paragraph">
-            本项目是针对高校"找楼难、找教室难"痛点开发的智能导航应用，基于Flutter实现跨平台适配，整合高德地图API与ARCore技术，提供室内外一体化导航服务，定位精度达1-3米，支持教室状态实时同步与个性化路线规划。
-          </p>
-          <p class="intro-paragraph">
-            项目历时6个月开发，累计注册用户5200+，导航请求超3万次，先后获校赛一等奖、省级金奖及全国大学生计算机设计大赛一等奖，并与当地科技企业达成合作推进商业化。
-          </p>
-          <h3 class="intro-subtitle">核心功能</h3>
-          <ul class="intro-list">
-            <li>精准定位：GPS+WiFi+蓝牙三重定位，室内1-3米/室外≤5米精度</li>
-            <li>AR实景导航：摄像头实时叠加指引，复杂路口识别率95%+</li>
-            <li>实时同步：对接教务系统，显示教室占用/图书馆座位状态</li>
-            <li>个性路线：支持最短/避晒/无障碍等多维度路线选择</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 3.3 团队成员模块 -->
-      <div class="project-section">
-        <h2 class="section-title">
-          <el-icon><User /></el-icon>
-          团队成员
-        </h2>
-        <div class="team-members-container">
-          <div
-            class="team-member-card"
-            v-for="member in teamMembers"
-            :key="member.id"
-          >
-            <span class="member-card__badge"></span>
-            <h3 class="member-name">{{ member.name }}</h3>
-            <p class="member-role">{{ member.role }}</p>
+        <!-- 3.4 获得奖项模块 -->
+        <div
+          class="project-section"
+          v-if="projectDetail.awardList && projectDetail.awardList.length > 0"
+        >
+          <h2 class="section-title">
+            <el-icon><Trophy /></el-icon>
+            获得奖项
+          </h2>
+          <div class="awards-timeline">
+            <el-timeline :reverse="false" class="custom-timeline">
+              <el-timeline-item
+                v-for="(award, index) in projectDetail.awardList"
+                :key="award.id || `award-${index}`"
+                :timestamp="String(award.awardDate || award.year || '')"
+                placement="top"
+                :type="getAwardType(award.awardLevel)"
+                class="timeline-item"
+              >
+                <el-card class="award-card">
+                  <h4 class="award-title">
+                    {{
+                      award.title ||
+                      `${award.competitionName || "未知竞赛"} - ${
+                        award.awardLevel || "未知奖项"
+                      }`
+                    }}
+                  </h4>
+                  <p class="award-desc">
+                    {{
+                      award.description ||
+                      (Array.isArray(award.winners)
+                        ? `获奖者: ${award.winners.join(", ")}`
+                        : `获奖者: ${award.winners}`)
+                    }}
+                  </p>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
           </div>
         </div>
       </div>
 
-      <!-- 3.4 获得奖项模块 -->
-      <div class="project-section">
-        <h2 class="section-title">
-          <el-icon><Trophy /></el-icon>
-          获得奖项
-        </h2>
-        <div class="awards-timeline">
-          <el-timeline :reverse="false" class="custom-timeline">
-            <el-timeline-item
-              v-for="(award, index) in awards"
-              :key="index"
-              :timestamp="award.date"
-              placement="top"
-              :type="award.type as 'primary' | 'success' | 'warning' | 'info' | 'danger'"
-              class="timeline-item"
-            >
-              <el-card class="award-card">
-                <h4 class="award-title">{{ award.title }}</h4>
-                <p class="award-desc">{{ award.description }}</p>
-              </el-card>
-            </el-timeline-item>
-          </el-timeline>
+      <!-- 底部提示 -->
+      <div class="bottom-end-notice">
+        <div class="end-text">
+          <el-icon><Finished /></el-icon>
+          已经到底了，感谢您的浏览
         </div>
       </div>
-    </div>
-
-    <!-- 4. 底部CTA区：修改联系我们部分 -->
-    <div class="cta-section">
-      <div class="cta-container">
-        <h2 class="cta-title">对我们的项目感兴趣？</h2>
-        <p class="cta-desc">欢迎联系我们获取更多信息或探讨合作机会</p>
-
-        <!-- 删除按钮，添加联系电话列表 -->
-        <div class="contact-phones">
-          <div
-            v-for="(phone, index) in contactPhones"
-            :key="index"
-            class="phone-item"
-          >
-            <el-icon class="phone-icon"><Phone /></el-icon>
-            <span class="phone-label">联系电话：</span>
-            <span class="phone-number">{{ phone }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue"
+// 添加必要的导入
+import { ref, onMounted, onUnmounted, computed, watch } from "vue"
+import { useRoute } from "vue-router"
 import {
   User,
   Cpu,
   Trophy,
-  // 删除未使用的 Promotion 导入
   Document,
   Picture,
-  // 添加Phone图标
-  Phone,
+  Finished,
 } from "@element-plus/icons-vue"
 import {
   ElCarousel,
@@ -195,136 +266,133 @@ import {
   ElTimeline,
   ElTimelineItem,
   ElCard,
-  // 移除ElButton的导入
-  // ElButton,
 } from "element-plus"
+import { getProjectDetail } from "../services/projectService"
+import type { ProjectDetail as ProjectDetailType } from "../services/projectService"
+
+// 路由相关
+const route = useRoute()
+const projectId = computed(() => {
+  const id = route.query.id
+  return id ? String(id) : ""
+})
+
+// 响应式数据
+const isMobile = ref(false)
+const loading = ref(false)
+const error = ref("")
+const projectDetail = ref<ProjectDetailType | null>(null)
+
+// 技术标签类型数组
+const tagTypes = ref<
+  Array<"primary" | "success" | "warning" | "info" | "danger">
+>(["primary", "info", "success", "warning", "danger", "primary"])
 
 // 轮播图响应式处理
-const isMobile = ref(false)
 const handleCarouselResize = () => {
   isMobile.value = window.innerWidth < 768
 }
 
+// 格式化团队成员显示
+const formatTeamMembers = (
+  members?: Array<{ name?: string; role?: string }>
+) => {
+  if (!members || members.length === 0) {
+    return "暂无团队成员信息"
+  }
+  return members
+    .map(
+      (member) => `${member.name || "匿名成员"}（${member.role || "暂无职责"}）`
+    )
+    .join("、")
+}
+
+// 获取奖项类型对应的Element Plus样式
+const getAwardType = (
+  type?: string
+): "primary" | "success" | "warning" | "info" | "danger" => {
+  const typeMap: Record<
+    string,
+    "primary" | "success" | "warning" | "info" | "danger"
+  > = {
+    primary: "primary",
+    success: "success",
+    warning: "warning",
+    info: "info",
+    danger: "danger",
+    // 映射奖项等级到颜色
+    一等奖: "success",
+    金奖: "warning",
+    二等奖: "primary",
+    银奖: "primary",
+    三等奖: "info",
+    铜奖: "info",
+    优秀奖: "danger",
+  }
+  return typeMap[type || "primary"] || "primary"
+}
+
+// 解析Markdown内容（简化版）
+const parseMarkdown = (md: string) => {
+  if (!md) return ""
+
+  return md
+    .replace(/#{3}\s+([^\n]+)/g, '<h3 class="intro-subtitle">$1</h3>')
+    .replace(/^[*-]\s+([^\n]+)/gm, "<li>$1</li>")
+    .replace(/<\/li>\s*<li>/g, "</li><li>")
+    .replace(/(<li>.+<\/li>)/gs, '<ul class="intro-list">$1</ul>')
+    .replace(/^([^\n]+)$/gm, '<p class="intro-paragraph">$1</p>')
+}
+
+// 获取项目详情数据
+const fetchProjectDetail = async () => {
+  if (!projectId.value) {
+    error.value = "项目ID不存在"
+    return
+  }
+
+  loading.value = true
+  error.value = ""
+
+  try {
+    // 使用修改后的API请求
+    const data = await getProjectDetail(projectId.value)
+    projectDetail.value = data
+  } catch (err) {
+    error.value =
+      err instanceof Error ? err.message : "获取项目详情失败，请稍后重试"
+    console.error("获取项目详情失败:", err)
+    // 在控制台打印更详细的错误信息，帮助调试
+    console.log("完整错误对象:", JSON.stringify(err, null, 2))
+  } finally {
+    loading.value = false
+  }
+}
+
+// 生命周期钩子
 onMounted(() => {
   handleCarouselResize()
   window.addEventListener("resize", handleCarouselResize)
+  fetchProjectDetail()
 })
 
 onUnmounted(() => {
   window.removeEventListener("resize", handleCarouselResize)
 })
 
-// 优化轮播图数据结构，增加更多信息
-type CarouselImage = {
-  id: number
-  url: string
-  title: string
-  description: string
-  caption: string
-}
-const carouselImages = ref<CarouselImage[]>([
-  {
-    id: 1,
-    url: "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80",
-    title: "应用主界面",
-    description: "简洁清晰的导航入口与功能分区设计",
-    caption: "应用主界面展示",
-  },
-  {
-    id: 2,
-    url: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    title: "AR导航功能",
-    description: "摄像头实时叠加箭头指引，提供直观导航体验",
-    caption: "AR导航功能演示",
-  },
-  {
-    id: 3,
-    url: "https://images.unsplash.com/photo-1547082299-de196ea013d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    title: "室内导航",
-    description: "教学楼内精准定位与路径规划，解决找教室难题",
-    caption: "室内导航效果",
-  },
-  {
-    id: 4,
-    url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    title: "个性化设置",
-    description: "支持路线偏好与界面风格自定义，满足不同用户需求",
-    caption: "用户个性化设置",
-  },
-  {
-    id: 5,
-    url: "https://images.unsplash.com/photo-1563986768609-322da1557225?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    title: "数据统计",
-    description: "实时显示导航数据与用户行为分析",
-    caption: "数据统计与分析界面",
-  },
-])
-
-// 其他模块数据：保持原结构不变
-type TeamMember = {
-  id: number
-  name: string
-  role: string
-}
-const teamMembers = ref<TeamMember[]>([
-  { id: 1, name: "张明", role: "项目负责人" },
-  { id: 2, name: "李华", role: "前端开发" },
-  { id: 3, name: "王芳", role: "后端开发" },
-  { id: 4, name: "刘强", role: "算法工程师" },
-])
-
-type Technology = { name: string }
-const technologies = ref<Technology[]>([
-  { name: "Flutter" },
-  { name: "Firebase" },
-  { name: "高德地图API" },
-  { name: "ARCore" },
-  { name: "Dart" },
-  { name: "GPS/WiFi定位" },
-])
-
-const tagTypes = ref<
-  Array<"primary" | "success" | "warning" | "info" | "danger">
->(["primary", "info", "success", "warning", "danger", "primary"])
-
-type Award = {
-  date: string
-  title: string
-  description: string
-  type: "primary" | "success" | "warning" | "info" | "danger"
-}
-const awards = ref<Award[]>([
-  {
-    date: "2023年3月",
-    title: "校赛一等奖",
-    description: "获得学校科技创新大赛一等奖，获校级资金支持",
-    type: "primary",
-  },
-  {
-    date: "2023年5月",
-    title: "省级比赛金奖",
-    description: "在省级大学生创新创业大赛中获得金奖，进入全国赛",
-    type: "success",
-  },
-  {
-    date: "2023年7月",
-    title: "全国大赛一等奖",
-    description: "荣获全国大学生计算机设计大赛一等奖，获行业关注",
-    type: "warning",
-  },
-  {
-    date: "2023年9月",
-    title: "校企合作认证",
-    description: "与当地科技企业达成合作协议，推进项目商业化落地",
-    type: "danger",
-  },
-])
-// 添加联系电话数组数据
-const contactPhones = ref<string[]>(["138-1234-5678", "139-8765-4321"])
+// 监听路由参数变化，重新获取数据
+watch(
+  () => route.query.id,
+  (newId) => {
+    if (newId) {
+      fetchProjectDetail()
+    }
+  }
+)
 </script>
 
 <style scoped lang="scss">
-// 1. 基础变量：保持原定义
+// 基础变量：保持原定义
 $color-primary: #165dff;
 $color-primary-light: #e8f3ff;
 $color-primary-hover: #0e4bdb;
@@ -354,7 +422,7 @@ $font-size-xl: 1.8rem;
 $font-weight-medium: 500;
 $font-weight-bold: 600;
 
-// 2. 全局样式：保持原定义
+// 全局样式：保持原定义
 .project-showcase {
   font-family: "Inter", "Microsoft YaHei", system-ui, sans-serif;
   color: $color-neutral-600;
@@ -364,7 +432,64 @@ $font-weight-bold: 600;
   padding-bottom: $spacing-lg;
 }
 
-// 3. 顶部标题区（导航栏）：核心修复——降低高度+增加底部间距
+// 加载状态样式
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid $color-neutral-200;
+  border-top-color: $color-primary;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: $spacing-md;
+}
+
+.loading-text,
+.error-text {
+  font-size: $font-size-base;
+  color: $color-neutral-600;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: $spacing-md;
+}
+
+.retry-btn {
+  margin-top: $spacing-md;
+  padding: $spacing-xs $spacing-md;
+  background-color: $color-primary;
+  color: white;
+  border: none;
+  border-radius: $radius-full;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  transition: $transition-base;
+
+  &:hover {
+    background-color: $color-primary-hover;
+    transform: translateY(-2px);
+    box-shadow: $shadow-sm;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 顶部标题区（导航栏）：核心修复——降低高度+增加底部间距
 .top-header {
   background-color: #fff;
   box-shadow: $shadow-sm;
@@ -625,38 +750,41 @@ $font-weight-bold: 600;
       }
     }
   }
-}
 
-// 文字描述：优化移动端文字与图片的关系
-.carousel-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 16px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
-  color: #fff;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  text-align: center;
-  line-height: 1.5;
-  border-bottom-left-radius: $radius-sm;
-  border-bottom-right-radius: $radius-sm;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  .carousel-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
+    color: #fff;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    text-align: center;
+    line-height: 1.5;
+    border-bottom-left-radius: $radius-sm;
+    border-bottom-right-radius: $radius-sm;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
-  // 移动端优化：紧贴图片，减少高度
-  @media (max-width: 768px) {
-    padding: 6px 10px;
-    font-size: $font-size-xs;
-    // 减少文字区域高度
-    line-height: 1.4;
-    // 增加透明度，让文字更融入图片
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
+    // 移动端优化：紧贴图片，减少高度
+    @media (max-width: 768px) {
+      padding: 6px 10px;
+      font-size: $font-size-xs;
+      // 减少文字区域高度
+      line-height: 1.4;
+      // 增加透明度，让文字更融入图片
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.7),
+        rgba(0, 0, 0, 0.2)
+      );
+    }
   }
 }
 
@@ -982,23 +1110,6 @@ $font-weight-bold: 600;
     width: 80%;
   }
 }
-// 调整CTA区域样式，保持框架大小不变
-.cta-section {
-  background: linear-gradient(135deg, $color-primary, $color-primary-hover);
-  color: #fff;
-  text-align: center;
-  padding: $spacing-lg $spacing-sm;
-  margin: $spacing-lg auto $spacing-lg;
-  border-radius: $radius-lg;
-  max-width: 1400px;
-  box-shadow: $shadow-md;
-
-  @media (max-width: 480px) {
-    padding: $spacing-md $spacing-xs;
-    margin: $spacing-md auto $spacing-sm;
-    border-radius: $radius-md;
-  }
-}
 
 // 联系电话列表样式
 .contact-phones {
@@ -1057,8 +1168,127 @@ $font-weight-bold: 600;
   color: #fff;
 }
 
-// 删除原按钮样式（如果不需要可以完全删除这个类）
-.cta-button {
-  display: none; // 隐藏按钮
+// 空图片占位符样式
+.empty-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $color-neutral-200;
+  border-radius: $radius-sm;
+}
+
+.empty-text {
+  color: $color-neutral-600;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+}
+
+// 底部提示样式
+.bottom-end-notice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md 0;
+  position: relative;
+
+  // 为了让提示更突出，添加顶部装饰线
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      $color-primary,
+      transparent
+    );
+    border-radius: 3px;
+  }
+
+  .end-text {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    background: #fff;
+    border-radius: $radius-full;
+    box-shadow: $shadow-sm;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
+    font-weight: $font-weight-medium;
+    transition: all 0.3s ease;
+
+    // 轻微的悬浮效果
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+
+    // 图标样式增强
+    .el-icon {
+      font-size: $font-size-base;
+      color: $color-primary;
+      animation: pulse 2s infinite;
+    }
+  }
+
+  // 响应式适配
+  @media (max-width: 480px) {
+    margin-top: $spacing-lg;
+    margin-bottom: $spacing-md;
+
+    &::before {
+      width: 50px;
+      height: 2px;
+    }
+
+    .end-text {
+      font-size: $font-size-xs;
+      padding: 8px 20px;
+      text-align: center;
+
+      .el-icon {
+        font-size: $font-size-sm;
+      }
+    }
+  }
+}
+
+// 脉冲动画效果
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+// 渐入动画
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 延迟渐入效果
+.bottom-end-notice {
+  animation: fadeInUp 0.8s ease-out 0.5s both;
 }
 </style>

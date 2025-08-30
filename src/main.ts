@@ -1,14 +1,45 @@
 import './style.css'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
-import ElementPlus, { ElNotification } from 'element-plus'
+import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import { createApp } from 'vue'
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
-// main.ts
+import * as ElementPlusIconsVue from "@element-plus/icons-vue"
+import { ElNotification } from 'element-plus'
+
+// 导入Vue 3版本的Markdown编辑器
+import VMdEditor from '@kangc/v-md-editor';
+import '@kangc/v-md-editor/lib/style/base-editor.css';
+import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
+import '@kangc/v-md-editor/lib/theme/style/github.css';
+
+// 引入Prism
+import Prism from 'prismjs';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
+
 // 创建应用实例
-const app = createApp(App)
+export const app = createApp(App);
+
+// 配置主题
+VMdEditor.use(githubTheme, { Prism });
+
+// 注册Markdown编辑器组件
+app.component('VMdEditor', VMdEditor);
+app.component('v-md-editor', VMdEditor); // 同时注册kebab-case形式
+
+// 注册所有Element Plus图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component);
+}
+
+// 使用插件
+app.use(router)
+app.use(createPinia())
+app.use(ElementPlus)
 
 // 成功操作提示工具函数
 export const showSuccessNotification = (message: string) => {
@@ -20,6 +51,16 @@ export const showSuccessNotification = (message: string) => {
     icon: '✓', // 使用字符图标
     position: 'top-right', // 右上角
     customClass: 'fade-effect' // 淡入动画效果类名
+  })
+}
+
+// 错误操作提示工具函数
+export const showErrorNotification = (message: string) => {
+  ElNotification({
+    title: '操作失败',
+    message,
+    type: 'error',
+    duration: 3000
   })
 }
 
@@ -54,20 +95,5 @@ window.addEventListener('unhandledrejection', (event) => {
   event.preventDefault()
 })
 
-
-export const showErrorNotification = (message: string) => {
-  ElNotification({
-    title: '操作失败',
-    message,
-    type: 'error',
-    duration: 3000
-  })
-}
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component);
-}
-// 使用插件并挂载应用
-app.use(router)
-app.use(createPinia())
-app.use(ElementPlus)
+// 挂载应用
 app.mount('#app')

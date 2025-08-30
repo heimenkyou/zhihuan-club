@@ -1,10 +1,11 @@
-import type { RouteRecordRaw } from 'vue-router';
 import AdminLayout from '../views/admin/layout/AdminLayout.vue';
 import Dashboard from '../views/admin/Dashboard.vue';
 import ApplicationList from '../views/admin/applications/ApplicationList.vue';
 import AwardManagement from '../views/admin/awards/AwardManagement.vue';
 import MessageManagement from '../views/admin/messages/MessageManagement.vue';
-import AdminManagement from '../views/admin/admins/AdminManagement.vue'; // 新增导入
+import AdminManagement from '../views/admin/admins/AdminManagement.vue';
+import ProjectManagement from '../views/admin/projects/ProjectManagement.vue'
+import type { RouteRecordRaw } from 'vue-router';
 
 const adminRoutes: RouteRecordRaw[] = [
   {
@@ -35,7 +36,22 @@ const adminRoutes: RouteRecordRaw[] = [
       {
         path: 'admins',
         component: AdminManagement,
-        meta: { title: '管理员管理', requiresSuperAdmin: true }, // 只有超级管理员可访问
+        meta: { title: '管理员管理', requiresSuperAdmin: true },
+      },
+      // 项目管理路由
+      {
+        path: 'projects',
+        name: 'ProjectManagement',
+        component: ProjectManagement,
+        meta: { title: '项目管理' }
+      },
+      
+      // 项目编辑页面路由
+      {
+        path: 'projects/edit/:id?',
+        name: 'ProjectEdit',
+        component: () => import('../views/admin/projects/ProjectEditPage.vue'),
+        meta: { title: '编辑项目' }
       },
     ],
   },
