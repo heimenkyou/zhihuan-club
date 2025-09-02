@@ -26,9 +26,6 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         if (StrUtil.isBlank(awardReqDTO.getCompetitionName())) {
             throw new IllegalArgumentException("竞赛名称不能为空");
         }
-        if (StrUtil.isBlank(awardReqDTO.getCompetitionTrack())) {
-            throw new IllegalArgumentException("赛道/组别不能为空");
-        }
         if (StrUtil.isBlank(awardReqDTO.getCompetitionLevel())) {
             throw new IllegalArgumentException("竞赛级别不能为空");
         }
@@ -55,7 +52,6 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         if (awardDO == null) {
             throw new ClientException("奖项不存在");
         }
-//        BeanUtil.copyProperties(awardReqDTO, awardDO);
         AwardDO newAwardDO = BeanUtil.toBean(awardReqDTO, AwardDO.class);
         // 存储获奖年份
         if (awardReqDTO.getAwardDate() != null) {
