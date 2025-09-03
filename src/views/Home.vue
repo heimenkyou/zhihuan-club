@@ -1,5 +1,8 @@
 <template>
   <div class="code-pulse-container">
+    <!-- 添加协议弹窗组件 -->
+    <PolicyModal />
+
     <!-- 导航栏 -->
     <!-- 使用新的导航栏组件 -->
     <CommonNavbar />
@@ -638,64 +641,7 @@
       </div>
     </el-main>
 
-    <!-- 页脚 -->
-    <footer
-      style="background-color: #1e293b; color: white; padding: 2.5rem 1rem"
-    >
-      <div style="max-width: 80rem; margin: 0 auto">
-        <div
-          style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-          "
-        >
-          <!-- 社团信息 -->
-          <div style="text-align: center; margin-bottom: 1rem">
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <i
-                class="fa fa-code"
-                style="font-size: 1.5rem; color: #3b82f6; margin-right: 0.5rem"
-              ></i>
-              <span style="font-size: 1.25rem; font-weight: bold"
-                >智环学创融合协会</span
-              >
-            </div>
-            <p style="color: #9ca3af; margin-top: 0.5rem">
-              零门槛技术社团 · 欢迎大一新生
-            </p>
-          </div>
-
-          <!-- 社交图标 -->
-          <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem">
-            <a href="#" style="color: #9ca3af">
-              <i class="fa fa-weixin" style="font-size: 1.5rem"></i>
-            </a>
-            <a href="#" style="color: #9ca3af">
-              <i class="fa fa-qq" style="font-size: 1.5rem"></i>
-            </a>
-            <a href="#" style="color: #9ca3af">
-              <i class="fa fa-github" style="font-size: 1.5rem"></i>
-            </a>
-            <a href="#" style="color: #9ca3af">
-              <i class="fa fa-envelope" style="font-size: 1.5rem"></i>
-            </a>
-          </div>
-
-          <!-- 版权信息 -->
-          <div style="color: #9ca3af; text-align: center">
-            <p>© 2024-2025 智环学创融合协会. 保留所有权利.</p>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <CommonFooter />
   </div>
 </template>
 
@@ -703,7 +649,8 @@
 // import { ref, reactive } from "vue"
 import { ArrowDown } from "@element-plus/icons-vue"
 import CommonNavbar from "../components/CommonNavbar.vue"
-
+import PolicyModal from "../components/PolicyModal.vue"
+import CommonFooter from "../components/CommonFooter.vue"
 // 留言墙
 // 从 vue-router 导入 useRouter 钩子
 import { useRouter } from "vue-router"

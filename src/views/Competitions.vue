@@ -731,12 +731,14 @@
         </section>
       </div>
     </main>
+    <CommonFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue"
 import CommonNavbar from "../components/CommonNavbar.vue"
+import CommonFooter from "../components/CommonFooter.vue"
 
 // 完整保留原HTML的滚动动画逻辑（迁移自DOMContentLoaded）
 onMounted(() => {

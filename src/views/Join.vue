@@ -554,10 +554,12 @@
         </div>
       </section>
     </main>
+    <CommonFooter />
   </div>
 </template>
 
 <script setup lang="ts">
+import CommonFooter from "../components/CommonFooter.vue"
 import CommonNavbar from "../components/CommonNavbar.vue" // 引入通用导航栏
 import { ref, onMounted } from "vue"
 // 导入 submitApplication 函数
@@ -764,7 +766,7 @@ const handleSubmit = async () => {
     console.error("提交失败:", error)
     alert(
       `提交失败: ${
-        error instanceof Error ? error.message : '网络请求错误，请稍后重试。'
+        error instanceof Error ? error.message : "网络请求错误，请稍后重试。"
       }`
     )
   } finally {

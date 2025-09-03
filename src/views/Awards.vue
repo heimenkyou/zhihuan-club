@@ -424,10 +424,16 @@
                   <!-- 修改赛道信息部分 - 无论是否有赛道都显示，但样式不同 -->
                   <div class="flex items-center mb-3">
                     <i class="fa fa-flag mr-1.5 text-gray-500"></i>
-                    <span v-if="award.competitionTrack" class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm">
+                    <span
+                      v-if="award.competitionTrack"
+                      class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm"
+                    >
                       {{ award.competitionTrack }}
                     </span>
-                    <span v-else class="bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full text-sm italic">
+                    <span
+                      v-else
+                      class="bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full text-sm italic"
+                    >
                       尚未区分赛道
                     </span>
                   </div>
@@ -491,15 +497,21 @@
                   </div>
 
                   <!-- 修改后的赛道信息显示 - 无论是否有赛道都显示 -->
-        <div class="flex items-center mb-3">
-          <i class="fa fa-flag mr-1.5 text-gray-500"></i>
-          <span v-if="award.competitionTrack" class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm">
-            {{ award.competitionTrack }}
-          </span>
-          <span v-else class="bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full text-sm italic">
-            尚未区分赛道
-          </span>
-        </div>
+                  <div class="flex items-center mb-3">
+                    <i class="fa fa-flag mr-1.5 text-gray-500"></i>
+                    <span
+                      v-if="award.competitionTrack"
+                      class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm"
+                    >
+                      {{ award.competitionTrack }}
+                    </span>
+                    <span
+                      v-else
+                      class="bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full text-sm italic"
+                    >
+                      尚未区分赛道
+                    </span>
+                  </div>
 
                   <!-- 获奖人员信息 -->
                   <div class="flex items-start mb-3">
@@ -562,15 +574,21 @@
                   </div>
 
                   <!-- 修改后的赛道信息显示 - 无论是否有赛道都显示 -->
-        <div class="flex items-center mb-3">
-          <i class="fa fa-flag mr-1.5 text-gray-500"></i>
-          <span v-if="award.competitionTrack" class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm">
-            {{ award.competitionTrack }}
-          </span>
-          <span v-else class="bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full text-sm italic">
-            尚未区分赛道
-          </span>
-        </div>
+                  <div class="flex items-center mb-3">
+                    <i class="fa fa-flag mr-1.5 text-gray-500"></i>
+                    <span
+                      v-if="award.competitionTrack"
+                      class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm"
+                    >
+                      {{ award.competitionTrack }}
+                    </span>
+                    <span
+                      v-else
+                      class="bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full text-sm italic"
+                    >
+                      尚未区分赛道
+                    </span>
+                  </div>
 
                   <!-- 获奖人员信息 -->
                   <div class="flex items-start mb-3">
@@ -618,6 +636,7 @@
         </div>
       </div>
     </main>
+    <CommonFooter />
   </div>
 </template>
 
@@ -626,6 +645,7 @@ import { ref, computed, onMounted, nextTick, watch } from "vue"
 import CommonNavbar from "../components/CommonNavbar.vue"
 import { useRouter } from "vue-router"
 import { getAwards } from "../services/adminService"
+import CommonFooter from "../components/CommonFooter.vue"
 
 // 定义奖项数据结构
 interface Award {
@@ -704,10 +724,10 @@ const currentCompetitionTracks = computed(() => {
   if (!filter.value.competitionName) return []
 
   const tracks = new Set<string>()
-  
+
   // 首先添加"尚未区分赛道"选项
   let hasNoTrack = false
-  
+
   awards.value.forEach((award) => {
     if (award.competitionName === filter.value.competitionName) {
       if (award.competitionTrack && award.competitionTrack !== "") {
@@ -717,12 +737,12 @@ const currentCompetitionTracks = computed(() => {
       }
     }
   })
-  
+
   // 如果有项目没有赛道，添加"尚未区分赛道"选项
   if (hasNoTrack) {
     tracks.add("尚未区分赛道")
   }
-  
+
   return Array.from(tracks).sort()
 })
 

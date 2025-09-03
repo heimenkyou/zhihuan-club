@@ -24,7 +24,7 @@
           class="bg-white rounded-xl shadow-lg overflow-hidden mobile:rounded-lg"
         >
           <div class="md:flex flex-col mobile:flex-col">
-            <div class="md:w-1/2 mobile:w-full">
+            <div class="mobile:w-full">
               <img
                 src="https://images.unsplash.com/photo-1484417894907-623942c8ee29?q=80&w=1740&auto=format&fit=crop"
                 alt="社团活动照片"
@@ -33,7 +33,7 @@
               />
             </div>
             <div
-              class="md:w-1/2 p-8 md:p-10 flex flex-col justify-center mobile:w-full mobile:p-5"
+              class="p-8 md:p-10 flex flex-col justify-center mobile:w-full mobile:p-5"
             >
               <h2 class="text-2xl font-bold text-dark mb-4 mobile:text-xl">
                 社团简介
@@ -516,12 +516,14 @@
         </div>
       </section>
     </main>
+    <CommonFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue"
 import CommonNavbar from "../components/CommonNavbar.vue"
+import CommonFooter from "../components/CommonFooter.vue"
 
 // 滚动监听动画：元素进入视口时添加slide-up动画（保留原HTML交互）
 onMounted(() => {

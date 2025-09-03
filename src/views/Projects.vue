@@ -226,10 +226,12 @@
         </p>
       </div>
     </main>
+    <CommonFooter />
   </div>
 </template>
 
 <script setup lang="ts">
+import CommonFooter from "../components/CommonFooter.vue"
 import { ref, computed, watch, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import CommonNavbar from "../components/CommonNavbar.vue"
@@ -237,7 +239,7 @@ import { getProjects } from "../services/projectService"
 import type {
   Project,
   ProjectListParams,
-  ProjectListResponse,
+  // ProjectListResponse,
 } from "../services/projectService"
 
 // 筛选选项

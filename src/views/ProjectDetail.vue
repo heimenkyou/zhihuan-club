@@ -244,11 +244,13 @@
         </div>
       </div>
     </template>
+    <CommonFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 // 添加必要的导入
+import CommonFooter from "../components/CommonFooter.vue"
 import { ref, onMounted, onUnmounted, computed, watch } from "vue"
 import { useRoute } from "vue-router"
 import {

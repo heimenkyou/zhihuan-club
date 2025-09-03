@@ -4,6 +4,7 @@ import adminRoutes from './adminRoutes';
 import { useAdminStore } from '../stores/adminStore';
 import { ElMessage } from 'element-plus'; // 添加导入
 
+// 在路由数组中添加以下内容
 const routes: RouteRecordRaw[] = [
   // 假设 Home 组件路径为 '../views/Home.vue'，需根据实际情况调整
   { path: '/', name: 'home', component: () => import('../views/Home.vue') },
@@ -16,6 +17,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/join', name: 'join', component: () => import('../views/Join.vue') },
   { path: '/messages', name: 'messageList', component: () => import('../views/MessageList.vue') },
   { path: '/projectdetail', name: 'projectDetail', component: () => import('../views/ProjectDetail.vue') },
+  { path: '/privacy-policy', name: 'privacyPolicy', component: () => import('../views/PrivacyPolicy.vue') },
+  { path: '/terms-of-service', name: 'termsOfService', component: () => import('../views/TermsOfService.vue') },
   // 添加管理员公共路由
   ...adminRoutes,
 ];

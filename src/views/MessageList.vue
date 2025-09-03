@@ -4,7 +4,7 @@ import { useMessageStore } from "../stores/messageStore"
 import { showSuccessNotification, showErrorNotification } from "../main"
 import { Refresh, Edit } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
-
+import CommonFooter from "../components/CommonFooter.vue"
 const messageStore = useMessageStore()
 const debugInfo = ref("")
 const router = useRouter() // 初始化router
@@ -533,6 +533,7 @@ const formatTime = (timeString: string) => {
         </div>
       </div>
     </main>
+    <CommonFooter />
   </div>
 </template>
 
