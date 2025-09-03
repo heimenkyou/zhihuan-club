@@ -14,7 +14,7 @@
           加入我们，<span class="text-primary">共创未来</span>
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
-          这里是培养技术人才摇篮，我们期待有激情、有梦想的你加入！
+          这里是培养个人能力的摇篮，我们期待有激情、有行动力的你加入！
         </p>
         <a
           href="#form"
@@ -46,7 +46,8 @@
               专业技术指导
             </h3>
             <p class="text-gray-600 text-center">
-              由经验丰富的学长学姐提供专业技术指导，从零开始学习编程和项目开发。
+              由经验丰富的学长学姐提供手把手指导 ——
+              为计算机专业同学从零拆解编程逻辑与项目开发流程，为非计算机专业同学搭建技术实践平台（如基础编程入门、跨专业项目协作），帮你快速积累实用能力。
             </p>
           </div>
 
@@ -63,7 +64,7 @@
               团队协作
             </h3>
             <p class="text-gray-600 text-center">
-              参与实际项目开发，锻炼团队协作能力，积累项目经验，提升综合竞争力。
+              找不到人组队参与比赛？社团将根据兴趣与能力匹配组队，共同备战各类创新竞赛。其中算法竞赛板块，更有蓝桥杯国一学长带队，针对性拆解考点、打磨解题思路！
             </p>
           </div>
 
@@ -80,7 +81,7 @@
               竞赛机会
             </h3>
             <p class="text-gray-600 text-center">
-              有机会参加各类科技创新竞赛，获得奖项和荣誉，为个人简历增添亮点。
+              可组队参与企业级项目开发，将项目成果对接校赛、省赛等赛事通道，以赛促学，切实提升个人技术实力与综合竞争力
             </p>
           </div>
         </div>
@@ -215,7 +216,6 @@
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
                   <li>数据结构与算法</li>
                   <li>Python/Java/C++编程</li>
-                  <li>机器学习基础</li>
                   <li>算法竞赛技巧</li>
                 </ul>
               </div>
@@ -244,18 +244,19 @@
               <div class="mb-6">
                 <h4 class="font-semibold text-dark mb-2">招新要求：</h4>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
-                  <li>对软件开发有兴趣</li>
-                  <li>具备团队协作精神</li>
-                  <li>有responsibility and execution</li>
+                  <li>
+                    对软件开发，PPT，写项目书，UI设计，视频剪辑，宣讲演讲有兴趣的同学。如果想锻炼实践能力参赛拿奖，这个部门是不二之选。
+                  </li>
                 </ul>
               </div>
               <div>
                 <h4 class="font-semibold text-dark mb-2">学习内容：</h4>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
                   <li>前端/后端开发技术</li>
-                  <li>数据库设计与应用</li>
-                  <li>项目管理方法</li>
-                  <li>竞赛项目开发技巧</li>
+                  <li>网站/APP的UI设计</li>
+                  <li>PPT制作</li>
+                  <li>项目书编写</li>
+                  <li>演讲答辩的任意方向</li>
                 </ul>
               </div>
             </div>

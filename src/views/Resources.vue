@@ -120,10 +120,10 @@
           </h3>
           <button
             @click="closeModal"
-            class="text-gray-500 hover:text-gray-700 transition-colors"
+            class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 hover:text-red-500 transition-all duration-200 shadow-sm hover:shadow-md"
             aria-label="关闭详情"
           >
-            <i class="fas fa-times text-xl"></i>
+            <el-icon><close /></el-icon>
           </button>
         </div>
 

@@ -1,8 +1,5 @@
 <template>
   <div class="code-pulse-container">
-    <!-- 添加协议弹窗组件 -->
-    <PolicyModal />
-
     <!-- 导航栏 -->
     <!-- 使用新的导航栏组件 -->
     <CommonNavbar />
@@ -104,17 +101,19 @@
 
         <div class="about-content">
           <div class="about-text">
-            <h3 class="about-subtitle">关于 CodePulse</h3>
-            <p class="about-paragraph">
-              CodePulse
-              计算机社团成立于2016年，是校内最具影响力的科技类社团之一。我们致力于为对计算机科学与技术感兴趣的同学提供一个交流、学习和实践的平台。
+            <h3 class="about-subtitle">聊天记录:</h3>
+            <p class="about-paragraph ">
+              😭：我的专业二本毕业找不到好工作怎么呀？<br /><hr/>
+              🥺：早就听说计算机寒冬了，我还有机会嘛？<br /><hr/>
+              🤓👆：有的兄弟们，有的！为何不建立个工作室一块做实战项目呢？既能丰富个人简历就业，考研还有优势。<br /><hr/>
+              🤩：我什么都不会你们会要我嘛？！<br /><hr/>
+              😏: 当然啦，计算机专业：前端，后端，测试，运维，嵌入式开发<br />
+              &emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;
+              非计算机专业同学：PPT，写项目书，UI设计，视频剪辑，宣讲演讲。
             </p>
-            <p class="about-paragraph">
-              成立背景源于一群热爱编程的学生希望打破课堂界限，在实践中提升技能、分享知识。多年来，社团不断发展壮大，已形成完善的组织架构和丰富的活动体系。
-            </p>
-            <p class="about-paragraph">
+            <p class="about-paragraph border-t-2 border-black pt-5">
               我们的宗旨是：<span class="highlight-text"
-                >"探索技术前沿，培养创新思维，提升实践能力，连接志同道合的伙伴"</span
+                >自觉，自律,自信”，热爱可以超过一切❤️快来加入项目组</span
               >。
             </p>
           </div>
@@ -164,123 +163,37 @@
           </p>
         </div>
 
+        <!-- 加载状态 -->
+        <div v-if="loading" class="flex justify-center items-center py-16">
+          <el-loading-spinner size="large" />
+          <span class="ml-4">加载项目中...</span>
+        </div>
+
         <!-- 精选成果滚动区域 -->
-        <div class="relative">
+        <div class="relative" v-else>
           <div class="overflow-x-auto pb-8 scrollbar-hide">
             <div class="flex gap-6 w-max px-2">
-              <!-- 项目卡片 1 -->
+              <!-- 动态渲染项目卡片 -->
               <div
+                v-for="(project, index) in projects"
+                :key="project.id || index"
                 class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1740&auto=format&fit=crop"
-                  alt="智能环境监测"
+                  :src="project.coverImage ? project.coverImage.replace(/[`\s]/g, '') : ''"
+                  :alt="project.title"
                   class="w-full h-48 object-cover"
+                  loading="lazy"
                 />
                 <div class="p-6">
                   <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">智能环境监测</h3>
-                    <span
-                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
-                    >
-                      即将开始
-                    </span>
+                    <h3 class="text-xl font-bold text-dark">{{ project.title  }}</h3>
                   </div>
                   <p class="text-gray-600 mb-6 line-clamp-3">
-                    基于物联网技术的智能环境监测项目，计划在新学期启动，欢迎零基础同学参与学习。
+                    {{ project.briefIntro  || '暂无项目简介' }}
                   </p>
                   <button
-                    @click="$router.push({ name: 'Projects' })"
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    了解项目
-                  </button>
-                </div>
-              </div>
-
-              <!-- 项目卡片 2 -->
-              <div
-                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1581091226033-d5c42263db6a?q=80&w=1740&auto=format&fit=crop"
-                  alt="竞赛培训计划"
-                  class="w-full h-48 object-cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">竞赛培训计划</h3>
-                    <span
-                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
-                    >
-                      招新后启动
-                    </span>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    针对蓝桥杯、挑战杯等竞赛的系统性培训计划，从零基础到参赛水平的完整指导。
-                  </p>
-                  <button
-                    @click="$router.push({ name: 'Projects' })"
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    了解项目
-                  </button>
-                </div>
-              </div>
-
-              <!-- 项目卡片 3 -->
-              <div
-                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=1740&auto=format&fit=crop"
-                  alt="技术学习小组"
-                  class="w-full h-48 object-cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">技术学习小组</h3>
-                    <span
-                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
-                    >
-                      持续进行中
-                    </span>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    涵盖Web开发、人工智能、移动开发等多个领域的技术学习小组，每周定期组织研讨和实践。
-                  </p>
-                  <button
-                    @click="$router.push({ name: 'Projects' })"
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    了解项目
-                  </button>
-                </div>
-              </div>
-
-              <!-- 项目卡片 4 -->
-              <div
-                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1740&auto=format&fit=crop"
-                  alt="校园技术节"
-                  class="w-full h-48 object-cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">校园技术节</h3>
-                    <span
-                      class="bg-accent/10 text-accent text-xs px-2 py-1 rounded-full font-medium"
-                    >
-                      下学期活动
-                    </span>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    计划举办的校园技术节活动，包括技术展览、讲座和互动体验区，展示社团成果和技术创新。
-                  </p>
-                  <button
-                    @click="$router.push({ name: 'Projects' })"
+                    @click="goToProjectDetail(project.id)"
                     class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
                   >
                     了解项目
@@ -646,43 +559,117 @@
 </template>
 
 <script setup lang="ts">
-// import { ref, reactive } from "vue"
-import { ArrowDown } from "@element-plus/icons-vue"
-import CommonNavbar from "../components/CommonNavbar.vue"
-import PolicyModal from "../components/PolicyModal.vue"
-import CommonFooter from "../components/CommonFooter.vue"
-// 留言墙
-// 从 vue-router 导入 useRouter 钩子
-import { useRouter } from "vue-router"
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import CommonNavbar from '../components/CommonNavbar.vue'
+import CommonFooter from '../components/CommonFooter.vue'
+import { ArrowDown } from '@element-plus/icons-vue'
+import { getProjects } from '../services/projectService'
+import type { Project } from '../services/projectService'
 
-// 获取路由实例
 const router = useRouter()
-// 加入我们点击
-const tojoin = () => {
-  router.push("/join")
+
+// 响应式状态
+const projects = ref<Project[]>([])
+const loading = ref(false)
+const error = ref('')
+
+// // 模拟数据，当无法获取真实数据时使用
+// const mockProjects = [
+//   {
+//     id: 1,
+//     title: '智能环境监测',
+//     briefIntro: '基于物联网技术的智能环境监测项目，计划在新学期启动，欢迎零基础同学参与学习。',
+//     coverImage: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1740&auto=format&fit=crop',
+//     status: '即将开始'
+//   },
+//   {
+//     id: 2,
+//     title: '竞赛培训计划',
+//     briefIntro: '针对蓝桥杯、挑战杯等竞赛的系统性培训计划，从零基础到参赛水平的完整指导。',
+//     coverImage: 'https://images.unsplash.com/photo-1581091226033-d5c42263db6a?q=80&w=1740&auto=format&fit=crop',
+//     status: '招新后启动'
+//   },
+//   {
+//     id: 3,
+//     title: '技术学习小组',
+//     briefIntro: '涵盖Web开发、人工智能、移动开发等多个领域的技术学习小组，每周定期组织研讨和实践。',
+//     coverImage: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=1740&auto=format&fit=crop',
+//     status: '持续进行中'
+//   },
+//   {
+//     id: 4,
+//     title: '校园技术节',
+//     briefIntro: '计划举办的校园技术节活动，包括技术展览、讲座和互动体验区，展示社团成果和技术创新。',
+//     coverImage: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1740&auto=format&fit=crop',
+//     status: '下学期活动'
+//   }
+// ]
+
+// 获取项目列表数据
+const fetchProjects = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    // 使用正确的参数格式
+    const params = {
+      current: 1,
+      size: 4 // 只获取4个项目
+    }
+
+    // 调用项目服务获取数据
+    const response = await getProjects(params)
+
+    // 处理响应数据
+    if (response && response.data && response.data.records && response.data.records.length > 0) {
+      projects.value = response.data.records.slice(0, 4)
+    } 
+  } catch (err) {
+    console.error('获取项目列表失败:', err)
+    // 发生错误时使用模拟数据
+    // projects.value = mockProjects
+  } finally {
+    loading.value = false
+  }
 }
-// 了解更多点击
+
+// 导航函数
 const toabout = () => {
-  router.push("/about")
+  router.push('/about')
 }
 
-// 查看更多项目点击
+const tojoin = () => {
+  router.push('/join')
+}
+
 const toproject = () => {
-  router.push("/projects")
-}
-// 查看更多奖项点击
-const toawards = () => {
-  router.push("/awards")
-}
-//搜索全部竞赛点击
-const tocompetitions = () => {
-  router.push("/competitions")
+  router.push('/projects')
 }
 
-// 新增：跳转到留言板的方法
-const toMessageBoard = () => {
-  router.push("/messages")
+const toawards = () => {
+  router.push('/awards')
 }
+
+// 搜索全部竞赛点击
+const tocompetitions = () => {
+  router.push('/competitions')
+}
+
+// 跳转到留言板的方法
+const toMessageBoard = () => {
+  router.push('/messages')
+}
+
+// 跳转到项目详情页
+const goToProjectDetail = (projectId: number) => {
+  router.push({ path: '/projectdetail', query: { id: projectId } })
+}
+
+// 组件挂载时获取数据
+onMounted(() => {
+  fetchProjects()
+})
 </script>
 
 <style scoped lang="scss">
@@ -1035,6 +1022,7 @@ const toMessageBoard = () => {
       color: #666;
       margin-bottom: 16px;
       line-height: 1.6;
+      font-size: 1.3rem;
     }
 
     .highlight-text {

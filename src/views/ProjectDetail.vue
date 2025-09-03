@@ -15,10 +15,57 @@
 
     <!-- 项目详情内容 -->
     <template v-else-if="projectDetail">
-      <!-- 1. 顶部标题区 -->
       <div class="top-header">
         <div class="top-header__container">
-          <h1 class="main-title">{{ projectDetail.title || "项目详情" }}</h1>
+          <!-- 修改顶部标题区域的flex布局 -->
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 8px;
+            "
+          >
+            <!-- 返回按钮 - 移除margin: auto并保留绝对定位 -->
+            <button
+              style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 1px solid #e5e6eb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #4e5969;
+                background: transparent;
+                cursor: pointer;
+              "
+              @click="goBackToList"
+              aria-label="返回项目列表"
+            >
+              <el-icon style="font-size: 16px"><ArrowLeft /></el-icon>
+            </button>
+
+            <!-- 标题 - 使用flex容器包裹确保完美居中 -->
+            <div style="flex: 1; display: flex; justify-content: center">
+              <h1
+                style="
+                  margin: 0;
+                  text-align: center;
+                  font-size: 1.8rem;
+                  font-weight: 600;
+                  color: #1d2129;
+                "
+              >
+                {{ projectDetail.title || "项目详情" }}
+              </h1>
+            </div>
+
+            <!-- 占位元素保持标题居中 -->
+            <div style="width: 40px"></div>
+          </div>
+
+          <!-- 元数据区域保持不变 -->
           <div class="top-meta">
             <div class="dev-time">
               开发时间：{{ projectDetail.timeRange || "-" }}
@@ -252,7 +299,7 @@
 // 添加必要的导入
 import CommonFooter from "../components/CommonFooter.vue"
 import { ref, onMounted, onUnmounted, computed, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import {
   User,
   Cpu,
@@ -260,6 +307,7 @@ import {
   Document,
   Picture,
   Finished,
+  ArrowLeft,
 } from "@element-plus/icons-vue"
 import {
   ElCarousel,
@@ -274,10 +322,16 @@ import type { ProjectDetail as ProjectDetailType } from "../services/projectServ
 
 // 路由相关
 const route = useRoute()
+const router = useRouter()
 const projectId = computed(() => {
   const id = route.query.id
   return id ? String(id) : ""
 })
+
+// 添加返回项目列表的方法
+const goBackToList = () => {
+  router.push("/projects")
+}
 
 // 响应式数据
 const isMobile = ref(false)
@@ -499,6 +553,54 @@ $font-weight-bold: 600;
   padding: $spacing-md 0; // PC端：24px上下
   margin-bottom: $spacing-md; // 修复与下方间距：增加底部margin 24px
 
+  // 返回按钮容器样式
+  .back-to-list-container {
+    margin-bottom: $spacing-md;
+    text-align: left;
+  }
+
+  // 返回按钮样式
+  .back-to-list-btn {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    background-color: transparent;
+    border: 1px solid $color-neutral-200;
+    border-radius: $radius-md;
+    color: $color-neutral-600;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $color-primary-light;
+      border-color: $color-primary;
+      color: $color-primary;
+      transform: translateX(-2px);
+    }
+
+    // 移动端优化
+    @media (max-width: 768px) {
+      padding: $spacing-xs $spacing-xs;
+      font-size: $font-size-xs;
+      .back-text {
+        display: none; // 在小屏幕上只显示图标
+      }
+    }
+  }
+
+  // 返回图标样式
+  .back-icon {
+    font-size: $font-size-base;
+  }
+
+  // 返回文本样式
+  .back-text {
+    white-space: nowrap;
+  }
+
   // 手机端适配：进一步减小内边距和字体，避免占1/3屏幕
   @media (max-width: 768px) {
     padding: $spacing-sm 0; // 手机端：16px上下
@@ -621,10 +723,6 @@ $font-weight-bold: 600;
 // 6. 轮播图核心样式 - 优化移动端显示
 .project-carousel {
   margin-top: $spacing-sm;
-  // 确保轮播图容器自身居中
-  display: flex;
-  justify-content: center;
-
   // 卡片式轮播：PC端样式保持不变
   &.el-carousel--card {
     .el-carousel__container {
@@ -644,7 +742,7 @@ $font-weight-bold: 600;
 
     // 轮播项宽度：优化为60%，确保更好的对称性
     .carousel-item {
-      width: 60% !important; // 从58%调整为60%，提高对称性
+      width: 50% !important; // 从58%调整为60%，提高对称性
       opacity: 0.7;
       transition: $transition-slow;
       border-radius: $radius-sm !important;
