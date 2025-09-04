@@ -743,11 +743,11 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue"
-import { useRouter } from "vue-router"
+// import { useRouter } from "vue-router"
 import CommonNavbar from "../components/CommonNavbar.vue"
 import CommonFooter from "../components/CommonFooter.vue"
 
-const router = useRouter()
+// const router = useRouter()
 // 跳转到相关赛事的官网
 const goToChallengeCup = () => {
   window.open("http://www.tiaozhanbei.net/", "_blank")

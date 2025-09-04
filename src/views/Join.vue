@@ -364,7 +364,6 @@
                   v-model="formData.major"
                 />
               </div>
-              <!-- 年级字段已删除 -->
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -403,8 +402,6 @@
                 </p>
               </div>
             </div>
-
-            <!-- 邮箱字段已删除 -->
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
@@ -556,6 +553,76 @@
       </section>
     </main>
     <CommonFooter />
+
+    <!-- 报名成功弹窗：新增QQ群跳转链接 + 重新排版 -->
+    <div v-if="showSuccessModal" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <!-- 弹窗头部：标题+关闭按钮 -->
+        <div
+          class="modal-header flex justify-between items-center border-b pb-3 mb-4"
+        >
+          <h3 class="text-xl font-bold text-dark">报名成功！</h3>
+          <button
+            class="close-button text-gray-500 hover:text-gray-700"
+            @click="closeModal"
+          >
+            <i class="fa fa-times text-lg"></i>
+          </button>
+        </div>
+
+        <!-- 弹窗主体：提示文字 + 二维码 + 操作按钮 -->
+        <div class="modal-body">
+          <!-- 提示文字 -->
+          <p class="text-center text-gray-600 mb-6">
+            请通过以下方式加入QQ群，获取面试安排与后续通知
+          </p>
+
+          <!-- 二维码：居中展示 -->
+          <div class="qrcode-container flex justify-center mb-8">
+            <img
+              src="/zhaoshengQQqun.jpg"
+              alt="社团招新QQ群二维码（扫码加群）"
+              class="qrcode-image w-48 h-48 object-contain border border-gray-100 p-4 rounded-lg"
+              @error="handleQrError"
+            />
+          </div>
+
+          <!-- 操作按钮区：群号复制 + 直接跳转，响应式布局 -->
+          <div
+            class="action-buttons flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <!-- 群号+复制按钮 -->
+            <div
+              class="group-number-wrapper flex items-center gap-2 bg-gray-50 px-4 py-2.5 rounded-lg"
+            >
+              <span class="text-gray-800 font-medium">群号：</span>
+              <span
+                id="groupNumber"
+                class="group-number text-primary font-semibold"
+                >967370226</span
+              >
+              <button
+                class="copy-button text-primary hover:text-primary-dark transition-colors"
+                @click="copyGroupNumber"
+                title="复制群号"
+              >
+                <i class="fa fa-copy mr-1"></i> {{ copyButtonText }}
+              </button>
+            </div>
+
+            <!-- 直接跳转加群链接：突出显示 -->
+            <a
+              href="https://qm.qq.com/q/KiJWZAQ1C6"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <i class="fa fa-external-link"></i> 直接加群
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -563,7 +630,7 @@
 import CommonFooter from "../components/CommonFooter.vue"
 import CommonNavbar from "../components/CommonNavbar.vue" // 引入通用导航栏
 import { ref, onMounted } from "vue"
-// 导入 submitApplication 函数
+// 导入 submitApplication 函数（请确保此函数路径正确且能正常请求）
 import { submitApplication } from "../services/applicationsService"
 type ElementRef = HTMLElement | null
 
@@ -670,7 +737,18 @@ const departmentsRef = ref<ElementRef | null>(null)
 const formRef = ref<ElementRef | null>(null)
 const faqRef = ref<ElementRef | null>(null)
 
+// 弹窗相关状态
+const showSuccessModal = ref(false)
+const copyButtonText = ref("复制")
+
 // 2. 方法定义
+// 二维码加载失败处理（兜底提示）
+const handleQrError = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  img.src =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRR5YiG5Lq65Yqo5pyN5Lq6PC90ZXh0Pjwvc3ZnPg=="
+  img.alt = "QQ群二维码加载失败，可通过群号967370226或链接加群"
+}
 
 // 滚动动画：监听section进入视口
 const observeSections = () => {
@@ -745,11 +823,12 @@ const handleSubmit = async () => {
         '<i class="fa fa-spinner fa-spin mr-2"></i> 提交中...'
     }
 
-    // 4. 使用封装的 axios 请求提交表单
+    // 4. 使用封装的 axios 请求提交表单（请确保submitApplication函数正确）
     await submitApplication(formData.value)
 
-    // 5. 处理成功响应
-    alert("报名信息提交成功！我们将尽快与您联系，请保持手机畅通。")
+    // 5. 处理成功响应 - 显示弹窗
+    showSuccessModal.value = true
+
     // 重置表单
     formData.value = {
       name: "",
@@ -780,6 +859,41 @@ const handleSubmit = async () => {
       submitButton.innerHTML = '<i class="fa fa-paper-plane mr-2"></i> 提交报名'
     }
   }
+}
+
+// 复制群号函数
+const copyGroupNumber = async () => {
+  try {
+    // 标准的Clipboard API
+    await navigator.clipboard.writeText("967370226")
+    copyButtonText.value = "已复制"
+
+    // 3秒后恢复按钮文本
+    setTimeout(() => {
+      copyButtonText.value = "复制"
+    }, 3000)
+  } catch (err) {
+    // 降级方案：使用传统的select和execCommand方法
+    const groupNumberElement = document.getElementById("groupNumber")
+    if (groupNumberElement) {
+      const range = document.createRange()
+      range.selectNode(groupNumberElement)
+      window.getSelection()?.removeAllRanges()
+      window.getSelection()?.addRange(range)
+      document.execCommand("copy")
+      window.getSelection()?.removeAllRanges()
+
+      copyButtonText.value = "已复制"
+      setTimeout(() => {
+        copyButtonText.value = "复制"
+      }, 3000)
+    }
+  }
+}
+
+// 关闭弹窗
+const closeModal = () => {
+  showSuccessModal.value = false
 }
 
 // 3. 生命周期钩子
@@ -845,5 +959,111 @@ button:disabled {
 /* FAQ内容样式：处理换行符 */
 .faq-content {
   white-space: pre-line; /* 保留文本中的换行符 */
+}
+
+/* ########################### 弹窗样式（重新排版优化） ########################### */
+/* 遮罩层：全屏覆盖，半透明背景 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* 确保在最上层 */
+  backdrop-filter: blur(2px); /* 毛玻璃效果，提升视觉层次 */
+}
+
+/* 弹窗内容：白色背景，居中，阴影 */
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+/* 弹窗头部：标题+关闭按钮 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 关闭按钮：hover效果优化 */
+.close-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+/* 二维码容器：增加边框和内边距，提升精致度 */
+.qrcode-container {
+  display: flex;
+  justify-content: center;
+}
+.qrcode-image {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+
+/* 操作按钮区：响应式布局，移动端垂直排列 */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .action-buttons {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+}
+
+/* 群号包装器：浅灰色背景，区分功能区域 */
+.group-number-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+}
+
+/* 复制按钮：精简文字，突出图标 */
+.copy-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 直接加群按钮：主色背景，突出行动点 */
+.join-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  text-decoration: none; /* 清除a标签默认下划线 */
 }
 </style>
