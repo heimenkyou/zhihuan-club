@@ -91,6 +91,7 @@
                   </div>
                 </div>
                 <button
+                  @click="goToChallengeCup"
                   class="w-full py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors"
                 >
                   查看详情
@@ -134,6 +135,7 @@
                   </div>
                 </div>
                 <button
+                  @click="goToInternetPlus"
                   class="w-full py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors"
                 >
                   查看详情
@@ -177,6 +179,7 @@
                   </div>
                 </div>
                 <button
+                  @click="goToACM"
                   class="w-full py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors"
                 >
                   查看详情
@@ -220,6 +223,7 @@
                   </div>
                 </div>
                 <button
+                  @click="goToElectronicDesign"
                   class="w-full py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors"
                 >
                   查看详情
@@ -263,6 +267,7 @@
                   </div>
                 </div>
                 <button
+                  @click="goToSmartCar"
                   class="w-full py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors"
                 >
                   查看详情
@@ -306,6 +311,7 @@
                   </div>
                 </div>
                 <button
+                  @click="goToMathModeling"
                   class="w-full py-2 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors"
                 >
                   查看详情
@@ -737,8 +743,29 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue"
+import { useRouter } from "vue-router"
 import CommonNavbar from "../components/CommonNavbar.vue"
 import CommonFooter from "../components/CommonFooter.vue"
+
+const router = useRouter()
+// 跳转到相关赛事的官网
+const goToChallengeCup = () => {
+  window.open('http://www.tiaozhanbei.net/', '_blank')
+}
+const goToInternetPlus = () => {
+  window.open('https://cy.ncss.cn/', '_blank')
+}
+const goToACM = () => {
+  window.open('https://acm.hust.edu.cn/', '_blank')
+}
+const goToElectronicDesign = () => {
+  window.open('https://www.edc.hust.edu.cn/', '_blank')
+}
+const goToSmartCar = () => {
+  window.open('http://www.smartcarrace.com/', '_blank')
+}
+const goToMathModeling = () => {
+  window.open('https://www.mcm.edu.cn/', '_blank')}
 
 // 完整保留原HTML的滚动动画逻辑（迁移自DOMContentLoaded）
 onMounted(() => {
