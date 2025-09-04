@@ -303,7 +303,7 @@
             <p style="color: #6b7280; margin-bottom: 1rem">
               国内规模最大的算法竞赛之一，面向全国高校学生
             </p>
-            <a href="#" style="color: #3b82f6; font-weight: 500"
+            <a href="https://www.lanqiao.cn/" style="color: #3b82f6; font-weight: 500"
               >了解更多
               <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
             ></a>
@@ -348,7 +348,7 @@
             <p style="color: #6b7280; margin-bottom: 1rem">
               国际大学生程序设计竞赛，计算机领域的奥林匹克
             </p>
-            <a href="#" style="color: #3b82f6; font-weight: 500"
+            <a href="https://icpc.global" style="color: #3b82f6; font-weight: 500"
               >了解更多
               <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
             ></a>
@@ -393,7 +393,7 @@
             <p style="color: #6b7280; margin-bottom: 1rem">
               全国大学生课外学术科技作品竞赛，科技创新的舞台
             </p>
-            <a href="#" style="color: #3b82f6; font-weight: 500"
+            <a href="www.tiaozhanbei.net" style="color: #3b82f6; font-weight: 500"
               >了解更多
               <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
             ></a>
@@ -438,7 +438,7 @@
             <p style="color: #6b7280; margin-bottom: 1rem">
               培养创新能力，展示计算机应用成果的重要平台
             </p>
-            <a href="#" style="color: #3b82f6; font-weight: 500"
+            <a href="http://jsjds.blcu.edu.cn" style="color: #3b82f6; font-weight: 500"
               >了解更多
               <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
             ></a>
