@@ -85,10 +85,10 @@
                     <i class="fa fa-calendar mr-2"></i>
                     <span>每年11月</span>
                   </div>
-                  <div class="flex items-center text-gray-500">
+                  <!-- <div class="flex items-center text-gray-500">
                     <i class="fa fa-trophy mr-2"></i>
                     <span>28次获奖</span>
-                  </div>
+                  </div> -->
                 </div>
                 <button
                   @click="goToChallengeCup"
@@ -129,10 +129,10 @@
                     <i class="fa fa-calendar mr-2"></i>
                     <span>每年9月</span>
                   </div>
-                  <div class="flex items-center text-gray-500">
+                  <!-- <div class="flex items-center text-gray-500">
                     <i class="fa fa-trophy mr-2"></i>
                     <span>22次获奖</span>
-                  </div>
+                  </div> -->
                 </div>
                 <button
                   @click="goToInternetPlus"
@@ -173,10 +173,10 @@
                     <i class="fa fa-calendar mr-2"></i>
                     <span>每年10月</span>
                   </div>
-                  <div class="flex items-center text-gray-500">
+                  <!-- <div class="flex items-center text-gray-500">
                     <i class="fa fa-trophy mr-2"></i>
                     <span>15次获奖</span>
-                  </div>
+                  </div> -->
                 </div>
                 <button
                   @click="goToACM"
@@ -217,10 +217,10 @@
                     <i class="fa fa-calendar mr-2"></i>
                     <span>偶数年8月</span>
                   </div>
-                  <div class="flex items-center text-gray-500">
+                  <!-- <div class="flex items-center text-gray-500">
                     <i class="fa fa-trophy mr-2"></i>
                     <span>18次获奖</span>
-                  </div>
+                  </div> -->
                 </div>
                 <button
                   @click="goToElectronicDesign"
@@ -261,10 +261,10 @@
                     <i class="fa fa-calendar mr-2"></i>
                     <span>每年7月</span>
                   </div>
-                  <div class="flex items-center text-gray-500">
+                  <!-- <div class="flex items-center text-gray-500">
                     <i class="fa fa-trophy mr-2"></i>
                     <span>12次获奖</span>
-                  </div>
+                  </div> -->
                 </div>
                 <button
                   @click="goToSmartCar"
@@ -305,10 +305,10 @@
                     <i class="fa fa-calendar mr-2"></i>
                     <span>每年9月</span>
                   </div>
-                  <div class="flex items-center text-gray-500">
+                  <!-- <div class="flex items-center text-gray-500">
                     <i class="fa fa-trophy mr-2"></i>
                     <span>15次获奖</span>
-                  </div>
+                  </div> -->
                 </div>
                 <button
                   @click="goToMathModeling"
@@ -750,22 +750,23 @@ import CommonFooter from "../components/CommonFooter.vue"
 const router = useRouter()
 // 跳转到相关赛事的官网
 const goToChallengeCup = () => {
-  window.open('http://www.tiaozhanbei.net/', '_blank')
+  window.open("http://www.tiaozhanbei.net/", "_blank")
 }
 const goToInternetPlus = () => {
-  window.open('https://cy.ncss.cn/', '_blank')
+  window.open("https://cy.ncss.cn/", "_blank")
 }
 const goToACM = () => {
-  window.open('https://acm.hust.edu.cn/', '_blank')
+  window.open("https://acm.hust.edu.cn/", "_blank")
 }
 const goToElectronicDesign = () => {
-  window.open('https://www.edc.hust.edu.cn/', '_blank')
+  window.open("https://www.edc.hust.edu.cn/", "_blank")
 }
 const goToSmartCar = () => {
-  window.open('http://www.smartcarrace.com/', '_blank')
+  window.open("http://www.smartcarrace.com/", "_blank")
 }
 const goToMathModeling = () => {
-  window.open('https://www.mcm.edu.cn/', '_blank')}
+  window.open("https://www.mcm.edu.cn/", "_blank")
+}
 
 // 完整保留原HTML的滚动动画逻辑（迁移自DOMContentLoaded）
 onMounted(() => {
