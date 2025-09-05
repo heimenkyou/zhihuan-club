@@ -8,11 +8,20 @@ const isPlaying = ref(false)
 const volume = ref(0.3)
 const playerRef = ref<HTMLDivElement | null>(null)
 const volumeRef = ref<HTMLDivElement | null>(null)
-const isDragging = ref(false)
-const elementOffset = ref({ x: 0, y: 0 })
 const navbarHeight = ref(0)
-const showControls = ref(false)
-const hideControlsTimer = ref<ReturnType<typeof setTimeout> | null>(null)
+const isExpanded = ref(false)
+const isDragging = ref(false)
+const showVolumeControl = ref(false)
+const hasAttemptedAutoPlay = ref(false)
+const showClickTip = ref(true) // 首次进入"点我"提示
+
+// 模拟歌曲列表
+const songs = ref([
+  { id: 1, name: "音乐1", src: "/musics/music.mp3" },
+  { id: 2, name: "音乐2", src: "/music.mp3" },
+  { id: 3, name: "音乐3", src: "/music.mp3" },
+])
+const currentSongIndex = ref(0)
 
 // 播放/暂停控制
 const togglePlay = () => {
@@ -22,69 +31,144 @@ const togglePlay = () => {
     if (isPlaying.value) {
       audioRef.value.pause()
       isPlaying.value = false
-      showControls.value = true
-      resetHideTimer(3000)
     } else {
       audioRef.value
         .play()
         .then(() => {
           isPlaying.value = true
-          showControls.value = false
-          clearHideTimer()
         })
         .catch((err) => {
           console.error("播放失败:", err)
-          showControls.value = true
-          resetHideTimer(3000)
         })
     }
   } catch (err) {
     console.error("音乐控制失败:", err)
-    showControls.value = true
-    resetHideTimer(3000)
   }
+}
+
+// 播放指定歌曲
+const playSong = (index: number) => {
+  if (!audioRef.value) return
+
+  currentSongIndex.value = index
+  audioRef.value.src = songs.value[index].src
+  audioRef.value.volume = volume.value
+
+  audioRef.value
+    .play()
+    .then(() => {
+      isPlaying.value = true
+    })
+    .catch((err) => {
+      console.error("播放失败:", err)
+    })
+}
+
+// 上一首
+const prevSong = () => {
+  let newIndex = currentSongIndex.value - 1
+  if (newIndex < 0) newIndex = songs.value.length - 1
+  playSong(newIndex)
+}
+
+// 下一首
+const nextSong = () => {
+  let newIndex = currentSongIndex.value + 1
+  if (newIndex >= songs.value.length) newIndex = 0
+  playSong(newIndex)
 }
 
 // 音量控制
 const changeVolume = (newVolume: number) => {
   volume.value = newVolume
   if (audioRef.value) audioRef.value.volume = newVolume
-  resetHideTimer(isPlaying.value ? 2000 : 3000)
-  adjustVolumePosition()
 }
 
-// 控制显示/自动隐藏
-const handlePlayerClick = () => {
-  if (!audioRef.value) return
-
-  if (isPlaying.value) {
-    showControls.value = true
-    resetHideTimer(2000)
+// 切换音量控制显示
+const toggleVolumeControl = (e?: MouseEvent) => {
+  if (e) e.stopPropagation()
+  showVolumeControl.value = !showVolumeControl.value
+  if (showVolumeControl.value) {
     nextTick(() => adjustVolumePosition())
-  } else {
-    togglePlay()
   }
 }
 
-const resetHideTimer = (delay: number = 2000) => {
-  clearHideTimer()
-  if (showControls.value) {
-    hideControlsTimer.value = setTimeout(() => {
-      showControls.value = false
-    }, delay)
-  }
+// 切换按钮展开/收起（隐藏"点我"提示）
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value
+  showClickTip.value = false // 点击后隐藏提示
 }
 
-const clearHideTimer = () => {
-  if (hideControlsTimer.value) {
-    clearTimeout(hideControlsTimer.value)
-    hideControlsTimer.value = null
+// 开始拖拽（解决移动端滑动问题）
+const startDrag = (e: MouseEvent | TouchEvent) => {
+  if (!playerRef.value) return
+  e.stopPropagation()
+  isDragging.value = true
+
+  // 获取鼠标/触摸位置
+  const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
+  const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
+
+  // 获取元素位置
+  const rect = playerRef.value.getBoundingClientRect()
+  // 计算偏移量
+  const offsetX = clientX - rect.left
+  const offsetY = clientY - rect.top
+
+  // 处理拖拽移动
+  const handleMove = (moveEvent: Event) => {
+    const e = moveEvent as MouseEvent | TouchEvent
+    if (!isDragging.value || !playerRef.value) return
+
+    // 阻止移动端屏幕滚动
+    if ("touches" in e) e.preventDefault()
+
+    const moveClientX = "touches" in e ? e.touches[0].clientX : e.clientX
+    const moveClientY = "touches" in e ? e.touches[0].clientY : e.clientY
+
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+    const playerWidth = playerRef.value.offsetWidth || 120
+    const playerHeight = playerRef.value.offsetHeight || 120
+
+    // 计算新位置（边界限制：顶部间距适配导航栏）
+    let newX = moveClientX - offsetX
+    let newY = moveClientY - offsetY
+
+    newX = Math.max(10, Math.min(newX, windowWidth - playerWidth - 10))
+    newY = Math.max(
+      navbarHeight.value + 50, // 顶部间距，避免遮挡导航栏
+      Math.min(newY, windowHeight - playerHeight - 30)
+    )
+
+    // 设置新位置
+    playerRef.value.style.left = `${newX}px`
+    playerRef.value.style.top = `${newY}px`
+    playerRef.value.style.bottom = "auto"
+    playerRef.value.style.right = "auto"
   }
+
+  // 结束拖拽
+  const handleEnd = () => {
+    isDragging.value = false
+    document.removeEventListener("mousemove", handleMove as EventListener)
+    document.removeEventListener("mouseup", handleEnd as EventListener)
+    document.removeEventListener("touchmove", handleMove as EventListener)
+    document.removeEventListener("touchend", handleEnd as EventListener)
+  }
+
+  // 添加事件监听器
+  document.addEventListener("mousemove", handleMove as EventListener)
+  document.addEventListener("mouseup", handleEnd as EventListener)
+  document.addEventListener("touchmove", handleMove as EventListener, {
+    passive: false,
+  })
+  document.addEventListener("touchend", handleEnd as EventListener)
 }
 
-// 音量条位置自适应
+// 音量控制条位置自适应
 const adjustVolumePosition = () => {
-  if (!playerRef.value || !volumeRef.value || !showControls.value) return
+  if (!playerRef.value || !volumeRef.value || !showVolumeControl.value) return
 
   const playerEl = playerRef.value
   const volumeEl = volumeRef.value
@@ -92,56 +176,55 @@ const adjustVolumePosition = () => {
   const windowHeight = window.innerHeight
 
   const playerRect = playerEl.getBoundingClientRect()
-  const playerWidth = playerRect.width || 48
-  const leftSpace = playerRect.left
-  const rightSpace = windowWidth - playerRect.right
   const volumeWidth = volumeEl.offsetWidth || 128
+  const volumeHeight = volumeEl.offsetHeight || 40
 
-  // 横向方向判断
-  let targetDirection: "left" | "right" = "right"
-  const isLeftSpaceEnough = leftSpace >= volumeWidth
-  const isRightSpaceEnough = rightSpace >= volumeWidth
+  // 计算可用空间
+  const rightSpace = windowWidth - playerRect.right - 10
+  const bottomSpace = windowHeight - playerRect.bottom - 10
+  const leftSpace = playerRect.left - 10
+  const topSpace = playerRect.top - navbarHeight.value - 10
 
-  if (isLeftSpaceEnough && !isRightSpaceEnough) {
-    targetDirection = "left"
-  } else if (!isLeftSpaceEnough && isRightSpaceEnough) {
-    targetDirection = "right"
-  } else {
-    targetDirection = leftSpace >= rightSpace ? "left" : "right"
+  let newTop = 0
+  let newLeft = 0
+
+  // 优先右侧显示
+  if (rightSpace >= volumeWidth) {
+    newLeft = playerRect.right + 10
+    newTop = playerRect.top + playerRect.height / 2 - volumeHeight / 2
   }
+  // 右侧不够则下方显示
+  else if (bottomSpace >= volumeHeight) {
+    newLeft = playerRect.left + playerRect.width / 2 - volumeWidth / 2
+    newTop = playerRect.bottom + 10
+  }
+  // 下方不够则左侧显示
+  else if (leftSpace >= volumeWidth) {
+    newLeft = playerRect.left - volumeWidth - 10
+    newTop = playerRect.top + playerRect.height / 2 - volumeHeight / 2
+  }
+  // 左侧不够则上方显示（增加顶部间距检查）
+  else if (topSpace >= volumeHeight + 10) {
+    newLeft = playerRect.left + playerRect.width / 2 - volumeWidth / 2
+    newTop = playerRect.top - volumeHeight - 10
+  }
+  // 兜底：屏幕中心附近
+  else {
+    newLeft = windowWidth / 2 - volumeWidth / 2
+    newTop = windowHeight / 2 - volumeHeight / 2
+  }
+
+  // 最终边界检查
+  newLeft = Math.max(10, Math.min(newLeft, windowWidth - volumeWidth - 10))
+  newTop = Math.max(
+    navbarHeight.value + 10,
+    Math.min(newTop, windowHeight - volumeHeight - 10)
+  )
 
   // 应用位置
-  volumeEl.style.top = "50%"
-  volumeEl.style.transform = "translateY(-50%)"
-  volumeEl.style.bottom = "auto"
-
-  if (targetDirection === "left") {
-    volumeEl.style.left = "auto"
-    volumeEl.style.right = `${playerWidth + 8}px`
-  } else {
-    volumeEl.style.right = "auto"
-    volumeEl.style.left = `${playerWidth + 8}px`
-  }
-
-  // 兜底防溢出
-  const volumeRect = volumeEl.getBoundingClientRect()
-  if (volumeRect.left < 0) {
-    volumeEl.style.left = "0"
-    volumeEl.style.right = "auto"
-  }
-  if (volumeRect.right > windowWidth) {
-    volumeEl.style.right = "0"
-    volumeEl.style.left = "auto"
-  }
-  if (volumeRect.top < navbarHeight.value) {
-    volumeEl.style.top = `${navbarHeight.value + 8}px`
-    volumeEl.style.transform = "none"
-  }
-  if (volumeRect.bottom > windowHeight) {
-    volumeEl.style.bottom = "8px"
-    volumeEl.style.top = "auto"
-    volumeEl.style.transform = "none"
-  }
+  volumeEl.style.position = "fixed"
+  volumeEl.style.top = `${newTop}px`
+  volumeEl.style.left = `${newLeft}px`
 }
 
 // 获取导航栏高度
@@ -150,199 +233,224 @@ const getNavbarHeight = () => {
   navbarHeight.value = navbar ? navbar.getBoundingClientRect().height || 60 : 60
 }
 
-// 拖拽功能 - 完全重写以确保PC和移动端都能正常工作
-const handleDragStart = (e: MouseEvent | TouchEvent) => {
-  if (!playerRef.value) return
-
-  // 阻止默认行为以避免冲突
-  if (e.preventDefault) {
-    e.preventDefault()
-  }
-
-  // 开始拖拽
-  isDragging.value = true
-
-  // 获取鼠标/触摸位置
-  const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-  const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
-
-  // 计算偏移量
-  const rect = playerRef.value.getBoundingClientRect()
-  elementOffset.value = {
-    x: clientX - rect.left,
-    y: clientY - rect.top,
-  }
-
-  // 添加全局事件监听器 - 关键修复：不使用capture模式
-  document.addEventListener("mousemove", handleDragMove)
-  document.addEventListener("mouseup", handleDragEnd)
-  document.addEventListener("touchmove", handleDragMove, { passive: false })
-  document.addEventListener("touchend", handleDragEnd)
-}
-
-const handleDragMove = (e: MouseEvent | TouchEvent) => {
-  if (!isDragging.value || !playerRef.value) return
-
-  // 阻止默认行为以确保流畅拖拽
-  if (e.preventDefault) {
-    e.preventDefault()
-  }
+// 【核心修改】子按钮位置计算：解决“离大按钮远”和“小按钮间距紧”
+const getButtonPosition = () => {
+  if (!playerRef.value) return {}
 
   const playerEl = playerRef.value
+  const playerRect = playerEl.getBoundingClientRect()
   const windowWidth = window.innerWidth
-  const windowHeight = window.innerHeight
-  const playerWidth = playerEl.offsetWidth || 48
-  const playerHeight = playerEl.offsetHeight || 48
 
-  // 获取当前坐标
-  const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-  const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
+  // 基础参数调整：
+  // 1. subBtnRadius保持20px（按钮尺寸不变）
+  // 2. arcRadius增量从60→35（缩小大按钮与小按钮的距离）
+  const mainBtnCenterX = playerRect.left + playerRect.width / 2
+  const mainBtnCenterY = playerRect.top + playerRect.height / 2
+  const mainBtnRadius = playerRect.width / 2
+  const subBtnRadius = 20
+  const arcRadius = mainBtnRadius + subBtnRadius + 35 // 核心：减小增量，拉近大-小按钮距离
 
-  // 计算新位置
-  let newX = clientX - elementOffset.value.x
-  let newY = clientY - elementOffset.value.y
+  // 1. 判断弹出方向（左/右）
+  const leftSpace = mainBtnCenterX - 10
+  const rightSpace = windowWidth - mainBtnCenterX - 10
+  const isRightArc = leftSpace < rightSpace
 
-  // 限制在窗口内
-  newX = Math.max(0, Math.min(newX, windowWidth - playerWidth))
-  newY = Math.max(
-    navbarHeight.value + 10,
-    Math.min(newY, windowHeight - playerHeight)
-  )
+  // 2. 角度跨度调整：从60°→120°（增大跨度，让小按钮分布更开）
+  // 向右弹出：90°→-30°（总跨度120°），向左弹出：90°→210°（对称120°）
+  const startAngle = isRightArc
+    ? Math.PI / 2 // 向右弹出-起始角度（90°，更靠上）
+    : Math.PI / 2 // 向左弹出-起始角度（90°，与右侧对称）
+  const endAngle = isRightArc
+    ? -Math.PI / 6 // 向右弹出-结束角度（-30°，更靠下）
+    : (Math.PI * 7) / 6 // 向左弹出-结束角度（210°，与右侧对称）
 
-  // 应用新位置
-  playerEl.style.position = "fixed"
-  playerEl.style.left = `${newX}px`
-  playerEl.style.top = `${newY}px`
-  playerEl.style.bottom = "auto"
-  playerEl.style.right = "auto"
+  // 3. 固定按钮顺序：move→prev→playPause→next→volume
+  const buttons = [
+    { key: "move", order: 0 }, // 最上方（拖拽按钮）
+    { key: "prev", order: 1 }, // 上一首（move下方）
+    { key: "playPause", order: 2 }, // 播放/暂停（中间）
+    { key: "next", order: 3 }, // 下一首（playPause下方）
+    { key: "volume", order: 4 }, // 最下方（音量按钮）
+  ]
+  const btnCount = buttons.length
+  const angleStep = (endAngle - startAngle) / (btnCount - 1) // 角度间隔增大，小按钮间距变宽
 
-  // 调整音量条位置
-  if (showControls.value) adjustVolumePosition()
+  const positions: Record<string, { left: string; top: string }> = {}
+
+  buttons.forEach((btn) => {
+    const currentAngle = startAngle + angleStep * btn.order
+
+    // 计算子按钮坐标（跨度增大后，按钮间距离自动拉开）
+    const targetX = mainBtnCenterX + Math.cos(currentAngle) * arcRadius
+    const targetY = mainBtnCenterY + Math.sin(currentAngle) * arcRadius
+
+    // 转换为相对位置
+    const relLeft = targetX - playerRect.left - subBtnRadius
+    const relTop = targetY - playerRect.top - subBtnRadius
+
+    positions[btn.key] = {
+      left: `${relLeft}px`,
+      top: `${relTop}px`,
+    }
+  })
+
+  return positions
 }
 
-const handleDragEnd = () => {
-  isDragging.value = false
+// 用户首次交互自动播放
+const handleUserInteraction = async () => {
+  if (hasAttemptedAutoPlay.value || isPlaying.value || !audioRef.value) return
+  hasAttemptedAutoPlay.value = true
 
-  // 移除事件监听器 - 确保与添加时完全一致
-  document.removeEventListener("mousemove", handleDragMove)
-  document.removeEventListener("mouseup", handleDragEnd)
-  document.removeEventListener("touchmove", handleDragMove)
-  document.removeEventListener("touchend", handleDragEnd)
-}
-
-// 协议检测自动播放
-const checkPolicyAndAutoPlay = async () => {
   await nextTick()
-  if (!audioRef.value) return
 
-  const agreed = localStorage.getItem("hasAgreedToPolicies")
-  if (agreed === "true") {
-    audioRef.value
-      .play()
-      .then(() => {
-        isPlaying.value = true
-        showControls.value = false
-        console.log("协议已同意，自动播放音乐")
-      })
-      .catch((err) => {
-        console.warn("自动播放被限制，点击按钮可播放:", err)
-        showControls.value = true
-        resetHideTimer(3000)
-      })
-  } else {
-    console.log("未同意协议，不自动播放")
-    showControls.value = true
-    resetHideTimer(3000)
+  try {
+    await audioRef.value.play()
+    isPlaying.value = true
+  } catch (err) {
+    console.warn("自动播放被浏览器限制，请用户手动点击播放按钮")
   }
+}
+
+// 点击页面其他地方关闭音量控制和展开的按钮
+const handleDocumentClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  if (playerRef.value && !playerRef.value.contains(target)) {
+    showVolumeControl.value = false
+    isExpanded.value = false
+  }
+}
+
+// 设置播放器初始位置（移动端友好：左上偏移，避免遮挡核心内容）
+const setInitialPlayerPosition = () => {
+  if (!playerRef.value) return
+
+  const playerEl = playerRef.value
+  const initialLeft = 10
+  const initialTop = navbarHeight.value + 50 // 顶部间距，避免遮挡导航栏
+
+  playerEl.style.left = `${initialLeft}px`
+  playerEl.style.top = `${initialTop}px`
 }
 
 // 生命周期
 onMounted(() => {
   getNavbarHeight()
-  checkPolicyAndAutoPlay()
+  nextTick(() => setInitialPlayerPosition())
+
   window.addEventListener("resize", () => {
     getNavbarHeight()
-    if (showControls.value) adjustVolumePosition()
-  })
-
-  // 为body添加点击事件，点击其他地方时隐藏控制
-  const handleBodyClick = () => {
-    if (showControls.value) {
-      showControls.value = false
+    setInitialPlayerPosition()
+    if (showVolumeControl.value) {
+      nextTick(() => adjustVolumePosition())
     }
-  }
-  document.body.addEventListener("click", handleBodyClick)
-
-  onUnmounted(() => {
-    document.body.removeEventListener("click", handleBodyClick)
   })
+
+  document.addEventListener("click", handleUserInteraction, {
+    once: true,
+    passive: true,
+  })
+  document.addEventListener("touchstart", handleUserInteraction, {
+    once: true,
+    passive: true,
+  })
+
+  document.addEventListener("click", handleDocumentClick)
 })
 
 onUnmounted(() => {
   if (audioRef.value) audioRef.value.pause()
-  clearHideTimer()
   window.removeEventListener("resize", getNavbarHeight)
-
-  // 确保移除所有拖拽事件监听器
-  document.removeEventListener("mousemove", handleDragMove)
-  document.removeEventListener("mouseup", handleDragEnd)
-  document.removeEventListener("touchmove", handleDragMove)
-  document.removeEventListener("touchend", handleDragEnd)
+  document.removeEventListener("click", handleUserInteraction)
+  document.removeEventListener("touchstart", handleUserInteraction)
+  document.removeEventListener("click", handleDocumentClick)
 })
 </script>
 
 <template>
-  <!-- 背景音乐播放器（拖拽修复） -->
+  <!-- 背景音乐播放器 -->
   <div
     ref="playerRef"
-    class="background-music-player fixed bottom-6 right-6 z-50"
-    @mousedown="handleDragStart"
-    @touchstart="handleDragStart"
-    @click="handlePlayerClick"
+    class="music-player-container fixed z-50"
+    :class="{ 'is-dragging': isDragging }"
   >
-    <audio
-      ref="audioRef"
-      src="/music.mp3"
-      loop
-      :volume="volume"
-      @playing="isPlaying = true"
-      @pause="isPlaying = false"
-    />
+    <!-- 首次进入"点我"提示 -->
+    <div v-if="showClickTip" class="click-tip">点我</div>
 
-    <!-- 播放控制按钮 -->
+    <!-- 主按钮 -->
     <button
-      class="music-control-btn relative w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-all duration-300"
-      :class="{ playing: isPlaying && !showControls }"
-      aria-label="{{ isPlaying ? '显示音乐控制' : '播放音乐' }}"
-      @click.stop="handlePlayerClick"
+      class="main-button relative w-16 h-16 md:w-20 md:h-20 rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-all duration-300"
+      :class="{ 'is-playing': isPlaying }"
+      @click="toggleExpand"
+      aria-label="音乐控制中心"
     >
       <img
         src="/image.png"
         alt="音乐控制背景"
-        class="music-background-image absolute inset-0 w-full h-full rounded-full object-cover"
+        class="background-image absolute inset-0 w-full h-full rounded-full object-cover"
       />
-      <!-- 图标层 -->
-      <div
-        v-if="showControls"
-        class="music-icon-overlay relative z-10 text-white p-2"
-      >
-        <i
-          v-if="!isPlaying"
-          class="fa fa-play text-xl"
-          @click.stop="togglePlay"
-        ></i>
-        <i v-else class="fa fa-pause text-xl" @click.stop="togglePlay"></i>
-      </div>
     </button>
+
+    <!-- 子按钮容器（弧形环绕） -->
+    <div class="sub-buttons-container" :class="{ 'is-expanded': isExpanded }">
+      <!-- 播放/暂停按钮 -->
+      <button
+        class="sub-button"
+        :style="getButtonPosition().playPause"
+        @click.stop="togglePlay"
+        aria-label="播放/暂停"
+      >
+        <i v-if="!isPlaying" class="fa fa-play text-white text-lg"></i>
+        <i v-else class="fa fa-pause text-white text-lg"></i>
+      </button>
+
+      <!-- 上一首按钮 -->
+      <button
+        class="sub-button"
+        :style="getButtonPosition().prev"
+        @click.stop="prevSong"
+        aria-label="上一首"
+      >
+        <i class="fa fa-step-backward text-white text-lg"></i>
+      </button>
+
+      <!-- 下一首按钮 -->
+      <button
+        class="sub-button"
+        :style="getButtonPosition().next"
+        @click.stop="nextSong"
+        aria-label="下一首"
+      >
+        <i class="fa fa-step-forward text-white text-lg"></i>
+      </button>
+
+      <!-- 音量按钮 -->
+      <button
+        class="sub-button"
+        :style="getButtonPosition().volume"
+        @click.stop="toggleVolumeControl"
+        aria-label="音量控制"
+      >
+        <i class="fa fa-volume-up text-white text-lg"></i>
+      </button>
+
+      <!-- 拖拽按钮 -->
+      <button
+        class="sub-button"
+        :style="getButtonPosition().move"
+        @mousedown="startDrag"
+        @touchstart="startDrag"
+        aria-label="移动播放器"
+      >
+        <i class="fa fa-arrows text-white text-lg"></i>
+      </button>
+    </div>
 
     <!-- 音量控制滑块 -->
     <div
       ref="volumeRef"
-      v-if="showControls"
-      class="volume-control absolute p-2 bg-white rounded-lg shadow-md z-10"
-      @mousedown.stop
-      @touchstart.stop
-      @touchmove="resetHideTimer(isPlaying ? 2000 : 3000)"
+      v-if="showVolumeControl"
+      class="volume-control bg-white rounded-lg shadow-lg z-20"
     >
       <input
         type="range"
@@ -355,6 +463,17 @@ onUnmounted(() => {
         aria-label="音乐音量"
       />
     </div>
+
+    <!-- 音频元素 -->
+    <audio
+      ref="audioRef"
+      :src="songs[currentSongIndex].src"
+      loop
+      :volume="volume"
+      @playing="isPlaying = true"
+      @pause="isPlaying = false"
+      @ended="nextSong"
+    />
   </div>
 
   <PolicyModal />
@@ -362,38 +481,62 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* 背景音乐播放器样式 */
-.background-music-player {
+/* 音乐播放器容器 */
+.music-player-container {
   position: fixed;
   z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 8px;
   user-select: none;
-  padding: 4px;
-  cursor: move; /* 默认设置为可移动光标 */
+  cursor: default;
 }
 
-/* 音乐控制按钮 */
-.music-control-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+.music-player-container.is-dragging {
+  cursor: move;
+}
+
+/* "点我"提示样式 */
+.click-tip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  animation: tipFade 1.5s ease-in-out infinite alternate;
+  z-index: 3;
+}
+
+@keyframes tipFade {
+  from {
+    opacity: 0.8;
+    transform: translateY(-50%) scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.05);
+  }
+}
+
+/* 主按钮样式 */
+.main-button {
   border: none;
-  cursor: inherit; /* 继承父元素的光标样式 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   background: transparent;
   outline: none;
+  position: relative;
+  z-index: 2;
 }
 
-/* 播放状态下的旋转动画 */
-.music-control-btn.playing {
-  animation: rotate 15s linear infinite;
+.main-button.is-playing {
+  animation: rotate 20s linear infinite;
 }
 
-/* 旋转动画定义 */
 @keyframes rotate {
   from {
     transform: rotate(0deg);
@@ -403,8 +546,7 @@ onUnmounted(() => {
   }
 }
 
-/* 背景图片样式 */
-.music-background-image {
+.background-image {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -413,30 +555,98 @@ onUnmounted(() => {
   transition: filter 0.2s ease;
 }
 
-/* 悬停效果 */
-.music-control-btn:hover .music-background-image {
+.main-button:hover .background-image {
   filter: brightness(0.8);
 }
 
-/* 图标叠加层 */
-.music-icon-overlay {
+/* 子按钮容器 */
+.sub-buttons-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* 子按钮样式：保持尺寸，间距通过角度调整 */
+.sub-button {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(100, 108, 255, 0.9);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  transform: translate(calc(50% - 20px), calc(50% - 20px)) scale(0);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/*  hover时轻微放大，提升交互感 */
+.sub-button:hover {
+  background: rgba(100, 108, 255, 1);
+  transform: translate(0, 0) scale(1.15); /* 放大比例从1.1→1.15，更明显 */
+}
+
+.sub-buttons-container.is-expanded .sub-button {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+  pointer-events: all;
+}
+
+/* 移动端适配：确保按钮触控区域足够大 */
+@media (max-width: 768px) {
+  .main-button {
+    width: 64px;
+    height: 64px; /* 主按钮触控区域不变 */
+  }
+
+  .sub-button {
+    width: 42px; /* 子按钮宽度从38→42，增大触控区域 */
+    height: 42px;
+    transform: translate(calc(50% - 21px), calc(50% - 21px)) scale(0); /* 对应宽度调整偏移 */
+  }
+
+  .sub-button i {
+    font-size: 16px !important; /* 图标从15→16，更清晰 */
+  }
+
+  .click-tip {
+    font-size: 12px;
+    padding: 3px 8px;
+    left: calc(100% + 8px);
+  }
 }
 
 /* 音量控制滑块样式 */
 .volume-control {
+  position: fixed;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
-  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  padding: 10px 12px;
   min-width: 128px;
-  transition: all 0.2s ease;
+  animation: fadeIn 0.2s ease-out;
 }
 
-/* 美化音量滑块 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .volume-control input {
   -webkit-appearance: none;
   appearance: none;
@@ -445,6 +655,7 @@ onUnmounted(() => {
   background: #e5e7eb;
   outline: none;
   width: 100%;
+  cursor: pointer;
 }
 
 .volume-control input::-webkit-slider-thumb {
@@ -454,7 +665,13 @@ onUnmounted(() => {
   border-radius: 50%;
   background: #646cff;
   cursor: pointer;
-  box-shadow: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+}
+
+.volume-control input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(100, 108, 255, 0.4);
 }
 
 .volume-control input::-moz-range-thumb {
@@ -464,22 +681,7 @@ onUnmounted(() => {
   background: #646cff;
   border: none;
   cursor: pointer;
-  box-shadow: none;
-}
-
-/* 原有logo样式 */
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
 }
 </style>

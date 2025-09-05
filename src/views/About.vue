@@ -13,7 +13,7 @@
           <h1
             class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-3 mobile:text-[clamp(1.2rem,5vw,2rem)]"
           >
-            关于智能科技社团
+            关于智环学创融合协会
           </h1>
           <p class="text-gray-600 max-w-2xl mx-auto mobile:text-sm">
             我们是一群怀揣着对科技的热忱与憧憬的青年集结而成的社团。成立以来，始终以

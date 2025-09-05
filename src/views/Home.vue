@@ -102,15 +102,19 @@
         <div class="about-content">
           <div class="about-text">
             <h3 class="about-subtitle">聊天记录:</h3>
-            <p class="about-paragraph ">
-              😭：我的专业二本毕业找不到好工作怎么呀？<br /><hr/>
-              🥺：早就听说计算机寒冬了，我还有机会嘛？<br /><hr/>
-              🤓👆：有的兄弟们，有的！为何不建立个工作室一块做实战项目呢？既能丰富个人简历就业，考研还有优势。<br /><hr/>
-              🤩：我什么都不会你们会要我嘛？！<br /><hr/>
-              😏: 当然啦，计算机专业：前端，后端，测试，运维，嵌入式开发<br />
+            <div class="chat-history">
+              <p class="about-paragraph">😭：我的专业二本毕业找不到好工作怎么呀？</p>
+              <hr/>
+              <p class="about-paragraph">🥺：早就听说计算机寒冬了，我还有机会嘛？</p>
+              <hr/>
+              <p class="about-paragraph">🤓👆：有的兄弟们，有的！为何不建立个工作室一块做实战项目呢？既能丰富个人简历就业，考研还有优势。</p>
+              <hr/>
+              <p class="about-paragraph">🤩：我什么都不会你们会要我嘛？！</p>
+              <hr/>
+              <p class="about-paragraph">😏: 当然啦，计算机专业：前端，后端，测试，运维，嵌入式开发<br />
               &emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;
-              非计算机专业同学：PPT，写项目书，UI设计，视频剪辑，宣讲演讲。
-            </p>
+              非计算机专业同学：PPT，写项目书，UI设计，视频剪辑，宣讲演讲。</p>
+            </div>
             <p class="about-paragraph border-t-2 border-black pt-5">
               我们的宗旨是：<span class="highlight-text"
                 >自觉，自律,自信”，热爱可以超过一切❤️快来加入项目组</span
