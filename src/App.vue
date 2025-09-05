@@ -16,11 +16,7 @@ const hasAttemptedAutoPlay = ref(false)
 const showClickTip = ref(true) // 首次进入"点我"提示
 
 // 模拟歌曲列表
-const songs = ref([
-  { id: 1, name: "音乐1", src: "/musics/music.mp3" },
-  { id: 2, name: "音乐2", src: "/music.mp3" },
-  { id: 3, name: "音乐3", src: "/music.mp3" },
-])
+const songs = ref([{ id: 1, name: "曼波", src: "/musics/曼波.mp3" }])
 const currentSongIndex = ref(0)
 
 // 播放/暂停控制
@@ -405,24 +401,24 @@ onUnmounted(() => {
       </button>
 
       <!-- 上一首按钮 -->
-      <button
+      <!-- <button
         class="sub-button"
         :style="getButtonPosition().prev"
         @click.stop="prevSong"
         aria-label="上一首"
       >
         <i class="fa fa-step-backward text-white text-lg"></i>
-      </button>
+      </button> -->
 
       <!-- 下一首按钮 -->
-      <button
+      <!-- <button
         class="sub-button"
         :style="getButtonPosition().next"
         @click.stop="nextSong"
         aria-label="下一首"
       >
         <i class="fa fa-step-forward text-white text-lg"></i>
-      </button>
+      </button> -->
 
       <!-- 音量按钮 -->
       <button
