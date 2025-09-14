@@ -239,20 +239,20 @@
                 项目竞赛部
               </h3>
               <p class="text-gray-600 mb-6">
-                负责项目开发和管理，参加各类项目竞赛，提升团队协作和项目管理能力。
+                负责各类软硬件项目开发，参加各类项目竞赛，提升团队协作和项目开发能力。
               </p>
               <div class="mb-6">
                 <h4 class="font-semibold text-dark mb-2">招新要求：</h4>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
                   <li>
-                    对软件开发，PPT，写项目书，UI设计，视频剪辑，宣讲演讲有兴趣的同学。如果想锻炼实践能力参赛拿奖，这个部门是不二之选。
+                    对软硬件开发，PPT，写项目书，UI设计，视频剪辑，宣讲演讲有兴趣的同学。如果想锻炼实践能力参赛拿奖，这个部门是不二之选。
                   </li>
                 </ul>
               </div>
               <div>
                 <h4 class="font-semibold text-dark mb-2">学习内容：</h4>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
-                  <li>前端/后端开发技术</li>
+                  <li>前端/后端/嵌入式开发技术</li>
                   <li>网站/APP的UI设计</li>
                   <li>PPT制作</li>
                   <li>项目书编写</li>
@@ -285,7 +285,7 @@
                 <h4 class="font-semibold text-dark mb-2">招新要求：</h4>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
                   <li>具备良好的沟通能力</li>
-                  <li>有responsibility and execution</li>
+                  <li>有责任心和执行力</li>
                   <li>擅长组织策划活动</li>
                 </ul>
               </div>
@@ -343,8 +343,9 @@
                   name="studentId"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
                   required
-                  placeholder="请输入您的学号"
+                  placeholder="请输入您的学号（输入后将自动填充专业）"
                   v-model="formData.studentId"
+                  @input="autoFillMajor"
                 />
               </div>
             </div>
@@ -352,7 +353,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label for="major" class="block text-gray-700 font-medium mb-2"
-                  >专业</label
+                  >专业 (输入学号后自动识别)</label
                 >
                 <input
                   type="text"
@@ -627,443 +628,470 @@
 </template>
 
 <script setup lang="ts">
-import CommonFooter from "../components/CommonFooter.vue"
-import CommonNavbar from "../components/CommonNavbar.vue" // 引入通用导航栏
-import { ref, onMounted } from "vue"
-// 导入 submitApplication 函数（请确保此函数路径正确且能正常请求）
-import { submitApplication } from "../services/applicationsService"
-type ElementRef = HTMLElement | null
+  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonNavbar from '../components/CommonNavbar.vue' // 引入通用导航栏
+  import { ref, onMounted } from 'vue'
+  // 导入 submitApplication 函数（请确保此函数路径正确且能正常请求）
+  import {
+    submitApplication,
+    getMajorMapping,
+  } from '../services/applicationsService'
+  import type { MajorMapping } from '../services/applicationsService'
+  type ElementRef = HTMLElement | null
 
-// 1. 响应式状态定义
-// 表单数据状态（类型化管理）-------------申请表收集
-interface FormData {
-  name: string
-  studentId: string
-  major: string
-  phone: string
-  QQNumber: string
-  department: string // algorithm/project/management
-  secondDepartment: string // algorithm/project/management/""
-  interests: string[] // 兴趣方向（多选）
-  reason: string
-  introduction: string
-}
-const formData = ref<FormData>({
-  name: "",
-  studentId: "",
-  major: "",
-  phone: "",
-  QQNumber: "",
-  department: "",
-  secondDepartment: "",
-  interests: [],
-  reason: "",
-  introduction: "",
-})
-
-// 兴趣方向选项（统一管理）
-const interests = ref([
-  { label: "编程", value: "programming" },
-  { label: "设计", value: "design" },
-  { label: "算法", value: "algorithm" },
-  { label: "数据库", value: "database" },
-  { label: "前端开发", value: "frontend" },
-  { label: "后端开发", value: "backend" },
-  { label: "PPT", value: "ppt" },
-  { label: "演讲", value: "speech" },
-  { label: "视频剪辑", value: "video_editing" },
-  { label: "无", value: "none" },
-])
-
-// QQ号校验状态
-const qqNumberError = ref("")
-
-// QQ号校验方法
-const validateQQNumber = () => {
-  const qq = formData.value.QQNumber
-  if (!/^\d+$/.test(qq)) {
-    qqNumberError.value = "QQ号必须为纯数字"
-  } else if (qq.length < 5 || qq.length > 11) {
-    qqNumberError.value = "QQ号长度必须在5-11位之间"
-  } else {
-    qqNumberError.value = ""
+  // 响应式状态定义
+  // 表单数据状态（类型化管理）-------------申请表收集
+  interface FormData {
+    name: string
+    studentId: string
+    major: string
+    phone: string
+    QQNumber: string
+    department: string // algorithm/project/management
+    secondDepartment: string // algorithm/project/management/""
+    interests: string[] // 兴趣方向（多选）
+    reason: string
+    introduction: string
   }
-}
+  const formData = ref<FormData>({
+    name: '',
+    studentId: '',
+    major: '',
+    phone: '',
+    QQNumber: '',
+    department: '',
+    secondDepartment: '',
+    interests: [],
+    reason: '',
+    introduction: '',
+  })
 
-// FAQ状态（类型化管理）---------问题
-interface FaqItem {
-  question: string
-  answer: string
-  isOpen: boolean
-}
-const faqList = ref<FaqItem[]>([
-  {
-    question: "加入有什么条件？",
-    answer:
-      "我们对技术水平没有严格要求，只要你对技术有兴趣，有学习的意愿和热情，都可以加入我们。我们更看重的是学习态度和自主学习能力。",
-    isOpen: false,
-  },
-  {
-    question: "每周需要投入多少时间？",
-    answer:
-      "通常情况下，每周需要投入3-5小时参与团队活动和项目开发。具体时间会根据项目需求和个人情况有所不同。我们鼓励成员合理安排时间，平衡学习和社团活动。",
-    isOpen: false,
-  },
-  {
-    question: "加入能学到什么？",
-    answer:
-      "1. 掌握专业的编程技术和项目开发经验；\n2. 参与实际项目开发，积累项目经验；\n3. 有机会参加各类科技创新竞赛，获得奖项和荣誉；\n4. 认识志同道合的同学，建立深厚友谊；\n5. 获得实习和就业机会，为未来职业发展打下基础。",
-    isOpen: false,
-  },
-  {
-    question: "如何选择适合自己的部门？",
-    answer:
-      "选择部门时，可以根据自己的兴趣爱好和职业规划来考虑。如果你专注算法类竞赛，可以选择算法部；如果你更喜欢做项目并参加项目类竞赛，可以选择项目竞赛部；如果你擅长组织管理和活动策划，可以选择综合管理部。所有部门都没有技术要求，主要看重学习意愿和自主学习能力。",
-    isOpen: false,
-  },
-  {
-    question: "招新流程和时间安排是怎样的？",
-    answer:
-      "招新流程主要包括：线上报名、简单面试、正式加入三个环节。具体时间安排如下：\n1. 线上报名：9月1日-9月15日\n2. 简单面试：9月16日-9月20日（主要了解学习意愿和自主学习能力）\n3. 正式加入：9月21日公布结果\n请关注我们的微信公众号获取最新的招新信息和时间安排。",
-    isOpen: false,
-  },
-])
+  // 专业映射表
+  const majorMapping = ref<MajorMapping>({})
 
-// 页面section的Ref（用于滚动动画）
-const homeRef = ref<ElementRef | null>(null)
-const highlightsRef = ref<ElementRef | null>(null)
-const processRef = ref<ElementRef | null>(null)
-const departmentsRef = ref<ElementRef | null>(null)
-const formRef = ref<ElementRef | null>(null)
-const faqRef = ref<ElementRef | null>(null)
+  // 兴趣方向选项（统一管理）
+  const interests = ref([
+    { label: '编程', value: 'programming' },
+    { label: '设计', value: 'design' },
+    { label: '算法', value: 'algorithm' },
+    { label: '数据库', value: 'database' },
+    { label: '前端开发', value: 'frontend' },
+    { label: '后端开发', value: 'backend' },
+    { label: 'PPT', value: 'ppt' },
+    { label: '演讲', value: 'speech' },
+    { label: '视频剪辑', value: 'video_editing' },
+    { label: '无', value: 'none' },
+  ])
 
-// 弹窗相关状态
-const showSuccessModal = ref(false)
-const copyButtonText = ref("复制")
+  // QQ号校验状态
+  const qqNumberError = ref('')
 
-// 2. 方法定义
-// 二维码加载失败处理（兜底提示）
-const handleQrError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  img.src =
-    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRR5YiG5Lq65Yqo5pyN5Lq6PC90ZXh0Pjwvc3ZnPg=="
-  img.alt = "QQ群二维码加载失败，可通过群号967370226或链接加群"
-}
-
-// 滚动动画：监听section进入视口
-const observeSections = () => {
-  const observerOptions: IntersectionObserverInit = {
-    root: null,
-    rootMargin: "0px",
-    threshold: 0.1,
-  }
-
-  // 定义观察者回调（添加类型）
-  const observerCallback: IntersectionObserverCallback = (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        // 添加动画类
-        entry.target.classList.add("animate-slide-up")
-        observer.unobserve(entry.target)
-      }
-    })
-  }
-
-  const observer = new IntersectionObserver(observerCallback, observerOptions)
-
-  // 监听所有section（获取DOM元素并过滤null）
-  const sections = [
-    homeRef.value,
-    highlightsRef.value,
-    processRef.value,
-    departmentsRef.value,
-    formRef.value,
-    faqRef.value,
-  ].filter(Boolean) as Element[]
-
-  sections.forEach((section) => observer.observe(section))
-}
-
-// FAQ展开/折叠（通过索引控制，替代原DOM查找）
-const toggleFaq = (index: number) => {
-  faqList.value[index].isOpen = !faqList.value[index].isOpen
-}
-
-// 表单提交处理（类型化表单数据）
-const handleSubmit = async () => {
-  // 1. 表单数据校验
-  if (
-    !formData.value.name ||
-    !formData.value.studentId ||
-    !formData.value.major ||
-    !formData.value.phone ||
-    !formData.value.QQNumber ||
-    !formData.value.department ||
-    !formData.value.introduction
-  ) {
-    alert("请填写必填字段！")
-    return
-  }
-
-  // 2. QQ号校验
-  validateQQNumber()
-  if (qqNumberError.value) {
-    alert(qqNumberError.value)
-    return
-  }
-
-  try {
-    // 3. 显示加载状态
-    const submitButton = document.querySelector('button[type="submit"]')
-    if (submitButton) {
-      if (submitButton instanceof HTMLButtonElement) {
-        submitButton.disabled = true
-      }
-      submitButton.innerHTML =
-        '<i class="fa fa-spinner fa-spin mr-2"></i> 提交中...'
-    }
-
-    // 4. 使用封装的 axios 请求提交表单（请确保submitApplication函数正确）
-    await submitApplication(formData.value)
-
-    // 5. 处理成功响应 - 显示弹窗
-    showSuccessModal.value = true
-
-    // 重置表单
-    formData.value = {
-      name: "",
-      studentId: "",
-      major: "",
-      phone: "",
-      QQNumber: "",
-      department: "",
-      secondDepartment: "",
-      interests: [],
-      reason: "",
-      introduction: "",
-    }
-  } catch (error) {
-    console.error("提交失败:", error)
-    alert(
-      `提交失败: ${
-        error instanceof Error ? error.message : "网络请求错误，请稍后重试。"
-      }`
-    )
-  } finally {
-    // 恢复按钮状态
-    const submitButton = document.querySelector('button[type="submit"]')
-    if (submitButton) {
-      if (submitButton instanceof HTMLButtonElement) {
-        submitButton.disabled = false
-      }
-      submitButton.innerHTML = '<i class="fa fa-paper-plane mr-2"></i> 提交报名'
+  // QQ号校验方法
+  const validateQQNumber = () => {
+    const qq = formData.value.QQNumber
+    if (!/^\d+$/.test(qq)) {
+      qqNumberError.value = 'QQ号必须为纯数字'
+    } else if (qq.length < 5 || qq.length > 11) {
+      qqNumberError.value = 'QQ号长度必须在5-11位之间'
+    } else {
+      qqNumberError.value = ''
     }
   }
-}
 
-// 复制群号函数
-const copyGroupNumber = async () => {
-  try {
-    // 标准的Clipboard API
-    await navigator.clipboard.writeText("967370226")
-    copyButtonText.value = "已复制"
+  // FAQ状态（类型化管理）---------问题
+  interface FaqItem {
+    question: string
+    answer: string
+    isOpen: boolean
+  }
+  const faqList = ref<FaqItem[]>([
+    {
+      question: '加入有什么条件？',
+      answer:
+        '我们对技术水平没有严格要求，只要你对技术有兴趣，有学习的意愿和热情，都可以加入我们。我们更看重的是学习态度和自主学习能力。',
+      isOpen: false,
+    },
+    {
+      question: '每周需要投入多少时间？',
+      answer:
+        '通常情况下，每周需要投入3-5小时参与团队活动和项目开发。具体时间会根据项目需求和个人情况有所不同。我们鼓励成员合理安排时间，平衡学习和社团活动。',
+      isOpen: false,
+    },
+    {
+      question: '加入能学到什么？',
+      answer:
+        '1. 掌握专业的编程技术和项目开发经验；\n2. 参与实际项目开发，积累项目经验；\n3. 有机会参加各类科技创新竞赛，获得奖项和荣誉；\n4. 认识志同道合的同学，建立深厚友谊；\n5. 获得实习和就业机会，为未来职业发展打下基础。',
+      isOpen: false,
+    },
+    {
+      question: '如何选择适合自己的部门？',
+      answer:
+        '选择部门时，可以根据自己的兴趣爱好和职业规划来考虑。如果你专注算法类竞赛，可以选择算法部；如果你更喜欢做项目并参加项目类竞赛，可以选择项目竞赛部；如果你擅长组织管理和活动策划，可以选择综合管理部。所有部门都没有技术要求，主要看重学习意愿和自主学习能力。',
+      isOpen: false,
+    },
+    {
+      question: '招新流程和时间安排是怎样的？',
+      answer:
+        '招新流程主要包括：线上报名、简单面试、正式加入三个环节。具体时间安排如下：\n1. 线上报名：9月1日-9月15日\n2. 简单面试：9月16日-9月20日（主要了解学习意愿和自主学习能力）\n3. 正式加入：9月21日公布结果\n请关注我们的微信公众号获取最新的招新信息和时间安排。',
+      isOpen: false,
+    },
+  ])
 
-    // 3秒后恢复按钮文本
-    setTimeout(() => {
-      copyButtonText.value = "复制"
-    }, 3000)
-  } catch (err) {
-    // 降级方案：使用传统的select和execCommand方法
-    const groupNumberElement = document.getElementById("groupNumber")
-    if (groupNumberElement) {
-      const range = document.createRange()
-      range.selectNode(groupNumberElement)
-      window.getSelection()?.removeAllRanges()
-      window.getSelection()?.addRange(range)
-      document.execCommand("copy")
-      window.getSelection()?.removeAllRanges()
+  // 页面section的Ref（用于滚动动画）
+  const homeRef = ref<ElementRef | null>(null)
+  const highlightsRef = ref<ElementRef | null>(null)
+  const processRef = ref<ElementRef | null>(null)
+  const departmentsRef = ref<ElementRef | null>(null)
+  const formRef = ref<ElementRef | null>(null)
+  const faqRef = ref<ElementRef | null>(null)
 
-      copyButtonText.value = "已复制"
+  // 弹窗相关状态
+  const showSuccessModal = ref(false)
+  const copyButtonText = ref('复制')
+
+  // 2. 方法定义
+  // 二维码加载失败处理（兜底提示）
+  const handleQrError = (e: Event) => {
+    const img = e.target as HTMLImageElement
+    img.src =
+      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRR5YiG5Lq65Yqo5pyN5Lq6PC90ZXh0Pjwvc3ZnPg=='
+    img.alt = 'QQ群二维码加载失败，可通过群号967370226或链接加群'
+  }
+
+  // 滚动动画：监听section进入视口
+  const observeSections = () => {
+    const observerOptions: IntersectionObserverInit = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1,
+    }
+
+    // 定义观察者回调（添加类型）
+    const observerCallback: IntersectionObserverCallback = entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // 添加动画类
+          entry.target.classList.add('animate-slide-up')
+          observer.unobserve(entry.target)
+        }
+      })
+    }
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions)
+
+    // 监听所有section（获取DOM元素并过滤null）
+    const sections = [
+      homeRef.value,
+      highlightsRef.value,
+      processRef.value,
+      departmentsRef.value,
+      formRef.value,
+      faqRef.value,
+    ].filter(Boolean) as Element[]
+
+    sections.forEach(section => observer.observe(section))
+  }
+
+  // FAQ展开/折叠（通过索引控制，替代原DOM查找）
+  const toggleFaq = (index: number) => {
+    faqList.value[index].isOpen = !faqList.value[index].isOpen
+  }
+
+  // 表单提交处理（类型化表单数据）
+  const handleSubmit = async () => {
+    // 1. 表单数据校验
+    if (
+      !formData.value.name ||
+      !formData.value.studentId ||
+      !formData.value.major ||
+      !formData.value.phone ||
+      !formData.value.QQNumber ||
+      !formData.value.department ||
+      !formData.value.introduction
+    ) {
+      alert('请填写必填字段！')
+      return
+    }
+
+    // 2. QQ号校验
+    validateQQNumber()
+    if (qqNumberError.value) {
+      alert(qqNumberError.value)
+      return
+    }
+
+    try {
+      // 3. 显示加载状态
+      const submitButton = document.querySelector('button[type="submit"]')
+      if (submitButton) {
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = true
+        }
+        submitButton.innerHTML =
+          '<i class="fa fa-spinner fa-spin mr-2"></i> 提交中...'
+      }
+
+      // 4. 使用封装的 axios 请求提交表单（请确保submitApplication函数正确）
+      await submitApplication(formData.value)
+
+      // 5. 处理成功响应 - 显示弹窗
+      showSuccessModal.value = true
+
+      // 重置表单
+      formData.value = {
+        name: '',
+        studentId: '',
+        major: '',
+        phone: '',
+        QQNumber: '',
+        department: '',
+        secondDepartment: '',
+        interests: [],
+        reason: '',
+        introduction: '',
+      }
+    } catch (error) {
+      console.error('提交失败:', error)
+      alert(
+        `提交失败: ${
+          error instanceof Error ? error.message : '网络请求错误，请稍后重试。'
+        }`
+      )
+    } finally {
+      // 恢复按钮状态
+      const submitButton = document.querySelector('button[type="submit"]')
+      if (submitButton) {
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = false
+        }
+        submitButton.innerHTML =
+          '<i class="fa fa-paper-plane mr-2"></i> 提交报名'
+      }
+    }
+  }
+
+  // 复制群号函数
+  const copyGroupNumber = async () => {
+    try {
+      // 标准的Clipboard API
+      await navigator.clipboard.writeText('967370226')
+      copyButtonText.value = '已复制'
+
+      // 3秒后恢复按钮文本
       setTimeout(() => {
-        copyButtonText.value = "复制"
+        copyButtonText.value = '复制'
       }, 3000)
+    } catch (err) {
+      // 降级方案：使用传统的select和execCommand方法
+      const groupNumberElement = document.getElementById('groupNumber')
+      if (groupNumberElement) {
+        const range = document.createRange()
+        range.selectNode(groupNumberElement)
+        window.getSelection()?.removeAllRanges()
+        window.getSelection()?.addRange(range)
+        document.execCommand('copy')
+        window.getSelection()?.removeAllRanges()
+
+        copyButtonText.value = '已复制'
+        setTimeout(() => {
+          copyButtonText.value = '复制'
+        }, 3000)
+      }
     }
   }
-}
 
-// 关闭弹窗
-const closeModal = () => {
-  showSuccessModal.value = false
-}
+  // 关闭弹窗
+  const closeModal = () => {
+    showSuccessModal.value = false
+  }
 
-// 3. 生命周期钩子
-onMounted(() => {
-  // 页面加载后初始化滚动动画监听
-  observeSections()
-})
+  // 自动填充专业
+  const autoFillMajor = () => {
+    const studentId = formData.value.studentId
+    // 检查学号是否为11位
+    if (studentId.length === 11 && /^\d+$/.test(studentId)) {
+      // 提取第4-7位作为专业代号
+      const majorCode = studentId.substring(4, 8)
+      // 检查是否有对应的专业
+      if (majorMapping.value[majorCode]) {
+        // 填充专业全称
+        formData.value.major = majorMapping.value[majorCode].fullName
+      }
+    }
+  }
+
+  // 3. 生命周期钩子
+  onMounted(async () => {
+    // 页面加载后初始化滚动动画监听
+    observeSections()
+
+    // 页面加载时获取专业映射表
+
+    majorMapping.value = await getMajorMapping()
+  })
 </script>
 
 <style scoped>
-/* 基础布局：适配CommonNavbar高度，避免内容遮挡 */
-.join-page {
-  padding-top: 0 !important;
-}
-
-/* 自定义动画效果：进入视口时的滑入动画 */
-.animate-slide-up {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-/* 初始状态：section默认隐藏并向下偏移 */
-section {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* 加载中按钮样式 */
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* 移动端内容区适配：避开CommonNavbar的移动端高度 */
-@media (max-width: 768px) {
-  main {
-    margin-top: 94px !important; /* iOS：状态栏44px + 导航50px */
+  /* 基础布局：适配CommonNavbar高度，避免内容遮挡 */
+  .join-page {
+    padding-top: 0 !important;
   }
-}
 
-/* 颜色变量定义（统一管理） */
-.text-primary {
-  color: #4f46e5;
-}
+  /* 自定义动画效果：进入视口时的滑入动画 */
+  .animate-slide-up {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
 
-.bg-primary {
-  background-color: #4f46e5;
-}
+  /* 初始状态：section默认隐藏并向下偏移 */
+  section {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-.bg-primary\/10 {
-  background-color: rgba(79, 70, 229, 0.1);
-}
+  /* 加载中按钮样式 */
+  button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 
-.hover\:bg-primary-dark:hover {
-  background-color: #4338ca;
-}
+  /* 移动端内容区适配：避开CommonNavbar的移动端高度 */
+  @media (max-width: 768px) {
+    main {
+      margin-top: 94px !important; /* iOS：状态栏44px + 导航50px */
+    }
+  }
 
-.text-dark {
-  color: #1f2937;
-}
+  /* 颜色变量定义（统一管理） */
+  .text-primary {
+    color: #4f46e5;
+  }
 
-/* FAQ内容样式：处理换行符 */
-.faq-content {
-  white-space: pre-line; /* 保留文本中的换行符 */
-}
+  .bg-primary {
+    background-color: #4f46e5;
+  }
 
-/* ########################### 弹窗样式（重新排版优化） ########################### */
-/* 遮罩层：全屏覆盖，半透明背景 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999; /* 确保在最上层 */
-  backdrop-filter: blur(2px); /* 毛玻璃效果，提升视觉层次 */
-}
+  .bg-primary\/10 {
+    background-color: rgba(79, 70, 229, 0.1);
+  }
 
-/* 弹窗内容：白色背景，居中，阴影 */
-.modal-content {
-  background-color: white;
-  border-radius: 12px;
-  padding: 24px;
-  width: 90%;
-  max-width: 480px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
-  position: relative;
-}
+  .hover\:bg-primary-dark:hover {
+    background-color: #4338ca;
+  }
 
-/* 弹窗头部：标题+关闭按钮 */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  .text-dark {
+    color: #1f2937;
+  }
 
-/* 关闭按钮：hover效果优化 */
-.close-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  transition: color 0.2s ease;
-}
+  /* FAQ内容样式：处理换行符 */
+  .faq-content {
+    white-space: pre-line; /* 保留文本中的换行符 */
+  }
 
-/* 二维码容器：增加边框和内边距，提升精致度 */
-.qrcode-container {
-  display: flex;
-  justify-content: center;
-}
-.qrcode-image {
-  width: 180px;
-  height: 180px;
-  object-fit: contain;
-}
-
-/* 操作按钮区：响应式布局，移动端垂直排列 */
-.action-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-@media (min-width: 640px) {
-  .action-buttons {
-    flex-direction: row;
+  /* ########################### 弹窗样式（重新排版优化） ########################### */
+  /* 遮罩层：全屏覆盖，半透明背景 */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    z-index: 9999; /* 确保在最上层 */
+    backdrop-filter: blur(2px); /* 毛玻璃效果，提升视觉层次 */
   }
-}
 
-/* 群号包装器：浅灰色背景，区分功能区域 */
-.group-number-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
-}
+  /* 弹窗内容：白色背景，居中，阴影 */
+  .modal-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+    position: relative;
+  }
 
-/* 复制按钮：精简文字，突出图标 */
-.copy-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+  /* 弹窗头部：标题+关闭按钮 */
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-/* 直接加群按钮：主色背景，突出行动点 */
-.join-link-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-  text-decoration: none; /* 清除a标签默认下划线 */
-}
+  /* 关闭按钮：hover效果优化 */
+  .close-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s ease;
+  }
+
+  /* 二维码容器：增加边框和内边距，提升精致度 */
+  .qrcode-container {
+    display: flex;
+    justify-content: center;
+  }
+  .qrcode-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+  }
+
+  /* 操作按钮区：响应式布局，移动端垂直排列 */
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  @media (min-width: 640px) {
+    .action-buttons {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+  }
+
+  /* 群号包装器：浅灰色背景，区分功能区域 */
+  .group-number-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    border: 1px solid #f3f4f6;
+  }
+
+  /* 复制按钮：精简文字，突出图标 */
+  .copy-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* 直接加群按钮：主色背景，突出行动点 */
+  .join-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    text-decoration: none; /* 清除a标签默认下划线 */
+  }
 </style>

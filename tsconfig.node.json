@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+    // 设置基础路径
+    "baseUrl": ".",
+
+    // 配置路径别名
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2023",
     "lib": ["ES2023"],
@@ -24,5 +31,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "src"]
 }

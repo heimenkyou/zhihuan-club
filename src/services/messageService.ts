@@ -1,4 +1,4 @@
-import api from './api'
+import api from '@/services/api'
 
 // 分页查询参数类型
 export interface GetMessagesParams {
@@ -48,7 +48,10 @@ export const getMessages = async (
     console.log('🚀 发送请求参数:', params)
 
     // 现在api.get返回正确的类型
-    const response = await api.get<ApiResponse<PageData<MessageItem>>>('/public/messages', { params })
+    const response = await api.get<ApiResponse<PageData<MessageItem>>>(
+      '/public/messages',
+      { params }
+    )
 
     console.log('📡 响应数据:', response)
     console.log('🔍 响应数据结构:', JSON.stringify(response, null, 2))
@@ -66,16 +69,20 @@ export const getMessages = async (
 export type LikeActionResult = 'LIKED' | 'UNLIKED'
 
 // 点赞/取消点赞接口请求函数
-export const toggleLike = async (messageId: number): Promise<LikeActionResult> => {
+export const toggleLike = async (
+  messageId: number
+): Promise<LikeActionResult> => {
   try {
     console.log('👍 发送点赞请求:', messageId)
-    
+
     // 调用点赞接口
-    const response = await api.post<ApiResponse<LikeActionResult>>(`/public/messages/${messageId}/like`)
-    
+    const response = await api.post<ApiResponse<LikeActionResult>>(
+      `/public/messages/${messageId}/like`
+    )
+
     console.log('👍 点赞响应:', response)
     console.log('👍 点赞结果:', response.data)
-    
+
     return response.data.data
   } catch (error) {
     console.error('❌ 点赞操作失败:', error)
@@ -85,18 +92,20 @@ export const toggleLike = async (messageId: number): Promise<LikeActionResult> =
 
 // 在文件末尾添加
 // 为 toggleLike 添加别名 toggleMessageLike
-export { toggleLike as toggleMessageLike };
+export { toggleLike as toggleMessageLike }
 
 // 删除留言接口请求函数
 export const deleteMessage = async (messageId: number): Promise<void> => {
   try {
     console.log('🗑️ 发送删除请求:', messageId)
-    
+
     // 调用删除接口
-    const response = await api.delete<ApiResponse<null>>(`/public/messages/${messageId}`)
-    
+    const response = await api.delete<ApiResponse<null>>(
+      `/public/messages/${messageId}`
+    )
+
     console.log('🗑️ 删除响应:', response)
-    
+
     // 不需要返回值
   } catch (error) {
     console.error('❌ 删除留言失败:', error)
@@ -105,16 +114,21 @@ export const deleteMessage = async (messageId: number): Promise<void> => {
 }
 
 // 创建留言接口请求函数
-export const createMessage = async (params: CreateMessageParams): Promise<MessageItem> => {
+export const createMessage = async (
+  params: CreateMessageParams
+): Promise<MessageItem> => {
   try {
     console.log('📝 发送创建留言请求:', params)
-    
+
     // 调用创建留言接口
-    const response = await api.post<ApiResponse<MessageItem>>('/public/messages', params)
-    
+    const response = await api.post<ApiResponse<MessageItem>>(
+      '/public/messages',
+      params
+    )
+
     console.log('📝 创建留言响应:', response)
     console.log('📝 创建留言结果:', response.data)
-    
+
     return response.data.data
   } catch (error) {
     console.error('❌ 创建留言失败:', error)
