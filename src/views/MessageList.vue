@@ -4,6 +4,7 @@ import { useMessageStore } from "../stores/messageStore"
 import { showSuccessNotification, showErrorNotification } from "../main"
 import { Refresh, Edit } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
+import { ElMessageBox } from 'element-plus'
 import CommonFooter from "../components/CommonFooter.vue"
 const messageStore = useMessageStore()
 const debugInfo = ref("")
@@ -13,6 +14,9 @@ const router = useRouter() // 初始化router
 const goToHome = () => {
   router.push("/")
 }
+
+// 根元素引用
+const messageBoard = ref<null | any>(null)
 
 // 分页相关数据
 const currentPage = ref(1)
@@ -73,22 +77,22 @@ const visiblePages = computed(() => {
   return pages
 })
 
-// 下拉刷新处理
-const handleTouchStart = (e: TouchEvent) => {
+// 下拉刷新处理 - 使用Vue 3响应式方式
+const pullDistanceStyle = ref("0px")
+
+const handleTouchStart = (e: any) => {
   if (window.scrollY === 0) {
     startY.value = e.touches[0].clientY
   }
 }
 
-const handleTouchMove = (e: TouchEvent) => {
-  if (window.scrollY === 0 && startY.value > 0) {
+const handleTouchMove = (e: any) => {
+  // 下拉刷新处理 - 优化为仅在页面顶部时触发
+  if (messageBoard.value && window.scrollY === 0 && startY.value > 0) {
     currentY.value = e.touches[0].clientY
     pullDistance.value = Math.max(0, currentY.value - startY.value)
     if (pullDistance.value > 0) {
-      document.body.style.setProperty(
-        "--pull-distance",
-        `${Math.min(pullDistance.value, threshold)}px`
-      )
+      pullDistanceStyle.value = `${Math.min(pullDistance.value, threshold)}px`
     }
   }
 }
@@ -102,7 +106,7 @@ const handleTouchEnd = async () => {
   startY.value = 0
   currentY.value = 0
   pullDistance.value = 0
-  document.body.style.removeProperty("--pull-distance")
+  pullDistanceStyle.value = "0px"
 }
 
 // 分页处理方法
@@ -169,11 +173,7 @@ onMounted(async () => {
     }
     debugInfo.value = "开始获取留言数据..."
     await fetchMessages()
-    document.addEventListener("touchstart", handleTouchStart, {
-      passive: false,
-    })
-    document.addEventListener("touchmove", handleTouchMove, { passive: false })
-    document.addEventListener("touchend", handleTouchEnd, { passive: false })
+  
   } catch (error) {
     debugInfo.value = `初始化失败: ${
       error instanceof Error ? error.message : "未知错误"
@@ -183,11 +183,12 @@ onMounted(async () => {
   }
 })
 
-// 组件卸载时移除事件监听器
+// 组件卸载时清理资源
 onUnmounted(() => {
-  document.removeEventListener("touchstart", handleTouchStart)
-  document.removeEventListener("touchmove", handleTouchMove)
-  document.removeEventListener("touchend", handleTouchEnd)
+  startY.value = 0
+  currentY.value = 0
+  pullDistance.value = 0
+  pullDistanceStyle.value = "0px"
 })
 
 // 修复点赞/取消点赞逻辑（核心修改：去掉严格状态验证，消除非必要错误提示）
@@ -227,23 +228,39 @@ const handleLike = async (messageId: number) => {
   }
 }
 
-// 实现删除功能
+// 实现删除功能 - 使用Vue 3的方式处理确认对话框
 const handleDelete = async (messageId: number) => {
-  const confirmed = window.confirm("确定要删除这条留言吗？此操作不可恢复。")
-  if (!confirmed) return
-
-  debugInfo.value = `正在删除留言 ${messageId}...`
   try {
-    await messageStore.handleDeleteMessage(messageId)
-    debugInfo.value = `留言 ${messageId} 删除成功`
-    console.log(`🗑️ 留言删除成功:`, messageId)
-    showSuccessNotification("删除成功")
-    await fetchMessages()
+    const confirmed = await ElMessageBox.confirm(
+      '确定要删除这条留言吗？此操作不可恢复。',
+      '删除确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+
+    if (confirmed) {
+      debugInfo.value = `正在删除留言 ${messageId}...`
+      try {
+        await messageStore.handleDeleteMessage(messageId)
+        debugInfo.value = `留言 ${messageId} 删除成功`
+        console.log(`🗑️ 留言删除成功:`, messageId)
+        showSuccessNotification("删除成功")
+        await fetchMessages()
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : "删除失败"
+        debugInfo.value = `删除留言失败: ${errorMsg}`
+        console.error("删除留言异常:", error)
+        showErrorNotification(`删除失败: ${errorMsg}`)
+      }
+    }
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : "删除失败"
-    debugInfo.value = `删除留言失败: ${errorMsg}`
-    console.error("删除留言异常:", error)
-    showErrorNotification(`删除失败: ${errorMsg}`)
+    // 用户点击取消
+    if ((error as any).msg !== 'cancel') {
+      console.error("删除确认框异常:", error)
+    }
   }
 }
 
@@ -325,11 +342,12 @@ const formatTime = (timeString: string) => {
 </script>
 
 <template>
-  <div class="message-board">
-    <!-- 下拉刷新指示器 -->
+  <div class="message-board" ref="messageBoard" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+    <!-- 下拉刷新指示器 - 使用Vue 3的响应式样式绑定 -->
     <div
       class="pull-indicator"
       :class="{ release: pullDistance >= threshold, refreshing: isRefreshing }"
+      :style="{ height: pullDistanceStyle }"
     ></div>
 
     <!-- 头部区域 -->
@@ -1181,13 +1199,12 @@ body {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* 下拉刷新指示器 */
+/* 下拉刷新指示器 - 移除CSS变量依赖，使用Vue样式绑定 */
 .pull-indicator {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: var(--pull-distance, 0px);
   background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   align-items: center;

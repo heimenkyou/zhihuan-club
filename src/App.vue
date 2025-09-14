@@ -61,11 +61,11 @@ const playSong = (index: number) => {
 }
 
 // 上一首
-const prevSong = () => {
-  let newIndex = currentSongIndex.value - 1
-  if (newIndex < 0) newIndex = songs.value.length - 1
-  playSong(newIndex)
-}
+// const prevSong = () => {
+//   let newIndex = currentSongIndex.value - 1
+//   if (newIndex < 0) newIndex = songs.value.length - 1
+//   playSong(newIndex)
+// }
 
 // 下一首
 const nextSong = () => {

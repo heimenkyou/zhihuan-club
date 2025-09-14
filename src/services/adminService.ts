@@ -20,29 +20,19 @@ export interface ApplicationPageData<T> {
   records: T[]
 }
 
-// 奖项类型定义 - 更新为用户提供的新数据结构
-interface Award {
-  id: number
-  competitionName: string // 奖项名称
-  competitionTrack?: string //赛道
-  competitionLevel: string // 奖项等级
-  awardLevel: '一等奖' | '二等奖' | '三等奖' | '优秀奖' // 获奖等级
-  winners: string[] // 获奖人员数组
-  year: number // 年份
-  awardDate: string // 获奖日期
-}
 
-// 移除重复的AwardItem定义，保留一个统一的定义
+// 奖项定义
 export interface AwardItem {
-  id?: number
+  id: number
   title?: string
   description?: string
   awardDate?: string
   type?: string
   competitionName?: string
-  competitionLevel?: string
-  awardLevel?: string
-  winners?: string[] | string
+  competitionLevel: string
+  competitionTrack?: string
+  awardLevel: string
+  winners?: string[]
   year?: number
 }
 
@@ -93,8 +83,6 @@ export const getAwards = async (
             ? award.winners.some(winner =>
                 winner?.toLowerCase().includes(keyword)
               )
-            : typeof award.winners === 'string'
-            ? award.winners.toLowerCase().includes(keyword)
             : false) ||
           award.year?.toString().includes(keyword)
       )
@@ -124,7 +112,7 @@ export const createAward = async (
 
     // 返回完整的奖项对象
     return {
-      id: response.data.data.id,
+      id: response.data?.data?.id,
       ...params,
     }
   } catch (error) {

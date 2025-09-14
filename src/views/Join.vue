@@ -419,9 +419,9 @@
                   v-model="formData.department"
                 >
                   <option value="">请选择意向部门</option>
-                  <option value="algorithm">算法部</option>
-                  <option value="project">项目竞赛部</option>
-                  <option value="management">综合管理部</option>
+                  <option value="算法部">算法部</option>
+                  <option value="项目竞赛部">项目竞赛部</option>
+                  <option value="综合管理部">综合管理部</option>
                 </select>
               </div>
               <div>
@@ -437,9 +437,9 @@
                   v-model="formData.secondDepartment"
                 >
                   <option value="">无</option>
-                  <option value="algorithm">算法部</option>
-                  <option value="project">项目竞赛部</option>
-                  <option value="management">综合管理部</option>
+                  <option value="算法部">算法部</option>
+                  <option value="项目竞赛部">项目竞赛部</option>
+                  <option value="综合管理部">综合管理部</option>
                 </select>
               </div>
             </div>
@@ -500,13 +500,21 @@
                 v-model="formData.introduction"
               ></textarea>
             </div>
-
-            <button
-              type="submit"
-              class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center"
-            >
-              <i class="fa fa-paper-plane mr-2"></i> 提交报名
-            </button>
+            <div class="flex flex-col sm:flex-row gap-4 w-full">
+              <button
+                type="submit"
+                class="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center"
+              >
+                <i class="fa fa-paper-plane mr-2"></i> 提交报名
+              </button>
+              <button
+                type="button"
+                class="flex-1 bg-white border-2 border-primary text-primary hover:bg-primary/5 font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center"
+                @click="showSuccessModal = true"
+              >
+                <i class="fa fa-users mr-2"></i> 先进群看看
+              </button>
+            </div>
           </form>
         </div>
       </section>
@@ -671,16 +679,16 @@
 
   // 兴趣方向选项（统一管理）
   const interests = ref([
-    { label: '编程', value: 'programming' },
-    { label: '设计', value: 'design' },
-    { label: '算法', value: 'algorithm' },
-    { label: '数据库', value: 'database' },
-    { label: '前端开发', value: 'frontend' },
-    { label: '后端开发', value: 'backend' },
-    { label: 'PPT', value: 'ppt' },
-    { label: '演讲', value: 'speech' },
-    { label: '视频剪辑', value: 'video_editing' },
-    { label: '无', value: 'none' },
+    { label: '编程', value: '编程' },
+    { label: '设计', value: '设计' },
+    { label: '算法', value: '算法' },
+    { label: '数据库', value: '数据库' },
+    { label: '前端开发', value: '前端开发' },
+    { label: '后端开发', value: '后端开发' },
+    { label: 'PPT', value: 'PPT' },
+    { label: '演讲', value: '演讲' },
+    { label: '视频剪辑', value: '视频剪辑' },
+    { label: '无', value: '无' },
   ])
 
   // QQ号校验状态
