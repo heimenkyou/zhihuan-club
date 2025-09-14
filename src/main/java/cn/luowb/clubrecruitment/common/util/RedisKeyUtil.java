@@ -24,4 +24,8 @@ public class RedisKeyUtil {
     public String buildMessageLikeKey(Long messageId, String ip) {
         return projectPrefix + ":like:message:" + messageId + ":ip:" + ip;
     }
+
+    public String buildMajorMappingKey() {
+        return projectPrefix + ":major:mapping";
+    }
 }
