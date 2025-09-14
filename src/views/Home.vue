@@ -117,10 +117,25 @@
             </div>
             <p class="about-paragraph border-t-2 border-black pt-5">
               我们的宗旨是：<span class="highlight-text"
-                >自觉，自律,自信”，热爱可以超过一切❤️快来加入项目组</span
+                >以赛促学，以创促研”，热爱和兴趣可以超过一切❤️快来加入吧</span
               >。
             </p>
           </div>
+          <!-- <div class="about-text">
+            <h3 class="about-subtitle">关于 智环学创融合协会</h3>
+            <p class="about-paragraph">
+              智环学创融合协会 成立于2024年，是信息工程系下属的学术科技类社团。我们专注于计算机相关学科竞赛与创新创业竞赛，致力于为热爱技术、渴望实践的同学提供一个交流、学习和成长的平台。
+            </p>
+            <p class="about-paragraph">
+              协会成立的初衷是打破课堂与实验的界限，让同学们在真实的项目与竞赛中提升技能、拓展视野。作为一个刚刚起步的社团，我们正在积极探索和成长，期待与每一位成员共同构建积极向上的技术社区。
+            </p>
+            <p class="about-paragraph">
+              我们的目标是：<span class="highlight-text"
+                >"以赛促学，以创促研，连接不同领域的同学，共同探索技术的更多可能。无论你是希望深耕专业技术，还是对跨学科创新感兴趣，这里都欢迎你的加入！"</span
+              >。
+            </p>
+          </div> -->
+          
 
           <div class="about-image">
             <div class="image-decoration top-left"></div>
@@ -163,7 +178,7 @@
           </h2>
           <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
           <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
-            2025年首次招新，期待与你一起创造属于我们的第一个高光时刻
+            2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
           </p>
         </div>
 

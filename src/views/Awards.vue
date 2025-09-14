@@ -641,22 +641,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from "vue"
-import CommonNavbar from "../components/CommonNavbar.vue"
-import { useRouter } from "vue-router"
-import { getAwards } from "../services/adminService"
-import CommonFooter from "../components/CommonFooter.vue"
+import { ref, computed, onMounted, nextTick, watch } from "vue";
+import CommonNavbar from "../components/CommonNavbar.vue";
+import { useRouter } from "vue-router";
+import { getAwards } from "../services/adminService";
+import CommonFooter from "../components/CommonFooter.vue";
 
 // 定义奖项数据结构
 interface Award {
-  id: number
-  competitionName: string // 竞赛名称
-  competitionLevel: string // 竞赛级别（现在直接用中文）
-  competitionTrack?: string // 新增：赛道（可选）
-  awardLevel: string // 奖项级别
-  winners: string[] // 获奖人员数组
-  year: number // 年份
-  awardDate: string // 获奖日期
+  id: number;
+  competitionName: string; // 竞赛名称
+  competitionLevel: string; // 竞赛级别（现在直接用中文）
+  competitionTrack?: string; // 新增：赛道（可选）
+  awardLevel: string; // 奖项级别
+  winners: string[]; // 获奖人员数组
+  year: number; // 年份
+  awardDate: string; // 获奖日期
 }
 
 // 奖项级别排序权重映射 - 确保这个对象被正确使用
@@ -668,7 +668,7 @@ const awardLevelPriority: Record<string, number> = {
   三等奖: 5,
   铜牌: 6,
   优秀奖: 7,
-}
+};
 
 // 新增：根据奖项级别返回对应的徽章样式（只修改样式，不改变原始文本）
 const getAwardBadgeClass = (level: string): string => {
@@ -681,17 +681,17 @@ const getAwardBadgeClass = (level: string): string => {
     铜牌: "bg-orange-100 text-orange-800",
     优秀奖: "bg-green-100 text-green-800",
     其他: "bg-purple-100 text-purple-800",
-  }
-  return badgeClasses[level] || "bg-blue-100 text-blue-800"
-}
+  };
+  return badgeClasses[level] || "bg-blue-100 text-blue-800";
+};
 
 // 响应式状态管理
-const router = useRouter()
-const awards = ref<Award[]>([]) // 奖项数据
-const loading = ref(true) // 加载状态
-const error = ref<string | null>(null) // 错误信息
-const searchKeyword = ref("") // 搜索关键词
-let searchTimeout: number | null = null // 搜索防抖计时器
+const router = useRouter();
+const awards = ref<Award[]>([]); // 奖项数据
+const loading = ref(true); // 加载状态
+const error = ref<string | null>(null); // 错误信息
+const searchKeyword = ref(""); // 搜索关键词
+let searchTimeout: number | null = null; // 搜索防抖计时器
 
 // 筛选条件状态
 const filter = ref({
@@ -701,64 +701,64 @@ const filter = ref({
   competitionName: "",
   competitionTrack: "", // 新增赛道筛选字段
 }) as import("vue").Ref<{
-  competitionLevel: string
-  awardLevel: string
-  year: string
-  competitionName: string
-  competitionTrack: string
-}>
+  competitionLevel: string;
+  awardLevel: string;
+  year: string;
+  competitionName: string;
+  competitionTrack: string;
+}>;
 
 // 动态提取的竞赛名称列表
 const competitionNames = computed(() => {
-  const names = new Set<string>()
+  const names = new Set<string>();
   awards.value.forEach((award) => {
     if (award.competitionName) {
-      names.add(award.competitionName)
+      names.add(award.competitionName);
     }
-  })
-  return Array.from(names).sort()
-})
+  });
+  return Array.from(names).sort();
+});
 
 // 修改 currentCompetitionTracks 计算属性，将没有赛道的项目归为"尚未区分赛道"
 const currentCompetitionTracks = computed(() => {
-  if (!filter.value.competitionName) return []
+  if (!filter.value.competitionName) return [];
 
-  const tracks = new Set<string>()
+  const tracks = new Set<string>();
 
   // 首先添加"尚未区分赛道"选项
-  let hasNoTrack = false
+  let hasNoTrack = false;
 
   awards.value.forEach((award) => {
     if (award.competitionName === filter.value.competitionName) {
       if (award.competitionTrack && award.competitionTrack !== "") {
-        tracks.add(award.competitionTrack)
+        tracks.add(award.competitionTrack);
       } else {
-        hasNoTrack = true
+        hasNoTrack = true;
       }
     }
-  })
+  });
 
   // 如果有项目没有赛道，添加"尚未区分赛道"选项
   if (hasNoTrack) {
-    tracks.add("尚未区分赛道")
+    tracks.add("尚未区分赛道");
   }
 
-  return Array.from(tracks).sort()
-})
+  return Array.from(tracks).sort();
+});
 
 // 从API获取奖项数据
 const fetchAwards = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
     // 设置参数，包含keyword搜索功能
     const params = {
       keyword: searchKeyword.value,
       ...filter.value,
-    }
+    };
 
     // 使用getAwards函数
-    const data = await getAwards(params)
+    const data = await getAwards(params);
 
     // 确保数据格式正确
     if (Array.isArray(data)) {
@@ -767,32 +767,32 @@ const fetchAwards = async () => {
         ...item,
         year: parseInt(item.year), // 将 year 从字符串转换为数字
         winners: item.winners as Array<string>,
-      })) as Award[]
+      })) as Award[];
     } else {
       // 如果响应不是预期格式，使用空数组
-      awards.value = []
-      console.warn("API响应格式不符合预期，使用空数组")
+      awards.value = [];
+      console.warn("API响应格式不符合预期，使用空数组");
     }
   } catch (err) {
-    error.value = "获取奖项数据失败，请检查API服务是否运行"
-    console.error("Failed to fetch awards:", err)
+    error.value = "获取奖项数据失败，请检查API服务是否运行";
+    console.error("Failed to fetch awards:", err);
     // 发生错误时，确保awards.value是数组
-    awards.value = []
+    awards.value = [];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 处理搜索输入
 const handleSearch = () => {
   // 防抖处理，避免频繁请求
   if (searchTimeout) {
-    clearTimeout(searchTimeout)
+    clearTimeout(searchTimeout);
   }
   searchTimeout = setTimeout(() => {
-    fetchAwards()
-  }, 300) as unknown as number // 类型转换处理
-}
+    fetchAwards();
+  }, 300) as unknown as number; // 类型转换处理
+};
 
 // 重置筛选条件
 const resetFilters = () => {
@@ -802,10 +802,10 @@ const resetFilters = () => {
     year: "",
     competitionName: "",
     competitionTrack: "", // 重置赛道筛选
-  }
-  searchKeyword.value = ""
-  fetchAwards() // 重新获取数据
-}
+  };
+  searchKeyword.value = "";
+  fetchAwards(); // 重新获取数据
+};
 
 // 分类筛选逻辑
 const filteredAwards = computed(() => {
@@ -825,7 +825,7 @@ const filteredAwards = computed(() => {
           .includes(searchKeyword.value.toLowerCase())
       )
     ) {
-      return false
+      return false;
     }
 
     // 竞赛级别筛选
@@ -833,7 +833,7 @@ const filteredAwards = computed(() => {
       filter.value.competitionLevel &&
       award.competitionLevel !== filter.value.competitionLevel
     ) {
-      return false
+      return false;
     }
 
     // 奖项级别筛选
@@ -843,31 +843,31 @@ const filteredAwards = computed(() => {
         if (
           ["一等奖", "二等奖", "三等奖", "优秀奖"].includes(award.awardLevel)
         ) {
-          return false
+          return false;
         }
       } else if (filter.value.awardLevel === "一等奖") {
         // 点击一等奖时同时加载金牌和一等奖
         if (award.awardLevel !== "一等奖" && award.awardLevel !== "金牌") {
-          return false
+          return false;
         }
       } else if (filter.value.awardLevel === "二等奖") {
         // 点击二等奖时同时加载二等奖和银牌
         if (award.awardLevel !== "二等奖" && award.awardLevel !== "银牌") {
-          return false
+          return false;
         }
       } else if (filter.value.awardLevel === "三等奖") {
         // 点击三等奖时同时加载三等奖和铜牌
         if (award.awardLevel !== "三等奖" && award.awardLevel !== "铜牌") {
-          return false
+          return false;
         }
       } else if (award.awardLevel !== filter.value.awardLevel) {
-        return false
+        return false;
       }
     }
 
     // 年份筛选
     if (filter.value.year && award.year !== parseInt(filter.value.year)) {
-      return false
+      return false;
     }
 
     // 竞赛名称筛选
@@ -875,7 +875,7 @@ const filteredAwards = computed(() => {
       filter.value.competitionName &&
       award.competitionName !== filter.value.competitionName
     ) {
-      return false
+      return false;
     }
 
     // 修改赛道筛选逻辑，支持"尚未区分赛道"选项
@@ -883,101 +883,101 @@ const filteredAwards = computed(() => {
       if (filter.value.competitionTrack === "尚未区分赛道") {
         // 如果选择了"尚未区分赛道"，则只显示没有赛道的项目
         if (award.competitionTrack && award.competitionTrack !== "") {
-          return false
+          return false;
         }
       } else {
         // 否则只显示有对应赛道的项目
         if (award.competitionTrack !== filter.value.competitionTrack) {
-          return false
+          return false;
         }
       }
     }
 
-    return true
-  })
-})
+    return true;
+  });
+});
 
 // 数据分组：按年份→级别分组
 const groupedAwards = computed(() => {
   // 先对筛选后的数据按照奖项级别排序
   const sortedAwards = [...filteredAwards.value].sort((a, b) => {
     // 获取两个奖项的优先级，如果不存在则默认为99（表示其他奖项）
-    const priorityA = awardLevelPriority[a.awardLevel] || 99
-    const priorityB = awardLevelPriority[b.awardLevel] || 99
+    const priorityA = awardLevelPriority[a.awardLevel] || 99;
+    const priorityB = awardLevelPriority[b.awardLevel] || 99;
 
     // 先按奖项级别优先级排序
     if (priorityA !== priorityB) {
-      return priorityA - priorityB
+      return priorityA - priorityB;
     }
 
     // 如果奖项级别相同，再按竞赛名称排序
-    return a.competitionName.localeCompare(b.competitionName)
-  })
+    return a.competitionName.localeCompare(b.competitionName);
+  });
 
   // 然后再按年份和竞赛级别分组 - 注意这里没有对award.awardLevel进行转换
   return sortedAwards.reduce((acc, award) => {
-    const yearKey = award.year.toString()
+    const yearKey = award.year.toString();
     if (!acc[yearKey]) {
       acc[yearKey] = {
         国家级: [] as Award[],
         省级: [] as Award[],
         校级: [] as Award[],
-      }
+      };
     }
     // 直接使用中文级别作为键
     const level = ["国家级", "省级", "校级"].includes(award.competitionLevel)
       ? award.competitionLevel
-      : "校级" // 默认使用校级
+      : "校级"; // 默认使用校级
     // 确保 level 是有效的键类型，避免隐式 any 类型错误
     if (level === "国家级" || level === "省级" || level === "校级") {
-      acc[yearKey][level].push(award) // 这里直接push原始的award对象，不修改其属性
+      acc[yearKey][level].push(award); // 这里直接push原始的award对象，不修改其属性
     }
-    return acc
-  }, {} as Record<string, { 国家级: Award[]; 省级: Award[]; 校级: Award[] }>)
-})
+    return acc;
+  }, {} as Record<string, { 国家级: Award[]; 省级: Award[]; 校级: Award[] }>);
+});
 
 // 年份排序：按降序排列
 const sortedYears = computed(() => {
   return Object.keys(groupedAwards.value).sort(
     (a, b) => parseInt(b) - parseInt(a)
-  )
-})
+  );
+});
 
 // 跳转到项目详情页
 const goToProjectDetail = (awardId: number) => {
-  router.push({ path: "/projectdetailtest", query: { awardId } })
-}
+  router.push({ path: "/projectdetailtest", query: { awardId } });
+};
 
 // 页面加载时获取数据
 onMounted(() => {
-  fetchAwards()
+  fetchAwards();
 
   nextTick(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-slide-up")
-            observer.unobserve(entry.target)
+            entry.target.classList.add("animate-slide-up");
+            observer.unobserve(entry.target);
           }
-        })
+        });
       },
       { root: null, rootMargin: "0px", threshold: 0.1 }
-    )
+    );
 
     document
       .querySelectorAll("section")
-      .forEach((section) => observer.observe(section))
-  })
-})
+      .forEach((section) => observer.observe(section));
+  });
+});
 
 // 新增：监听竞赛项目变化，清空赛道筛选
 watch(
   () => filter.value.competitionName,
   () => {
-    filter.value.competitionTrack = ""
+    filter.value.competitionTrack = "";
   }
-)
+);
 </script>
 
 <style scoped>
