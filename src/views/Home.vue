@@ -112,7 +112,6 @@
               <p class="about-paragraph">🤩：我什么都不会你们会要我嘛？！</p>
               <hr/>
               <p class="about-paragraph">😏: 当然啦，计算机专业：前端，后端，测试，运维，嵌入式开发<br />
-              &emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;
               非计算机专业同学：PPT，写项目书，UI设计，视频剪辑，宣讲演讲。</p>
             </div>
             <p class="about-paragraph border-t-2 border-black pt-5">

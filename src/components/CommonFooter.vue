@@ -44,7 +44,7 @@
   background-color: #1e293b;
   color: white;
   padding: 1rem 0;
-  margin-top: 3rem;
+  /* margin-top: 3rem; */
 }
 
 .footer-content {
