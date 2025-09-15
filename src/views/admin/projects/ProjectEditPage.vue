@@ -551,12 +551,20 @@ const beforeUpload = (file: File) => {
 const handleUpload = (options: any) => {
   const { onSuccess } = options
   // 模拟图片上传过程
+  const mockImageUrl = `https://picsum.photos/id/${Math.floor(
+    Math.random() * 100
+  )}/400/300`
+  
   setTimeout(() => {
-    const mockImageUrl = `https://picsum.photos/id/${Math.floor(
-      Math.random() * 100
-    )}/400/300`
-    onSuccess(mockImageUrl)
+    onSuccess({ url: mockImageUrl })
   }, 1000)
+  
+  // 返回一个Promise以满足UploadRequestHandler类型要求
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ url: mockImageUrl })
+    }, 1000)
+  })
 }
 
 // 图片上传成功处理

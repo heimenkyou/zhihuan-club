@@ -127,7 +127,7 @@
 
     <!-- 详情对话框 -->
     <el-dialog v-model="dialogVisible" title="报名详情" width="600px">
-      <el-form :model="currentApplication" label-width="100px">
+      <el-form :model="currentApplication || {}" label-width="100px">
         <el-form-item label="姓名">
           <span>{{ currentApplication?.name }}</span>
         </el-form-item>

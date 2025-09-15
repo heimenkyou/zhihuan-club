@@ -207,7 +207,9 @@
 
         <!-- 加载状态 -->
         <div v-if="loading" class="flex justify-center items-center py-16">
-          <el-loading-spinner size="large" />
+          <el-icon class="is-loading" size="24">
+            <i class="fa fa-spinner"></i>
+          </el-icon>
           <span class="ml-4">加载项目中...</span>
         </div>
 
