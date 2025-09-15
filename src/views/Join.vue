@@ -639,6 +639,7 @@
   import CommonFooter from '../components/CommonFooter.vue'
   import CommonNavbar from '../components/CommonNavbar.vue' // 引入通用导航栏
   import { ref, onMounted } from 'vue'
+  import { showSuccess } from '@/utils/notification' // 引入通知工具函数
   // 导入 submitApplication 函数（请确保此函数路径正确且能正常请求）
   import {
     submitApplication,
@@ -934,8 +935,9 @@
     observeSections()
 
     // 页面加载时获取专业映射表
-
     majorMapping.value = await getMajorMapping()
+    // 显示成功通知
+    showSuccess('专业映射表加载成功')
   })
 </script>
 

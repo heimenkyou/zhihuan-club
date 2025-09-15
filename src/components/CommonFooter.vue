@@ -18,7 +18,11 @@
       <!-- 社交图标 -->
       <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem">
         <!-- 微信 -->
-        <a href="#" @click.prevent="throwError('还没有微信')" style="color: #9ca3af">
+        <a
+          href="#"
+          @click.prevent="showWarning('还没有微信')"
+          style="color: #9ca3af"
+        >
           <i class="fa fa-weixin" style="font-size: 1.5rem"></i>
         </a>
         <!-- QQ群 -->
@@ -31,7 +35,11 @@
           <i class="fa fa-qq" style="font-size: 1.5rem"></i>
         </a>
         <!-- github目前也没有 -->
-        <a href="#" @click.prevent="throwError('GitHub地址暂不公开')" style="color: #9ca3af">
+        <a
+          href="#"
+          @click.prevent="showWarning('GitHub地址暂不公开')"
+          style="color: #9ca3af"
+        >
           <i class="fa fa-github" style="font-size: 1.5rem"></i>
         </a>
         <!-- 这里应该展示邮箱 -->
@@ -47,9 +55,7 @@
 </template>
 
 <script setup lang="ts">
-function throwError(message: string) {
-  throw new Error(message);
-}
+  import { showWarning } from '@/utils/notification'
 </script>
 
 <style scoped>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, onUnmounted } from "vue"
 import { useMessageStore } from "../stores/messageStore"
-import { showSuccessNotification, showErrorNotification } from "../main"
+// import { showSuccessNotification, showErrorNotification } from "../main"
+import { showError, showSuccess } from '@/utils/notification'
 import { Refresh, Edit } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
 import { ElMessageBox } from 'element-plus'
@@ -208,7 +209,7 @@ const handleLike = async (messageId: number) => {
 
     debugInfo.value = `${actionText}成功: 留言 ${messageId}`
     console.log(`👍 ${actionText}成功:`, messageId)
-    showSuccessNotification(successText)
+    showSuccess(successText)
   } catch (error) {
     // 仅在store调用真失败时提示（如网络错误），消除状态同步延迟导致的误提示
     const errorMsg =
@@ -221,7 +222,8 @@ const handleLike = async (messageId: number) => {
     }
     debugInfo.value = `点赞/取消点赞失败: ${errorMsg}`
     console.error("点赞操作异常:", error)
-    showErrorNotification(`操作失败: ${errorMsg}`)
+    // showError(`操作失败: ${errorMsg}`)
+    throw new Error(`点赞/取消点赞失败: ${errorMsg}`)
   } finally {
     // 无论成功失败，都释放加载状态
     likeLoading.value[messageId] = false
@@ -247,13 +249,14 @@ const handleDelete = async (messageId: number) => {
         await messageStore.handleDeleteMessage(messageId)
         debugInfo.value = `留言 ${messageId} 删除成功`
         console.log(`🗑️ 留言删除成功:`, messageId)
-        showSuccessNotification("删除成功")
+        showSuccess("删除成功")
         await fetchMessages()
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : "删除失败"
         debugInfo.value = `删除留言失败: ${errorMsg}`
         console.error("删除留言异常:", error)
-        showErrorNotification(`删除失败: ${errorMsg}`)
+        // showError(`删除失败: ${errorMsg}`)
+        throw new Error(`删除留言失败: ${errorMsg}`)
       }
     }
   } catch (error) {
@@ -286,13 +289,13 @@ const handleAddMessage = async () => {
     newMessage.value.content = ""
     debugInfo.value = "留言发布成功"
     console.log("📝 留言发布成功")
-    showSuccessNotification("新增留言成功")
+    showSuccess("新增留言成功")
     await fetchMessages()
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : "发布失败"
     debugInfo.value = `留言发布失败: ${errorMsg}`
     console.error("发布留言异常:", error)
-    showErrorNotification(`操作失败: ${errorMsg}`)
+    // showError(`操作失败: ${errorMsg}`)
     throw error
   }
 }
@@ -303,11 +306,11 @@ const handleRefresh = async () => {
   try {
     await fetchMessages()
     debugInfo.value = "留言数据刷新成功"
-    showSuccessNotification("刷新成功")
+    showSuccess("刷新成功")
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : "刷新失败"
     debugInfo.value = `刷新留言失败: ${errorMsg}`
-    showErrorNotification(`刷新失败: ${errorMsg}`)
+    // showError(`刷新失败: ${errorMsg}`)
     throw error
   }
 }

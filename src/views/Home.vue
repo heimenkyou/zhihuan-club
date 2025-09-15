@@ -237,15 +237,6 @@
               </div>
             </div>
           </div>
-
-          <!-- 滚动指示器 -->
-          <div
-            class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2"
-          >
-            <div class="w-12 h-1 bg-primary rounded-full"></div>
-            <div class="w-3 h-1 bg-gray-300 rounded-full"></div>
-            <div class="w-3 h-1 bg-gray-300 rounded-full"></div>
-          </div>
         </div>
 
         <!-- 查看更多按钮 -->
