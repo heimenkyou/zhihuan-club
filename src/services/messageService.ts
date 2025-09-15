@@ -45,19 +45,11 @@ export const getMessages = async (
   params: GetMessagesParams = { current: 1, size: 10 }
 ): Promise<PageData<MessageItem>> => {
   try {
-    console.log('🚀 发送请求参数:', params)
-
     // 现在api.get返回正确的类型
     const response = await api.get<ApiResponse<PageData<MessageItem>>>(
       '/public/messages',
       { params }
     )
-
-    console.log('📡 响应数据:', response)
-    console.log('🔍 响应数据结构:', JSON.stringify(response, null, 2))
-    console.log('✅ API响应结构:', response)
-    console.log('📄 分页数据:', response.data)
-
     return response.data.data
   } catch (error) {
     console.error('❌ 获取留言列表失败:', error)
@@ -73,15 +65,10 @@ export const toggleLike = async (
   messageId: number
 ): Promise<LikeActionResult> => {
   try {
-    console.log('👍 发送点赞请求:', messageId)
-
     // 调用点赞接口
     const response = await api.post<ApiResponse<LikeActionResult>>(
       `/public/messages/${messageId}/like`
     )
-
-    console.log('👍 点赞响应:', response)
-    console.log('👍 点赞结果:', response.data)
 
     return response.data.data
   } catch (error) {
@@ -97,15 +84,8 @@ export { toggleLike as toggleMessageLike }
 // 删除留言接口请求函数
 export const deleteMessage = async (messageId: number): Promise<void> => {
   try {
-    console.log('🗑️ 发送删除请求:', messageId)
-
     // 调用删除接口
-    const response = await api.delete<ApiResponse<null>>(
-      `/public/messages/${messageId}`
-    )
-
-    console.log('🗑️ 删除响应:', response)
-
+    await api.delete<ApiResponse<null>>(`/public/messages/${messageId}`)
     // 不需要返回值
   } catch (error) {
     console.error('❌ 删除留言失败:', error)
@@ -118,17 +98,11 @@ export const createMessage = async (
   params: CreateMessageParams
 ): Promise<MessageItem> => {
   try {
-    console.log('📝 发送创建留言请求:', params)
-
     // 调用创建留言接口
     const response = await api.post<ApiResponse<MessageItem>>(
       '/public/messages',
       params
     )
-
-    console.log('📝 创建留言响应:', response)
-    console.log('📝 创建留言结果:', response.data)
-
     return response.data.data
   } catch (error) {
     console.error('❌ 创建留言失败:', error)

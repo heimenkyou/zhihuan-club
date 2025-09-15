@@ -6,7 +6,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import { ElNotification } from 'element-plus'
+
 
 // 导入Vue 3版本的Markdown编辑器
 import VMdEditor from '@kangc/v-md-editor'

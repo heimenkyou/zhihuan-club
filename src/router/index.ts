@@ -1,27 +1,68 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import type { RouteRecordRaw } from 'vue-router';
-import adminRoutes from './adminRoutes';
-import { useAdminStore } from '../stores/adminStore';
-import { ElMessage } from 'element-plus'; // 添加导入
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import adminRoutes from '@/router/adminRoutes'
+import { useAdminStore } from '@/stores/adminStore'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 在路由数组中添加以下内容
 const routes: RouteRecordRaw[] = [
   // 假设 Home 组件路径为 '../views/Home.vue'，需根据实际情况调整
   { path: '/', name: 'home', component: () => import('../views/Home.vue') },
-  { path: '/projects', name: 'projects', component: () => import('../views/Projects.vue') },
-  { path: '/projectdetailtest', name: 'projectdetail', component: () => import('../views/ProjectDetailTest.vue') },
-  { path: '/competitions', name: 'competitions', component: () => import('../views/Competitions.vue') },
-  { path: '/awards', name: 'awards', component: () => import('../views/Awards.vue') },
-  { path: '/about', name: 'about', component: () => import('../views/About.vue') },
-  { path: '/resources', name: 'resources', component: () => import('../views/Resources.vue') },
+  {
+    path: '/projects',
+    name: 'projects',
+    component: () => import('../views/Projects.vue'),
+  },
+  {
+    path: '/projectdetailtest',
+    name: 'projectdetail',
+    component: () => import('../views/ProjectDetailTest.vue'),
+  },
+  {
+    path: '/competitions',
+    name: 'competitions',
+    component: () => import('../views/Competitions.vue'),
+    meta: { requiresConfirmation: true }, // 需要确认访问
+  },
+  {
+    path: '/awards',
+    name: 'awards',
+    component: () => import('../views/Awards.vue'),
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/About.vue'),
+  },
+  {
+    path: '/resources',
+    name: 'resources',
+    component: () => import('../views/Resources.vue'),
+  },
   { path: '/join', name: 'join', component: () => import('../views/Join.vue') },
-  { path: '/messages', name: 'messageList', component: () => import('../views/MessageList.vue') },
-  { path: '/projectdetail', name: 'projectDetail', component: () => import('../views/ProjectDetail.vue') },
-  { path: '/privacy-policy', name: 'privacyPolicy', component: () => import('../views/PrivacyPolicy.vue') },
-  { path: '/terms-of-service', name: 'termsOfService', component: () => import('../views/TermsOfService.vue') },
+  {
+    path: '/messages',
+    name: 'messageList',
+    component: () => import('../views/MessageList.vue'),
+  },
+  {
+    path: '/projectdetail',
+    name: 'projectDetail',
+    component: () => import('../views/ProjectDetail.vue'),
+  },
+  {
+    path: '/privacy-policy',
+    name: 'privacyPolicy',
+    component: () => import('../views/PrivacyPolicy.vue'),
+  },
+  {
+    path: '/terms-of-service',
+    name: 'termsOfService',
+    component: () => import('../views/TermsOfService.vue'),
+  },
   // 添加管理员公共路由
   ...adminRoutes,
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,27 +70,50 @@ const router = createRouter({
   scrollBehavior(_to, _from, _savedPosition) {
     // 始终滚动到顶部
     return { top: 0 }
-  }
-});
+  },
+})
 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
-  const adminStore = useAdminStore();
-  
+  const adminStore = useAdminStore()
+  // 检查是否需要访问确认
+  if (to.meta.requiresConfirmation) {
+    try {
+      await ElMessageBox.confirm(
+        '竞赛天地还在开发中，页面上都是假的，确认访问吗？',
+        '访问确认',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          // 可选：防止频繁弹窗
+          closeOnClickModal: false,
+          closeOnPressEscape: false,
+        }
+      )
+      // 用户点击“确定”：继续后续逻辑
+    } catch {
+      // 用户点击“取消”或关闭
+      ElMessage.info('已取消访问')
+      next(false) // 阻止导航
+      return
+    }
+  }
   // 检查登录状态
   if (!adminStore.isLoggedIn && to.meta.requiresAuth) {
-    next('/admin/login');
-    return;
+    ElMessage.error('请先登录')
+    next('/admin/login')
+    return
   }
-  
+
   // 检查是否为超级管理员
   if (to.meta.requiresSuperAdmin && !adminStore.isSuperAdmin()) {
-    ElMessage.error('无权限访问此页面');
-    next(from.path || '/admin/dashboard');
-    return;
+    ElMessage.error('无权限访问此页面')
+    next(from.path || '/admin/dashboard')
+    return
   }
-  
-  next();
-});
 
-export default router;
+  next()
+})
+
+export default router

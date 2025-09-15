@@ -742,176 +742,176 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue"
-// import { useRouter } from "vue-router"
-import CommonNavbar from "../components/CommonNavbar.vue"
-import CommonFooter from "../components/CommonFooter.vue"
+  import { onMounted } from 'vue'
+  // import { useRouter } from "vue-router"
+  import CommonNavbar from '../components/CommonNavbar.vue'
+  import CommonFooter from '../components/CommonFooter.vue'
 
-// const router = useRouter()
-// 跳转到相关赛事的官网
-const goToChallengeCup = () => {
-  window.open("http://www.tiaozhanbei.net/", "_blank")
-}
-const goToInternetPlus = () => {
-  window.open("https://cy.ncss.cn/", "_blank")
-}
-const goToACM = () => {
-  window.open("https://acm.hust.edu.cn/", "_blank")
-}
-const goToElectronicDesign = () => {
-  window.open("https://www.edc.hust.edu.cn/", "_blank")
-}
-const goToSmartCar = () => {
-  window.open("http://www.smartcarrace.com/", "_blank")
-}
-const goToMathModeling = () => {
-  window.open("https://www.mcm.edu.cn/", "_blank")
-}
-
-// 完整保留原HTML的滚动动画逻辑（迁移自DOMContentLoaded）
-onMounted(() => {
-  const observerOptions = {
-    root: null,
-    rootMargin: "0px",
-    threshold: 0.1,
+  // const router = useRouter()
+  // 跳转到相关赛事的官网
+  const goToChallengeCup = () => {
+    window.open('http://www.tiaozhanbei.net/', '_blank')
+  }
+  const goToInternetPlus = () => {
+    window.open('https://cy.ncss.cn/', '_blank')
+  }
+  const goToACM = () => {
+    window.open('https://icpc.global/', '_blank')
+  }
+  const goToElectronicDesign = () => {
+    window.open('http://nuedc.xjtu.edu.cn/', '_blank')
+  }
+  const goToSmartCar = () => {
+    window.open('http://www.smartcarrace.com/', '_blank')
+  }
+  const goToMathModeling = () => {
+    window.open('https://www.mcm.edu.cn/', '_blank')
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("animate-slide-up")
-        observer.unobserve(entry.target)
-      }
-    })
-  }, observerOptions)
+  // 完整保留原HTML的滚动动画逻辑（迁移自DOMContentLoaded）
+  onMounted(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1,
+    }
 
-  // 监听所有section，确保动画触发逻辑与原HTML一致
-  document.querySelectorAll("section").forEach((section) => {
-    observer.observe(section)
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-slide-up')
+          observer.unobserve(entry.target)
+        }
+      })
+    }, observerOptions)
+
+    // 监听所有section，确保动画触发逻辑与原HTML一致
+    document.querySelectorAll('section').forEach(section => {
+      observer.observe(section)
+    })
   })
-})
 </script>
 
 <style scoped>
-/* 1. 基础样式：与原HTML保持一致 */
-.competitions-page {
-  background-color: #f8fafc;
-}
-
-/* 2. 自定义颜色：完整迁移原tailwind.config的颜色定义 */
-.bg-primary {
-  background-color: #3b82f6;
-}
-.text-primary {
-  color: #3b82f6;
-}
-.bg-secondary {
-  background-color: #10b981;
-}
-.text-secondary {
-  color: #10b981;
-}
-.bg-accent {
-  background-color: #f59e0b;
-}
-.text-accent {
-  color: #f59e0b;
-}
-.text-dark {
-  color: #1e293b;
-}
-
-/* 3. 动画样式：完整迁移@layer utilities中的所有动画（避免scoped失效） */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-@keyframes pulseSlow {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-in-out;
-}
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out;
-}
-.animate-scale-in {
-  animation: scaleIn 0.5s ease-out;
-}
-.animate-pulse-slow {
-  animation: pulseSlow 2s infinite;
-}
-
-/* 4. 移动端适配：保留原HTML的响应式逻辑，优化触摸体验 */
-@media (max-width: 768px) {
-  /* 确保文字不溢出，强制换行 */
-  span,
-  p,
-  h3,
-  h4 {
-    word-wrap: break-word !important;
-    white-space: normal !important;
+  /* 1. 基础样式：与原HTML保持一致 */
+  .competitions-page {
+    background-color: #f8fafc;
   }
 
-  /* 优化卡片间距，避免拥挤 */
-  .grid {
-    gap: 1rem !important;
+  /* 2. 自定义颜色：完整迁移原tailwind.config的颜色定义 */
+  .bg-primary {
+    background-color: #3b82f6;
+  }
+  .text-primary {
+    color: #3b82f6;
+  }
+  .bg-secondary {
+    background-color: #10b981;
+  }
+  .text-secondary {
+    color: #10b981;
+  }
+  .bg-accent {
+    background-color: #f59e0b;
+  }
+  .text-accent {
+    color: #f59e0b;
+  }
+  .text-dark {
+    color: #1e293b;
   }
 
-  /* 按钮触摸区域优化（符合移动端交互规范） */
-  button {
-    min-height: 44px !important;
-    min-width: 44px !important;
+  /* 3. 动画样式：完整迁移@layer utilities中的所有动画（避免scoped失效） */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes pulseSlow {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
   }
 
-  /* 调整图片高度，避免移动端遮挡 */
-  .h-48 {
-    height: 280px !important;
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
   }
-}
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out;
+  }
+  .animate-pulse-slow {
+    animation: pulseSlow 2s infinite;
+  }
 
-/* 5. Font Awesome图标：确保图标正常显示（迁移原HTML的图标样式） */
-.fa {
-  display: inline-block;
-  font-style: normal;
-  font-variant: normal;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-}
+  /* 4. 移动端适配：保留原HTML的响应式逻辑，优化触摸体验 */
+  @media (max-width: 768px) {
+    /* 确保文字不溢出，强制换行 */
+    span,
+    p,
+    h3,
+    h4 {
+      word-wrap: break-word !important;
+      white-space: normal !important;
+    }
 
-/* 6. 补充原HTML的content-auto类（用于性能优化） */
-.content-auto {
-  content-visibility: auto;
-}
+    /* 优化卡片间距，避免拥挤 */
+    .grid {
+      gap: 1rem !important;
+    }
+
+    /* 按钮触摸区域优化（符合移动端交互规范） */
+    button {
+      min-height: 44px !important;
+      min-width: 44px !important;
+    }
+
+    /* 调整图片高度，避免移动端遮挡 */
+    .h-48 {
+      height: 280px !important;
+    }
+  }
+
+  /* 5. Font Awesome图标：确保图标正常显示（迁移原HTML的图标样式） */
+  .fa {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 6. 补充原HTML的content-auto类（用于性能优化） */
+  .content-auto {
+    content-visibility: auto;
+  }
 </style>
