@@ -81,10 +81,10 @@ router.beforeEach(async (to, from, next) => {
     try {
       await ElMessageBox.confirm(
         '竞赛天地还在开发中，页面上都是假的，确认访问吗？',
-        '访问确认',
+        '这里没啥东西啊',
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+          confirmButtonText: '让我康康!',
+          cancelButtonText: '溜了',
           type: 'warning',
           // 可选：防止频繁弹窗
           closeOnClickModal: false,

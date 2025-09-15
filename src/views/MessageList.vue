@@ -1,11 +1,13 @@
 <script setup lang="ts">
-  import { onMounted, ref, computed, onUnmounted } from 'vue'
+  import { onMounted, ref, computed, onUnmounted, nextTick, watch } from 'vue'
   import { useMessageStore } from '../stores/messageStore'
   import { showSuccess } from '@/utils/notification'
   import { Refresh, Edit } from '@element-plus/icons-vue'
   import { useRouter } from 'vue-router'
   import { ElMessageBox } from 'element-plus'
   import CommonFooter from '../components/CommonFooter.vue'
+
+  
   const messageStore = useMessageStore()
   const debugInfo = ref('')
   const router = useRouter() // 初始化router
@@ -43,6 +45,12 @@
 
   // 控制留言内容展开/收起状态
   const expandedMessages = ref<Record<number, boolean>>({})
+
+  // 存储每个留言内容元素的引用
+  const contentRefs = ref<Record<number, HTMLElement | null>>({})
+
+  // 存储每个留言是否需要展开按钮的状态
+  const showExpandButtons = ref<Record<number, boolean>>({})
 
   // 计算可见的页码
   const visiblePages = computed(() => {
@@ -342,10 +350,63 @@
     }
   }
 
+  // 检测留言是否被截断
+  const checkTruncatedMessages = async () => {
+    await nextTick()
+    messageStore.messages.forEach((msg) => {
+      const contentElement = contentRefs.value[msg.id]
+      if (contentElement) {
+        // 检查元素是否被截断（scrollHeight > clientHeight）
+        const isTruncated = contentElement.scrollHeight > contentElement.clientHeight
+        showExpandButtons.value[msg.id] = isTruncated
+      }
+    })
+  }
+
   // 切换留言内容展开/收起状态
   const toggleMessageExpansion = (messageId: number) => {
     expandedMessages.value[messageId] = !expandedMessages.value[messageId]
   }
+
+  // 在组件挂载时检测留言截断状态
+  onMounted(async () => {
+    try {
+      const savedNickname = localStorage.getItem('message_board_nickname')
+      if (savedNickname) {
+        newMessage.value.nickname = savedNickname
+        console.log('👤 已加载保存的昵称:', savedNickname)
+      }
+      debugInfo.value = '开始获取留言数据...'
+      await fetchMessages()
+      // 检测留言截断状态
+      await checkTruncatedMessages()
+    } catch (error) {
+      debugInfo.value = `初始化失败: ${
+        error instanceof Error ? error.message : '未知错误'
+      }`
+      console.error('组件初始化失败:', error)
+      throw error
+    }
+  })
+
+  // 监听消息变化，重新检测截断状态
+  watch(
+    () => messageStore.messages,
+    async () => {
+      await checkTruncatedMessages()
+    },
+    { deep: true }
+  )
+
+  // 监听expandedMessages变化，但不需要重新检测截断状态
+  // 因为展开/收起状态不影响内容是否被截断的判断
+  watch(
+    expandedMessages,
+    () => {
+      // 不需要执行任何操作，只需保持响应式更新
+    },
+    { deep: true }
+  )
 </script>
 
 <template>
@@ -484,12 +545,13 @@
                 <p
                   class="content-text"
                   :class="{ expanded: expandedMessages[msg.id] }"
+                  :ref="(el) => (contentRefs[msg.id] = el as HTMLElement)"
                 >
                   {{ msg.content }}
                 </p>
                 <!-- 展开/收起按钮 -->
                 <button
-                  v-if="msg.content.length > 100"
+                  v-if="showExpandButtons[msg.id]"
                   @click="toggleMessageExpansion(msg.id)"
                   class="expand-toggle-btn"
                 >
