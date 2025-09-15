@@ -98,16 +98,33 @@
           <h1 class="section-title">我们是谁？</h1>
           <div class="section-divider"></div>
         </div>
-
+        <!-- 切换介绍风格的按钮 -->
+        <div class="style-switcher mb-6 flex justify-center">
+          <el-button 
+            :type="showChatStyle ? 'primary' : ''" 
+            @click="showChatStyle = true"
+            style="margin-right: 10px;"
+          >
+            聊天风格
+          </el-button>
+          <el-button 
+            :type="!showChatStyle ? 'primary' : ''" 
+            @click="showChatStyle = false"
+          >
+            正式介绍
+          </el-button>
+        </div>
         <div class="about-content">
-          <div class="about-text">
+          
+          <!-- 通过v-if/v-else控制应该展示聊天形式还是正式形式的介绍 -->
+          <div v-if="showChatStyle" class="about-text">
             <h3 class="about-subtitle">聊天记录:</h3>
             <div class="chat-history">
               <p class="about-paragraph">😭：我的专业二本毕业找不到好工作怎么呀？</p>
               <hr/>
               <p class="about-paragraph">🥺：早就听说计算机寒冬了，我还有机会嘛？</p>
               <hr/>
-              <p class="about-paragraph">🤓👆：有的兄弟们，有的！为何不建立个工作室一块做实战项目呢？既能丰富个人简历就业，考研还有优势。</p>
+              <p class="about-paragraph">🤓👆：有的兄弟们，有的！为何一块组队做实战项目呢？既能丰富个人简历就业，考研还有优势。</p>
               <hr/>
               <p class="about-paragraph">🤩：我什么都不会你们会要我嘛？！</p>
               <hr/>
@@ -120,7 +137,7 @@
               >。
             </p>
           </div>
-          <!-- <div class="about-text">
+          <div v-else class="about-text">
             <h3 class="about-subtitle">关于 智环学创融合协会</h3>
             <p class="about-paragraph">
               智环学创融合协会 成立于2024年，是信息工程系下属的学术科技类社团。我们专注于计算机相关学科竞赛与创新创业竞赛，致力于为热爱技术、渴望实践的同学提供一个交流、学习和成长的平台。
@@ -133,7 +150,7 @@
                 >"以赛促学，以创促研，连接不同领域的同学，共同探索技术的更多可能。无论你是希望深耕专业技术，还是对跨学科创新感兴趣，这里都欢迎你的加入！"</span
               >。
             </p>
-          </div> -->
+          </div>
           
 
           <div class="about-image">
@@ -591,6 +608,8 @@ const router = useRouter()
 const projects = ref<Project[]>([])
 const loading = ref(false)
 const error = ref('')
+// 控制介绍风格显示的变量
+const showChatStyle = ref(true)
 
 // // 模拟数据，当无法获取真实数据时使用
 // const mockProjects = [

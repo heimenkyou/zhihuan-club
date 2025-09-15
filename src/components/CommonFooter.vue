@@ -17,16 +17,25 @@
 
       <!-- 社交图标 -->
       <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem">
-        <a href="#" style="color: #9ca3af">
+        <!-- 微信 -->
+        <a href="#" @click.prevent="throwError('还没有微信')" style="color: #9ca3af">
           <i class="fa fa-weixin" style="font-size: 1.5rem"></i>
         </a>
-        <a href="#" style="color: #9ca3af">
+        <!-- QQ群 -->
+        <a
+          href="https://qm.qq.com/q/KiJWZAQ1C6"
+          style="color: #9ca3af"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <i class="fa fa-qq" style="font-size: 1.5rem"></i>
         </a>
-        <a href="#" style="color: #9ca3af">
+        <!-- github目前也没有 -->
+        <a href="#" @click.prevent="throwError('GitHub地址暂不公开')" style="color: #9ca3af">
           <i class="fa fa-github" style="font-size: 1.5rem"></i>
         </a>
-        <a href="#" style="color: #9ca3af">
+        <!-- 这里应该展示邮箱 -->
+        <a href="mailto:Wenbin.Lo@outlook.com" style="color: #9ca3af">
           <i class="fa fa-envelope" style="font-size: 1.5rem"></i>
         </a>
       </div>
@@ -37,75 +46,79 @@
   </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+function throwError(message: string) {
+  throw new Error(message);
+}
+</script>
 
 <style scoped>
-.common-footer {
-  background-color: #1e293b;
-  color: white;
-  padding: 1rem 0;
-  /* margin-top: 3rem; */
-}
+  .common-footer {
+    background-color: #1e293b;
+    color: white;
+    padding: 1rem 0;
+    /* margin-top: 3rem; */
+  }
 
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-.footer-info {
-  text-align: center;
-  margin-bottom: 0.2rem;
-}
-
-.footer-info h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.footer-info p {
-  color: #94a3b8;
-  font-size: 1rem;
-}
-
-.footer-links {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.footer-link {
-  color: #e2e8f0;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.3s;
-}
-
-.footer-link:hover {
-  color: #3b82f6;
-}
-
-.footer-copyright {
-  text-align: center;
-  color: #94a3b8;
-  font-size: 0.875rem;
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .footer-links {
-    /* flex-direction: column; */
-    gap: 1rem;
+  .footer-info {
     text-align: center;
+    margin-bottom: 0.2rem;
   }
 
   .footer-info h3 {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
   }
-}
+
+  .footer-info p {
+    color: #94a3b8;
+    font-size: 1rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-link {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s;
+  }
+
+  .footer-link:hover {
+    color: #3b82f6;
+  }
+
+  .footer-copyright {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.875rem;
+  }
+
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    .footer-links {
+      /* flex-direction: column; */
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .footer-info h3 {
+      font-size: 1.25rem;
+    }
+  }
 </style>

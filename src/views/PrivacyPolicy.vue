@@ -76,7 +76,24 @@
         <section>
           <h2>八、联系我们</h2>
           <p>如您对本隐私政策有任何疑问，请通过以下方式联系我们：</p>
-          <p>邮箱：team@example.com</p>
+          <p>邮箱：Wenbin.Lo@outlook.com</p>
+          <!-- <a
+              href="https://qm.qq.com/q/KiJWZAQ1C6"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <i class="fa fa-external-link"></i> 直接加群
+            </a> -->
+          <p>
+            <a
+              href="https://qm.qq.com/q/KiJWZAQ1C6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i class="fa fa-external-link"></i> QQ群：967370226
+            </a>
+          </p>
         </section>
       </div>
     </el-main>
@@ -84,103 +101,103 @@
 </template>
 
 <script setup lang="ts">
-// 导入必要的导航功能
-import { useRouter } from "vue-router"
+  // 导入必要的导航功能
+  import { useRouter } from 'vue-router'
 
-const router = useRouter()
+  const router = useRouter()
 
-// 添加导航到首页的方法
-const navigateToHome = () => {
-  router.push("/")
-}
+  // 添加导航到首页的方法
+  const navigateToHome = () => {
+    router.push('/')
+  }
 </script>
 
 <style scoped>
-.policy-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+  .policy-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-.policy-content {
-  flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.policy-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  padding-top: 0;
-}
-
-.policy-header h1 {
-  font-size: 1.5rem;
-  color: #1e293b;
-  margin: 0;
-}
-
-.update-date {
-  color: #64748b;
-  font-size: 1rem;
-  margin-top: 1rem;
-}
-
-.policy-body {
-  background: white;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-}
-
-section {
-  margin-bottom: 2.5rem;
-}
-
-section h2 {
-  font-size: 1.5rem;
-  color: #1e293b;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-section p {
-  margin-bottom: 1rem;
-  line-height: 1.8;
-  color: #475569;
-}
-
-section ul {
-  list-style-type: disc;
-  padding-left: 2rem;
-  margin-bottom: 1rem;
-}
-
-section li {
-  margin-bottom: 0.5rem;
-  line-height: 1.8;
-  color: #475569;
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
   .policy-content {
-    padding: 1rem;
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .policy-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 0;
   }
 
   .policy-header h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .update-date {
+    color: #64748b;
+    font-size: 1rem;
+    margin-top: 1rem;
   }
 
   .policy-body {
-    padding: 1.5rem;
+    background: white;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  section {
+    margin-bottom: 2.5rem;
   }
 
   section h2 {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
   }
-}
+
+  section p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+    color: #475569;
+  }
+
+  section ul {
+    list-style-type: disc;
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  section li {
+    margin-bottom: 0.5rem;
+    line-height: 1.8;
+    color: #475569;
+  }
+
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    .policy-content {
+      padding: 1rem;
+    }
+
+    .policy-header h1 {
+      font-size: 2rem;
+    }
+
+    .policy-body {
+      padding: 1.5rem;
+    }
+
+    section h2 {
+      font-size: 1.35rem;
+    }
+  }
 </style>
