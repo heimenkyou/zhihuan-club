@@ -21,7 +21,7 @@
     "noEmit": true,
 
     /* Node.js types */
-    "types": ["node"],
+    "types": ["node", "element-plus/global"],
 
     /* Linting */
     "strict": true,

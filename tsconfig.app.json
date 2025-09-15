@@ -1,9 +1,9 @@
 {
   "extends": "./node_modules/@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
-     // 设置基础路径
+    // 设置基础路径
     "baseUrl": ".",
-
+    "types": ["element-plus/global"],
     // 配置路径别名
     "paths": {
       "@/*": ["src/*"]
