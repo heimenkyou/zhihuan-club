@@ -1,6 +1,6 @@
 import api from '@/services/api'
 // API响应类型
-import { type ApiResponse } from '@/services/api'
+import { type Result } from '@/services/api'
 
 export interface joinForm {
   name: string
@@ -31,7 +31,7 @@ export interface MajorMapping {
  */
 export const getMajorMapping = async (): Promise<MajorMapping> => {
   try {
-    const response = await api.get<ApiResponse<MajorMapping>>('/public/majors')
+    const response = await api.get<Result<MajorMapping>>('/public/majors')
     return response.data.data
   } catch (error) {
     console.error('获取专业映射表失败:', error)
@@ -42,12 +42,12 @@ export const getMajorMapping = async (): Promise<MajorMapping> => {
 
 export const submitApplication = async (
   params: joinForm
-): Promise<ApiResponse<null>> => {
+): Promise<Result<null>> => {
   try {
     console.log('🚀 发送请求参数:', params)
 
     // 使用JSON格式发送请求
-    const response = await api.post<ApiResponse<null>>(
+    const response = await api.post<Result<null>>(
       '/public/applications',
       params // 直接传递参数对象，axios会自动转为JSON
     )
@@ -56,7 +56,7 @@ export const submitApplication = async (
     console.log('📝 响应数据:', response.data)
 
     // 返回响应数据
-    return response.data as unknown as ApiResponse<null>
+    return response.data as unknown as Result<null>
   } catch (error) {
     console.error('提交申请失败:', error)
     const msg = error instanceof Error ? error.message : String(error)

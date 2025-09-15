@@ -24,4 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 deploy.ps1
-.trae/rules/project_rules.md
+.trae**

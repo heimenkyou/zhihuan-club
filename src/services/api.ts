@@ -1,26 +1,21 @@
 import axios from 'axios'
 
-export interface ApiResponse<T> {
+export interface Result<T> {
   code: string
   message: string
   data: T
-  requestId: string
+  requestId?: string
+  success: boolean
+  fail: boolean
 }
 
 // 分页响应类型定义
 export interface PageData<T> {
-  code: string
-  message: string
-  data: {
-    current: number
-    size: number
-    total: number
-    pages: number
-    records: T[]
-  }
-  requestId?: string
-  success: boolean
-  fail: boolean
+  current: number
+  size: number
+  total: number
+  pages: number
+  records: T[]
 }
 // 创建axios实例
 const api = axios.create({

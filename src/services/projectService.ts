@@ -1,4 +1,4 @@
-import api, { type PageData } from '@/services/api'
+import api, { type Result, type PageData } from '@/services/api'
 
 // 媒体资源类型定义
 export interface MediaResource {
@@ -62,7 +62,7 @@ export const getProjectDetail = async (id: string): Promise<ProjectDetail> => {
 // 获取项目列表
 export const getProjects = async (
   params?: ProjectListParams
-): Promise<PageData<Project>> => {
+): Promise<Result<PageData<Project>>> => {
   try {
     const response = await api.get<any>('/public/projects', { params })
     return response.data

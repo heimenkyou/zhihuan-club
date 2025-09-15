@@ -1,5 +1,5 @@
 import api from '@/services/api'
-import type { ApiResponse } from '@/services/api'
+import type { Result } from '@/services/api'
 
 // 报名信息分页查询参数
 export interface GetApplicationsParams {
@@ -101,7 +101,7 @@ export const createAward = async (
   params: Omit<AwardItem, 'id'>
 ): Promise<AwardItem> => {
   try {
-    const response = await api.post<ApiResponse<{ id: number }>>(
+    const response = await api.post<Result<{ id: number }>>(
       `/admin/awards`,
       params
     )
@@ -164,7 +164,7 @@ export interface Admin {
 // 获取所有管理员列表
 export const getAdmins = async (): Promise<Admin[]> => {
   try {
-    const response = await api.get<ApiResponse<Admin[]>>(`/admin/admins/page`)
+    const response = await api.get<Result<Admin[]>>(`/admin/admins/page`)
     return response.data.data
   } catch (error) {
     console.error('获取管理员列表失败:', error)
@@ -177,7 +177,7 @@ export const createAdmin = async (
   params: Omit<Admin, 'id' | 'createTime' | 'updateTime'>
 ): Promise<Admin> => {
   try {
-    const response = await api.post<ApiResponse<Admin>>(
+    const response = await api.post<Result<Admin>>(
       `/admin/admins/add`,
       params
     )
@@ -191,7 +191,7 @@ export const createAdmin = async (
 // 删除管理员
 export const deleteAdmin = async (id: number): Promise<void> => {
   try {
-    await api.delete<ApiResponse<null>>(`/admin/admins/${id}`)
+    await api.delete<Result<null>>(`/admin/admins/${id}`)
   } catch (error) {
     console.error('删除管理员失败:', error)
     throw error
@@ -204,7 +204,7 @@ export const updateAdmin = async (
   params: Partial<Omit<Admin, 'id' | 'createTime' | 'updateTime'>>
 ): Promise<Admin> => {
   try {
-    const response = await api.put<ApiResponse<Admin>>(`/admins/${id}`, params)
+    const response = await api.put<Result<Admin>>(`/admins/${id}`, params)
     return response.data.data
   } catch (error) {
     console.error('更新管理员信息失败:', error)
@@ -215,7 +215,7 @@ export const updateAdmin = async (
 // 获取当前登录管理员信息
 export const getCurrentAdmin = async (): Promise<Admin> => {
   try {
-    const response = await api.get<ApiResponse<Admin>>(`/admin/admins/me`)
+    const response = await api.get<Result<Admin>>(`/admin/admins/me`)
     return response.data.data
   } catch (error) {
     console.error('获取当前管理员信息失败:', error)
@@ -229,7 +229,7 @@ export const login = async (params: {
   password: string
 }): Promise<Admin> => {
   try {
-    const response = await api.post<ApiResponse<Admin>>(
+    const response = await api.post<Result<Admin>>(
       '/public/admins/login',
       params
     )
@@ -271,7 +271,7 @@ export const getApplications = async (
   params: GetApplicationsParams = {}
 ): Promise<ApplicationPageData<any>> => {
   try {
-    const response = await api.get<ApiResponse<ApplicationPageData<any>>>(
+    const response = await api.get<Result<ApplicationPageData<any>>>(
       `/public/applications`,
       {
         params,
