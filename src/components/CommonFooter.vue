@@ -12,7 +12,12 @@
         <router-link to="/terms-of-service" class="footer-link"
           >服务条款</router-link
         >
-        <a href="#" class="footer-link">联系我们</a>
+        <a
+          href="#"
+          @click.prevent="showWarning('牢弟点一点下面一行')"
+          class="footer-link"
+          >联系我们</a
+        >
       </div>
 
       <!-- 社交图标 -->
@@ -48,7 +53,7 @@
         </a>
       </div>
       <div class="footer-copyright">
-        <p>&copy; 2024-2025 智环学创融合协会. 保留所有权利.</p>
+        <p>&copy; 2025 智环慧新团队. 保留所有权利.</p>
       </div>
     </div>
   </footer>
