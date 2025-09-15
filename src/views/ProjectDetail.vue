@@ -65,14 +65,17 @@
             <div style="width: 40px"></div>
           </div>
 
-          <!-- 元数据区域保持不变 -->
+          <!-- 元数据区域 -->
           <div class="top-meta">
             <div class="dev-time">
               开发时间：{{ projectDetail.timeRange || "-" }}
             </div>
+            <div class="category-text">
+              项目分类：{{ projectDetail.category || "-" }}
+            </div>
             <div class="team-members-text">
               团队成员：{{
-                formatTeamMembers(projectDetail.teamDivision || [])
+                formatTeamMembers(projectDetail.teamDivisions || [])
               }}
             </div>
           </div>
@@ -127,26 +130,6 @@
                   </div>
                 </el-carousel-item>
               </template>
-              <template v-else-if="projectDetail.coverImage">
-                <el-carousel-item class="carousel-item">
-                  <div class="carousel-image-wrap">
-                    <img
-                      :src="projectDetail.coverImage"
-                      :alt="projectDetail.title || '项目封面'"
-                      class="carousel-image"
-                      loading="lazy"
-                    />
-                    <div class="carousel-caption">
-                      <h3 class="caption-title">
-                        {{ projectDetail.title || "项目封面" }}
-                      </h3>
-                      <p class="caption-description">
-                        {{ projectDetail.briefIntro || "" }}
-                      </p>
-                    </div>
-                  </div>
-                </el-carousel-item>
-              </template>
               <template v-else>
                 <el-carousel-item class="carousel-item">
                   <div class="empty-image">
@@ -171,12 +154,12 @@
             <template
               v-if="
                 projectDetail &&
-                projectDetail.techStackDetail &&
-                projectDetail.techStackDetail.length > 0
+                projectDetail.techStackTags &&
+                projectDetail.techStackTags.length > 0
               "
             >
               <el-tag
-                v-for="(tech, index) in projectDetail.techStackDetail"
+                v-for="(tech, index) in projectDetail.techStackTags"
                 :key="index"
                 :type="tagTypes[index % tagTypes.length] as 'primary' | 'success' | 'warning' | 'info' | 'danger'"
                 size="large"
@@ -202,9 +185,6 @@
             <template v-if="projectDetail.descriptionMd">
               <div v-html="parseMarkdown(projectDetail.descriptionMd)"></div>
             </template>
-            <template v-else-if="projectDetail.briefIntro">
-              <p class="intro-paragraph">{{ projectDetail.briefIntro }}</p>
-            </template>
             <template v-else>
               <p class="text-gray-500">暂无项目介绍</p>
             </template>
@@ -220,13 +200,13 @@
           <div class="team-members-container">
             <template
               v-if="
-                projectDetail.teamDivision &&
-                projectDetail.teamDivision.length > 0
+                projectDetail.teamDivisions &&
+                projectDetail.teamDivisions.length > 0
               "
             >
               <div
                 class="team-member-card"
-                v-for="(member, index) in projectDetail.teamDivision"
+                v-for="(member, index) in projectDetail.teamDivisions"
                 :key="`${member.name || 'member'}-${index}`"
               >
                 <span class="member-card__badge"></span>
@@ -243,7 +223,7 @@
         <!-- 3.4 获得奖项模块 -->
         <div
           class="project-section"
-          v-if="projectDetail.awardList && projectDetail.awardList.length > 0"
+          v-if="projectDetail.awards && projectDetail.awards.length > 0"
         >
           <h2 class="section-title">
             <el-icon><Trophy /></el-icon>
@@ -252,29 +232,21 @@
           <div class="awards-timeline">
             <el-timeline :reverse="false" class="custom-timeline">
               <el-timeline-item
-                v-for="(award, index) in projectDetail.awardList"
-                :key="award.id || `award-${index}`"
-                :timestamp="String(award.awardDate || award.year || '')"
+                v-for="(award, index) in projectDetail.awards"
+                :key="award.id"
+                :timestamp="String(award.awardDate)"
                 placement="top"
                 :type="getAwardType(award.awardLevel)"
                 class="timeline-item"
               >
                 <el-card class="award-card">
                   <h4 class="award-title">
-                    {{
-                      award.title ||
-                      `${award.competitionName || "未知竞赛"} - ${
-                        award.awardLevel || "未知奖项"
-                      }`
-                    }}
+                    {{ `${award.competitionName} - ${award.awardLevel}` }}
                   </h4>
                   <p class="award-desc">
-                    {{
-                      award.description ||
-                      (Array.isArray(award.winners)
-                        ? `获奖者: ${award.winners.join(", ")}`
-                        : `获奖者: ${award.winners}`)
-                    }}
+                    赛道：{{ award.competitionTrack }}<br/>
+                    级别：{{ award.competitionLevel }}<br/>
+                    获奖者：{{ award.winners.join(', ') }} ({{ award.year }}年)
                   </p>
                 </el-card>
               </el-timeline-item>
@@ -628,19 +600,32 @@ $font-weight-bold: 600;
 
   .top-meta {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    gap: $spacing-sm;
-    font-size: $font-size-sm;
-    color: $color-neutral-600;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #666;
 
-    // 手机端：减小字体+垂直排列，避免横向溢出
+    .dev-time,
+    .category-text,
+    .team-members-text {
+      font-weight: 500;
+    }
+
+    .team-members-text {
+      text-align: center;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+
     @media (max-width: 768px) {
-      flex-direction: column;
-      gap: $spacing-xs;
-      padding: 0 $spacing-xs;
-      font-size: 0.85rem; // 从0.9rem减小到0.85rem
+      gap: 6px;
+      font-size: 0.8rem;
+
+      .team-members-text {
+        max-width: 90%;
+      }
     }
   }
 

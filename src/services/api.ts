@@ -6,6 +6,22 @@ export interface ApiResponse<T> {
   data: T
   requestId: string
 }
+
+// 分页响应类型定义
+export interface PageData<T> {
+  code: string
+  message: string
+  data: {
+    current: number
+    size: number
+    total: number
+    pages: number
+    records: T[]
+  }
+  requestId?: string
+  success: boolean
+  fail: boolean
+}
 // 创建axios实例
 const api = axios.create({
   baseURL: '/api', // 根据实际情况设置
