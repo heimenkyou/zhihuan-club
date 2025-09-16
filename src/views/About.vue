@@ -22,7 +22,7 @@
         </div>
 
         <div
-          class="bg-white rounded-xl shadow-lg overflow-hidden mobile:rounded-lg"
+          class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mobile:rounded-lg"
         >
           <div class="md:flex flex-col mobile:flex-col">
             <div class="mobile:w-full">
@@ -73,7 +73,7 @@
         <div class="relative">
           <!-- 时间线轴线 -->
           <div
-            class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-gray-200"
+            class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-gray-200 timeline"
           ></div>
 
           <!-- 2024年：社团成立 -->
@@ -94,7 +94,9 @@
                 <span class="font-bold">24</span>
               </div>
               <div class="md:w-1/2 md:pl-10 md:ml-auto">
-                <div class="bg-white rounded-xl shadow-md p-4">
+                <div
+                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
+                >
                   <h4 class="font-medium text-dark mb-2">2024年8月</h4>
                   <p class="text-gray-600 text-sm">
                     零零散散凑了几个部门，完成社团注册
@@ -122,7 +124,9 @@
                 <span class="font-bold">24</span>
               </div>
               <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
-                <div class="bg-white rounded-xl shadow-md p-4">
+                <div
+                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
+                >
                   <h4 class="font-medium text-dark mb-2">2024年9月</h4>
                   <p class="text-gray-600 text-sm">
                     首次招新活动启动，面向大一新生，不设技术门槛
@@ -150,7 +154,9 @@
                 <span class="font-bold">25</span>
               </div>
               <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
-                <div class="bg-white rounded-xl shadow-md p-4">
+                <div
+                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
+                >
                   <h4 class="font-medium text-dark mb-2">2025年5月</h4>
                   <p class="text-gray-600 text-sm">
                     进行了人员缩减和部门架构大调整，形成了现在的社团结构
@@ -178,7 +184,9 @@
                 <span class="font-bold">25</span>
               </div>
               <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
-                <div class="bg-white rounded-xl shadow-md p-4">
+                <div
+                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
+                >
                   <h4 class="font-medium text-dark mb-2">2025年9月</h4>
                   <p class="text-gray-600 text-sm">
                     社团网站初步建立上线，非官方，仅是社团内成员团队自发学习开发以及内部使用
@@ -203,7 +211,9 @@
                 <font-awesome-icon :icon="['fas', 'star']" class="fa-star" />
               </div>
               <div class="md:w-1/2 md:pl-10 md:ml-auto">
-                <div class="bg-white rounded-xl shadow-md p-4">
+                <div
+                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
+                >
                   <h4 class="font-medium text-dark mb-2">未来展望</h4>
                   <p class="text-gray-600 text-sm">
                     期待在各类竞赛中崭露头角，成为学校有影响力的科技创新社团
@@ -227,13 +237,16 @@
         <!-- 社长和副社长 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div
-            class="bg-white rounded-xl shadow-lg p-8 text-center animate-scale-in"
+            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 text-center animate-scale-in"
             style="animation-delay: 0.1s"
           >
             <div
               class="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
             >
-              <font-awesome-icon :icon="['fas', 'id-card']" class="fa-id-card" />
+              <font-awesome-icon
+                :icon="['fas', 'id-card']"
+                class="fa-id-card"
+              />
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">社长</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -245,7 +258,7 @@
           </div>
 
           <div
-            class="bg-white rounded-xl shadow-lg p-8 text-center animate-scale-in"
+            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 text-center animate-scale-in"
             style="animation-delay: 0.2s"
           >
             <div
@@ -267,18 +280,27 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- 算法部 -->
           <div
-            class="bg-white rounded-xl shadow-lg p-6 text-center animate-scale-in"
+            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center animate-scale-in"
             style="animation-delay: 0.3s"
           >
             <div
-              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
+              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden group"
             >
-              <img
-                src="@/assets/images/department-algorithm.webp"
+              <el-image
+                :src="algorithmImg"
                 alt="算法部图标"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover cursor-zoom-in"
+                :preview-src-list="[algorithmImg]"
                 loading="lazy"
               />
+              <div
+                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              >
+                <font-awesome-icon
+                  :icon="['fas', 'magnifying-glass-plus']"
+                  class="text-white text-2xl"
+                />
+              </div>
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">算法部</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -291,18 +313,27 @@
 
           <!-- 项目竞赛部 -->
           <div
-            class="bg-white rounded-xl shadow-lg p-6 text-center animate-scale-in"
+            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center animate-scale-in"
             style="animation-delay: 0.4s"
           >
             <div
-              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
+              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden group"
             >
-              <img
-                src="@/assets/images/department-project-competition.webp"
+              <el-image
+                :src="projectCompetitionImg"
                 alt="项目竞赛部图标"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover cursor-zoom-in"
+                :preview-src-list="[projectCompetitionImg]"
                 loading="lazy"
               />
+              <div
+                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              >
+                <font-awesome-icon
+                  :icon="['fas', 'magnifying-glass-plus']"
+                  class="text-white text-2xl"
+                />
+              </div>
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">项目竞赛部</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -315,18 +346,27 @@
 
           <!-- 综合管理部 -->
           <div
-            class="bg-white rounded-xl shadow-lg p-6 text-center animate-scale-in"
+            class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center animate-scale-in"
             style="animation-delay: 0.5s"
           >
             <div
-              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
+              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden group"
             >
-              <img
-                src="@/assets/images/department-general-admin.webp"
+              <el-image
+                :src="generalAdminImg"
                 alt="综合管理部图标"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover cursor-zoom-in"
+                :preview-src-list="[generalAdminImg]"
                 loading="lazy"
               />
+              <div
+                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              >
+                <font-awesome-icon
+                  :icon="['fas', 'magnifying-glass-plus']"
+                  class="text-white text-2xl"
+                />
+              </div>
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">综合管理部</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -346,7 +386,9 @@
           <div class="w-20 h-1 bg-primary mx-auto"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+        <div
+          class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 text-center"
+        >
           <p class="text-gray-600">点击底部页脚的图标就行辣！😎👇</p>
         </div>
       </section>
@@ -360,6 +402,9 @@
   import CommonNavbar from '../components/CommonNavbar.vue'
   import CommonFooter from '../components/CommonFooter.vue'
 
+  import algorithmImg from '@/assets/images/department-algorithm.webp'
+  import projectCompetitionImg from '@/assets/images/department-project-competition.webp'
+  import generalAdminImg from '@/assets/images/department-general-admin.webp'
   // 滚动监听动画：元素进入视口时添加slide-up动画（保留原HTML交互）
   onMounted(() => {
     const observerOptions = {
@@ -465,14 +510,6 @@
     }
   }
 
-  /* 5. Font Awesome图标样式：确保图标正常显示 */
-  .fa {
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-  }
 </style>
 
 <style scoped>
@@ -486,9 +523,7 @@
       left: 20px !important;
     }
 
-    .relative > div:nth-child(2),
-    .relative > div:nth-child(3),
-    .relative > div:nth-child(4) {
+    .relative > div:nth-child(n + 2) {
       padding-left: 40px !important;
     }
 
