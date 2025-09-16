@@ -192,85 +192,104 @@
         </div>
       </div>
     </el-main>
-    <!-- 高光时刻 -->
-    <el-main id="achievements" class="py-20 px-4 bg-gray-50">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
-            我们的高光时刻
-          </h2>
-          <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-          <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
-            2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
-          </p>
-        </div>
+ <!-- 高光时刻 -->
+<el-main id="achievements" class="py-20 px-4 bg-gray-50">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
+        我们的高光时刻
+      </h2>
+      <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+      <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
+        2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
+      </p>
+    </div>
 
-        <!-- 加载状态 -->
-        <div v-if="loading" class="flex justify-center items-center py-16">
-          <el-icon class="is-loading" size="24">
-            <i class="fa fa-spinner"></i>
-          </el-icon>
-          <span class="ml-4">加载项目中...</span>
-        </div>
+    <!-- 加载状态 -->
+    <div v-if="loading" class="flex justify-center items-center py-16">
+      <el-icon class="is-loading" size="24">
+        <i class="fa fa-spinner"></i>
+      </el-icon>
+      <span class="ml-4">加载项目中...</span>
+    </div>
 
-        <!-- 精选成果滚动区域 -->
-        <div class="relative" v-else>
-          <div class="overflow-x-auto pb-8 scrollbar-hide">
-            <div class="flex gap-6 w-max px-2">
-              <!-- 动态渲染项目卡片 -->
-              <div
-                v-for="(project, index) in projects"
-                :key="project.id || index"
-                class="w-[280px] md:w-[320px] bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
-              >
-                <img
-                  :src="
-                    project.coverImage
-                      ? project.coverImage.replace(/[`\s]/g, '')
-                      : ''
-                  "
-                  :alt="project.title"
-                  class="w-full h-48 object-cover"
-                  loading="lazy"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">
-                      {{ project.title }}
-                    </h3>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    {{ project.briefIntro || '暂无项目简介' }}
-                  </p>
-                  <button
-                    @click="goToProjectDetail(project.id)"
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    了解项目
-                  </button>
-                </div>
+    <!-- 轮播图区域 -->
+    <div class="relative" v-else>
+      <el-carousel 
+        ref="carouselRef"
+        :interval="4000"
+        type="card"
+        height="400px"
+        autoplay
+        indicator-position="none"
+      >
+        <el-carousel-item 
+          v-for="(project, index) in projects" 
+          :key="project.id || index"
+        >
+          <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
+            <img
+              :src="
+                project.coverImage
+                  ? project.coverImage.replace(/[`\s]/g, '')
+                  : ''
+              "
+              :alt="project.title"
+              class="w-full h-48 object-cover"
+              loading="lazy"
+            />
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold text-dark">
+                  {{ project.title }}
+                </h3>
               </div>
+              <p class="text-gray-600 mb-6 line-clamp-3">
+                {{ project.briefIntro || '暂无项目简介' }}
+              </p>
+              <button
+                @click="goToProjectDetail(project.id)"
+                class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+              >
+                了解项目
+              </button>
             </div>
           </div>
-        </div>
+        </el-carousel-item>
+      </el-carousel>
+      
+      <!-- 左右导航按钮 -->
+      <button 
+        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
+        @click="prev"
+      >
+        <el-icon><ArrowLeft /></el-icon>
+      </button>
+      <button 
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
+        @click="next"
+      >
+        <el-icon><ArrowRight /></el-icon>
+      </button>
+    </div>
 
-        <!-- 查看更多按钮 -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-          <button
-            @click="toproject"
-            class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
-          >
-            查看更多项目
-          </button>
-          <button
-            @click="toawards"
-            class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
-          >
-            查看更多奖项
-          </button>
-        </div>
-      </div>
-    </el-main>
+    <!-- 查看更多按钮 -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+      <button
+        @click="toproject"
+        class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
+      >
+        查看更多项目
+      </button>
+      <button
+        @click="toawards"
+        class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
+      >
+        查看更多奖项
+      </button>
+    </div>
+  </div>
+</el-main>
     <!-- 热门赛事 -->
     <el-main class="competitions-section" id="competitions">
       <div style="max-width: 80rem; margin: 0 auto; padding: 5rem 1rem">
@@ -619,7 +638,19 @@
   import { ArrowDown } from '@element-plus/icons-vue'
   import { getProjects } from '../services/projectService'
   import type { Project } from '../services/projectService'
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 
+// 添加 carouselRef 引用
+const carouselRef = ref()
+
+// 添加导航方法
+const prev = () => {
+  carouselRef.value?.prev()
+}
+
+const next = () => {
+  carouselRef.value?.next()
+}
 
   const router = useRouter()
 
