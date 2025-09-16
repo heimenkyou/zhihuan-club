@@ -345,10 +345,10 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <i
-                class="fa fa-code"
+              <font-awesome-icon
+                :icon="['fas', 'code']"
                 style="font-size: 2.5rem; color: #3b82f6"
-              ></i>
+              />
             </div>
             <h3
               style="
@@ -393,10 +393,10 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <i
-                class="fa fa-trophy"
+              <font-awesome-icon
+                :icon="['fas', 'trophy']"
                 style="font-size: 2.5rem; color: #6366f1"
-              ></i>
+              />
             </div>
             <h3
               style="
@@ -440,10 +440,10 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <i
-                class="fa fa-lightbulb-o"
+              <font-awesome-icon
+                :icon="['fas', 'lightbulb']"
                 style="font-size: 2.5rem; color: #ef4444"
-              ></i>
+              />
             </div>
             <h3
               style="
@@ -488,10 +488,10 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <i
-                class="fa fa-desktop"
+              <font-awesome-icon
+                :icon="['fas', 'desktop']"
                 style="font-size: 2.5rem; color: #22c55e"
-              ></i>
+              />
             </div>
             <h3
               style="
