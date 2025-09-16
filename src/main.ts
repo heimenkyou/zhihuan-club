@@ -6,7 +6,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-
+import zhCn from 'element-plus/es/locale/lang/zh-cn' // 引入中文语言包
 
 // 导入Vue 3版本的Markdown编辑器
 import VMdEditor from '@kangc/v-md-editor'
@@ -42,7 +42,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 // 使用插件
 app.use(router)
 app.use(createPinia())
-app.use(ElementPlus)
+app.use(ElementPlus, {
+  locale: zhCn, // 配置中文语言包
+})
 
 // // 成功操作提示工具函数
 // export const showSuccessNotification = (message: string) => {
