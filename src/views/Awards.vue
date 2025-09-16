@@ -111,7 +111,7 @@
               ]"
               @click="filter.awardLevel = '一等奖'"
             >
-              一等奖(金牌)
+              一等奖(金奖)
             </button>
             <button
               :class="[
@@ -122,7 +122,7 @@
               ]"
               @click="filter.awardLevel = '二等奖'"
             >
-              二等奖(银牌)
+              二等奖(银奖)
             </button>
             <button
               :class="[
@@ -133,7 +133,7 @@
               ]"
               @click="filter.awardLevel = '三等奖'"
             >
-              三等奖(铜牌)
+              三等奖(铜奖)
             </button>
             <button
               :class="[
@@ -662,11 +662,11 @@ interface Award {
 // 奖项级别排序权重映射 - 确保这个对象被正确使用
 const awardLevelPriority: Record<string, number> = {
   一等奖: 1,
-  金牌: 2,
+  金奖: 2,
   二等奖: 3,
-  银牌: 4,
+  银奖: 4,
   三等奖: 5,
-  铜牌: 6,
+  铜奖: 6,
   优秀奖: 7,
 };
 
@@ -674,11 +674,11 @@ const awardLevelPriority: Record<string, number> = {
 const getAwardBadgeClass = (level: string): string => {
   const badgeClasses: Record<string, string> = {
     一等奖: "bg-yellow-100 text-yellow-800",
-    金牌: "bg-yellow-100 text-yellow-800",
+    金奖: "bg-yellow-100 text-yellow-800",
     二等奖: "bg-gray-100 text-gray-800",
-    银牌: "bg-gray-100 text-gray-800",
+    银奖: "bg-gray-100 text-gray-800",
     三等奖: "bg-orange-100 text-orange-800",
-    铜牌: "bg-orange-100 text-orange-800",
+    铜奖: "bg-orange-100 text-orange-800",
     优秀奖: "bg-green-100 text-green-800",
     其他: "bg-purple-100 text-purple-800",
   };
@@ -841,23 +841,23 @@ const filteredAwards = computed(() => {
       if (filter.value.awardLevel === "其他") {
         // 其他奖项：不是一等、二等、三等、优秀奖的归为其他
         if (
-          ["一等奖", "二等奖", "三等奖", "优秀奖"].includes(award.awardLevel)
+          ["一等奖", "二等奖", "三等奖", "优秀奖", "金奖", "银奖", "铜奖"].includes(award.awardLevel)
         ) {
           return false;
         }
       } else if (filter.value.awardLevel === "一等奖") {
-        // 点击一等奖时同时加载金牌和一等奖
-        if (award.awardLevel !== "一等奖" && award.awardLevel !== "金牌") {
+        // 点击一等奖时同时加载金奖和一等奖
+        if (award.awardLevel !== "一等奖" && award.awardLevel !== "金奖") {
           return false;
         }
       } else if (filter.value.awardLevel === "二等奖") {
-        // 点击二等奖时同时加载二等奖和银牌
-        if (award.awardLevel !== "二等奖" && award.awardLevel !== "银牌") {
+        // 点击二等奖时同时加载二等奖和银奖
+        if (award.awardLevel !== "二等奖" && award.awardLevel !== "银奖") {
           return false;
         }
       } else if (filter.value.awardLevel === "三等奖") {
-        // 点击三等奖时同时加载三等奖和铜牌
-        if (award.awardLevel !== "三等奖" && award.awardLevel !== "铜牌") {
+        // 点击三等奖时同时加载三等奖和铜奖
+        if (award.awardLevel !== "三等奖" && award.awardLevel !== "铜奖") {
           return false;
         }
       } else if (award.awardLevel !== filter.value.awardLevel) {
