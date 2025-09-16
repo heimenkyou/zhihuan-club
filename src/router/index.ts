@@ -33,12 +33,12 @@ const routes: RouteRecordRaw[] = [
     path: '/about',
     name: 'about',
     component: () => import('../views/About.vue'),
-    meta: { requiresConfirmation: true }, // 需要确认访问
   },
   {
     path: '/resources',
     name: 'resources',
     component: () => import('../views/Resources.vue'),
+    meta: { requiresConfirmation: true }, // 需要确认访问
   },
   { path: '/join', name: 'join', component: () => import('../views/Join.vue') },
   {

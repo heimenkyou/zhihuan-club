@@ -41,8 +41,9 @@
     }
   }
 
-  // 模拟歌曲列表
-  const songs = ref([{ id: 1, name: '曼波', src: '/musics/曼波.mp3' }])
+  // 歌曲列表
+  import manboSrc from '@/assets/audios/manbo.mp3'
+  const songs = ref([{ id: 1, name: '曼波', src: manboSrc }])
   const currentSongIndex = ref(0)
 
   // 播放/暂停控制
@@ -429,7 +430,7 @@
       aria-label="音乐控制中心"
     >
       <img
-        src="/image.png"
+        src="@/assets/images/manbo.png"
         alt="音乐控制背景"
         class="background-image absolute inset-0 w-full h-full rounded-full object-cover"
       />

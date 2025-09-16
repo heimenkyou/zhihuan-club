@@ -46,42 +46,10 @@ app.use(ElementPlus, {
   locale: zhCn, // 配置中文语言包
 })
 
-// // 成功操作提示工具函数
-// export const showSuccessNotification = (message: string) => {
-//   ElNotification({
-//     title: '操作成功',
-//     message,
-//     type: 'success',
-//     duration: 2000, // 2秒后自动关闭
-//     icon: '✓', // 使用字符图标
-//     position: 'top-right', // 右上角
-//     customClass: 'fade-effect', // 淡入动画效果类名
-//   })
-// }
-
-// // 错误操作提示工具函数
-// export const showErrorNotification = (message: string) => {
-//   ElNotification({
-//     title: '操作失败',
-//     message,
-//     type: 'error',
-//     duration: 3000,
-//   })
-// }
-
 // Vue 全局异常处理器
 app.config.errorHandler = (err, _instance, info) => {
   console.error('Vue错误:', err, info)
   showError(err instanceof Error ? err.message : String(err))
-
-  // // 显示错误提示
-  // ElNotification({
-  //   title: '错误',
-  //   message: err instanceof Error ? err.message : String(err),
-  //   type: 'error',
-  //   duration: 3000,
-  //   position: 'top-right'
-  // })
 }
 
 // Promise 未捕获异常处理器
@@ -90,16 +58,6 @@ window.addEventListener('unhandledrejection', event => {
   showError(
     event.reason instanceof Error ? event.reason.message : String(event.reason)
   )
-
-  // // 显示错误提示
-  // ElNotification({
-  //   title: '错误',
-  //   message: event.reason instanceof Error ? event.reason.message : String(event.reason),
-  //   type: 'error',
-  //   duration: 3000,
-  //   position: 'top-right'
-  // })
-
   // 阻止默认事件处理
   event.preventDefault()
 })

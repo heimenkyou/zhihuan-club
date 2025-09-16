@@ -4,8 +4,8 @@
     <!-- 桌面端顶部导航 -->
     <nav class="web-nav">
       <div class="web-nav-container">
-        <div class="web-nav-brand">
-          <i class="fa fa-code mr-2"></i>智环学创融合协会
+        <div class="web-nav-brand flex items-center" @click="navigateToHome" aria-label="返回首页">
+          <i class="fa fa-code mr-2 nav-brand-icon"></i>智环学创融合协会
         </div>
         <div class="web-nav-links">
           <button
@@ -244,6 +244,24 @@ const currentPageTitle = computed(() => {
   font-size: 20px;
   font-weight: 700;
   color: #3b82f6;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.web-nav-brand:hover {
+  transform: scale(1.05);
+}
+
+/* 导航图标悬停效果 */
+.nav-brand-icon {
+  transition: all 0.3s ease;
+}
+
+.web-nav-brand:hover .nav-brand-icon {
+  transform: rotate(10deg);
+  color: #2563eb;
 }
 
 .web-nav-links {

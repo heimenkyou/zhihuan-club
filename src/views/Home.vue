@@ -197,7 +197,7 @@
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-16">
       <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
-        我们的高光时刻
+        我们的高光时刻<br>(假数据, 这里还没做好)
       </h2>
       <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
       <p class="text-gray-600 mt-4 max-w-2xl mx-auto">

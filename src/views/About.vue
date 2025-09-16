@@ -27,7 +27,7 @@
           <div class="md:flex flex-col mobile:flex-col">
             <div class="mobile:w-full">
               <img
-                src="https://images.unsplash.com/photo-1484417894907-623942c8ee29?q=80&w=1740&auto=format&fit=crop"
+                src="@/assets/images/compuerCode.avif"
                 alt="社团活动照片"
                 class="w-full h-64 md:h-full object-cover mobile:h-48"
                 loading="lazy"
@@ -160,6 +160,34 @@
             </div>
           </div>
 
+          <!-- 网站上线 -->
+          <div
+            class="relative mb-10 md:mb-16 animate-slide-up"
+            style="animation-delay: 0.3s"
+          >
+            <div class="md:flex items-center">
+              <div class="md:w-1/2 md:pr-10 md:text-right mb-6 md:mb-0">
+                <h3 class="text-xl font-bold text-dark mb-2">数字化转型</h3>
+                <p class="text-gray-600">
+                  为了更好地展示社团风采和成果，提升内部管理效率
+                </p>
+              </div>
+              <div
+                class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg z-10"
+              >
+                <span class="font-bold">25</span>
+              </div>
+              <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
+                <div class="bg-white rounded-xl shadow-md p-4">
+                  <h4 class="font-medium text-dark mb-2">2025年9月</h4>
+                  <p class="text-gray-600 text-sm">
+                    社团网站初步建立上线，非官方，仅是社团内成员团队自发学习开发以及内部使用
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 未来展望 -->
           <div class="relative animate-slide-up" style="animation-delay: 0.3s">
             <div class="md:flex items-center">
@@ -243,24 +271,12 @@
             style="animation-delay: 0.3s"
           >
             <div
-              class="w-24 h-24 mx-auto mb-4 bg-white border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden"
-              style="
-                background-image: linear-gradient(
-                    45deg,
-                    #f9fafb 25%,
-                    transparent 25%
-                  ),
-                  linear-gradient(-45deg, #f9fafb 25%, transparent 25%),
-                  linear-gradient(45deg, transparent 75%, #f9fafb 75%),
-                  linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
-                background-size: 10px 10px;
-                background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
-              "
+              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop" 
-                alt="算法部图标" 
-                class="w-full h-full object-cover opacity-70" 
+              <img
+                src="@/assets/images/department-algorithm.png"
+                alt="算法部图标"
+                class="w-full h-full object-cover"
                 loading="lazy"
               />
             </div>
@@ -279,24 +295,12 @@
             style="animation-delay: 0.4s"
           >
             <div
-              class="w-24 h-24 mx-auto mb-4 bg-white border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden"
-              style="
-                background-image: linear-gradient(
-                    45deg,
-                    #f9fafb 25%,
-                    transparent 25%
-                  ),
-                  linear-gradient(-45deg, #f9fafb 25%, transparent 25%),
-                  linear-gradient(45deg, transparent 75%, #f9fafb 75%),
-                  linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
-                background-size: 10px 10px;
-                background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
-              "
+              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop" 
-                alt="项目竞赛部图标" 
-                class="w-full h-full object-cover opacity-70" 
+              <img
+                src="@/assets/images/department-project-competition.png"
+                alt="项目竞赛部图标"
+                class="w-full h-full object-cover"
                 loading="lazy"
               />
             </div>
@@ -315,24 +319,12 @@
             style="animation-delay: 0.5s"
           >
             <div
-              class="w-24 h-24 mx-auto mb-4 bg-white border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden"
-              style="
-                background-image: linear-gradient(
-                    45deg,
-                    #f9fafb 25%,
-                    transparent 25%
-                  ),
-                  linear-gradient(-45deg, #f9fafb 25%, transparent 25%),
-                  linear-gradient(45deg, transparent 75%, #f9fafb 75%),
-                  linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
-                background-size: 10px 10px;
-                background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
-              "
+              class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071&auto=format&fit=crop" 
-                alt="综合管理部图标" 
-                class="w-full h-full object-cover opacity-70" 
+              <img
+                src="@/assets/images/department-general-admin.png"
+                alt="综合管理部图标"
+                class="w-full h-full object-cover"
                 loading="lazy"
               />
             </div>
@@ -355,7 +347,7 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-lg p-8 text-center">
-          <p class="text-gray-600">点击底部页脚的图标就行辣！</p>
+          <p class="text-gray-600">点击底部页脚的图标就行辣！😎👇</p>
         </div>
       </section>
     </main>
@@ -421,7 +413,7 @@
     color: #1e293b;
   }
 
-  /* 3. 动画样式：移除@layer，CDN不支持（保留原HTML动画效果） */
+  /* 动画样式：移除@layer，CDN不支持（保留原HTML动画效果） */
   .animate-fade-in {
     animation: fadeIn 0.8s ease-in-out;
   }
