@@ -1,6 +1,6 @@
 ﻿# deploy.ps1
 # 保存为 UTF-8 with BOM
-$server = "heimenkyou@luowb.cn"
+$server = "root@luowb.cn"
 $remotePath = "/opt/club"
 $localJar = "target/club-recruitment-0.0.1-SNAPSHOT.jar"
 $localYml = "src/main/resources/application-prod.yml"

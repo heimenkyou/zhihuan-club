@@ -4,19 +4,30 @@ import cn.luowb.clubrecruitment.dto.TeamDivisionDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 项目详情响应参数
+ * 项目详情编辑回显响应参数
  */
 @Data
-public class ProjectDetailRespDTO {
+public class ProjectEditRespDTO {
     /**
      * 关联项目id
      */
     @Schema(description = "关联项目id")
     private Long projectId;
+
+    /**
+     * 项目分类(如: Web开发)
+     */
+    @Schema(description = "项目分类")
+    private String category;
+
+    /**
+     * 封面图片URL
+     */
+    @Schema(description = "封面图片URL")
+    private String coverImage;
 
     /**
      * 项目标题
@@ -25,10 +36,16 @@ public class ProjectDetailRespDTO {
     private String title;
 
     /**
-     * 项目分类(如: Web开发)
+     * 简要介绍
      */
-    @Schema(description = "项目分类")
-    private String category;
+    @Schema(description = "简要介绍")
+    private String briefIntro;
+
+    /**
+     * 技术栈标签数组["React", "Node.js"]
+     */
+    @Schema(description = "技术栈标签数组")
+    private List<String> techStackTags;
 
     /**
      * 项目时间范围
@@ -41,12 +58,6 @@ public class ProjectDetailRespDTO {
      */
     @Schema(description = "媒体资源")
     private List<MediaResourceRespDTO> mediaResources;
-
-    /**
-     * 详细技术栈标签
-     */
-    @Schema(description = "详细技术栈标签")
-    private List<String> techStackTags;
 
     /**
      * Markdown格式的项目介绍
@@ -65,16 +76,4 @@ public class ProjectDetailRespDTO {
      */
     @Schema(description = "奖项列表")
     private List<AwardRespDTO> awards;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
 }

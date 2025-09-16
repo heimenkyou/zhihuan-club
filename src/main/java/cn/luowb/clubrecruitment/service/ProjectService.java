@@ -5,6 +5,7 @@ import cn.luowb.clubrecruitment.dao.entity.ProjectDO;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.ProjectSaveReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectDetailRespDTO;
+import cn.luowb.clubrecruitment.dto.resp.ProjectEditRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.validation.Valid;
@@ -39,4 +40,11 @@ public interface ProjectService extends IService<ProjectDO> {
      * @param reqDTO    项目信息
      */
     Long saveProject(Long projectId, @Valid ProjectSaveReqDTO reqDTO);
+
+    /**
+     * 查询项目编辑回显信息
+     * @param projectId 项目id
+     * @return 项目编辑回显信息
+     */
+    ProjectEditRespDTO getProjectEdit(Long projectId);
 }

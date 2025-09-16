@@ -53,7 +53,7 @@ public class MediaResourceServiceImpl extends ServiceImpl<MediaResourceMapper, M
             requestParam.setTitle(file.getOriginalFilename());
         }
         if (StrUtil.isBlank(requestParam.getDescription())) {
-            requestParam.setDescription("上传于 " + LocalDateTime.now());
+            requestParam.setDescription("上传于 " + DateUtil.formatLocalDateTime(LocalDateTime.now()));
         }
         MediaResourceDO mediaResourceDO = new MediaResourceDO()
                 .setType(getFileType(file.getContentType()))

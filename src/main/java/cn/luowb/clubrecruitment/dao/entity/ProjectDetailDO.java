@@ -37,8 +37,8 @@ public class ProjectDetailDO {
     /**
      * 详细技术栈标签
      */
-    @TableField(value = "tech_stack_detail")
-    private String techStackDetail;
+    @TableField(value = "tech_stack_tags")
+    private String techStackTags;
 
     /**
      * Markdown格式的项目介绍

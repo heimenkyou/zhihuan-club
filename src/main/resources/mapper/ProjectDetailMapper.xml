@@ -8,7 +8,7 @@
         <id property="id" column="id"/>
         <result property="projectId" column="project_id"/>
         <result property="timeRange" column="time_range"/>
-        <result property="techStackDetail" column="tech_stack_detail"/>
+        <result property="techStackTags" column="tech_stack_tags"/>
         <result property="descriptionMd" column="description_md"/>
         <result property="teamDivision" column="team_division"/>
         <result property="awardIds" column="award_ids"/>
@@ -17,7 +17,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,project_id,time_range,media_resources,tech_stack_detail,description_md,
+        id,project_id,time_range,media_resources,tech_stack_tags,description_md,
         team_division,award_ids,create_time,update_time
     </sql>
 </mapper>

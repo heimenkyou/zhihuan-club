@@ -6,6 +6,7 @@ import cn.luowb.clubrecruitment.common.web.Results;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.ProjectSaveReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectDetailRespDTO;
+import cn.luowb.clubrecruitment.dto.resp.ProjectEditRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.ProjectRespDTO;
 import cn.luowb.clubrecruitment.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,4 +57,9 @@ public class ProjectController {
         return Results.success();
     }
 
+    @GetMapping("/projects/{projectId}/edit")
+    @Operation(summary = "项目信息编辑回显")
+    public Result<ProjectEditRespDTO> edit(@PathVariable Long projectId) {
+        return Results.success(projectService.getProjectEdit(projectId));
+    }
 }
