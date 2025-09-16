@@ -70,156 +70,215 @@
           <div class="w-20 h-1 bg-primary mx-auto animate-slide-up"></div>
         </div>
 
-        <div class="relative">
-          <!-- 时间线轴线 -->
-          <div
-            class="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-gray-200 timeline"
-          ></div>
-
+        <!-- 时间线容器 -->
+        <div class="space-y-8 md:space-y-16">
           <!-- 2024年：社团成立 -->
-          <div
-            class="relative mb-10 md:mb-16 animate-slide-up"
-            style="animation-delay: 0.1s"
-          >
-            <div class="md:flex items-center">
-              <div class="md:w-1/2 md:pr-10 md:text-right mb-6 md:mb-0">
+          <div class="flex items-start animate-slide-up" style="animation-delay: 0.1s">
+            <!-- 移动端时间线图标 -->
+            <div class="md:hidden flex flex-col items-center mr-4 mt-2">
+              <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                <span class="text-sm font-bold">24</span>
+              </div>
+              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+            </div>
+            <!-- 桌面端时间线 -->
+            <div class="hidden md:flex items-center w-full">
+              <div class="w-1/2 pr-10 text-right">
                 <h3 class="text-xl font-bold text-dark mb-2">社团成立</h3>
-                <p class="text-gray-600">
-                  智环学创融合协会正式成立，由一群热爱科技创新的同学共同创建，开启社团发展之路
-                </p>
+                <p class="text-gray-600">智环学创融合协会正式成立，由一群热爱科技创新的同学共同创建，开启社团发展之路</p>
               </div>
-              <div
-                class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg z-10"
-              >
-                <span class="font-bold">24</span>
+              <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                  <span class="font-bold">24</span>
+                </div>
+                <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
               </div>
-              <div class="md:w-1/2 md:pl-10 md:ml-auto">
-                <div
-                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
-                >
+              <div class="w-1/2 pl-10">
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4">
                   <h4 class="font-medium text-dark mb-2">2024年8月</h4>
-                  <p class="text-gray-600 text-sm">
-                    零零散散凑了几个部门，完成社团注册
-                  </p>
+                  <p class="text-gray-600 text-sm">零零散散凑了几个部门，完成社团注册</p>
                 </div>
               </div>
             </div>
+            <!-- 移动端内容 -->
+            <div class="md:hidden flex-1">
+              <div class="flex items-center mb-3">
+                <el-icon class="text-primary mr-2"><CircleCheck /></el-icon>
+                <h3 class="text-lg font-bold text-dark">社团成立</h3>
+              </div>
+              <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
+                <h4 class="font-medium text-dark mb-2 text-primary">2024年8月</h4>
+                <p class="text-gray-600 text-sm">零零散散凑了几个部门，完成社团注册</p>
+              </div>
+              <p class="text-gray-600 text-sm">智环学创融合协会正式成立，由一群热爱科技创新的同学共同创建，开启社团发展之路</p>
+            </div>
           </div>
 
-          <!-- 首次招新 -->
-          <div
-            class="relative mb-10 md:mb-16 animate-slide-up"
-            style="animation-delay: 0.2s"
-          >
-            <div class="md:flex items-center">
-              <div class="md:w-1/2 md:pr-10 md:text-right mb-6 md:mb-0">
-                <h3 class="text-xl font-bold text-dark mb-2">新的开始</h3>
-                <p class="text-gray-600">
-                  社团开始第一次正式招新，期待更多热爱科技的同学加入我们，共同创造社团的未来
-                </p>
+          <!-- 2024年：首次招新 -->
+          <div class="flex items-start animate-slide-up" style="animation-delay: 0.2s">
+            <!-- 移动端时间线图标 -->
+            <div class="md:hidden flex flex-col items-center mr-4 mt-2">
+              <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                <el-icon class="text-sm"><CircleCheck /></el-icon>
               </div>
-              <div
-                class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg z-10"
-              >
-                <span class="font-bold">24</span>
+              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+            </div>
+            <!-- 桌面端时间线 -->
+            <div class="hidden md:flex items-center w-full">
+              <div class="w-1/2 pr-10 text-right">
+                <h3 class="text-xl font-bold text-dark mb-2">首次招新</h3>
+                <p class="text-gray-600">社团开始第一次正式招新，期待更多热爱科技的同学加入我们，共同创造社团的未来</p>
               </div>
-              <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
-                <div
-                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
-                >
+              <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                  <el-icon><CircleCheck /></el-icon>
+                </div>
+                <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+              </div>
+              <div class="w-1/2 pl-10">
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4">
                   <h4 class="font-medium text-dark mb-2">2024年9月</h4>
-                  <p class="text-gray-600 text-sm">
-                    首次招新活动启动，面向大一新生，不设技术门槛
-                  </p>
+                  <p class="text-gray-600 text-sm">首次招新活动启动，面向大一新生，不设技术门槛</p>
                 </div>
               </div>
+            </div>
+            <!-- 移动端内容 -->
+            <div class="md:hidden flex-1">
+              <div class="flex items-center mb-3">
+                <el-icon class="text-primary mr-2"><CircleCheck /></el-icon>
+                <h3 class="text-lg font-bold text-dark">首次招新</h3>
+              </div>
+              <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
+                <h4 class="font-medium text-dark mb-2 text-primary">2024年9月</h4>
+                <p class="text-gray-600 text-sm">首次招新活动启动，面向大一新生，不设技术门槛</p>
+              </div>
+              <p class="text-gray-600 text-sm">社团开始第一次正式招新，期待更多热爱科技的同学加入我们，共同创造社团的未来</p>
             </div>
           </div>
 
           <!-- 架构调整 -->
-          <div
-            class="relative mb-10 md:mb-16 animate-slide-up"
-            style="animation-delay: 0.3s"
-          >
-            <div class="md:flex items-center">
-              <div class="md:w-1/2 md:pr-10 md:text-right mb-6 md:mb-0">
+          <div class="flex items-start animate-slide-up" style="animation-delay: 0.3s">
+            <!-- 移动端时间线图标 -->
+            <div class="md:hidden flex flex-col items-center mr-4 mt-2">
+              <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                <font-awesome-icon :icon="['fas', 'cogs']" class="text-sm" />
+              </div>
+              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+            </div>
+            <!-- 桌面端时间线 -->
+            <div class="hidden md:flex items-center w-full">
+              <div class="w-1/2 pr-10 text-right">
                 <h3 class="text-xl font-bold text-dark mb-2">变革与成长</h3>
-                <p class="text-gray-600">
-                  经过半年多的发展，社团经历了一次重要的变革，为了更好的发展方向
-                </p>
+                <p class="text-gray-700">经过半年多的发展，社团经历了一次重要的变革，为了更好的发展方向</p>
               </div>
-              <div
-                class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg z-10"
-              >
-                <span class="font-bold">25</span>
+              <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                  <font-awesome-icon :icon="['fas', 'cogs']" />
+                </div>
+                <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
               </div>
-              <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
-                <div
-                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
-                >
-                  <h4 class="font-medium text-dark mb-2">2025年5月</h4>
-                  <p class="text-gray-600 text-sm">
-                    进行了人员缩减和部门架构大调整，形成了现在的社团结构
-                  </p>
+              <div class="w-1/2 pl-10">
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4">
+                  <h4 class="font-medium text-dark mb-2 text-primary">2025年5月</h4>
+                  <p class="text-gray-600 text-sm">进行了人员缩减和部门架构大调整，形成了现在的社团结构</p>
                 </div>
               </div>
+            </div>
+            <!-- 移动端内容 -->
+            <div class="md:hidden flex-1">
+              <div class="flex items-center mb-3">
+                <font-awesome-icon :icon="['fas', 'cogs']" class="text-primary mr-2" />
+                <h3 class="text-lg font-bold text-dark">变革与成长</h3>
+              </div>
+              <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
+                <h4 class="font-medium text-dark mb-2 text-primary">2025年5月</h4>
+                <p class="text-gray-600 text-sm">进行了人员缩减和部门架构大调整，形成了现在的社团结构</p>
+              </div>
+              <p class="text-gray-700 text-sm">经过半年多的发展，社团经历了一次重要的变革，为了更好的发展方向</p>
             </div>
           </div>
 
           <!-- 网站上线 -->
-          <div
-            class="relative mb-10 md:mb-16 animate-slide-up"
-            style="animation-delay: 0.3s"
-          >
-            <div class="md:flex items-center">
-              <div class="md:w-1/2 md:pr-10 md:text-right mb-6 md:mb-0">
+          <div class="flex items-start animate-slide-up" style="animation-delay: 0.3s">
+            <!-- 移动端时间线图标 -->
+            <div class="md:hidden flex flex-col items-center mr-4 mt-2">
+              <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                <font-awesome-icon :icon="['fas', 'globe']" class="text-sm" />
+              </div>
+              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+            </div>
+            <!-- 桌面端时间线 -->
+            <div class="hidden md:flex items-center w-full">
+              <div class="w-1/2 pr-10 text-right">
                 <h3 class="text-xl font-bold text-dark mb-2">数字化转型</h3>
-                <p class="text-gray-600">
-                  为了更好地展示社团风采和成果，提升内部管理效率
-                </p>
+                <p class="text-gray-600">为了更好地展示社团风采和成果，提升内部管理效率</p>
               </div>
-              <div
-                class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg z-10"
-              >
-                <span class="font-bold">25</span>
+              <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
+                  <font-awesome-icon :icon="['fas', 'globe']" />
+                </div>
+                <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
               </div>
-              <div class="md:w-1/2 md:pl-10 md:text-left md:ml-auto">
-                <div
-                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
-                >
-                  <h4 class="font-medium text-dark mb-2">2025年9月</h4>
-                  <p class="text-gray-600 text-sm">
-                    社团网站初步建立上线，非官方，仅是社团内成员团队自发学习开发以及内部使用
-                  </p>
+              <div class="w-1/2 pl-10">
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4">
+                  <h4 class="font-medium text-dark mb-2 text-primary">2025年9月</h4>
+                  <p class="text-gray-600 text-sm">社团网站初步建立上线，非官方，仅是社团内成员团队自发学习开发以及内部使用</p>
                 </div>
               </div>
+            </div>
+            <!-- 移动端内容 -->
+            <div class="md:hidden flex-1">
+              <div class="flex items-center mb-3">
+                <font-awesome-icon :icon="['fas', 'globe']" class="text-primary mr-2" />
+                <h3 class="text-lg font-bold text-dark">数字化转型</h3>
+              </div>
+              <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
+                <h4 class="font-medium text-dark mb-2 text-primary">2025年9月</h4>
+                <p class="text-gray-600 text-sm">社团网站初步建立上线，非官方，仅是社团内成员团队自发学习开发以及内部使用</p>
+              </div>
+              <p class="text-gray-600 text-sm">为了更好地展示社团风采和成果，提升内部管理效率</p>
             </div>
           </div>
 
           <!-- 未来展望 -->
-          <div class="relative animate-slide-up" style="animation-delay: 0.3s">
-            <div class="md:flex items-center">
-              <div class="md:w-1/2 md:pr-10 md:text-right mb-6 md:mb-0">
+          <div class="flex items-start animate-slide-up" style="animation-delay: 0.3s">
+            <!-- 移动端时间线图标 -->
+            <div class="md:hidden flex flex-col items-center mr-4 mt-2">
+              <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg">
+                <font-awesome-icon :icon="['fas', 'star']" class="text-sm" />
+              </div>
+              <!-- 最后一个节点不需要连接线 -->
+            </div>
+            <!-- 桌面端时间线 -->
+            <div class="hidden md:flex items-center w-full">
+              <div class="w-1/2 pr-10 text-right">
                 <h3 class="text-xl font-bold text-dark mb-2">未来可期</h3>
-                <p class="text-gray-600">
-                  社团正在逐步发展中，我们将通过不定期的活动和项目实践，慢慢积累经验和成果，期待与你一起见证成长
-                </p>
+                <p class="text-gray-600">社团正在逐步发展中，我们将通过不定期的活动和项目实践，慢慢积累经验和成果，期待与你一起见证成长</p>
               </div>
-              <div
-                class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg z-10"
-              >
-                <font-awesome-icon :icon="['fas', 'star']" class="fa-star" />
+              <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg">
+                  <font-awesome-icon :icon="['fas', 'star']" />
+                </div>
+                <!-- 最后一个节点不需要连接线 -->
               </div>
-              <div class="md:w-1/2 md:pl-10 md:ml-auto">
-                <div
-                  class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4"
-                >
-                  <h4 class="font-medium text-dark mb-2">未来展望</h4>
-                  <p class="text-gray-600 text-sm">
-                    期待在各类竞赛中崭露头角，成为学校有影响力的科技创新社团
-                  </p>
+              <div class="w-1/2 pl-10">
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4">
+                  <h4 class="font-medium text-dark mb-2 text-secondary">未来展望</h4>
+                  <p class="text-gray-600 text-sm">期待在各类竞赛中崭露头角，成为学校有影响力的科技创新社团</p>
                 </div>
               </div>
+            </div>
+            <!-- 移动端内容 -->
+            <div class="md:hidden flex-1">
+              <div class="flex items-center mb-3">
+                <font-awesome-icon :icon="['fas', 'star']" class="text-secondary mr-2" />
+                <h3 class="text-lg font-bold text-dark">未来可期</h3>
+              </div>
+              <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
+                <h4 class="font-medium text-dark mb-2 text-secondary">未来展望</h4>
+                <p class="text-gray-600 text-sm">期待在各类竞赛中崭露头角，成为学校有影响力的科技创新社团</p>
+              </div>
+              <p class="text-gray-600 text-sm">社团正在逐步发展中，我们将通过不定期的活动和项目实践，慢慢积累经验和成果，期待与你一起见证成长</p>
             </div>
           </div>
         </div>
@@ -399,6 +458,7 @@
 
 <script setup lang="ts">
   import { onMounted } from 'vue'
+  import { CircleCheck, Monitor } from '@element-plus/icons-vue'
   import CommonNavbar from '../components/CommonNavbar.vue'
   import CommonFooter from '../components/CommonFooter.vue'
 
@@ -430,12 +490,12 @@
 </script>
 
 <style scoped>
-  /* 1. 基础样式：确保页面最小高度和背景色 */
+  /* 基础样式：确保页面最小高度和背景色 */
   .about-page {
     background-color: #f8fafc;
   }
 
-  /* 2. 自定义颜色类（适配CDN版Tailwind，替代tailwind.config） */
+  /* 自定义颜色类（适配CDN版Tailwind，替代tailwind.config） */
   .bg-primary {
     background-color: #3b82f6;
   }
@@ -498,7 +558,7 @@
     }
   }
 
-  /* 4. 响应式适配：修复移动端时间线布局 */
+  /* 响应式适配：修复移动端时间线布局 */
   @media (max-width: 768px) {
     /* 移动端时间线轴线居中 */
     .relative > .absolute {
@@ -510,9 +570,6 @@
     }
   }
 
-</style>
-
-<style scoped>
   @media (max-width: 768px) {
     .about-page main {
       padding-top: 1rem !important;

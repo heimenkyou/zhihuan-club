@@ -97,27 +97,33 @@
           招新流程
         </h2>
         <div class="relative max-w-4xl mx-auto">
-          <!-- 连接线 -->
+          <!-- 桌面端连接线 -->
           <div
             class="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200"
+          ></div>
+          <!-- 移动端连接线 -->
+          <div
+            class="md:hidden absolute left-6 top-12 bottom-12 w-0.5 bg-gray-200"
           ></div>
 
           <!-- 步骤 1 -->
           <div
             class="flex flex-col md:flex-row items-center mb-12 md:mb-24 relative"
           >
-            <div class="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0">
+            <div class="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0 ml-16 md:ml-0">
               <h3 class="text-xl font-semibold text-dark mb-2">线上报名</h3>
               <p class="text-gray-600">
                 填写在线报名表单，提交个人基本信息和特长爱好。
               </p>
             </div>
             <div
-              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
+              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
               <font-awesome-icon :icon="['far', 'file-text']" />
             </div>
             <div class="md:w-1/2 md:pl-12 hidden md:block"></div>
+            <!-- 移动端连接线 -->
+            <div class="md:hidden absolute left-6 top-12 w-0.5 h-24 bg-gray-200 mt-2"></div>
           </div>
 
           <!-- 步骤 2 -->
@@ -126,45 +132,49 @@
           >
             <div class="md:w-1/2 md:pr-12 hidden md:block"></div>
             <div
-              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
+              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
               <font-awesome-icon :icon="['far', 'comments']" />
             </div>
-            <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0">
+            <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0 ml-16 md:ml-0">
               <h3 class="text-xl font-semibold text-dark mb-2">简单面试</h3>
               <p class="text-gray-600">
                 主要了解学习意愿和自主学习能力，无需担心技术水平。
               </p>
             </div>
+            <!-- 移动端连接线 -->
+            <div class="md:hidden absolute left-6 top-12 w-0.5 h-24 bg-gray-200 mt-2"></div>
           </div>
 
           <!-- 步骤 3 -->
           <div
             class="flex flex-col md:flex-row items-center mb-12 md:mb-24 relative"
           >
-            <div class="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0">
+            <div class="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0 ml-16 md:ml-0">
               <h3 class="text-xl font-semibold text-dark mb-2">结果公布</h3>
               <p class="text-gray-600">
                 通过面试的同学将收到正式加入的通知，并安排后续培训。
               </p>
             </div>
             <div
-              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
+              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
               <font-awesome-icon :icon="['far', 'check-circle']" />
             </div>
             <div class="md:w-1/2 md:pl-12 hidden md:block"></div>
+            <!-- 移动端连接线 -->
+            <div class="md:hidden absolute left-6 top-12 w-0.5 h-24 bg-gray-200 mt-2"></div>
           </div>
 
           <!-- 步骤 4 -->
-          <div class="flex flex-col md:flex-row items-center relative">
+          <div class="flex flex-col md:flex-row items-center mb-12 md:mb-24 relative">
             <div class="md:w-1/2 md:pr-12 hidden md:block"></div>
             <div
-              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
+              class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
               <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
             </div>
-            <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0">
+            <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0 ml-16 md:ml-0">
               <h3 class="text-xl font-semibold text-dark mb-2">正式加入</h3>
               <p class="text-gray-600">
                 开始参与部门活动和项目开发，开启你的技术成长之旅。
@@ -959,11 +969,6 @@
 </script>
 
 <style scoped>
-  /* 基础布局：适配CommonNavbar高度，避免内容遮挡 */
-  .join-page {
-    padding-top: 0 !important;
-  }
-
   /* 自定义动画效果：进入视口时的滑入动画 */
   .animate-slide-up {
     opacity: 1 !important;
@@ -981,13 +986,6 @@
   button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-  }
-
-  /* 移动端内容区适配：避开CommonNavbar的移动端高度 */
-  @media (max-width: 768px) {
-    main {
-      margin-top: 94px !important; /* iOS：状态栏44px + 导航50px */
-    }
   }
 
   /* 颜色变量定义（统一管理） */
