@@ -589,7 +589,7 @@
           <!-- 二维码：居中展示 -->
           <div class="qrcode-container flex justify-center mb-8">
             <img
-              src="@/assets/images/QQGroup.jpg"
+              src="@/assets/images/QQGroup.webp"
               alt="社团招新QQ群二维码（扫码加群）"
               class="qrcode-image w-48 h-48 object-contain border border-gray-100 p-4 rounded-lg"
               @error="handleQrError"

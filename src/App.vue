@@ -430,7 +430,7 @@
       aria-label="音乐控制中心"
     >
       <img
-        src="@/assets/images/manbo.png"
+        src="@/assets/images/manbo.webp"
         alt="音乐控制背景"
         class="background-image absolute inset-0 w-full h-full rounded-full object-cover"
       />

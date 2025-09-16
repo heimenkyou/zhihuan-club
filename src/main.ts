@@ -1,7 +1,18 @@
-import './style.css'
+import '@/style.css'
+
+// Font Awesome
+import { library } from '@fortawesome/fontawesome-svg-core'
+// 导入整个图标集（不是单个图标！）
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// 将整个图标集加入库中
+library.add(fas, fab) // fas = 所有实心图标，fab = 所有品牌图标
+
 import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import App from '@/App.vue'
+import router from '@/router'
 import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -38,6 +49,8 @@ app.component('v-md-editor', VMdEditor) // 同时注册kebab-case形式
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+
+app.component('font-awesome-icon', FontAwesomeIcon)
 
 // 使用插件
 app.use(router)

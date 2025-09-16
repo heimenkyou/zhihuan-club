@@ -1,10 +1,4 @@
-/* @import 'tailwindcss'; */
-/* 全局样式重置 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import 'tailwindcss';
 
 html {
   font-size: 16px;
@@ -50,22 +44,8 @@ ol {
   list-style: none;
 }
 
-/* 图片样式 */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* 标题样式 */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 600;
-  line-height: 1.2;
+hr {
+  @apply border-t border-gray-200 my-1 sm:my-2;
 }
 
 /* 段落样式 */
@@ -95,12 +75,6 @@ p {
 ::selection {
   background: rgba(102, 126, 234, 0.3);
   color: inherit;
-}
-
-/* 焦点样式 */
-:focus {
-  outline: 2px solid rgba(102, 126, 234, 0.5);
-  outline-offset: 2px;
 }
 
 /* 淡入动画效果 */
@@ -145,187 +119,6 @@ p {
   opacity: 0;
 }
 
-/* 工具类 */
-.text-center {
-  text-align: center;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.mb-1 {
-  margin-bottom: 0.25rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.mb-3 {
-  margin-bottom: 1rem;
-}
-
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-5 {
-  margin-bottom: 3rem;
-}
-
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
-.mt-3 {
-  margin-top: 1rem;
-}
-
-.mt-4 {
-  margin-top: 1.5rem;
-}
-
-.mt-5 {
-  margin-top: 3rem;
-}
-
-.p-1 {
-  padding: 0.25rem;
-}
-
-.p-2 {
-  padding: 0.5rem;
-}
-
-.p-3 {
-  padding: 1rem;
-}
-
-.p-4 {
-  padding: 1.5rem;
-}
-
-.p-5 {
-  padding: 3rem;
-}
-
-/* 响应式工具类 */
-.mobile-hidden {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .mobile-hidden {
-    display: none;
-  }
-}
-
-.mobile-visible {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .mobile-visible {
-    display: block;
-  }
-}
-
-.mobile-text-sm {
-  font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-  .mobile-text-sm {
-    font-size: 0.875rem;
-  }
-}
-
-.mobile-padding {
-  padding: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .mobile-padding {
-    padding: 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .hide-mobile {
-    display: none !important;
-  }
-}
-
-@media (min-width: 769px) {
-  .hide-desktop {
-    display: none !important;
-  }
-}
-
-/* 加载动画 */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* 渐变背景 */
-.gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.gradient-bg-alt {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-/* 玻璃拟态效果 */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* 阴影效果 */
-.shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.shadow {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
 
 /* 添加响应式字体大小设置 */
 @media (max-width: 768px) {
@@ -340,48 +133,24 @@ p {
   }
 }
 
-/* 移动端容器调整 */
-@media (max-width: 768px) {
-  .container,
-  main {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-}
-
-/* 移动端图片调整 */
-@media (max-width: 768px) {
-  img {
-    border-radius: 0.5rem !important;
-  }
-}
-
-/* 移动端按钮调整 */
-@media (max-width: 768px) {
-  button {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.9rem !important;
-  }
-}
-
 /* 移动端卡片调整 */
 @media (max-width: 768px) {
   .card,
   .bg-white.rounded-xl {
-    padding: 1.5rem !important;
-    margin-bottom: 1.5rem !important;
+    padding: 1.5rem ;
+    margin-bottom: 1.5rem ;
   }
 }
 
 /* 移动端标题调整 */
 @media (max-width: 768px) {
   h1 {
-    font-size: 1.8rem !important;
+    font-size: 1.8rem ;
   }
   h2 {
-    font-size: 1.5rem !important;
+    font-size: 1.5rem ;
   }
   h3 {
-    font-size: 1.3rem !important;
+    font-size: 1.3rem ;
   }
 }

@@ -274,7 +274,7 @@
               class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
             >
               <img
-                src="@/assets/images/department-algorithm.png"
+                src="@/assets/images/department-algorithm.webp"
                 alt="算法部图标"
                 class="w-full h-full object-cover"
                 loading="lazy"
@@ -298,7 +298,7 @@
               class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
             >
               <img
-                src="@/assets/images/department-project-competition.png"
+                src="@/assets/images/department-project-competition.webp"
                 alt="项目竞赛部图标"
                 class="w-full h-full object-cover"
                 loading="lazy"
@@ -322,7 +322,7 @@
               class="w-24 h-24 mx-auto mb-4 flex items-center justify-center overflow-hidden"
             >
               <img
-                src="@/assets/images/department-general-admin.png"
+                src="@/assets/images/department-general-admin.webp"
                 alt="综合管理部图标"
                 class="w-full h-full object-cover"
                 loading="lazy"
