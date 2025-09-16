@@ -33,6 +33,7 @@ const routes: RouteRecordRaw[] = [
     path: '/about',
     name: 'about',
     component: () => import('../views/About.vue'),
+    meta: { requiresConfirmation: true }, // 需要确认访问
   },
   {
     path: '/resources',
@@ -80,7 +81,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresConfirmation) {
     try {
       await ElMessageBox.confirm(
-        '竞赛天地还在开发中，页面上都是假的，确认访问吗？',
+        '这个页面还在开发中，页面上还有很多假信息，确认访问吗？',
         '这里没啥东西啊',
         {
           confirmButtonText: '让我康康!',

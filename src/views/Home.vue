@@ -140,7 +140,7 @@
             </div>
             <p class="about-paragraph border-t-2 border-black pt-5">
               我们的宗旨是：<span class="highlight-text"
-                >以赛促学，以创促研”，热爱和兴趣可以超过一切❤️快来加入吧</span
+                >“以赛促学，以创促研”，热爱和兴趣可以超过一切❤️快来加入吧</span
               >。
             </p>
           </div>
