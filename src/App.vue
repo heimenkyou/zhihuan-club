@@ -456,7 +456,7 @@
         @click.stop="prevSong"
         aria-label="上一首"
       >
-        <i class="fa fa-step-backward text-white text-lg"></i>
+        <font-awesome-icon :icon="['fas', 'step-backward']" class="fa-step-backward" />
       </button> -->
 
       <!-- 下一首按钮 -->
@@ -466,7 +466,7 @@
         @click.stop="nextSong"
         aria-label="下一首"
       >
-        <i class="fa fa-step-forward text-white text-lg"></i>
+        <font-awesome-icon :icon="['fas', 'step-forward']" class="fa-step-forward" />
       </button> -->
 
       <!-- 音量按钮 -->
@@ -476,7 +476,7 @@
         @click.stop="toggleVolumeControl"
         aria-label="音量控制"
       >
-        <i class="fa fa-volume-up text-white text-lg"></i>
+        <font-awesome-icon :icon="['fas', 'volume-up']" class="fa-volume-up" />
       </button>
 
       <!-- 拖拽按钮 -->
@@ -487,7 +487,7 @@
         @touchstart="startDrag"
         aria-label="移动播放器"
       >
-        <i class="fa fa-arrows text-white text-lg"></i>
+        <font-awesome-icon :icon="['fas', 'arrows']" class="fa-arrows" />
       </button>
     </div>
 

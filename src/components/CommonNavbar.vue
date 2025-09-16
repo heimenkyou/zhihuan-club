@@ -5,7 +5,7 @@
     <nav class="web-nav">
       <div class="web-nav-container">
         <div class="web-nav-brand flex items-center" @click="navigateToHome" aria-label="返回首页">
-          <i class="fa fa-code mr-2 nav-brand-icon"></i>智环学创融合协会
+          <font-awesome-icon :icon="['fas', 'code']" class="fa-code nav-brand-icon" />智环学创融合协会
         </div>
         <div class="web-nav-links">
           <button
@@ -21,7 +21,7 @@
           </button>
         </div>
         <div class="menu-toggle">
-          <i class="fa fa-bars"></i>
+          <font-awesome-icon :icon="['fas', 'bars']" class="fa-bars" />
         </div>
       </div>
     </nav>
@@ -33,9 +33,9 @@
     <div v-if="isIosDevice" class="ios-status-bar sticky top-0 z-20 bg-white">
       <span>{{ currentTime }}</span>
       <div class="flex items-center gap-1">
-        <i class="fa fa-signal"></i>
-        <i class="fa fa-wifi"></i>
-        <i class="fa fa-battery-three-quarters"></i>
+        <font-awesome-icon :icon="['fas', 'signal']" class="fa-signal" />
+        <font-awesome-icon :icon="['fas', 'wifi']" class="fa-wifi" />
+        <font-awesome-icon :icon="['fas', 'battery-three-quarters']" class="fa-battery-three-quarters" />
       </div>
     </div>
 
@@ -50,7 +50,7 @@
         class="flex items-center space-x-4 w-full"
       >
         <button @click="navigateToHome" class="text-dark" aria-label="返回首页">
-          <i class="fa fa-arrow-left text-xl"></i>
+          <font-awesome-icon :icon="['fas', 'arrow-left']" class="fa-arrow-left" />
         </button>
         <div class="font-medium text-lg text-center flex-1">
           {{ currentPageTitle }}
@@ -59,7 +59,7 @@
       <!-- 首页保持原有样式 -->
       <div v-else class="font-medium text-lg">智环学创融合协会</div>
       <button @click="openSidebar" class="text-dark" aria-label="打开菜单">
-        <i class="fa fa-bars text-xl"></i>
+        <font-awesome-icon :icon="['fas', 'bars']" class="fa-bars" />
       </button>
     </div>
 
@@ -73,7 +73,7 @@
       <div class="p-4 border-b flex justify-between items-center">
         <h2 class="text-lg font-bold text-dark">导航菜单</h2>
         <button @click="closeSidebar" class="p-2" aria-label="关闭菜单">
-          <i class="fa fa-times text-xl"></i>
+          <font-awesome-icon :icon="['fas', 'times']" class="fa-times" />
         </button>
       </div>
       <nav class="py-2">

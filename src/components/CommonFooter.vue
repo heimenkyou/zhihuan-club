@@ -28,7 +28,11 @@
           @click.prevent="showWarning('还没有微信')"
           style="color: #9ca3af"
         >
-          <i class="fa fa-weixin" style="font-size: 1.5rem"></i>
+          <font-awesome-icon
+            :icon="['fab', 'weixin']"
+            class="fa-weixin"
+            style="font-size: 1.5rem"
+          />
         </a>
         <!-- QQ群 -->
         <a
@@ -37,7 +41,11 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          <i class="fa fa-qq" style="font-size: 1.5rem"></i>
+          <font-awesome-icon
+            :icon="['fab', 'qq']"
+            class="fa-qq"
+            style="font-size: 1.5rem"
+          />
         </a>
         <!-- github目前也没有 -->
         <a
@@ -45,11 +53,19 @@
           @click.prevent="showWarning('GitHub地址暂不公开')"
           style="color: #9ca3af"
         >
-          <i class="fa fa-github" style="font-size: 1.5rem"></i>
+          <font-awesome-icon
+            :icon="['fab', 'github']"
+            class="fa-github"
+            style="font-size: 1.5rem"
+          />
         </a>
         <!-- 这里应该展示邮箱 -->
         <a href="mailto:Wenbin.Lo@outlook.com" style="color: #9ca3af">
-          <i class="fa fa-envelope" style="font-size: 1.5rem"></i>
+          <font-awesome-icon
+            :icon="['fas', 'envelope']"
+            class="fa-envelope"
+            style="font-size: 1.5rem"
+          />
         </a>
       </div>
       <div class="footer-copyright">

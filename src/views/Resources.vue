@@ -171,7 +171,7 @@
               rel="noopener noreferrer"
               class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
             >
-              <i class="fas fa-external-link-alt mr-2"></i>
+              <el-icon size="16" class="mr-2"><Link /></el-icon>
               访问资源
             </a>
           </div>

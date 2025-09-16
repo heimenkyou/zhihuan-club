@@ -82,11 +82,11 @@
                 </p>
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center text-gray-500">
-                    <i class="fa fa-calendar mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     <span>每年11月</span>
                   </div>
                   <!-- <div class="flex items-center text-gray-500">
-                    <i class="fa fa-trophy mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
                     <span>28次获奖</span>
                   </div> -->
                 </div>
@@ -126,11 +126,11 @@
                 </p>
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center text-gray-500">
-                    <i class="fa fa-calendar mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     <span>每年9月</span>
                   </div>
                   <!-- <div class="flex items-center text-gray-500">
-                    <i class="fa fa-trophy mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
                     <span>22次获奖</span>
                   </div> -->
                 </div>
@@ -170,11 +170,11 @@
                 </p>
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center text-gray-500">
-                    <i class="fa fa-calendar mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     <span>每年10月</span>
                   </div>
                   <!-- <div class="flex items-center text-gray-500">
-                    <i class="fa fa-trophy mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
                     <span>15次获奖</span>
                   </div> -->
                 </div>
@@ -214,11 +214,11 @@
                 </p>
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center text-gray-500">
-                    <i class="fa fa-calendar mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     <span>偶数年8月</span>
                   </div>
                   <!-- <div class="flex items-center text-gray-500">
-                    <i class="fa fa-trophy mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
                     <span>18次获奖</span>
                   </div> -->
                 </div>
@@ -258,11 +258,11 @@
                 </p>
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center text-gray-500">
-                    <i class="fa fa-calendar mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     <span>每年7月</span>
                   </div>
                   <!-- <div class="flex items-center text-gray-500">
-                    <i class="fa fa-trophy mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
                     <span>12次获奖</span>
                   </div> -->
                 </div>
@@ -302,11 +302,11 @@
                 </p>
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center text-gray-500">
-                    <i class="fa fa-calendar mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     <span>每年9月</span>
                   </div>
                   <!-- <div class="flex items-center text-gray-500">
-                    <i class="fa fa-trophy mr-2"></i>
+                    <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
                     <span>15次获奖</span>
                   </div> -->
                 </div>
@@ -335,13 +335,13 @@
               <button
                 class="p-2 rounded-full hover:bg-gray-100 transition-colors"
               >
-                <i class="fa fa-chevron-left text-gray-600"></i>
+                <font-awesome-icon :icon="['fas', 'chevron-left']" class="fa-chevron-left" />
               </button>
               <h3 class="text-xl font-bold text-dark">2023年竞赛日程</h3>
               <button
                 class="p-2 rounded-full hover:bg-gray-100 transition-colors"
               >
-                <i class="fa fa-chevron-right text-gray-600"></i>
+                <font-awesome-icon :icon="['fas', 'chevron-right']" class="fa-chevron-right" />
               </button>
             </div>
 
@@ -439,7 +439,7 @@
               <div class="p-6">
                 <h3 class="text-xl font-bold text-dark mb-3">挑战杯备赛指南</h3>
                 <div class="flex items-center text-gray-500 mb-4">
-                  <i class="fa fa-user mr-2"></i>
+                  <font-awesome-icon :icon="['fas', 'user']" class="fa-user" />
                   <span>李教授 · 竞赛指导教师</span>
                 </div>
                 <p class="text-gray-600 mb-4">
@@ -447,10 +447,10 @@
                 </p>
                 <div class="flex items-center justify-between">
                   <div class="text-sm text-gray-500">
-                    <i class="fa fa-eye mr-1"></i> 2.5k 阅读
+                    <font-awesome-icon :icon="['fas', 'eye']" class="fa-eye" /> 2.5k 阅读
                   </div>
                   <button class="text-primary font-medium flex items-center">
-                    阅读全文 <i class="fa fa-angle-right ml-1"></i>
+                    阅读全文 <font-awesome-icon :icon="['fas', 'angle-right']" class="fa-angle-right" />
                   </button>
                 </div>
               </div>
@@ -466,7 +466,7 @@
                   互联网+创业大赛攻略
                 </h3>
                 <div class="flex items-center text-gray-500 mb-4">
-                  <i class="fa fa-user mr-2"></i>
+                  <font-awesome-icon :icon="['fas', 'user']" class="fa-user" />
                   <span>张学长 · 往届获奖者</span>
                 </div>
                 <p class="text-gray-600 mb-4">
@@ -474,10 +474,10 @@
                 </p>
                 <div class="flex items-center justify-between">
                   <div class="text-sm text-gray-500">
-                    <i class="fa fa-eye mr-1"></i> 3.2k 阅读
+                    <font-awesome-icon :icon="['fas', 'eye']" class="fa-eye" /> 3.2k 阅读
                   </div>
                   <button class="text-primary font-medium flex items-center">
-                    阅读全文 <i class="fa fa-angle-right ml-1"></i>
+                    阅读全文 <font-awesome-icon :icon="['fas', 'angle-right']" class="fa-angle-right" />
                   </button>
                 </div>
               </div>
@@ -493,7 +493,7 @@
                   ACM程序设计竞赛训练方法
                 </h3>
                 <div class="flex items-center text-gray-500 mb-4">
-                  <i class="fa fa-user mr-2"></i>
+                  <font-awesome-icon :icon="['fas', 'user']" class="fa-user" />
                   <span>王学姐 · 算法研究部部长</span>
                 </div>
                 <p class="text-gray-600 mb-4">
@@ -501,10 +501,10 @@
                 </p>
                 <div class="flex items-center justify-between">
                   <div class="text-sm text-gray-500">
-                    <i class="fa fa-eye mr-1"></i> 2.8k 阅读
+                    <font-awesome-icon :icon="['fas', 'eye']" class="fa-eye" /> 2.8k 阅读
                   </div>
                   <button class="text-primary font-medium flex items-center">
-                    阅读全文 <i class="fa fa-angle-right ml-1"></i>
+                    阅读全文 <font-awesome-icon :icon="['fas', 'angle-right']" class="fa-angle-right" />
                   </button>
                 </div>
               </div>
@@ -520,7 +520,7 @@
                   电子设计竞赛经验分享
                 </h3>
                 <div class="flex items-center text-gray-500 mb-4">
-                  <i class="fa fa-user mr-2"></i>
+                  <font-awesome-icon :icon="['fas', 'user']" class="fa-user" />
                   <span>陈学长 · 硬件开发部部长</span>
                 </div>
                 <p class="text-gray-600 mb-4">
@@ -528,10 +528,10 @@
                 </p>
                 <div class="flex items-center justify-between">
                   <div class="text-sm text-gray-500">
-                    <i class="fa fa-eye mr-1"></i> 2.3k 阅读
+                    <font-awesome-icon :icon="['fas', 'eye']" class="fa-eye" /> 2.3k 阅读
                   </div>
                   <button class="text-primary font-medium flex items-center">
-                    阅读全文 <i class="fa fa-angle-right ml-1"></i>
+                    阅读全文 <font-awesome-icon :icon="['fas', 'angle-right']" class="fa-angle-right" />
                   </button>
                 </div>
               </div>
@@ -618,7 +618,7 @@
                     <div
                       class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4"
                     >
-                      <i class="fa fa-envelope text-primary"></i>
+                      <font-awesome-icon :icon="['fas', 'envelope']" class="fa-envelope" />
                     </div>
                     <div>
                       <div class="font-medium text-dark">竞赛邮箱</div>
@@ -630,7 +630,7 @@
                     <div
                       class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4"
                     >
-                      <i class="fa fa-weixin text-primary"></i>
+                      <font-awesome-icon :icon="['fab', 'weixin']" class="fa-weixin" />
                     </div>
                     <div>
                       <div class="font-medium text-dark">微信咨询</div>
@@ -642,7 +642,7 @@
                     <div
                       class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4"
                     >
-                      <i class="fa fa-calendar text-primary"></i>
+                      <font-awesome-icon :icon="['fas', 'calendar']" class="fa-calendar" />
                     </div>
                     <div>
                       <div class="font-medium text-dark">咨询时间</div>

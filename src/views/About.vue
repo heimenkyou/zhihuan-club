@@ -200,7 +200,7 @@
               <div
                 class="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg z-10"
               >
-                <i class="fa fa-star"></i>
+                <font-awesome-icon :icon="['fas', 'star']" class="fa-star" />
               </div>
               <div class="md:w-1/2 md:pl-10 md:ml-auto">
                 <div class="bg-white rounded-xl shadow-md p-4">
@@ -233,7 +233,7 @@
             <div
               class="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
             >
-              <i class="fa fa-id-card text-4xl text-primary"></i>
+              <font-awesome-icon :icon="['fas', 'id-card']" class="fa-id-card" />
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">社长</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -251,7 +251,7 @@
             <div
               class="w-24 h-24 mx-auto mb-4 rounded-full bg-secondary/10 flex items-center justify-center"
             >
-              <i class="fa fa-user text-4xl text-secondary"></i>
+              <font-awesome-icon :icon="['fas', 'user']" class="fa-user" />
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">副社长</h3>
             <p class="text-gray-600 text-sm mb-4">

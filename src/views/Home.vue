@@ -208,7 +208,7 @@
     <!-- 加载状态 -->
     <div v-if="loading" class="flex justify-center items-center py-16">
       <el-icon class="is-loading" size="24">
-        <i class="fa fa-spinner"></i>
+        <font-awesome-icon :icon="['fas', 'spinner']" class="fa-spinner" />
       </el-icon>
       <span class="ml-4">加载项目中...</span>
     </div>
@@ -368,8 +368,8 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
-            ></a>
+              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon>
+            </a>
           </div>
 
           <!-- 竞赛2：ACM-ICPC -->
@@ -416,8 +416,7 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
-            ></a>
+              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon></a>
           </div>
 
           <!-- 竞赛3：挑战杯 -->
@@ -464,8 +463,8 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
-            ></a>
+              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon>
+            </a>
           </div>
 
           <!-- 竞赛4：计算机设计大赛 -->
@@ -512,8 +511,8 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <i class="fa fa-arrow-right" style="margin-left: 0.25rem"></i
-            ></a>
+              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon>
+            </a>
           </div>
         </div>
 

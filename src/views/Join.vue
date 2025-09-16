@@ -40,7 +40,7 @@
             <div
               class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
             >
-              <i class="fa fa-code text-primary text-2xl"></i>
+              <font-awesome-icon :icon="['fas', 'code']" class="fa-code" />
             </div>
             <h3 class="text-xl font-semibold text-center text-dark mb-4">
               专业技术指导
@@ -58,7 +58,7 @@
             <div
               class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
             >
-              <i class="fa fa-users text-primary text-2xl"></i>
+              <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
             </div>
             <h3 class="text-xl font-semibold text-center text-dark mb-4">
               团队协作
@@ -75,7 +75,7 @@
             <div
               class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
             >
-              <i class="fa fa-trophy text-primary text-2xl"></i>
+              <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
             </div>
             <h3 class="text-xl font-semibold text-center text-dark mb-4">
               竞赛机会
@@ -115,7 +115,7 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
             >
-              <i class="fa fa-file-text-o"></i>
+              <font-awesome-icon :icon="['far', 'file-text']" />
             </div>
             <div class="md:w-1/2 md:pl-12 hidden md:block"></div>
           </div>
@@ -128,7 +128,7 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
             >
-              <i class="fa fa-comments-o"></i>
+              <font-awesome-icon :icon="['far', 'comments']" />
             </div>
             <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0">
               <h3 class="text-xl font-semibold text-dark mb-2">简单面试</h3>
@@ -151,7 +151,7 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
             >
-              <i class="fa fa-check-circle-o"></i>
+              <font-awesome-icon :icon="['far', 'check-circle']" />
             </div>
             <div class="md:w-1/2 md:pl-12 hidden md:block"></div>
           </div>
@@ -162,7 +162,7 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg"
             >
-              <i class="fa fa-users"></i>
+              <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
             </div>
             <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0">
               <h3 class="text-xl font-semibold text-dark mb-2">正式加入</h3>
@@ -196,7 +196,10 @@
                 <span
                   class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3"
                 >
-                  <i class="fa fa-brain text-purple-500"></i>
+                  <font-awesome-icon
+                    :icon="['fas', 'brain']"
+                    class="fa-brain"
+                  />
                 </span>
                 算法部
               </h3>
@@ -234,7 +237,10 @@
                 <span
                   class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
                 >
-                  <i class="fa fa-laptop-code text-blue-500"></i>
+                  <font-awesome-icon
+                    :icon="['fas', 'laptop-code']"
+                    class="fa-laptop-code"
+                  />
                 </span>
                 项目竞赛部
               </h3>
@@ -274,7 +280,10 @@
                 <span
                   class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3"
                 >
-                  <i class="fa fa-users-cog text-green-500"></i>
+                  <font-awesome-icon
+                    :icon="['fas', 'users-cog']"
+                    class="fa-users-cog"
+                  />
                 </span>
                 综合管理部
               </h3>
@@ -504,15 +513,30 @@
               <button
                 type="submit"
                 class="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center"
+                :disabled="isSubmitting"
               >
-                <i class="fa fa-paper-plane mr-2"></i> 提交报名
+                <template v-if="isSubmitting">
+                  <font-awesome-icon
+                    :icon="['fas', 'spinner']"
+                    class="fa-spinner fa-spin mr-2"
+                  />
+                  提交中...
+                </template>
+                <template v-else>
+                  <font-awesome-icon
+                    :icon="['fas', 'paper-plane']"
+                    class="fa-paper-plane"
+                  />
+                  提交报名
+                </template>
               </button>
               <button
                 type="button"
                 class="flex-1 bg-white border-2 border-primary text-primary hover:bg-primary/5 font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center"
                 @click="showSuccessModal = true"
               >
-                <i class="fa fa-users mr-2"></i> 先进群看看
+                <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
+                先进群看看
               </button>
             </div>
           </form>
@@ -575,7 +599,7 @@
             class="close-button text-gray-500 hover:text-gray-700"
             @click="closeModal"
           >
-            <i class="fa fa-times text-lg"></i>
+            <font-awesome-icon :icon="['fas', 'times']" class="fa-times" />
           </button>
         </div>
 
@@ -615,7 +639,8 @@
                 @click="copyGroupNumber"
                 title="复制群号"
               >
-                <i class="fa fa-copy mr-1"></i> {{ copyButtonText }}
+                <font-awesome-icon :icon="['fas', 'copy']" class="fa-copy" />
+                {{ copyButtonText }}
               </button>
             </div>
 
@@ -626,7 +651,11 @@
               rel="noopener noreferrer"
               class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
             >
-              <i class="fa fa-external-link"></i> 直接加群
+              <font-awesome-icon
+                :icon="['fas', 'external-link']"
+                class="fa-external-link"
+              />
+              直接加群
             </a>
           </div>
         </div>
@@ -757,6 +786,8 @@
   // 弹窗相关状态
   const showSuccessModal = ref(false)
   const copyButtonText = ref('复制')
+  // 提交按钮状态
+  const isSubmitting = ref(false)
 
   // 2. 方法定义
   // 二维码加载失败处理（兜底提示）
@@ -831,14 +862,7 @@
 
     try {
       // 3. 显示加载状态
-      const submitButton = document.querySelector('button[type="submit"]')
-      if (submitButton) {
-        if (submitButton instanceof HTMLButtonElement) {
-          submitButton.disabled = true
-        }
-        submitButton.innerHTML =
-          '<i class="fa fa-spinner fa-spin mr-2"></i> 提交中...'
-      }
+      isSubmitting.value = true
 
       // 4. 使用封装的 axios 请求提交表单（请确保submitApplication函数正确）
       await submitApplication(formData.value)
@@ -868,14 +892,7 @@
       )
     } finally {
       // 恢复按钮状态
-      const submitButton = document.querySelector('button[type="submit"]')
-      if (submitButton) {
-        if (submitButton instanceof HTMLButtonElement) {
-          submitButton.disabled = false
-        }
-        submitButton.innerHTML =
-          '<i class="fa fa-paper-plane mr-2"></i> 提交报名'
-      }
+      isSubmitting.value = false
     }
   }
 

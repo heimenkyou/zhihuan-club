@@ -429,7 +429,7 @@
       <div class="container">
         <!-- 返回首页按钮 -->
         <button class="back-home-btn" @click="goToHome" title="返回首页">
-          <i class="fa fa-arrow-left"></i>
+          <font-awesome-icon :icon="['fas', 'arrow-left']" class="fa-arrow-left" />
         </button>
         <h1 class="board-title">
           <span class="icon">💬</span>
