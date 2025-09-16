@@ -7,15 +7,9 @@
   import { ElMessageBox } from 'element-plus'
   import CommonFooter from '../components/CommonFooter.vue'
 
-  
   const messageStore = useMessageStore()
   const debugInfo = ref('')
   const router = useRouter() // 初始化router
-
-  // 返回首页函数
-  const goToHome = () => {
-    router.push('/')
-  }
 
   // 根元素引用
   const messageBoard = ref<null | any>(null)
@@ -353,11 +347,12 @@
   // 检测留言是否被截断
   const checkTruncatedMessages = async () => {
     await nextTick()
-    messageStore.messages.forEach((msg) => {
+    messageStore.messages.forEach(msg => {
       const contentElement = contentRefs.value[msg.id]
       if (contentElement) {
         // 检查元素是否被截断（scrollHeight > clientHeight）
-        const isTruncated = contentElement.scrollHeight > contentElement.clientHeight
+        const isTruncated =
+          contentElement.scrollHeight > contentElement.clientHeight
         showExpandButtons.value[msg.id] = isTruncated
       }
     })
@@ -427,9 +422,12 @@
     <!-- 头部区域 -->
     <header class="board-header">
       <div class="container">
-        <!-- 返回首页按钮 -->
-        <button class="back-home-btn" @click="goToHome" title="返回首页">
-          <font-awesome-icon :icon="['fas', 'arrow-left']" class="fa-arrow-left" />
+        <!-- 返回按钮 -->
+        <button class="back-home-btn" @click="router.back()" title="返回">
+          <font-awesome-icon
+            :icon="['fas', 'arrow-left']"
+            class="fa-arrow-left"
+          />
         </button>
         <h1 class="board-title">
           <span class="icon">💬</span>
