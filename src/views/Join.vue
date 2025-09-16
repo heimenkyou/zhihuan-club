@@ -579,14 +579,16 @@
                 <h3 class="text-lg font-semibold text-dark">
                   {{ faq.question }}
                 </h3>
-                <i
-                  class="fa fa-chevron-down text-gray-500 transition-transform"
+                <font-awesome-icon
+                  :icon="['fas', 'chevron-down']"
+                  class="text-gray-500 transition-transform"
                   :class="{ 'rotate-180': faq.isOpen }"
-                ></i>
+                />
               </button>
               <div
-                class="faq-content hidden mt-3 text-gray-600"
-                :class="{ hidden: !faq.isOpen }"
+                class="mt-3 text-gray-600 overflow-hidden transition-all duration-300"
+                :class="faq.isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+                style="white-space: pre-line;"
               >
                 {{ faq.answer }}
               </div>
@@ -752,38 +754,44 @@
     answer: string
     isOpen: boolean
   }
-  const faqList = ref<FaqItem[]>([
-    {
-      question: '加入有什么条件？',
-      answer:
-        '我们对技术水平没有严格要求，只要你对技术有兴趣，有学习的意愿和热情，都可以加入我们。我们更看重的是学习态度和自主学习能力。',
-      isOpen: false,
-    },
-    {
-      question: '每周需要投入多少时间？',
-      answer:
-        '通常情况下，每周需要投入3-5小时参与团队活动和项目开发。具体时间会根据项目需求和个人情况有所不同。我们鼓励成员合理安排时间，平衡学习和社团活动。',
-      isOpen: false,
-    },
-    {
-      question: '加入能学到什么？',
-      answer:
-        '1. 掌握专业的编程技术和项目开发经验；\n2. 参与实际项目开发，积累项目经验；\n3. 有机会参加各类科技创新竞赛，获得奖项和荣誉；\n4. 认识志同道合的同学，建立深厚友谊；\n5. 获得实习和就业机会，为未来职业发展打下基础。',
-      isOpen: false,
-    },
-    {
-      question: '如何选择适合自己的部门？',
-      answer:
-        '选择部门时，可以根据自己的兴趣爱好和职业规划来考虑。如果你专注算法类竞赛，可以选择算法部；如果你更喜欢做项目并参加项目类竞赛，可以选择项目竞赛部；如果你擅长组织管理和活动策划，可以选择综合管理部。所有部门都没有技术要求，主要看重学习意愿和自主学习能力。',
-      isOpen: false,
-    },
-    {
-      question: '招新流程和时间安排是怎样的？',
-      answer:
-        '招新流程主要包括：线上报名、简单面试、正式加入三个环节。具体时间安排如下：\n1. 线上报名：9月1日-9月15日\n2. 简单面试：9月16日-9月20日（主要了解学习意愿和自主学习能力）\n3. 正式加入：9月21日公布结果\n请关注我们的微信公众号获取最新的招新信息和时间安排。',
-      isOpen: false,
-    },
-  ])
+ const faqList = ref<FaqItem[]>([
+  {
+    question: '加入有什么条件？',
+    answer:
+      '零门槛！我们不对技术水平做任何要求。只要你对技术感兴趣，愿意主动学习，就可以加入。我们更看重的是你的学习意愿和行动力，而不是你现在会多少。',
+    isOpen: false,
+  },
+  {
+    question: '每周需要投入多少时间？',
+    answer:
+      '完全由你自己决定。但在加入初期，我们会有一些"强制的"「任务」，帮助大家迈出第一步。后续的学习节奏、投入时间和发展方向，都由你自己掌控。"你投入多少，就会收获多少。"',
+    isOpen: false,
+  },
+  {
+    question: '我能学到东西吗？',
+    answer:
+      '能学到多少，取决于你自己。\n\n但我们可以保证：\n1. 提供经过验证的学习路线，帮你少走弯路；\n2. 分享高质量的学习资源和项目经验；\n3. 有学长学姐答疑解惑，及时反馈；\n4. 营造积极的学习氛围，互相激励。\n\n我们不能代替你学习，但可以陪你一起成长。',
+    isOpen: false,
+  },
+  {
+    question: '可以同时加入多个部门吗？',
+    answer:
+      '当然可以！我们鼓励成员跨部门参与，拓宽视野。但在一段时间内，建议选择一个主攻方向（主力部门），集中精力深入学习。等基础打牢后，再拓展到其他领域会更容易。',
+    isOpen: false,
+  },
+  {
+    question: '招新什么时候开始？怎么报名？',
+    answer:
+      '招新全年开放！随时可以加群申请。\n\n只需要在报名表中填写信息即可完成加入。如果你之前报过名，再次使用相同学号提交，系统会自动覆盖旧信息，无需担心重复问题。\n\n我们没有复杂的面试流程，也不看成绩排名，只要你愿意来，我们就欢迎。',
+    isOpen: false,
+  },
+  {
+    question: '如果我中途忙不过来，可以退出吗？',
+    answer:
+      '完全可以。我们理解每个人的时间和精力是有限的。如果你某段时间太忙，或者兴趣转移了，可以随时淡出。',
+    isOpen: false,
+  },
+])
 
   // 页面section的Ref（用于滚动动画）
   const homeRef = ref<ElementRef | null>(null)
