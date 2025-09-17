@@ -204,7 +204,6 @@
             2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
           </p>
         </div>
-
         <!-- 轮播图区域 -->
         <div class="relative">
           <el-carousel
@@ -215,104 +214,35 @@
             autoplay
             indicator-position="none"
           >
-            <!-- 使用指定的高光时刻图片 -->
-            <el-carousel-item>
+            <!-- 使用v-for循环渲染高光时刻 -->
+            <el-carousel-item
+              v-for="moment in highlightMoments"
+              :key="moment.id"
+            >
               <div
                 class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
               >
-                <img
-                  src="@/assets/images/hightligh/第九届CCPC铜奖颁奖.webp"
-                  alt="第九届CCPC铜奖颁奖"
-                  class="w-full h-48 object-cover"
+                <el-image
+                  :src="moment.image"
+                  :alt="moment.alt"
+                  class="w-full h-48 object-cover cursor-pointer"
+                  :preview-src-list="[moment.image]"
+                  :initial-index="0"
+                  :preview-teleported="true"
+                  fit="cover"
                 />
                 <div class="p-6">
                   <div class="flex justify-between items-start mb-4">
                     <h3 class="text-xl font-bold text-dark">
-                      第九届CCPC铜奖颁奖
+                      {{ moment.title }}
                     </h3>
                   </div>
                   <p class="text-gray-600 mb-6 line-clamp-3">
-                    我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。
+                    {{ moment.description }}
                   </p>
                   <button
                     class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    查看详情
-                  </button>
-                </div>
-              </div>
-            </el-carousel-item>
-
-            <el-carousel-item>
-              <div
-                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
-              >
-                <img
-                  src="@/assets/images/hightligh/十五届蓝桥杯国赛.jpg"
-                  alt="十五届蓝桥杯国赛"
-                  class="w-full h-48 object-cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">
-                      十五届蓝桥杯国赛
-                    </h3>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    参加第十五届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。
-                  </p>
-                  <button
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    查看详情
-                  </button>
-                </div>
-              </div>
-            </el-carousel-item>
-
-            <el-carousel-item>
-              <div
-                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
-              >
-                <img
-                  src="@/assets/images/hightligh/挑战杯路演 (2).webp"
-                  alt="挑战杯路演"
-                  class="w-full h-48 object-cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">挑战杯路演</h3>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    参加2025年挑战杯河北省大学生课外学术科技作品校内赛
-                  </p>
-                  <button
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                  >
-                    查看详情
-                  </button>
-                </div>
-              </div>
-            </el-carousel-item>
-
-            <el-carousel-item>
-              <div
-                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
-              >
-                <img
-                  src="@/assets/images/hightligh/收音机焊接 (1).webp"
-                  alt="收音机焊接"
-                  class="w-full h-48 object-cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">收音机焊接实践</h3>
-                  </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
-                    社团成员动手实践收音机焊接项目，提升电子实践能力和工程素养。
-                  </p>
-                  <button
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                    @click="showDetailInfo(moment.title)"
                   >
                     查看详情
                   </button>
@@ -701,14 +631,13 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
+  import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import CommonNavbar from '../components/CommonNavbar.vue'
-  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonNavbar from '@/components/CommonNavbar.vue'
+  import CommonFooter from '@/components/CommonFooter.vue'
   import { ArrowDown } from '@element-plus/icons-vue'
-  import { getProjects } from '../services/projectService'
-  import type { Project } from '../services/projectService'
   import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
+  import { showInfo } from '@/utils/notification'
 
   // 添加 carouselRef 引用
   const carouselRef = ref()
@@ -724,45 +653,43 @@
 
   const router = useRouter()
 
-  // 响应式状态
-  const projects = ref<Project[]>([])
-  const loading = ref(false)
-  const error = ref('')
   // 控制介绍风格显示的变量
   const showChatStyle = ref(true)
 
-  // 获取项目列表数据
-  const fetchProjects = async () => {
-    loading.value = true
-    error.value = ''
-
-    try {
-      // 使用正确的参数格式
-      const params = {
-        current: 1,
-        size: 4, // 只获取4个项目
-      }
-
-      // 调用项目服务获取数据
-      const response = await getProjects(params)
-
-      // 处理响应数据
-      if (
-        response &&
-        response.data &&
-        response.data.records &&
-        response.data.records.length > 0
-      ) {
-        projects.value = response.data.records.slice(0, 4)
-      }
-    } catch (err) {
-      console.error('获取项目列表失败:', err)
-      // 发生错误时使用模拟数据
-      // projects.value = mockProjects
-    } finally {
-      loading.value = false
-    }
-  }
+  // 高光时刻数据
+  const highlightMoments = ref([
+    {
+      id: 1,
+      image: new URL('@/assets/images/hightligh/第九届CCPC铜奖颁奖.webp', import.meta.url).href,
+      alt: '第九届CCPC铜奖颁奖',
+      title: '第九届CCPC铜奖颁奖',
+      description:
+        '我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。',
+    },
+    {
+      id: 2,
+      image: new URL('@/assets/images/hightligh/十五届蓝桥杯国赛.jpg', import.meta.url).href,
+      alt: '十五届蓝桥杯国赛',
+      title: '十五届蓝桥杯国赛',
+      description:
+        '参加第十五届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。',
+    },
+    {
+      id: 3,
+      image: new URL('@/assets/images/hightligh/挑战杯路演 (2).webp', import.meta.url).href,
+      alt: '挑战杯路演',
+      title: '挑战杯路演',
+      description: '参加2025年挑战杯河北省大学生课外学术科技作品校内赛',
+    },
+    {
+      id: 4,
+      image: new URL('@/assets/images/hightligh/收音机焊接 (1).webp', import.meta.url).href,
+      alt: '收音机焊接',
+      title: '收音机焊接实践',
+      description:
+        '社团成员动手实践收音机焊接项目，提升电子实践能力和工程素养。',
+    },
+  ])
 
   // 导航函数
   const toabout = () => {
@@ -796,10 +723,10 @@
   //   router.push({ path: '/projectdetail', query: { id: projectId } })
   // }
 
-  // 组件挂载时获取数据
-  onMounted(() => {
-    fetchProjects()
-  })
+  // 查看详情功能
+  const showDetailInfo = (title: string) => {
+    showInfo(`${title}的详情功能还在开发中，敬请期待！`)
+  }
 </script>
 
 <style scoped lang="scss">
