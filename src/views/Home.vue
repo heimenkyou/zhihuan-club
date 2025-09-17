@@ -192,12 +192,12 @@
         </div>
       </div>
     </el-main>
- <!-- 高光时刻 -->
+<!-- 高光时刻 -->
 <el-main id="achievements" class="py-20 px-4 bg-gray-50">
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-16">
       <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
-        我们的高光时刻<br>(假数据, 这里还没做好)
+        我们的高光时刻
       </h2>
       <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
       <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
@@ -205,16 +205,8 @@
       </p>
     </div>
 
-    <!-- 加载状态 -->
-    <div v-if="loading" class="flex justify-center items-center py-16">
-      <el-icon class="is-loading" size="24">
-        <font-awesome-icon :icon="['fas', 'spinner']" class="fa-spinner" />
-      </el-icon>
-      <span class="ml-4">加载项目中...</span>
-    </div>
-
     <!-- 轮播图区域 -->
-    <div class="relative" v-else>
+    <div class="relative">
       <el-carousel 
         ref="carouselRef"
         :interval="4000"
@@ -223,35 +215,102 @@
         autoplay
         indicator-position="none"
       >
-        <el-carousel-item 
-          v-for="(project, index) in projects" 
-          :key="project.id || index"
-        >
+        <!-- 使用指定的高光时刻图片 -->
+        <el-carousel-item>
           <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
             <img
-              :src="
-                project.coverImage
-                  ? project.coverImage.replace(/[`\s]/g, '')
-                  : ''
-              "
-              :alt="project.title"
+              src="@/assets/hightligh/第九届CCPC铜奖颁奖.jpg"
+              alt="第九届CCPC铜奖颁奖"
               class="w-full h-48 object-cover"
-              loading="lazy"
             />
             <div class="p-6">
               <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-bold text-dark">
-                  {{ project.title }}
+                  第九届CCPC铜奖颁奖
                 </h3>
               </div>
               <p class="text-gray-600 mb-6 line-clamp-3">
-                {{ project.briefIntro || '暂无项目简介' }}
-              </p>
+                  我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。
+                </p>
               <button
-                @click="goToProjectDetail(project.id)"
                 class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
               >
-                了解项目
+                查看详情
+              </button>
+            </div>
+          </div>
+        </el-carousel-item>
+        
+        <el-carousel-item>
+          <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
+            <img
+              src="@/assets/hightligh/十五届蓝桥杯国赛.jpg"
+              alt="十五届蓝桥杯国赛"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold text-dark">
+                  十五届蓝桥杯国赛
+                </h3>
+              </div>
+              <p class="text-gray-600 mb-6 line-clamp-3">
+                  参加第十五届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。
+                </p>
+              <button
+                class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+              >
+                查看详情
+              </button>
+            </div>
+          </div>
+        </el-carousel-item>
+
+        <el-carousel-item>
+  <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
+    <img
+      src="@/assets/hightligh/挑战杯路演 (2).jpg"
+      alt="挑战杯路演"
+      class="w-full h-48 object-cover"
+    />
+    <div class="p-6">
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="text-xl font-bold text-dark">
+          挑战杯路演
+        </h3>
+      </div>
+      <p class="text-gray-600 mb-6 line-clamp-3">
+        参加2025年挑战杯河北省大学生课外学术科技作品校内赛
+      </p>
+      <button
+        class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+      >
+        查看详情
+      </button>
+    </div>
+  </div>
+</el-carousel-item>
+        
+        <el-carousel-item>
+          <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
+            <img
+              src="@/assets/hightligh/收音机焊接 (1).jpg"
+              alt="收音机焊接"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-bold text-dark">
+                  收音机焊接实践
+                </h3>
+              </div>
+              <p class="text-gray-600 mb-6 line-clamp-3">
+                  社团成员动手实践收音机焊接项目，提升电子实践能力和工程素养。
+                </p>
+              <button
+                class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+              >
+                查看详情
               </button>
             </div>
           </div>
