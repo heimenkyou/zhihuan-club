@@ -54,7 +54,6 @@
             value-format="YYYY.MM"
             @change="handleDateRangeChange"
           />
-          <div class="form-tip">格式示例: 2024-11 - 2025-01</div>
         </el-form-item>
 
         <el-form-item label="项目简介" prop="briefIntro">
