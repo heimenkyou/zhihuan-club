@@ -20,7 +20,7 @@ export interface PageData<T> {
 // 创建axios实例
 const api = axios.create({
   baseURL: '/api', // 根据实际情况设置
-  timeout: 5000, // 设置超时时间
+  timeout: 10000, // 设置超时时间
 })
 
 // 请求拦截器

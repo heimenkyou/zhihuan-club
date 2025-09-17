@@ -302,11 +302,6 @@ export const deleteApplication = async (id: number): Promise<void> => {
 // 项目类型定义
 // 更新项目类型定义，完全匹配新API的数据结构
 // 完善项目接口定义
-interface TeamMember {
-  id?: number
-  name: string
-  role: string
-}
 
 // 媒体资源类型定义 - 已移除重复定义，保留下面的export版本
 
@@ -470,6 +465,48 @@ export interface MediaResource {
   description?: string
 }
 
+/**
+ * 项目编辑回显响应DTO
+ */
+export interface ProjectEditRespDTO {
+  projectId: number
+  category: string
+  coverImage: string
+  title: string
+  briefIntro: string
+  techStackTags: string[]
+  timeRange: string
+  mediaResources: MediaResource[]
+  descriptionMd: string
+  teamDivisions: TeamMember[]
+  awards: Award[]
+}
+
+/**
+ * 团队成员
+ */
+export interface TeamMember {
+  name: string
+  role: string
+}
+
+/**
+ * 奖项信息
+ */
+export interface Award {
+  id: number
+  competitionName: string
+  competitionTrack: string
+  competitionLevel: string
+  awardLevel: string
+  winners: string[]
+  year: number
+  awardDate: string
+}
+
+/**
+ * 获取项目详情 - 用于展示
+ */
 export const getProject = async (id: number): Promise<Project> => {
   try {
     const response = await api.get<any>(`/public/projects/${id}`)
@@ -483,6 +520,28 @@ export const getProject = async (id: number): Promise<Project> => {
     throw new Error('获取项目详情失败')
   } catch (error) {
     console.error('获取项目详情失败:', error)
+    throw error
+  }
+}
+
+/**
+ * 项目编辑回显 - 获取完整的项目数据包括关联的媒体资源和奖项
+ */
+export const getProjectForEdit = async (id: number): Promise<ProjectEditRespDTO> => {
+  try {
+    const response = await api.get<any>(`/projects/${id}/edit`)
+
+    if (typeof response.data === 'object') {
+      if (response.data.success && response.data.data) {
+        return response.data.data
+      } else if (response.data.code === '0' && response.data.data) {
+        return response.data.data
+      }
+    }
+
+    throw new Error('获取项目编辑数据失败')
+  } catch (error) {
+    console.error('获取项目编辑数据失败:', error)
     throw error
   }
 }
