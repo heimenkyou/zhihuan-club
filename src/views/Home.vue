@@ -219,7 +219,7 @@
         <el-carousel-item>
           <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
             <img
-              src="@/assets/hightligh/第九届CCPC铜奖颁奖.jpg"
+              src="@/assets/hightligh/第九届CCPC铜奖颁奖.webp"
               alt="第九届CCPC铜奖颁奖"
               class="w-full h-48 object-cover"
             />
@@ -244,7 +244,7 @@
         <el-carousel-item>
           <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
             <img
-              src="@/assets/hightligh/十五届蓝桥杯国赛.jpg"
+              src="@/assets/hightligh/十五届蓝桥杯国赛.webp"
               alt="十五届蓝桥杯国赛"
               class="w-full h-48 object-cover"
             />
@@ -269,7 +269,7 @@
         <el-carousel-item>
   <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
     <img
-      src="@/assets/hightligh/挑战杯路演 (2).jpg"
+      src="@/assets/hightligh/挑战杯路演 (2).webp"
       alt="挑战杯路演"
       class="w-full h-48 object-cover"
     />
@@ -294,7 +294,7 @@
         <el-carousel-item>
           <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
             <img
-              src="@/assets/hightligh/收音机焊接 (1).jpg"
+              src="@/assets/hightligh/收音机焊接 (1).webp"
               alt="收音机焊接"
               class="w-full h-48 object-cover"
             />
