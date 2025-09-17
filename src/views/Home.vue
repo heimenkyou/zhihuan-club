@@ -192,163 +192,167 @@
         </div>
       </div>
     </el-main>
-<!-- 高光时刻 -->
-<el-main id="achievements" class="py-20 px-4 bg-gray-50">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-      <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
-        我们的高光时刻
-      </h2>
-      <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
-      <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
-        2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
-      </p>
-    </div>
+    <!-- 高光时刻 -->
+    <el-main id="achievements" class="py-20 px-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
+            我们的高光时刻
+          </h2>
+          <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+          <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
+            2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
+          </p>
+        </div>
 
-    <!-- 轮播图区域 -->
-    <div class="relative">
-      <el-carousel 
-        ref="carouselRef"
-        :interval="4000"
-        type="card"
-        height="400px"
-        autoplay
-        indicator-position="none"
-      >
-        <!-- 使用指定的高光时刻图片 -->
-        <el-carousel-item>
-          <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
-            <img
-              src="@/assets/hightligh/第九届CCPC铜奖颁奖.webp"
-              alt="第九届CCPC铜奖颁奖"
-              class="w-full h-48 object-cover"
-            />
-            <div class="p-6">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-dark">
-                  第九届CCPC铜奖颁奖
-                </h3>
-              </div>
-              <p class="text-gray-600 mb-6 line-clamp-3">
-                  我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。
-                </p>
-              <button
-                class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+        <!-- 轮播图区域 -->
+        <div class="relative">
+          <el-carousel
+            ref="carouselRef"
+            :interval="4000"
+            type="card"
+            height="400px"
+            autoplay
+            indicator-position="none"
+          >
+            <!-- 使用指定的高光时刻图片 -->
+            <el-carousel-item>
+              <div
+                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
               >
-                查看详情
-              </button>
-            </div>
-          </div>
-        </el-carousel-item>
-        
-        <el-carousel-item>
-          <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
-            <img
-              src="@/assets/hightligh/十五届蓝桥杯国赛.webp"
-              alt="十五届蓝桥杯国赛"
-              class="w-full h-48 object-cover"
-            />
-            <div class="p-6">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-dark">
-                  十五届蓝桥杯国赛
-                </h3>
+                <img
+                  src="@/assets/images/hightligh/第九届CCPC铜奖颁奖.webp"
+                  alt="第九届CCPC铜奖颁奖"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">
+                      第九届CCPC铜奖颁奖
+                    </h3>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。
+                  </p>
+                  <button
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    查看详情
+                  </button>
+                </div>
               </div>
-              <p class="text-gray-600 mb-6 line-clamp-3">
-                  参加第十五届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。
-                </p>
-              <button
-                class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-              >
-                查看详情
-              </button>
-            </div>
-          </div>
-        </el-carousel-item>
+            </el-carousel-item>
 
-        <el-carousel-item>
-  <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
-    <img
-      src="@/assets/hightligh/挑战杯路演 (2).webp"
-      alt="挑战杯路演"
-      class="w-full h-48 object-cover"
-    />
-    <div class="p-6">
-      <div class="flex justify-between items-start mb-4">
-        <h3 class="text-xl font-bold text-dark">
-          挑战杯路演
-        </h3>
+            <el-carousel-item>
+              <div
+                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
+              >
+                <img
+                  src="@/assets/images/hightligh/十五届蓝桥杯国赛.jpg"
+                  alt="十五届蓝桥杯国赛"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">
+                      十五届蓝桥杯国赛
+                    </h3>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    参加第十五届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。
+                  </p>
+                  <button
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    查看详情
+                  </button>
+                </div>
+              </div>
+            </el-carousel-item>
+
+            <el-carousel-item>
+              <div
+                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
+              >
+                <img
+                  src="@/assets/images/hightligh/挑战杯路演 (2).webp"
+                  alt="挑战杯路演"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">挑战杯路演</h3>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    参加2025年挑战杯河北省大学生课外学术科技作品校内赛
+                  </p>
+                  <button
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    查看详情
+                  </button>
+                </div>
+              </div>
+            </el-carousel-item>
+
+            <el-carousel-item>
+              <div
+                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
+              >
+                <img
+                  src="@/assets/images/hightligh/收音机焊接 (1).webp"
+                  alt="收音机焊接"
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-dark">收音机焊接实践</h3>
+                  </div>
+                  <p class="text-gray-600 mb-6 line-clamp-3">
+                    社团成员动手实践收音机焊接项目，提升电子实践能力和工程素养。
+                  </p>
+                  <button
+                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
+                  >
+                    查看详情
+                  </button>
+                </div>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
+
+          <!-- 左右导航按钮 -->
+          <button
+            class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
+            @click="prev"
+          >
+            <el-icon><ArrowLeft /></el-icon>
+          </button>
+          <button
+            class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
+            @click="next"
+          >
+            <el-icon><ArrowRight /></el-icon>
+          </button>
+        </div>
+
+        <!-- 查看更多按钮 -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+          <button
+            @click="toproject"
+            class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
+          >
+            查看更多项目
+          </button>
+          <button
+            @click="toawards"
+            class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
+          >
+            查看更多奖项
+          </button>
+        </div>
       </div>
-      <p class="text-gray-600 mb-6 line-clamp-3">
-        参加2025年挑战杯河北省大学生课外学术科技作品校内赛
-      </p>
-      <button
-        class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-      >
-        查看详情
-      </button>
-    </div>
-  </div>
-</el-carousel-item>
-        
-        <el-carousel-item>
-          <div class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden">
-            <img
-              src="@/assets/hightligh/收音机焊接 (1).webp"
-              alt="收音机焊接"
-              class="w-full h-48 object-cover"
-            />
-            <div class="p-6">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-dark">
-                  收音机焊接实践
-                </h3>
-              </div>
-              <p class="text-gray-600 mb-6 line-clamp-3">
-                  社团成员动手实践收音机焊接项目，提升电子实践能力和工程素养。
-                </p>
-              <button
-                class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-              >
-                查看详情
-              </button>
-            </div>
-          </div>
-        </el-carousel-item>
-      </el-carousel>
-      
-      <!-- 左右导航按钮 -->
-      <button 
-        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
-        @click="prev"
-      >
-        <el-icon><ArrowLeft /></el-icon>
-      </button>
-      <button 
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
-        @click="next"
-      >
-        <el-icon><ArrowRight /></el-icon>
-      </button>
-    </div>
-
-    <!-- 查看更多按钮 -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-      <button
-        @click="toproject"
-        class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
-      >
-        查看更多项目
-      </button>
-      <button
-        @click="toawards"
-        class="bg-white text-primary border border-primary hover:bg-primary hover:text-white transition-all px-6 py-3 rounded-full font-semibold shadow hover:shadow-md"
-      >
-        查看更多奖项
-      </button>
-    </div>
-  </div>
-</el-main>
+    </el-main>
     <!-- 热门赛事 -->
     <el-main class="competitions-section" id="competitions">
       <div style="max-width: 80rem; margin: 0 auto; padding: 5rem 1rem">
@@ -427,7 +431,9 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon>
+              <el-icon size="14" style="margin-left: 0.25rem"
+                ><ArrowRight
+              /></el-icon>
             </a>
           </div>
 
@@ -475,7 +481,9 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon></a>
+              <el-icon size="14" style="margin-left: 0.25rem"
+                ><ArrowRight /></el-icon
+            ></a>
           </div>
 
           <!-- 竞赛3：挑战杯 -->
@@ -522,7 +530,9 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon>
+              <el-icon size="14" style="margin-left: 0.25rem"
+                ><ArrowRight
+              /></el-icon>
             </a>
           </div>
 
@@ -570,7 +580,9 @@
               target="_blank"
               style="color: #3b82f6; font-weight: 500"
               >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"><ArrowRight /></el-icon>
+              <el-icon size="14" style="margin-left: 0.25rem"
+                ><ArrowRight
+              /></el-icon>
             </a>
           </div>
         </div>
@@ -696,19 +708,19 @@
   import { ArrowDown } from '@element-plus/icons-vue'
   import { getProjects } from '../services/projectService'
   import type { Project } from '../services/projectService'
-import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
+  import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 
-// 添加 carouselRef 引用
-const carouselRef = ref()
+  // 添加 carouselRef 引用
+  const carouselRef = ref()
 
-// 添加导航方法
-const prev = () => {
-  carouselRef.value?.prev()
-}
+  // 添加导航方法
+  const prev = () => {
+    carouselRef.value?.prev()
+  }
 
-const next = () => {
-  carouselRef.value?.next()
-}
+  const next = () => {
+    carouselRef.value?.next()
+  }
 
   const router = useRouter()
 
