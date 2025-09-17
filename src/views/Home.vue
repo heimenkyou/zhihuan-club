@@ -780,9 +780,9 @@ const next = () => {
   }
 
   // 跳转到项目详情页
-  const goToProjectDetail = (projectId: number) => {
-    router.push({ path: '/projectdetail', query: { id: projectId } })
-  }
+  // const goToProjectDetail = (projectId: number) => {
+  //   router.push({ path: '/projectdetail', query: { id: projectId } })
+  // }
 
   // 组件挂载时获取数据
   onMounted(() => {

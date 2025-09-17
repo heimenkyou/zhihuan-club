@@ -458,7 +458,7 @@
 
 <script setup lang="ts">
   import { onMounted } from 'vue'
-  import { CircleCheck, Monitor } from '@element-plus/icons-vue'
+  import { CircleCheck } from '@element-plus/icons-vue'
   import CommonNavbar from '../components/CommonNavbar.vue'
   import CommonFooter from '../components/CommonFooter.vue'
 
