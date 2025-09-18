@@ -18,7 +18,7 @@
           class="footer-link"
           >联系我们</a
         >
-        <router-link to="/admin/login" class="footer-link admin-login-link"
+        <router-link to="/admin/dashboard" class="footer-link admin-login-link"
           >管理员登录</router-link
         >
       </div>
