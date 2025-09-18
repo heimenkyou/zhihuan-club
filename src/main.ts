@@ -24,18 +24,9 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn' // 引入中文语言包
 
-// 导入Vue 3版本的Markdown编辑器
-import VMdEditor from '@kangc/v-md-editor'
-import '@kangc/v-md-editor/lib/style/base-editor.css'
-import githubTheme from '@kangc/v-md-editor/lib/theme/github.js'
-import '@kangc/v-md-editor/lib/theme/style/github.css'
-
-// 引入Prism
-import Prism from 'prismjs'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-css'
-import 'prismjs/components/prism-markup'
+// 导入md-editor-v3 Markdown编辑器
+import { MdEditor, MdPreview, MdCatalog } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
 
 // 引入你封装的提示函数
 import { showError } from './utils/notification'
@@ -43,12 +34,10 @@ import { showError } from './utils/notification'
 // 创建应用实例
 export const app = createApp(App)
 
-// 配置主题
-VMdEditor.use(githubTheme, { Prism })
-
-// 注册Markdown编辑器组件
-app.component('VMdEditor', VMdEditor)
-app.component('v-md-editor', VMdEditor) // 同时注册kebab-case形式
+// 注册md-editor-v3组件
+app.component('MdEditor', MdEditor)
+app.component('MdPreview', MdPreview)
+app.component('MdCatalog', MdCatalog)
 
 // 注册所有Element Plus图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

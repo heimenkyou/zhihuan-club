@@ -183,7 +183,7 @@
           </h2>
           <div class="project-intro-content">
             <template v-if="projectDetail.descriptionMd">
-              <div v-html="parseMarkdown(projectDetail.descriptionMd)"></div>
+              <MdPreview :modelValue="projectDetail.descriptionMd"></MdPreview>
             </template>
             <template v-else>
               <p class="text-gray-500">暂无项目介绍</p>
@@ -358,18 +358,6 @@
       优秀奖: 'danger',
     }
     return typeMap[type || 'primary'] || 'primary'
-  }
-
-  // 解析Markdown内容（简化版）
-  const parseMarkdown = (md: string) => {
-    if (!md) return ''
-
-    return md
-      .replace(/#{3}\s+([^\n]+)/g, '<h3 class="intro-subtitle">$1</h3>')
-      .replace(/^[*-]\s+([^\n]+)/gm, '<li>$1</li>')
-      .replace(/<\/li>\s*<li>/g, '</li><li>')
-      .replace(/(<li>.+<\/li>)/gs, '<ul class="intro-list">$1</ul>')
-      .replace(/^([^\n]+)$/gm, '<p class="intro-paragraph">$1</p>')
   }
 
   // 获取项目详情数据
@@ -981,6 +969,8 @@
       }
     }
   }
+
+
 
   // 9. 团队成员模块：保持原样式
   .team-members-container {

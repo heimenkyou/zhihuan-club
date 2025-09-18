@@ -170,36 +170,32 @@
 
             <div class="editor-content">
               <div v-if="editorMode === 'edit'" class="editor-pane">
-                <v-md-editor
+                <MdEditor
                   v-model="projectForm.descriptionMd"
-                  :disabled-menus="[]"
-                  height="400px"
-                  @upload-image="handleImageUpload"
+                  :toolbars="toolbars"
+                  :preview="false"
+                  :footers="[]"
+                  @onUploadImg="handleImageUpload"
+                  style="height: 400px"
                 />
               </div>
 
               <div v-else-if="editorMode === 'preview'" class="preview-pane">
-                <v-md-editor
-                  :value="projectForm.descriptionMd"
-                  mode="preview"
-                  height="400px"
+                <MdPreview
+                  :modelValue="projectForm.descriptionMd"
+                  style="height: 400px"
                 />
               </div>
 
               <div v-else class="split-pane">
                 <div class="split-left">
-                  <v-md-editor
+                  <MdEditor
                     v-model="projectForm.descriptionMd"
-                    :disabled-menus="[]"
-                    height="400px"
-                    @upload-image="handleImageUpload"
-                  />
-                </div>
-                <div class="split-right">
-                  <v-md-editor
-                    :value="projectForm.descriptionMd"
-                    mode="preview"
-                    height="400px"
+                    :toolbars="toolbars"
+                    :preview="true"
+                    :footers="[]"
+                    @onUploadImg="handleImageUpload"
+                    style="height: 400px"
                   />
                 </div>
               </div>
@@ -642,6 +638,41 @@
   // Markdown编辑器模式
   const editorMode = ref('edit')
 
+  // MdEditor工具栏配置
+  const toolbars = [
+    'bold',
+    'underline',
+    'italic',
+    '-',
+    'title',
+    'strikeThrough',
+    'sub',
+    'sup',
+    'quote',
+    'unorderedList',
+    'orderedList',
+    'task',
+    '-',
+    'codeRow',
+    'code',
+    'link',
+    'image',
+    'table',
+    'mermaid',
+    'katex',
+    '-',
+    'revoke',
+    'next',
+    'save',
+    '=',
+    'pageFullscreen',
+    'fullscreen',
+    'preview',
+    'htmlPreview',
+    'catalog',
+    'github'
+  ]
+
   // 表单验证规则
   const rules = {
     title: [{ required: true, message: '请输入项目标题', trigger: 'blur' }],
@@ -1035,11 +1066,7 @@
   }
 
   // Markdown图片上传
-  const handleImageUpload = async (
-    _event: any,
-    insertImage: any,
-    files: File[]
-  ) => {
+  const handleImageUpload = async (files: File[]) => {
     const file = files[0]
     if (!file) return
 
@@ -1050,13 +1077,12 @@
         description: 'Markdown编辑器插入的图片',
       })
 
-      insertImage({
-        url: uploadedMedia.url,
-        desc: uploadedMedia.title || '图片',
-      })
+      // 返回图片URL给MdEditor
+      return [uploadedMedia.url]
     } catch (error) {
       ElMessage.error('图片上传失败')
       console.error('Markdown图片上传失败:', error)
+      return []
     }
   }
 

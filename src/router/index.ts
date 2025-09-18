@@ -4,9 +4,7 @@ import adminRoutes from '@/router/adminRoutes'
 import { useAdminStore } from '@/stores/adminStore'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-// 在路由数组中添加以下内容
 const routes: RouteRecordRaw[] = [
-  // 假设 Home 组件路径为 '../views/Home.vue'，需根据实际情况调整
   { path: '/', name: 'home', component: () => import('../views/Home.vue') },
   {
     path: '/projects',
