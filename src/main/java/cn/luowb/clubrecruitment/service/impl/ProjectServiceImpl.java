@@ -6,7 +6,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.AwardDO;
-import cn.luowb.clubrecruitment.dao.entity.MediaResourceDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDetailDO;
 import cn.luowb.clubrecruitment.dao.mapper.MediaResourceMapper;
@@ -75,7 +74,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         // 批量查询媒体资源
         List<AwardRespDTO> awardList = Collections.emptyList();
 
-        List<MediaResourceRespDTO> mediaResources = mediaResourceMapper.selectListByRefId(projectId).stream()
+        List<MediaResourceRespDTO> mediaResources = mediaResourceMapper
+                .selectListByRefIdAndRefType(projectId, "project").stream()
                 .map(each -> BeanUtil.toBean(each, MediaResourceRespDTO.class))
                 .toList();
         // 批量查询获奖信息
@@ -116,7 +116,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
 
     @Override
     @Transactional
-    public Long saveProject(Long projectId, ProjectSaveReqDTO reqDTO) {
+    public Long saveOrUpdateProject(Long projectId, ProjectSaveReqDTO reqDTO) {
         // 1. 保存项目基本信息
         ProjectDO projectDO = new ProjectDO();
         if (projectId != null) {
@@ -128,10 +128,10 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         }
 
         // 更新字段
-//        projectDO.setCategory(reqDTO.getCategory());
-//        projectDO.setCoverImage(reqDTO.getCoverImage());
-//        projectDO.setTitle(reqDTO.getTitle());
-//        projectDO.setBriefIntro(reqDTO.getBriefIntro());
+        // projectDO.setCategory(reqDTO.getCategory());
+        // projectDO.setCoverImage(reqDTO.getCoverImage());
+        // projectDO.setTitle(reqDTO.getTitle());
+        // projectDO.setBriefIntro(reqDTO.getBriefIntro());
         BeanUtil.copyProperties(reqDTO, projectDO);
         projectDO.setTechStackTags(JSON.toJSONString(reqDTO.getTechStackTags()));
         // 提取开发团队人名
@@ -181,26 +181,38 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         List<TeamDivisionDTO> teamDivisions = JSON.parseArray(detailDO.getTeamDivision(), TeamDivisionDTO.class);
         respDTO.setTeamDivisions(teamDivisions);
         // 查询媒体资源
-        List<MediaResourceRespDTO> mediaResources = mediaResourceMapper.selectList(new LambdaQueryWrapper<MediaResourceDO>()
-                        .eq(MediaResourceDO::getRefId, projectId)
-                        .eq(MediaResourceDO::getRefType, "project"))
+        List<MediaResourceRespDTO> mediaResources = mediaResourceMapper.selectListByRefIdAndRefType(
+                projectId, "project")
                 .stream()
                 .map(each -> BeanUtil.toBean(each, MediaResourceRespDTO.class))
                 .toList();
         respDTO.setMediaResources(mediaResources);
         // 查询获奖信息
         List<Long> awardIds = JSON.parseArray(detailDO.getAwardIds(), Long.class);
-        List<AwardRespDTO> awardList = awardService.listByIds(awardIds).stream()
-                .map(each -> {
-                    AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
-                    // 反序列化 获奖人
-                    List<String> winners = JSON.parseArray(each.getWinners(), String.class);
-                    awardRespDTO.setWinners(winners);
-                    return awardRespDTO;
-                })
-                .toList();
+        List<AwardRespDTO> awardList = CollectionUtil.isEmpty(awardIds)
+                ? Collections.emptyList()
+                : awardService.listByIds(awardIds).stream()
+                        .map(each -> {
+                            AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
+                            // 反序列化 获奖人
+                            List<String> winners = JSON.parseArray(each.getWinners(), String.class);
+                            awardRespDTO.setWinners(winners);
+                            return awardRespDTO;
+                        })
+                        .toList();
         respDTO.setAwards(awardList);
         return respDTO;
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long projectId) {
+        // 解除项目与媒体资源的关联
+        mediaResourceMapper.clearReferenceByRefId(projectId, "project");
+        // 删除项目详情
+        projectDetailMapper.deleteByProjectId(projectId);
+        // 删除项目
+        this.removeById(projectId);
     }
 
     private void updateMediaResources(Long projectId, List<Long> mediaResourceIds) {
@@ -231,9 +243,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
             if (count != reqDTO.getAwardIds().size()) {
                 throw new ClientException("使用了不存在的奖项");
             }
-            // 序列化
-            detailDO.setAwardIds(JSON.toJSONString(reqDTO.getAwardIds()));
         }
+        // 序列化
+        detailDO.setAwardIds(JSON.toJSONString(reqDTO.getAwardIds()));
         detailDO.setDescriptionMd(reqDTO.getDescriptionMd());
 
         if (detailDO.getId() == null) {
@@ -244,7 +256,3 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
     }
 
 }
-
-
-
-

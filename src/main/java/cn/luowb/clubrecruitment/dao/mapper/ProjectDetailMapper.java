@@ -2,6 +2,7 @@ package cn.luowb.clubrecruitment.dao.mapper;
 
 import cn.luowb.clubrecruitment.dao.entity.ProjectDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -20,6 +21,14 @@ public interface ProjectDetailMapper extends BaseMapper<ProjectDetailDO> {
      */
     @Select("select * from project_detail where project_id = #{projectId}")
     ProjectDetailDO selectByProjectId(Long projectId);
+
+    /**
+     * 根据项目ID删除项目详情
+     *
+     * @param projectId 项目ID
+     */
+    @Delete("delete from project_detail where project_id = #{projectId}")
+    void deleteByProjectId(Long projectId);
 }
 
 

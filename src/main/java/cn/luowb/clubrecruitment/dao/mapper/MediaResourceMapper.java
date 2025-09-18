@@ -26,6 +26,16 @@ public interface MediaResourceMapper extends BaseMapper<MediaResourceDO> {
     List<MediaResourceDO> selectListByRefId(Long refId);
 
     /**
+     * 根据引用ID和引用类型查询媒体资源列表
+     *
+     * @param refId   引用ID
+     * @param refType 引用类型
+     * @return 媒体资源列表
+     */
+    @Select("select * from media_resource where ref_id = #{refId} and ref_type = #{refType}")
+    List<MediaResourceDO> selectListByRefIdAndRefType(@Param("refId") Long refId, @Param("refType") String refType);
+
+    /**
      * 查询未引用的媒体资源列表
      *
      * @return 未引用的媒体资源列表

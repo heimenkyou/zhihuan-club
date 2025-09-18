@@ -1,6 +1,7 @@
 **/application-dev.yml
 **/application-prod.yml
 *.log
+.trae**
 
 HELP.md
 target/

@@ -45,7 +45,8 @@ public class ProjectController {
     @Operation(summary = "创建新项目")
     @Transactional
     public Result<Long> createProject(@RequestBody @Valid ProjectSaveReqDTO reqDTO) {
-        return Results.success(projectService.saveProject(null, reqDTO));
+        log.info("创建新项目, reqDTO={}", reqDTO);
+        return Results.success(projectService.saveOrUpdateProject(null, reqDTO));
     }
 
     @PutMapping("/admin/projects/{id}")
@@ -53,7 +54,8 @@ public class ProjectController {
     @Transactional
     public Result<Void> updateProject(@PathVariable Long id,
                                       @RequestBody @Valid ProjectSaveReqDTO reqDTO) {
-        projectService.saveProject(id, reqDTO);
+        log.info("更新项目, id={}, reqDTO={}", id, reqDTO);
+        projectService.saveOrUpdateProject(id, reqDTO);
         return Results.success();
     }
 
@@ -61,5 +63,14 @@ public class ProjectController {
     @Operation(summary = "项目信息编辑回显")
     public Result<ProjectEditRespDTO> edit(@PathVariable Long projectId) {
         return Results.success(projectService.getProjectEdit(projectId));
+    }
+
+    @Operation(summary = "删除项目")
+    @DeleteMapping("/admin/projects/{projectId}")
+    @Transactional
+    public Result<Void> delete(@PathVariable Long projectId) {
+        log.info("删除项目, projectId={}", projectId);
+        projectService.delete(projectId);
+        return Results.success();
     }
 }

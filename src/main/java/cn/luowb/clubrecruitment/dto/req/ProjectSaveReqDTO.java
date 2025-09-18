@@ -11,18 +11,19 @@ import java.util.List;
 @Schema(description = "项目保存请求参数")
 public class ProjectSaveReqDTO {
     @Schema(description = "项目分类")
-    @NotBlank(message = "项目分类不能为空")
+    @NotBlank(message = "请选择项目分类")
     private String category;
 
     @Schema(description = "封面图片URL")
-    @NotBlank(message = "封面图片不能为空")
+    @NotBlank(message = "请设置封面图片")
     private String coverImage;
 
     @Schema(description = "项目标题")
-    @NotBlank(message = "项目标题不能为空")
+    @NotBlank(message = "请输入项目标题")
     private String title;
 
     @Schema(description = "简要介绍")
+    @NotBlank(message = "请输入项目简要介绍")
     private String briefIntro;
 
     @Schema(description = "技术栈标签")
