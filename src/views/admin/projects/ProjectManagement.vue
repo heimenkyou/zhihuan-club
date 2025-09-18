@@ -66,9 +66,6 @@
                 style="margin-right: 4px"
                 >{{ tech }}</el-tag
               >
-              <span v-if="scope.row.techStackTags.length > 3" class="more-tags"
-                >+{{ scope.row.techStackTags.length - 3 }}</span
-              >
             </div>
             <span v-else>暂无</span>
           </template>

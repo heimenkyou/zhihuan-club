@@ -689,13 +689,24 @@
       { required: true, message: '请输入项目详情', trigger: 'blur' },
     ],
     coverImage: [
-      { required: true, message: '请选择封面图片', trigger: 'change' },
+      {
+        validator: (_: any, value: any, callback: any) => {
+          if (!value || value.trim() === '') {
+            // 使用字符串错误信息而不是Error对象，避免被全局错误处理器捕获
+            callback('请选择封面图片')
+          } else {
+            callback()
+          }
+        },
+        trigger: 'submit',
+      },
     ],
     mediaResourceIds: [
       {
         validator: (_: any, value: any, callback: any) => {
           if (!value || value.length === 0) {
-            callback(new Error('请至少添加一张轮播图'))
+            // 使用字符串错误信息而不是Error对象，避免被全局错误处理器捕获
+            callback('请至少添加一张轮播图')
           } else {
             callback()
           }
@@ -1117,12 +1128,22 @@
 
   /**
    * 提交表单 - 创建或更新项目
-   * 让拦截器处理错误，不吞掉错误
+   * 正确处理表单验证，避免验证错误被全局错误处理器捕获
    */
   const submitForm = async () => {
     if (!projectFormRef.value) return
 
-    await projectFormRef.value.validate()
+    // 使用validate的回调函数形式来处理验证结果，避免抛出错误到全局处理器
+    const isValid = await new Promise<boolean>((resolve) => {
+      projectFormRef.value!.validate((valid: boolean) => {
+        resolve(valid)
+      })
+    })
+
+    if (!isValid) {
+      // 验证失败，直接返回，错误信息会由Element Plus自动显示在表单字段下方
+      return
+    }
 
     submitLoading.value = true
 

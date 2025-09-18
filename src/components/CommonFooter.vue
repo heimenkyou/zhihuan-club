@@ -18,6 +18,9 @@
           class="footer-link"
           >联系我们</a
         >
+        <router-link to="/admin/login" class="footer-link admin-login-link"
+          >管理员登录</router-link
+        >
       </div>
 
       <!-- 社交图标 -->
@@ -134,6 +137,25 @@
     text-align: center;
     color: #94a3b8;
     font-size: 0.875rem;
+    position: relative;
+  }
+
+  /* 隐蔽的管理后台入口样式 */
+  .admin-entry {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #475569;
+    font-size: 0.75rem;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+    text-decoration: none;
+    padding: 0.25rem;
+  }
+
+  .admin-entry:hover {
+    opacity: 0.7;
+    color: #64748b;
   }
 
   /* 移动端适配 */
@@ -147,5 +169,15 @@
     .footer-info h3 {
       font-size: 1.25rem;
     }
+  }
+
+  /* 管理员登录链接样式 */
+  .admin-login-link {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .admin-login-link:hover {
+    color: #3b82f6;
   }
 </style>

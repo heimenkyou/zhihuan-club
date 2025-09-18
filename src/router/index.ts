@@ -75,6 +75,12 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
   const adminStore = useAdminStore()
+  
+  // 初始化认证状态（设置请求头）
+  if (typeof window !== 'undefined') {
+    adminStore.initAuthState()
+  }
+  
   // 检查是否需要访问确认
   if (to.meta.requiresConfirmation) {
     try {
@@ -90,17 +96,17 @@ router.beforeEach(async (to, from, next) => {
           closeOnPressEscape: false,
         }
       )
-      // 用户点击“确定”：继续后续逻辑
+      // 用户点击"确定"：继续后续逻辑
     } catch {
-      // 用户点击“取消”或关闭
+      // 用户点击"取消"或关闭
       ElMessage.info('已取消访问')
       next(false) // 阻止导航
       return
     }
   }
-  // 检查登录状态
-  if (!adminStore.isLoggedIn && to.meta.requiresAuth) {
-    ElMessage.error('请先登录')
+  
+  // 检查登录状态 - 本地有token就算登录
+  if (to.meta.requiresAuth && !localStorage.getItem('adminToken')) {
     next('/admin/login')
     return
   }

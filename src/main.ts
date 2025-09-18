@@ -47,11 +47,21 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 // 使用插件
-app.use(router)
 app.use(createPinia())
+app.use(router)
 app.use(ElementPlus, {
   locale: zhCn, // 配置中文语言包
 })
+
+// 初始化认证状态（必须在pinia和router之后）
+import { useAdminStore } from '@/stores/adminStore'
+const adminStore = useAdminStore()
+adminStore.initAuthState()
+
+// 如果本地有token但用户信息为空，获取用户信息
+if (localStorage.getItem('adminToken') && !adminStore.userInfo) {
+  adminStore.fetchUserInfo()
+}
 
 // Vue 全局异常处理器
 app.config.errorHandler = (err, _instance, info) => {

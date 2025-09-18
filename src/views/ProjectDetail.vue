@@ -40,7 +40,7 @@
                 background: transparent;
                 cursor: pointer;
               "
-              @click="goBackToList"
+              @click="router.back()"
               aria-label="返回项目列表"
             >
               <el-icon style="font-size: 16px"><ArrowLeft /></el-icon>
