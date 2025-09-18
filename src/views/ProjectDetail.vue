@@ -300,11 +300,6 @@
     return id ? String(id) : ''
   })
 
-  // 添加返回项目列表的方法
-  const goBackToList = () => {
-    router.push('/projects')
-  }
-
   // 响应式数据
   const isMobile = ref(false)
   const loading = ref(false)

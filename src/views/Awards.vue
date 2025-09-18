@@ -406,7 +406,7 @@
                   v-for="award in groupedAwards[year]['国家级']"
                   :key="award.id"
                   class="award-card cursor-pointer bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:translate-y-[-2px]"
-                  @click="goToProjectDetail(award.id)"
+                  @click="showAwardDetail(award)"
                 >
                   <!-- 竞赛信息头部 -->
                   <div class="flex items-start justify-between mb-4">
@@ -494,7 +494,7 @@
                   v-for="award in groupedAwards[year]['省级']"
                   :key="award.id"
                   class="award-card cursor-pointer bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:translate-y-[-2px]"
-                  @click="goToProjectDetail(award.id)"
+                  @click="showAwardDetail(award)"
                 >
                   <!-- 竞赛信息头部 -->
                   <div class="flex items-start justify-between mb-4">
@@ -581,7 +581,7 @@
                   v-for="award in groupedAwards[year]['校级']"
                   :key="award.id"
                   class="award-card cursor-pointer bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:translate-y-[-2px]"
-                  @click="goToProjectDetail(award.id)"
+                  @click="showAwardDetail(award)"
                 >
                   <!-- 竞赛信息头部 -->
                   <div class="flex items-start justify-between mb-4">
@@ -672,6 +672,86 @@
         </div>
       </div>
     </main>
+    
+    <!-- 奖项详情弹窗 -->
+    <el-dialog
+      v-model="showAwardDetailDialog"
+      :title="selectedAward?.competitionName || '奖项详情'"
+      width="90%"
+      :max-width="600"
+      :before-close="closeAwardDetailDialog"
+      class="award-detail-dialog"
+      :close-on-click-modal="false"
+    >
+      <div v-if="selectedAward" class="space-y-3 sm:space-y-4">
+        <!-- 竞赛信息 -->
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">竞赛信息</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div>
+              <label class="text-xs sm:text-sm text-gray-600">竞赛名称</label>
+              <p class="font-medium text-sm sm:text-base">{{ selectedAward.competitionName }}</p>
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-gray-600">竞赛级别</label>
+              <p class="font-medium">
+                <span :class="getAwardBadgeClass(selectedAward.competitionLevel)" class="px-2 py-1 rounded-full text-xs">
+                  {{ selectedAward.competitionLevel }}
+                </span>
+              </p>
+            </div>
+            <div v-if="selectedAward.competitionTrack">
+              <label class="text-xs sm:text-sm text-gray-600">赛道</label>
+              <p class="font-medium text-sm sm:text-base">{{ selectedAward.competitionTrack }}</p>
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-gray-600">获奖年份</label>
+              <p class="font-medium text-sm sm:text-base">{{ selectedAward.year }}年</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 奖项信息 -->
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">奖项信息</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div>
+              <label class="text-xs sm:text-sm text-gray-600">奖项级别</label>
+              <p class="font-medium">
+                <span :class="getAwardBadgeClass(selectedAward.awardLevel)" class="px-2 py-1 rounded-full text-xs">
+                  {{ selectedAward.awardLevel }}
+                </span>
+              </p>
+            </div>
+            <div>
+              <label class="text-xs sm:text-sm text-gray-600">获奖日期</label>
+              <p class="font-medium text-sm sm:text-base">{{ selectedAward.awardDate }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 获奖人员 -->
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">获奖人员</h3>
+          <div class="flex flex-wrap gap-1 sm:gap-2">
+            <span
+              v-for="(winner, index) in selectedAward.winners"
+              :key="index"
+              class="bg-blue-100 text-blue-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm"
+            >
+              {{ winner }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeAwardDetailDialog" size="small">关闭</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    
     <CommonFooter />
   </div>
 </template>
@@ -679,7 +759,6 @@
 <script setup lang="ts">
   import { ref, computed, onMounted, nextTick, watch } from 'vue'
   import CommonNavbar from '../components/CommonNavbar.vue'
-  import { useRouter } from 'vue-router'
   import { getAwards } from '../services/adminService'
   import CommonFooter from '../components/CommonFooter.vue'
 
@@ -722,7 +801,6 @@
   }
 
   // 响应式状态管理
-  const router = useRouter()
   const awards = ref<Award[]>([]) // 奖项数据
   const loading = ref(true) // 加载状态
   const error = ref<string | null>(null) // 错误信息
@@ -987,9 +1065,22 @@
     )
   })
 
-  // 跳转到项目详情页
-  const goToProjectDetail = (awardId: number) => {
-    router.push({ path: '/projectdetailtest', query: { awardId } })
+  // 当前选中的奖项（用于弹窗显示详情）
+  const selectedAward = ref<Award | null>(null)
+  const showAwardDetailDialog = ref(false)
+
+
+
+  // 显示奖项详情弹窗
+  const showAwardDetail = (award: Award) => {
+    selectedAward.value = award
+    showAwardDetailDialog.value = true
+  }
+
+  // 关闭奖项详情弹窗
+  const closeAwardDetailDialog = () => {
+    showAwardDetailDialog.value = false
+    selectedAward.value = null
   }
 
   // 页面加载时获取数据
@@ -1132,5 +1223,31 @@
   /* 奖项统计卡片优化 */
   .text-red-500 {
     color: #ef4444;
+  }
+
+  /* 弹窗移动端适配 */
+  @media (max-width: 640px) {
+    .award-detail-dialog .el-dialog {
+      margin: 10px;
+      border-radius: 8px;
+    }
+    
+    .award-detail-dialog .el-dialog__body {
+      padding: 15px;
+    }
+    
+    .award-detail-dialog .el-dialog__header {
+      padding: 15px 15px 10px;
+      margin-right: 0;
+    }
+    
+    .award-detail-dialog .el-dialog__title {
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    
+    .award-detail-dialog .el-dialog__footer {
+      padding: 10px 15px 15px;
+    }
   }
 </style>
