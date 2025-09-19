@@ -237,15 +237,9 @@
                       {{ moment.title }}
                     </h3>
                   </div>
-                  <p class="text-gray-600 mb-6 line-clamp-3">
+                  <p class="text-gray-600 mb-6 line-clamp-6">
                     {{ moment.description }}
                   </p>
-                  <button
-                    class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-                    @click="showDetailInfo(moment.title)"
-                  >
-                    查看详情
-                  </button>
                 </div>
               </div>
             </el-carousel-item>
@@ -637,7 +631,6 @@
   import CommonFooter from '@/components/CommonFooter.vue'
   import { ArrowDown } from '@element-plus/icons-vue'
   import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
-  import { showInfo } from '@/utils/notification'
 
   // 添加 carouselRef 引用
   const carouselRef = ref()
@@ -660,34 +653,68 @@
   const highlightMoments = ref([
     {
       id: 1,
-      image: new URL('@/assets/images/hightligh/第九届CCPC铜奖颁奖.webp', import.meta.url).href,
+      image: new URL('@/assets/images/hightligh/校圈主页.jpg', import.meta.url)
+        .href,
+      alt: '校圈（微信小程序）',
+      title: '校圈（微信小程序）',
+      description:
+        '校圈是一个基于微信小程序的大学生社交平台，为学生提供了一个交流、分享和发现的平台。',
+    },
+    {
+      id: 2,
+      image: new URL('@/assets/images/hightligh/活集贸.gif', import.meta.url)
+        .href,
+      alt: '招新网',
+      title: '招新网',
+      description: '没错孩子，就是这个网站。',
+    },
+    {
+      id: 3,
+      image: new URL(
+        '@/assets/images/hightligh/第九届CCPC铜奖颁奖.webp',
+        import.meta.url
+      ).href,
       alt: '第九届CCPC铜奖颁奖',
       title: '第九届CCPC铜奖颁奖',
       description:
         '我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。',
     },
     {
-      id: 2,
-      image: new URL('@/assets/images/hightligh/十五届蓝桥杯国赛.jpg', import.meta.url).href,
-      alt: '十五届蓝桥杯国赛',
-      title: '十五届蓝桥杯国赛',
-      description:
-        '参加第十五届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。',
+      id: 4,
+      image: new URL('@/assets/images/hightligh/智慧药箱.webp', import.meta.url)
+        .href,
+      alt: '智慧药箱',
+      title: '智慧药箱',
+      description: '挑战杯校赛一等奖作品',
     },
     {
-      id: 3,
-      image: new URL('@/assets/images/hightligh/挑战杯路演 (2).webp', import.meta.url).href,
+      id: 5,
+      image: new URL('@/assets/images/hightligh/ccpc.jpg', import.meta.url)
+        .href,
+      alt: '河北省大学生程序设计竞赛',
+      title: '河北省大学生程序设计竞赛',
+      description: '参加中国大学生程序设计竞赛河北省赛，',
+    },
+    {
+      id: 6,
+      image: new URL(
+        '@/assets/images/hightligh/挑战杯路演.webp',
+        import.meta.url
+      ).href,
       alt: '挑战杯路演',
       title: '挑战杯路演',
       description: '参加2025年挑战杯河北省大学生课外学术科技作品校内赛',
     },
     {
-      id: 4,
-      image: new URL('@/assets/images/hightligh/收音机焊接 (1).webp', import.meta.url).href,
-      alt: '收音机焊接',
-      title: '收音机焊接实践',
+      id: 7,
+      image: new URL(
+        '@/assets/images/hightligh/十六届蓝桥杯国赛.webp',
+        import.meta.url
+      ).href,
+      alt: '十六届蓝桥杯国赛',
+      title: '十六届蓝桥杯国赛',
       description:
-        '社团成员动手实践收音机焊接项目，提升电子实践能力和工程素养。',
+        '参加十六届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。',
     },
   ])
 
@@ -716,16 +743,6 @@
   // 跳转到留言板的方法
   const toMessageBoard = () => {
     router.push('/messages')
-  }
-
-  // 跳转到项目详情页
-  // const goToProjectDetail = (projectId: number) => {
-  //   router.push({ path: '/projectdetail', query: { id: projectId } })
-  // }
-
-  // 查看详情功能
-  const showDetailInfo = (title: string) => {
-    showInfo(`${title}的详情功能还在开发中，敬请期待！`)
   }
 </script>
 

@@ -3,6 +3,9 @@
     ref="playerRef"
     class="music-player-container fixed z-50"
     :class="{ 'is-dragging': isDragging }"
+    :style="playerPosition"
+    @mousedown="startDrag"
+    @touchstart="startDrag"
   >
     <!-- 首次进入"点我"提示 -->
     <div v-if="showClickTip" class="click-tip">点我</div>
@@ -18,6 +21,7 @@
         src="@/assets/images/manbo.webp"
         alt="音乐控制背景"
         class="background-image absolute inset-0 w-full h-full rounded-full object-cover"
+        draggable="false"
       />
     </button>
 
@@ -26,7 +30,7 @@
       <!-- 播放/暂停按钮 -->
       <button
         class="sub-button"
-        :style="getButtonPosition().playPause"
+        :style="buttonPositions.playPause"
         @click.stop="togglePlay"
         aria-label="播放/暂停"
       >
@@ -37,8 +41,8 @@
       <!-- 音量按钮 -->
       <button
         class="sub-button"
-        :style="getButtonPosition().volume"
-        @click.stop="toggleVolumeControl"
+        :style="buttonPositions.volume"
+        @click.stop="showVolumeControl = true"
         aria-label="音量控制"
       >
         <font-awesome-icon :icon="['fas', 'volume-up']" class="text-white text-lg" />
@@ -47,7 +51,7 @@
       <!-- 拖拽按钮 -->
       <button
         class="sub-button"
-        :style="getButtonPosition().move"
+        :style="buttonPositions.move"
         @mousedown="startDrag"
         @touchstart="startDrag"
         aria-label="移动播放器"
@@ -57,22 +61,35 @@
     </div>
 
     <!-- 音量控制滑块 -->
-    <div
-      ref="volumeRef"
-      v-if="showVolumeControl"
-      class="volume-control bg-white rounded-lg shadow-lg z-20"
+    <el-popover
+      v-model:visible="showVolumeControl"
+      trigger="click"
+      placement="right"
+      :width="200"
+      popper-class="volume-popover"
     >
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.1"
-        v-model="volume"
-        @input="changeVolume(Number(($event.target as HTMLInputElement).value))"
-        class="w-32"
-        aria-label="音乐音量"
-      />
-    </div>
+      <template #reference>
+        <button
+          class="sub-button"
+          :style="buttonPositions.volume"
+          @click.stop="() => {}"
+          aria-label="音量控制"
+        >
+          <font-awesome-icon :icon="['fas', 'volume-up']" class="text-white text-lg" />
+        </button>
+      </template>
+      <div class="volume-control-content">
+        <span class="text-sm text-gray-600 mb-2 block">音量控制</span>
+        <el-slider
+          v-model="volumePercent"
+          :min="0"
+          :max="100"
+          :step="1"
+          @input="changeVolume"
+          size="small"
+        />
+      </div>
+    </el-popover>
 
     <!-- 音频元素 -->
     <audio
@@ -88,20 +105,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed, reactive } from 'vue'
+import type { CSSProperties } from 'vue'
 
 // 核心状态定义
 const audioRef = ref<HTMLAudioElement | null>(null)
 const isPlaying = ref(false)
 const volume = ref(0.3)
 const playerRef = ref<HTMLDivElement | null>(null)
-const volumeRef = ref<HTMLDivElement | null>(null)
 const navbarHeight = ref(0)
 const isExpanded = ref(false)
 const isDragging = ref(false)
 const showVolumeControl = ref(false)
 const hasAttemptedAutoPlay = ref(false)
 const showClickTip = ref(true) // 首次进入"点我"提示
+
+// 播放器位置状态（使用Vue响应式替代直接DOM操作）
+const playerPosition = reactive({
+  left: '10px',
+  top: '110px',
+  right: 'auto',
+  bottom: 'auto'
+})
+
+// 子按钮位置状态
+const buttonPositions = reactive({
+  playPause: {} as CSSProperties,
+  volume: {} as CSSProperties,
+  move: {} as CSSProperties
+})
+
+// 音量百分比计算属性
+const volumePercent = computed({
+  get: () => Math.round(volume.value * 100),
+  set: (value: number) => {
+    volume.value = value / 100
+    if (audioRef.value) audioRef.value.volume = volume.value
+    storePlayState({ isPlaying: isPlaying.value, volume: volume.value })
+  }
+})
 
 // 从localStorage获取存储的播放状态
 const getStoredPlayState = () => {
@@ -187,21 +229,12 @@ const nextSong = () => {
   playSong(newIndex)
 }
 
-// 音量控制
-const changeVolume = (newVolume: number) => {
-  volume.value = newVolume
-  if (audioRef.value) audioRef.value.volume = newVolume
-  // 存储当前音量状态
+// 音量控制（使用Element Plus滑块）
+const changeVolume = (value: number | number[]) => {
+  const volumeValue = Array.isArray(value) ? value[0] : value
+  volume.value = volumeValue / 100
+  if (audioRef.value) audioRef.value.volume = volume.value
   storePlayState({ isPlaying: isPlaying.value, volume: volume.value })
-}
-
-// 切换音量控制显示
-const toggleVolumeControl = (e?: MouseEvent) => {
-  if (e) e.stopPropagation()
-  showVolumeControl.value = !showVolumeControl.value
-  if (showVolumeControl.value) {
-    nextTick(() => adjustVolumePosition())
-  }
 }
 
 // 切换按钮展开/收起（隐藏"点我"提示）
@@ -210,9 +243,8 @@ const toggleExpand = () => {
   showClickTip.value = false // 点击后隐藏提示
 }
 
-// 开始拖拽（解决移动端滑动问题）
+// 开始拖拽（使用Vue响应式系统替代直接DOM操作）
 const startDrag = (e: MouseEvent | TouchEvent) => {
-  if (!playerRef.value) return
   e.stopPropagation()
   isDragging.value = true
 
@@ -220,16 +252,18 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
   const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
   const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 
-  // 获取元素位置
-  const rect = playerRef.value.getBoundingClientRect()
+  // 获取当前位置（从响应式状态读取）
+  const currentLeft = parseInt(playerPosition.left) || 10
+  const currentTop = parseInt(playerPosition.top) || 110
+
   // 计算偏移量
-  const offsetX = clientX - rect.left
-  const offsetY = clientY - rect.top
+  const offsetX = clientX - currentLeft
+  const offsetY = clientY - currentTop
 
   // 处理拖拽移动
   const handleMove = (moveEvent: Event) => {
     const e = moveEvent as MouseEvent | TouchEvent
-    if (!isDragging.value || !playerRef.value) return
+    if (!isDragging.value) return
 
     // 阻止移动端屏幕滚动
     if ('touches' in e) e.preventDefault()
@@ -239,8 +273,8 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
 
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
-    const playerWidth = playerRef.value.offsetWidth || 120
-    const playerHeight = playerRef.value.offsetHeight || 120
+    const playerWidth = 80 // 主按钮宽度
+    const playerHeight = 80 // 主按钮高度
 
     // 计算新位置（边界限制：顶部间距适配导航栏）
     let newX = moveClientX - offsetX
@@ -248,15 +282,15 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
 
     newX = Math.max(10, Math.min(newX, windowWidth - playerWidth - 10))
     newY = Math.max(
-      navbarHeight.value + 50, // 顶部间距，避免遮挡导航栏
+      navbarHeight.value + 50,
       Math.min(newY, windowHeight - playerHeight - 30)
     )
 
-    // 设置新位置
-    playerRef.value.style.left = `${newX}px`
-    playerRef.value.style.top = `${newY}px`
-    playerRef.value.style.bottom = 'auto'
-    playerRef.value.style.right = 'auto'
+    // 使用Vue响应式系统更新位置
+    playerPosition.left = `${newX}px`
+    playerPosition.top = `${newY}px`
+    playerPosition.bottom = 'auto'
+    playerPosition.right = 'auto'
   }
 
   // 结束拖拽
@@ -277,66 +311,7 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
   document.addEventListener('touchend', handleEnd as EventListener)
 }
 
-// 音量控制条位置自适应
-const adjustVolumePosition = () => {
-  if (!playerRef.value || !volumeRef.value || !showVolumeControl.value) return
 
-  const playerEl = playerRef.value
-  const volumeEl = volumeRef.value
-  const windowWidth = window.innerWidth
-  const windowHeight = window.innerHeight
-
-  const playerRect = playerEl.getBoundingClientRect()
-  const volumeWidth = volumeEl.offsetWidth || 128
-  const volumeHeight = volumeEl.offsetHeight || 40
-
-  // 计算可用空间
-  const rightSpace = windowWidth - playerRect.right - 10
-  const bottomSpace = windowHeight - playerRect.bottom - 10
-  const leftSpace = playerRect.left - 10
-  const topSpace = playerRect.top - navbarHeight.value - 10
-
-  let newTop = 0
-  let newLeft = 0
-
-  // 优先右侧显示
-  if (rightSpace >= volumeWidth) {
-    newLeft = playerRect.right + 10
-    newTop = playerRect.top + playerRect.height / 2 - volumeHeight / 2
-  }
-  // 右侧不够则下方显示
-  else if (bottomSpace >= volumeHeight) {
-    newLeft = playerRect.left + playerRect.width / 2 - volumeWidth / 2
-    newTop = playerRect.bottom + 10
-  }
-  // 下方不够则左侧显示
-  else if (leftSpace >= volumeWidth) {
-    newLeft = playerRect.left - volumeWidth - 10
-    newTop = playerRect.top + playerRect.height / 2 - volumeHeight / 2
-  }
-  // 左侧不够则上方显示（增加顶部间距检查）
-  else if (topSpace >= volumeHeight + 10) {
-    newLeft = playerRect.left + playerRect.width / 2 - volumeWidth / 2
-    newTop = playerRect.top - volumeHeight - 10
-  }
-  // 兜底：屏幕中心附近
-  else {
-    newLeft = windowWidth / 2 - volumeWidth / 2
-    newTop = windowHeight / 2 - volumeHeight / 2
-  }
-
-  // 最终边界检查
-  newLeft = Math.max(10, Math.min(newLeft, windowWidth - volumeWidth - 10))
-  newTop = Math.max(
-    navbarHeight.value + 10,
-    Math.min(newTop, windowHeight - volumeHeight - 10)
-  )
-
-  // 应用位置
-  volumeEl.style.position = 'fixed'
-  volumeEl.style.top = `${newTop}px`
-  volumeEl.style.left = `${newLeft}px`
-}
 
 // 获取导航栏高度
 const getNavbarHeight = () => {
@@ -346,68 +321,56 @@ const getNavbarHeight = () => {
     : 60
 }
 
-// 子按钮位置计算：解决"离大按钮远"和"小按钮间距紧"
-const getButtonPosition = () => {
-  if (!playerRef.value) return {}
-
-  const playerEl = playerRef.value
-  const playerRect = playerEl.getBoundingClientRect()
+// 更新子按钮位置（使用Vue响应式系统）
+const updateButtonPositions = () => {
   const windowWidth = window.innerWidth
+  const mainBtnCenterX = 40 // 主按钮中心X坐标（相对于容器）
+  const mainBtnCenterY = 40 // 主按钮中心Y坐标（相对于容器）
+  const mainBtnRadius = 40 // 主按钮半径
+  const subBtnRadius = 20 // 子按钮半径
+  const arcRadius = mainBtnRadius + subBtnRadius + 35 // 弧形半径
 
-  // 基础参数调整：
-  // 1. subBtnRadius保持20px（按钮尺寸不变）
-  // 2. arcRadius增量从60→35（缩小大按钮与小按钮的距离）
-  const mainBtnCenterX = playerRect.left + playerRect.width / 2
-  const mainBtnCenterY = playerRect.top + playerRect.height / 2
-  const mainBtnRadius = playerRect.width / 2
-  const subBtnRadius = 20
-  const arcRadius = mainBtnRadius + subBtnRadius + 35 // 核心：减小增量，拉近大-小按钮距离
-
-  // 1. 判断弹出方向（左/右）
-  const leftSpace = mainBtnCenterX - 10
-  const rightSpace = windowWidth - mainBtnCenterX - 10
+  // 判断弹出方向（基于当前播放器位置）
+  const currentLeft = parseInt(playerPosition.left) || 10
+  const mainBtnScreenX = currentLeft + mainBtnCenterX
+  const leftSpace = mainBtnScreenX - 10
+  const rightSpace = windowWidth - mainBtnScreenX - 10
   const isRightArc = leftSpace < rightSpace
 
-  // 2. 角度跨度调整：从60°→120°（增大跨度，让小按钮分布更开）
-  // 向右弹出：90°→-30°（总跨度120°），向左弹出：90°→210°（对称120°）
-  const startAngle = isRightArc
-    ? Math.PI / 2 // 向右弹出-起始角度（90°，更靠上）
-    : Math.PI / 2 // 向左弹出-起始角度（90°，与右侧对称）
-  const endAngle = isRightArc
-    ? -Math.PI / 6 // 向右弹出-结束角度（-30°，更靠下）
-    : (Math.PI * 7) / 6 // 向左弹出-结束角度（210°，与右侧对称）
+  // 角度设置
+  const startAngle = Math.PI / 2
+  const endAngle = isRightArc ? -Math.PI / 6 : (Math.PI * 7) / 6
 
-  // 3. 固定按钮顺序：move→prev→playPause→next→volume
+  // 按钮配置
   const buttons = [
-    { key: 'move', order: 0 }, // 最上方（拖拽按钮）
-    { key: 'prev', order: 1 }, // 上一首（move下方）
-    { key: 'playPause', order: 2 }, // 播放/暂停（中间）
-    { key: 'next', order: 3 }, // 下一首（playPause下方）
-    { key: 'volume', order: 4 }, // 最下方（音量按钮）
+    { key: 'move', order: 0 },
+    { key: 'playPause', order: 2 }, // 注意：跳过了prev和next，因为我们只有3个按钮
+    { key: 'volume', order: 4 }
   ]
-  const btnCount = buttons.length
-  const angleStep = (endAngle - startAngle) / (btnCount - 1) // 角度间隔增大，小按钮间距变宽
+  
+  const btnCount = 5 // 总按钮数（包括未显示的）
+  const angleStep = (endAngle - startAngle) / (btnCount - 1)
 
-  const positions: Record<string, { left: string; top: string }> = {}
+  // 清空位置
+  Object.keys(buttonPositions).forEach(key => {
+    buttonPositions[key as keyof typeof buttonPositions] = {}
+  })
 
+  // 计算每个按钮的位置
   buttons.forEach(btn => {
     const currentAngle = startAngle + angleStep * btn.order
-
-    // 计算子按钮坐标（跨度增大后，按钮间距离自动拉开）
     const targetX = mainBtnCenterX + Math.cos(currentAngle) * arcRadius
     const targetY = mainBtnCenterY + Math.sin(currentAngle) * arcRadius
 
     // 转换为相对位置
-    const relLeft = targetX - playerRect.left - subBtnRadius
-    const relTop = targetY - playerRect.top - subBtnRadius
+    const relLeft = targetX - subBtnRadius
+    const relTop = targetY - subBtnRadius
 
-    positions[btn.key] = {
+    buttonPositions[btn.key as keyof typeof buttonPositions] = {
       left: `${relLeft}px`,
-      top: `${relTop}px`,
+      top: `${relTop}px`
     }
   })
-
-  return positions
 }
 
 // 用户首次交互自动播放
@@ -442,16 +405,12 @@ const handleDocumentClick = (e: MouseEvent) => {
   }
 }
 
-// 设置播放器初始位置（移动端友好：左上偏移，避免遮挡核心内容）
+// 设置播放器初始位置（使用Vue响应式系统）
 const setInitialPlayerPosition = () => {
-  if (!playerRef.value) return
-
-  const playerEl = playerRef.value
-  const initialLeft = 10
-  const initialTop = navbarHeight.value + 50 // 顶部间距，避免遮挡导航栏
-
-  playerEl.style.left = `${initialLeft}px`
-  playerEl.style.top = `${initialTop}px`
+  playerPosition.left = '10px'
+  playerPosition.top = `${navbarHeight.value + 50}px`
+  playerPosition.bottom = 'auto'
+  playerPosition.right = 'auto'
 }
 
 // 生命周期
@@ -462,14 +421,15 @@ onMounted(() => {
   volume.value = storedState.volume
   
   getNavbarHeight()
-  nextTick(() => setInitialPlayerPosition())
+  nextTick(() => {
+    setInitialPlayerPosition()
+    updateButtonPositions() // 初始化按钮位置
+  })
 
   window.addEventListener('resize', () => {
     getNavbarHeight()
     setInitialPlayerPosition()
-    if (showVolumeControl.value) {
-      nextTick(() => adjustVolumePosition())
-    }
+    updateButtonPositions() // 窗口大小改变时重新计算按钮位置
   })
 
   document.addEventListener('click', handleUserInteraction, {
@@ -632,69 +592,5 @@ onUnmounted(() => {
     padding: 3px 8px;
     left: calc(100% + 8px);
   }
-}
-
-/* 音量控制滑块样式 */
-.volume-control {
-  position: fixed;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  padding: 10px 12px;
-  min-width: 128px;
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* 滑块样式优化 */
-.volume-control input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 3px;
-  outline: none;
-  margin: 8px 0;
-}
-
-.volume-control input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #646cff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.volume-control input[type='range']::-webkit-slider-thumb:hover {
-  background: #535bf2;
-  transform: scale(1.1);
-}
-
-.volume-control input[type='range']::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  background: #646cff;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.volume-control input[type='range']::-moz-range-thumb:hover {
-  background: #535bf2;
-  transform: scale(1.1);
 }
 </style>

@@ -79,7 +79,7 @@
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
                 <span class="text-sm font-bold">24</span>
               </div>
-              <div class="w-0.5 h-2400 bg-gray-200 mt-2"></div>
+              <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
             <!-- 桌面端时间线 -->
             <div class="hidden md:flex items-center w-full">
@@ -121,7 +121,7 @@
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
                 <el-icon class="text-sm"><CircleCheck /></el-icon>
               </div>
-              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+              <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
             <!-- 桌面端时间线 -->
             <div class="hidden md:flex items-center w-full">
@@ -133,7 +133,7 @@
                 <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
                   <el-icon><CircleCheck /></el-icon>
                 </div>
-                <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+                <div class="w-0.5 h-28 bg-gray-200 mt-2"></div>
               </div>
               <div class="w-1/2 pl-10">
                 <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4">
@@ -163,7 +163,7 @@
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
                 <font-awesome-icon :icon="['fas', 'cogs']" class="text-sm" />
               </div>
-              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+              <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
             <!-- 桌面端时间线 -->
             <div class="hidden md:flex items-center w-full">
@@ -205,7 +205,7 @@
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
                 <font-awesome-icon :icon="['fas', 'globe']" class="text-sm" />
               </div>
-              <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
+              <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
             <!-- 桌面端时间线 -->
             <div class="hidden md:flex items-center w-full">

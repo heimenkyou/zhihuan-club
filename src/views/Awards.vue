@@ -34,225 +34,60 @@
 
         <!-- 竞赛级别筛选 -->
         <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >竞赛级别</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-2">竞赛级别</label>
           <div class="flex flex-wrap gap-2">
             <button
+              v-for="option in competitionLevelOptions"
+              :key="option.value"
               :class="[
                 'px-4 py-2 rounded-full text-sm transition-all',
-                filter.competitionLevel === ''
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                filter.competitionLevel === option.value
+                  ? `${option.colorClass} text-white`
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900',
               ]"
-              @click="filter.competitionLevel = ''"
+              @click="filter.competitionLevel = option.value"
             >
-              全部
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.competitionLevel === '国家级'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.competitionLevel = '国家级'"
-            >
-              国家级
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.competitionLevel === '省级'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.competitionLevel = '省级'"
-            >
-              省级
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.competitionLevel === '校级'
-                  ? 'bg-blue-400 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.competitionLevel = '校级'"
-            >
-              校级
+              {{ option.label }}
             </button>
           </div>
         </div>
 
         <!-- 奖项级别筛选 -->
         <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >奖项级别</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-2">奖项级别</label>
           <div class="flex flex-wrap gap-2">
             <button
+              v-for="option in awardLevelOptions"
+              :key="option.value"
               :class="[
                 'px-4 py-2 rounded-full text-sm transition-all',
-                filter.awardLevel === ''
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                filter.awardLevel === option.value
+                  ? `${option.colorClass} text-white`
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900',
               ]"
-              @click="filter.awardLevel = ''"
+              @click="filter.awardLevel = option.value"
             >
-              全部
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.awardLevel === '一等奖'
-                  ? 'bg-yellow-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '一等奖'"
-            >
-              一等奖(金奖)
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.awardLevel === '二等奖'
-                  ? 'bg-gray-400 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '二等奖'"
-            >
-              二等奖(银奖)
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.awardLevel === '三等奖'
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '三等奖'"
-            >
-              三等奖(铜奖)
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.awardLevel === '优秀奖'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '优秀奖'"
-            >
-              优秀奖
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.awardLevel === '其他'
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '其他'"
-            >
-              其他
+              {{ option.label }}
             </button>
           </div>
         </div>
 
         <!-- 竞赛年份筛选 -->
         <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >竞赛年份</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-2">竞赛年份</label>
           <div class="flex flex-wrap gap-2">
             <button
+              v-for="option in yearOptions"
+              :key="option.value"
               :class="[
                 'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === ''
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                filter.year === option.value
+                  ? `${option.colorClass} text-white`
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900',
               ]"
-              @click="filter.year = ''"
+              @click="filter.year = option.value"
             >
-              全部
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2025'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2025'"
-            >
-              2025年
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2024'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2024'"
-            >
-              2024年
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2023'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2023'"
-            >
-              2023年
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2022'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2022'"
-            >
-              2022年
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2021'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2021'"
-            >
-              2021年
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2020'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2020'"
-            >
-              2020年
-            </button>
-            <button
-              :class="[
-                'px-4 py-2 rounded-full text-sm transition-all',
-                filter.year === '2019'
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.year = '2019'"
-            >
-              2019年
+              {{ option.label }}
             </button>
           </div>
         </div>
@@ -273,7 +108,7 @@
           </select>
         </div>
 
-        <!-- 新增：赛道筛选（当选择了竞赛项目且该项目有赛道时显示） -->
+        <!-- 赛道筛选（当选择了竞赛项目且该项目有赛道时显示） -->
         <div
           class="mb-3"
           v-if="filter.competitionName && currentCompetitionTracks.length > 0"
@@ -762,6 +597,13 @@
   import { getAwards } from '../services/adminService'
   import CommonFooter from '../components/CommonFooter.vue'
 
+  // 筛选组件定义
+  interface FilterOption {
+    label: string
+    value: string
+    colorClass: string
+  }
+
   // 定义奖项数据结构
   interface Award {
     id: number
@@ -832,6 +674,34 @@
     })
     return Array.from(names).sort()
   })
+
+  // 筛选配置数据
+  const competitionLevelOptions = computed<FilterOption[]>(() => [
+    { label: '全部', value: '', colorClass: 'bg-primary' },
+    { label: '国家级', value: '国家级', colorClass: 'bg-blue-600' },
+    { label: '省级', value: '省级', colorClass: 'bg-blue-500' },
+    { label: '校级', value: '校级', colorClass: 'bg-blue-400' }
+  ])
+
+  const awardLevelOptions = computed<FilterOption[]>(() => [
+    { label: '全部', value: '', colorClass: 'bg-primary' },
+    { label: '一等奖(金奖)', value: '一等奖', colorClass: 'bg-yellow-500' },
+    { label: '二等奖(银奖)', value: '二等奖', colorClass: 'bg-gray-400' },
+    { label: '三等奖(铜奖)', value: '三等奖', colorClass: 'bg-orange-600' },
+    { label: '优秀奖', value: '优秀奖', colorClass: 'bg-green-500' },
+    { label: '其他', value: '其他', colorClass: 'bg-purple-500' }
+  ])
+
+  const yearOptions = computed<FilterOption[]>(() => [
+    { label: '全部', value: '', colorClass: 'bg-primary' },
+    { label: '2025年', value: '2025', colorClass: 'bg-indigo-500' },
+    { label: '2024年', value: '2024', colorClass: 'bg-indigo-500' },
+    { label: '2023年', value: '2023', colorClass: 'bg-indigo-500' },
+    { label: '2022年', value: '2022', colorClass: 'bg-indigo-500' },
+    { label: '2021年', value: '2021', colorClass: 'bg-indigo-500' },
+    { label: '2020年', value: '2020', colorClass: 'bg-indigo-500' },
+    { label: '2019年', value: '2019', colorClass: 'bg-indigo-500' }
+  ])
 
   // 修改 currentCompetitionTracks 计算属性，将没有赛道的项目归为"尚未区分赛道"
   const currentCompetitionTracks = computed(() => {

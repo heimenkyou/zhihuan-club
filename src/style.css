@@ -18,23 +18,6 @@ a {
   text-decoration: none;
 }
 
-/* 按钮样式重置 */
-button {
-  font-family: inherit;
-  border: none;
-  background: none;
-  cursor: pointer;
-  outline: none;
-}
-
-/* 输入框样式重置 */
-input,
-textarea {
-  font-family: inherit;
-  border: none;
-  outline: none;
-}
-
 /* 列表样式重置 */
 ul,
 ol {
@@ -115,7 +98,6 @@ p {
   opacity: 0;
 }
 
-
 /* 添加响应式字体大小设置 */
 @media (max-width: 768px) {
   html {
@@ -133,20 +115,20 @@ p {
 @media (max-width: 768px) {
   .card,
   .bg-white.rounded-xl {
-    padding: 1.5rem ;
-    margin-bottom: 1.5rem ;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 }
 
 /* 移动端标题调整 */
 @media (max-width: 768px) {
   h1 {
-    font-size: 1.8rem ;
+    font-size: 1.8rem;
   }
   h2 {
-    font-size: 1.5rem ;
+    font-size: 1.5rem;
   }
   h3 {
-    font-size: 1.3rem ;
+    font-size: 1.3rem;
   }
 }
