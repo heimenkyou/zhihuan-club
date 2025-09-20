@@ -214,7 +214,7 @@
             autoplay
             indicator-position="none"
           >
-            <!-- 使用v-for循环渲染高光时刻 -->
+            <!-- 渲染高光时刻卡片 -->
             <el-carousel-item
               v-for="moment in highlightMoments"
               :key="moment.id"

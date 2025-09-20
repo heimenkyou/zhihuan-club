@@ -113,10 +113,14 @@
                   class="carousel-item"
                 >
                   <div class="carousel-image-wrap">
-                    <img
+                    <el-image
                       :src="item.url"
                       :alt="item.title || '项目图片'"
-                      class="carousel-image"
+                      class="carousel-image cursor-pointer"
+                      :preview-src-list="previewImageList"
+                      :initial-index="projectDetail.mediaResources.findIndex(resource => resource.id === item.id)"
+                      :preview-teleported="true"
+                      fit="cover"
                       loading="lazy"
                     />
                     <div class="carousel-caption">
@@ -288,6 +292,7 @@
     ElTimeline,
     ElTimelineItem,
     ElCard,
+    ElImage,
   } from 'element-plus'
   import { getProjectDetail } from '../services/projectService'
   import type { ProjectDetail as ProjectDetailType } from '../services/projectService'
@@ -310,6 +315,11 @@
   const tagTypes = ref<
     Array<'primary' | 'success' | 'warning' | 'info' | 'danger'>
   >(['primary', 'info', 'success', 'warning', 'danger', 'primary'])
+
+  // 获取预览图片列表
+  const previewImageList = computed(() => {
+    return projectDetail.value?.mediaResources?.map(resource => resource.url) || []
+  })
 
   // 轮播图响应式处理
   const handleCarouselResize = () => {
