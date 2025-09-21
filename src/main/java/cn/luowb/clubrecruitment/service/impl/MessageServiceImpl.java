@@ -2,6 +2,7 @@ package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.luowb.clubrecruitment.common.context.IPContext;
+import cn.luowb.clubrecruitment.common.context.UserContext;
 import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
@@ -56,6 +57,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
     @Override
     public PageData<MessagePageRespDTO> getMessageList(PageReqDTO requestParam) {
         String ip = IPContext.getIp();
+        // 检查是否是管理员（普通管理员或超级管理员），管理员可以删除所有留言
+        boolean isAdmin = UserContext.getUser() != null &&
+                ("normal".equals(UserContext.getUser().getRole()) || "super".equals(UserContext.getUser().getRole()));
+
         Page<MessageDO> page = new Page<>(requestParam.getCurrent(), requestParam.getSize());
         // 时间倒序排序
         page = this.page(page, new LambdaQueryWrapper<MessageDO>().orderByDesc(MessageDO::getCreateTime));
@@ -63,7 +68,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         return PageData.of(page, each -> {
             MessagePageRespDTO respDTO = BeanUtil.toBean(each, MessagePageRespDTO.class);
             respDTO.setLiked(this.hasLiked(each.getId())); // 判断当前用户是否已点赞
-            respDTO.setCanDelete(each.getIpAddress().equals(ip)); // 判断当前用户是否可删除此留言
+            // 管理员可以删除所有留言，普通用户只能删除自己IP的留言
+            respDTO.setCanDelete(isAdmin || each.getIpAddress().equals(ip));
             return respDTO;
         });
     }
@@ -96,10 +102,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         if (messageDO == null) {
             throw new ClientException("留言不存在");
         }
-        String ip = IPContext.getIp();
-        if (!messageDO.getIpAddress().equals(ip)) {
-            throw new ClientException("只有留言对应的 IP 才能删除留言");
+
+        // 检查是否是管理员（普通管理员或超级管理员），管理员可以直接删除
+        boolean isAdmin = UserContext.getUser() != null &&
+                ("normal".equals(UserContext.getUser().getRole()) || "super".equals(UserContext.getUser().getRole()));
+
+        if (!isAdmin) {
+            // 非管理员需要检查IP是否匹配
+            String ip = IPContext.getIp();
+            if (!messageDO.getIpAddress().equals(ip)) {
+                throw new ClientException("只有留言对应的 IP 才能删除留言");
+            }
         }
+
         if (!this.removeById(id)) {
             throw new ServiceException("删除留言失败");
         }
@@ -112,7 +127,3 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         return Boolean.TRUE.equals(redisTemplate.hasKey(redisKey));
     }
 }
-
-
-
-

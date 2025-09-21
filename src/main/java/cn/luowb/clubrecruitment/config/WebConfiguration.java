@@ -21,7 +21,8 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(ipInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns("/**")
+                .order(0); // IP拦截器最先执行，设置为最高优先级
     }
 
     @Component
