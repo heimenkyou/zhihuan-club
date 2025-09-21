@@ -112,16 +112,15 @@
                   :key="item.id"
                   class="carousel-item"
                 >
-                  <div class="carousel-image-wrap">
+                  <div class="carousel-image-wrap bg-gray-100">
                     <el-image
                       :src="item.url"
                       :alt="item.title || '项目图片'"
-                      class="carousel-image cursor-pointer"
+                      class="carousel-image cursor-zoom-in"
                       :preview-src-list="previewImageList"
                       :initial-index="projectDetail.mediaResources.findIndex(resource => resource.id === item.id)"
                       :preview-teleported="true"
                       fit="cover"
-                      loading="lazy"
                     />
                     <div class="carousel-caption">
                       <h3 class="caption-title">
@@ -453,7 +452,6 @@
     padding-bottom: $spacing-lg;
   }
 
-  // 加载状态样式
   .loading-container,
   .error-container {
     display: flex;
@@ -510,65 +508,20 @@
     }
   }
 
-  // 顶部标题区（导航栏）：核心修复——降低高度+增加底部间距
+  // 顶部标题区
   .top-header {
     background-color: #fff;
     box-shadow: $shadow-sm;
-    // 修复高度过高：PC端减小上下内边距，手机端进一步减小
-    padding: $spacing-md 0; // PC端：24px上下
-    margin-bottom: $spacing-md; // 修复与下方间距：增加底部margin 24px
+    padding: $spacing-md 0;
+    margin-bottom: $spacing-md;
 
-    // 返回按钮容器样式
     .back-to-list-container {
       margin-bottom: $spacing-md;
       text-align: left;
     }
 
-    // 返回按钮样式
-    .back-to-list-btn {
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-      padding: $spacing-xs $spacing-sm;
-      background-color: transparent;
-      border: 1px solid $color-neutral-200;
-      border-radius: $radius-md;
-      color: $color-neutral-600;
-      font-size: $font-size-sm;
-      font-weight: $font-weight-medium;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background-color: $color-primary-light;
-        border-color: $color-primary;
-        color: $color-primary;
-        transform: translateX(-2px);
-      }
-
-      // 移动端优化
-      @media (max-width: 768px) {
-        padding: $spacing-xs $spacing-xs;
-        font-size: $font-size-xs;
-        .back-text {
-          display: none; // 在小屏幕上只显示图标
-        }
-      }
-    }
-
-    // 返回图标样式
-    .back-icon {
-      font-size: $font-size-base;
-    }
-
-    // 返回文本样式
-    .back-text {
-      white-space: nowrap;
-    }
-
-    // 手机端适配：进一步减小内边距和字体，避免占1/3屏幕
     @media (max-width: 768px) {
-      padding: $spacing-sm 0; // 手机端：16px上下
+      padding: $spacing-sm 0;
     }
 
     &__container {
@@ -576,19 +529,6 @@
       margin: 0 auto;
       padding: 0 $spacing-sm;
       text-align: center;
-    }
-
-    .main-title {
-      font-size: $font-size-xl;
-      font-weight: $font-weight-bold;
-      color: $color-neutral-900;
-      margin-bottom: $spacing-xs;
-      letter-spacing: -0.02em;
-
-      // 手机端：减小字体，避免撑开高度
-      @media (max-width: 480px) {
-        font-size: 1.5rem; // 从1.3rem调整为1.5rem，平衡可读性和高度
-      }
     }
 
     .top-meta {
@@ -629,7 +569,6 @@
       border-radius: $radius-full;
       font-weight: $font-weight-medium;
 
-      // 手机端：减小内边距，避免按钮过宽
       @media (max-width: 480px) {
         padding: 6px 12px;
         font-size: $font-size-xs;
@@ -639,10 +578,9 @@
     .team-members-text {
       line-height: 1.5;
 
-      // 手机端：强制换行，避免文字过长撑开高度
       @media (max-width: 480px) {
         white-space: pre-line;
-        font-size: $font-size-xs; // 从0.85rem减小到0.8rem
+        font-size: $font-size-xs;
       }
     }
   }
@@ -654,24 +592,12 @@
     padding: 0 $spacing-sm;
   }
 
-  // 5. 通用模块样式：给轮播图模块单独加顶部间距（双重保障）
+  // 通用模块样式
   .project-section {
     margin-bottom: $spacing-lg;
     animation: fadeIn 0.8s ease forwards;
     opacity: 0;
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    // 轮播图模块：额外增加顶部间距，确保与导航栏不拥挤
     &.carousel-section {
       margin-top: $spacing-sm;
     }
@@ -698,78 +624,78 @@
     }
   }
 
-  // 6. 轮播图核心样式 - 优化移动端显示
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // 轮播图核心样式
   .project-carousel {
     margin-top: $spacing-sm;
-    // 卡片式轮播：PC端样式保持不变
+
     &.el-carousel--card {
       .el-carousel__container {
-        // 修复内边距：保持一致的左右内边距
         padding: 0 $spacing-sm !important;
 
-        // 大屏PC端：适当调整内边距
         @media (min-width: 1200px) {
           padding: 0 $spacing-md !important;
         }
 
-        // 手机端：取消内边距，全屏显示
         @media (max-width: 768px) {
           padding: 0 !important;
         }
       }
 
-      // 轮播项宽度：优化为60%，确保更好的对称性
       .carousel-item {
-        width: 50% !important; // 从58%调整为60%，提高对称性
+        width: 50%;
         opacity: 0.7;
         transition: $transition-slow;
-        border-radius: $radius-sm !important;
-        overflow: hidden !important;
+        border-radius: $radius-sm;
+        overflow: hidden;
         box-shadow: $shadow-sm;
-        // 确保左右卡片对称
         margin: 0 auto;
 
-        // 激活态：优化缩放效果，确保居中对称
         &.is-active {
           opacity: 1;
-          transform: scale(1.02); // 从1.05调整为1.02，减小缩放比例
+          transform: scale(1.02);
           box-shadow: $shadow-md;
           z-index: 10;
-          // 确保激活卡片绝对居中
           position: relative;
-          left: 0 !important;
+          left: 0;
         }
 
-        // 手机端：恢复100%宽度，全屏显示
         @media (max-width: 768px) {
-          width: 100% !important;
-          opacity: 1 !important;
-          transform: none !important;
+          width: 100%;
+          opacity: 1;
+          transform: none;
         }
       }
     }
 
-    // 移动端轮播图特定样式（非卡片式）
     &.el-carousel:not(.el-carousel--card) {
       .el-carousel__container {
-        padding: 0 !important;
+        padding: 0;
       }
 
       .carousel-item {
-        width: 100% !important;
-        opacity: 1 !important;
-        border-radius: $radius-md !important;
-        overflow: hidden !important;
+        width: 100%;
+        opacity: 1;
+        border-radius: $radius-md;
+        overflow: hidden;
         box-shadow: $shadow-sm;
       }
 
-      // 确保非激活状态的轮播项完全隐藏
       .el-carousel__item--in-active {
-        display: none !important;
+        display: none;
       }
     }
 
-    // 轮播箭头：优化移动端箭头大小和位置
     .el-carousel__arrow {
       width: 40px;
       height: 40px;
@@ -777,13 +703,12 @@
       background-color: rgba(255, 255, 255, 0.9);
       color: $color-primary;
       box-shadow: $shadow-sm;
-      // 调整箭头位置，确保与卡片垂直居中对齐
-      top: 50% !important;
-      transform: translateY(-50%) !important;
+      top: 50%;
+      transform: translateY(-50%);
 
       &:hover {
         background-color: #fff;
-        transform: translateY(-50%) scale(1.1) !important;
+        transform: translateY(-50%) scale(1.1);
       }
 
       @media (max-width: 768px) {
@@ -794,7 +719,6 @@
     }
   }
 
-  // 图片容器：优化移动端图片显示
   .carousel-image-wrap {
     width: 100%;
     height: 100%;
@@ -802,7 +726,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    // 关键：为移动端设置固定的宽高比
+
     @media (max-width: 768px) {
       height: 100%;
       width: 100%;
@@ -811,14 +735,14 @@
     .carousel-image {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       transition: transform 0.8s ease;
-      // 确保图片大小固定，无论原始尺寸如何
+      background-color: #f3f4f6;
+
       @media (max-width: 768px) {
         width: 100%;
         height: 100%;
         min-height: 200px;
-        // 使用object-position确保图片重点内容显示
         object-position: center center;
       }
 
@@ -854,13 +778,10 @@
       overflow: hidden;
       text-overflow: ellipsis;
 
-      // 移动端优化：紧贴图片，减少高度
       @media (max-width: 768px) {
         padding: 6px 10px;
         font-size: $font-size-xs;
-        // 减少文字区域高度
         line-height: 1.4;
-        // 增加透明度，让文字更融入图片
         background: linear-gradient(
           to top,
           rgba(0, 0, 0, 0.7),
@@ -870,34 +791,31 @@
     }
   }
 
-  // 轮播指示器：优化移动端导航条样式
   .custom-indicator {
-    bottom: 8px !important; // 稍微上移，避免与文字重叠
-    z-index: 20 !important;
+    bottom: 8px;
+    z-index: 20;
 
-    // 移动端指示器细化
     @media (max-width: 768px) {
-      bottom: 6px !important;
+      bottom: 6px;
     }
 
     .el-carousel__indicator-btn {
       width: 12px;
-      height: 3px; // 细化导航条
+      height: 3px;
       border-radius: $radius-sm;
       background-color: rgba(255, 255, 255, 0.6);
-      margin: 0 4px; // 减小间距
+      margin: 0 4px;
 
-      // 移动端进一步细化
       @media (max-width: 768px) {
         width: 10px;
-        height: 2px; // 更细的导航条
-        margin: 0 3px; // 更小的间距
+        height: 2px;
+        margin: 0 3px;
       }
 
       &.is-active {
         width: 28px;
         background-color: #fff;
-        // 移动端激活状态也更细
+
         @media (max-width: 768px) {
           width: 20px;
           height: 2px;
@@ -1195,14 +1113,14 @@
     }
   }
 
-  // 联系电话列表样式
+  // 联系电话样式
   .contact-phones {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: $spacing-sm; // 电话之间的间距
-    margin-top: $spacing-md; // 保持与上方文本的距离
-    margin-bottom: $spacing-md; // 保持底部间距，确保框架大小不变
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+    margin-bottom: $spacing-md;
 
     @media (max-width: 480px) {
       margin-top: $spacing-sm;
@@ -1210,7 +1128,6 @@
     }
   }
 
-  // 单个电话项样式
   .phone-item {
     display: flex;
     align-items: center;
@@ -1233,26 +1150,22 @@
     }
   }
 
-  // 电话图标样式
   .phone-icon {
     font-size: $font-size-md;
     color: $color-neutral-100;
   }
 
-  // 电话标签样式
   .phone-label {
     font-size: $font-size-sm;
     opacity: 0.9;
   }
 
-  // 电话号码样式
   .phone-number {
     font-size: $font-size-base;
     font-weight: $font-weight-bold;
     color: #fff;
   }
 
-  // 空图片占位符样式
   .empty-image {
     width: 100%;
     height: 100%;
@@ -1278,8 +1191,9 @@
     margin-bottom: $spacing-lg;
     padding: $spacing-md 0;
     position: relative;
+    animation: fadeInUp 0.8s ease-out 0.5s both;
 
-    // 为了让提示更突出，添加顶部装饰线
+    // 顶部装饰线
     &::before {
       content: '';
       position: absolute;
@@ -1310,13 +1224,11 @@
       font-weight: $font-weight-medium;
       transition: all 0.3s ease;
 
-      // 轻微的悬浮效果
       &:hover {
         transform: translateY(-2px);
         box-shadow: $shadow-md;
       }
 
-      // 图标样式增强
       .el-icon {
         font-size: $font-size-base;
         color: $color-primary;
@@ -1324,7 +1236,6 @@
       }
     }
 
-    // 响应式适配
     @media (max-width: 480px) {
       margin-top: $spacing-lg;
       margin-bottom: $spacing-md;
@@ -1337,7 +1248,6 @@
       .end-text {
         font-size: $font-size-xs;
         padding: 8px 20px;
-        text-align: center;
 
         .el-icon {
           font-size: $font-size-sm;
@@ -1346,7 +1256,6 @@
     }
   }
 
-  // 脉冲动画效果
   @keyframes pulse {
     0%,
     100% {
@@ -1359,7 +1268,6 @@
     }
   }
 
-  // 渐入动画
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -1371,8 +1279,16 @@
     }
   }
 
-  // 延迟渐入效果
-  .bottom-end-notice {
-    animation: fadeInUp 0.8s ease-out 0.5s both;
+
+
+  // Element Plus 图片预览样式优化
+  .el-image-viewer__wrapper {
+    .el-image-viewer__canvas {
+      cursor: grab;
+      
+      &:active {
+        cursor: grabbing;
+      }
+    }
   }
 </style>

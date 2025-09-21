@@ -225,7 +225,7 @@
                 <el-image
                   :src="moment.image"
                   :alt="moment.alt"
-                  class="w-full h-48 object-cover cursor-pointer"
+                  class="w-full h-48 object-contain cursor-zoom-in bg-gray-100"
                   :preview-src-list="[moment.image]"
                   :initial-index="0"
                   :preview-teleported="true"
@@ -2241,6 +2241,17 @@
 
     .organization-chart {
       display: none;
+    }
+  }
+
+  /* Element Plus 图片预览样式优化 */
+  .el-image-viewer__wrapper {
+    .el-image-viewer__canvas {
+      cursor: grab;
+      
+      &:active {
+        cursor: grabbing;
+      }
     }
   }
 </style>

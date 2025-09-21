@@ -26,8 +26,8 @@ export default defineConfig({
     ],
     proxy: {
       '/api': {
-        // target: 'https://club.luowb.cn/api',
-        target: 'http://localhost:12321',
+        target: 'https://club.luowb.cn/api',
+        // target: 'http://localhost:12321',
         // target:'http://localhost:3200',
         // target: ' http://127.0.0.1:4523/m1/6949200-6665662-default',
 
