@@ -15,79 +15,128 @@
         </div>
       </template>
 
-      <el-table :data="adminsList" style="width: 100%">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="用户名" width="180" />
-        <el-table-column prop="role" label="角色" width="100">
-          <template #default="scope">
-            {{ scope.row.role === "super" ? "超级管理员" : "普通管理员" }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="handleEditAdmin(scope.row)"
-            >
-              编辑
-            </el-button>
-            <el-button
-              v-if="isSuperAdmin && scope.row.role !== 'super'"
-              type="danger"
-              size="small"
-              @click="handleDeleteAdmin(scope.row.id)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <!-- 移动端适配：使用响应式表格 -->
+      <div class="table-container">
+        <el-table 
+          :data="adminsList" 
+          style="width: 100%"
+          :class="{ 'mobile-table': isMobile }"
+        >
+          <el-table-column prop="id" label="ID" :width="isMobile ? 60 : 80" />
+          <el-table-column prop="username" label="用户名" :width="isMobile ? 120 : 180" />
+          <el-table-column prop="role" label="角色" :width="isMobile ? 100 : 100">
+            <template #default="scope">
+              <span class="role-tag" :class="scope.row.role">
+                {{ scope.row.role === "super" ? "超级管理员" : "普通管理员" }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" :width="isMobile ? 150 : 180" />
+          <el-table-column label="操作" :width="isMobile ? 150 : 200" fixed="right">
+            <template #default="scope">
+              <div class="action-buttons">
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="handleEditAdmin(scope.row)"
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  v-if="isSuperAdmin && scope.row.role !== 'super'"
+                  type="danger"
+                  size="small"
+                  @click="handleDeleteAdmin(scope.row.id)"
+                >
+                  删除
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </el-card>
 
-    <!-- 添加/编辑管理员对话框 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
+    <!-- 添加/编辑管理员对话框 - 移动端适配 -->
+    <el-dialog 
+      v-model="dialogVisible" 
+      :title="dialogTitle" 
+      :width="isMobile ? '90%' : '500px'"
+      :fullscreen="isMobile"
+    >
       <el-form
         ref="adminFormRef"
         :model="adminForm"
         :rules="rules"
         label-width="100px"
+        :label-position="isMobile ? 'top' : 'right'"
       >
-        <el-form-item prop="username">
-          <el-input v-model="adminForm.username" placeholder="请输入用户名" />
+        <el-form-item prop="username" :label="isMobile ? '用户名' : undefined">
+          <el-input 
+            v-model="adminForm.username" 
+            placeholder="请输入用户名" 
+            :clearable="isMobile"
+          />
         </el-form-item>
-        <el-form-item prop="password" v-if="!editingAdminId">
+        <el-form-item 
+          prop="password" 
+          v-if="!editingAdminId"
+          :label="isMobile ? '密码' : undefined"
+        >
           <el-input
             v-model="adminForm.password"
             type="password"
             placeholder="请输入密码"
+            :show-password="isMobile"
           />
         </el-form-item>
-        <el-form-item prop="newPassword" v-if="editingAdminId">
+        <el-form-item 
+          prop="newPassword" 
+          v-if="editingAdminId"
+          :label="isMobile ? '新密码' : undefined"
+        >
           <el-input
             v-model="adminForm.newPassword"
             type="password"
             placeholder="请输入新密码(选填)"
+            :show-password="isMobile"
           />
         </el-form-item>
-        <el-form-item prop="role" v-if="isSuperAdmin && !editingAdminId">
-          <el-select v-model="adminForm.role" placeholder="请选择角色">
+        <el-form-item 
+          prop="role" 
+          v-if="isSuperAdmin && !editingAdminId"
+          :label="isMobile ? '角色' : undefined"
+        >
+          <el-select 
+            v-model="adminForm.role" 
+            placeholder="请选择角色"
+            :style="{ width: '100%' }"
+          >
             <el-option label="超级管理员" value="super" />
             <el-option label="普通管理员" value="normal" />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false" :size="isMobile ? 'large' : 'default'">
+            取消
+          </el-button>
+          <el-button 
+            type="primary" 
+            @click="handleSubmit" 
+            :size="isMobile ? 'large' : 'default'"
+          >
+            确定
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue"
+import { ref, reactive, onMounted, computed } from "vue"
 import { ElMessage, ElForm } from "element-plus"
 import { useAdminStore } from "../../../stores/adminStore"
 import {
@@ -105,6 +154,11 @@ const dialogVisible = ref(false)
 const dialogTitle = ref("添加管理员")
 const editingAdminId = ref<number | null>(null)
 const adminFormRef = ref<InstanceType<typeof ElForm> | null>(null)
+
+// 检测是否为移动端
+const isMobile = computed(() => {
+  return window.innerWidth <= 768
+})
 
 const adminForm = reactive({
   username: "",
@@ -148,7 +202,6 @@ const handleAddAdmin = () => {
       adminForm[key as keyof typeof adminForm] = "super"
     }
   })
-  adminForm.role = "normal"
   dialogVisible.value = true
 }
 
@@ -214,10 +267,21 @@ const handleSubmit = async () => {
   })
 }
 
-// 初始加载
+// 监听窗口大小变化
+const handleResize = () => {
+  // 响应式处理会在computed中自动更新
+}
+
 onMounted(() => {
   loadAdminsList()
+  window.addEventListener('resize', handleResize)
 })
+
+// 清理事件监听器
+// 在Vue 3.5+中，可以使用onUnmounted
+// onUnmounted(() => {
+//   window.removeEventListener('resize', handleResize)
+// })
 </script>
 
 <style scoped>
@@ -229,5 +293,117 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card-header span {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+/* 移动端表格样式 */
+.mobile-table :deep(.el-table__row) {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-table :deep(.el-table__cell) {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #eee;
+}
+
+.mobile-table :deep(.el-table__cell)::before {
+  content: attr(label);
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.action-buttons .el-button {
+  margin: 0;
+}
+
+.role-tag {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.role-tag.super {
+  background-color: #fef0f0;
+  color: #f56c6c;
+}
+
+.role-tag.normal {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
+
+.dialog-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialog-footer .el-button {
+  width: 100%;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .admin-management {
+    padding: 10px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .card-header .el-button {
+    width: 100%;
+  }
+  
+  /* 表格在移动端的优化显示 */
+  :deep(.el-table) {
+    font-size: 14px;
+  }
+  
+  :deep(.el-table th) {
+    font-size: 14px;
+  }
+  
+  :deep(.el-table td) {
+    padding: 8px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-management {
+    padding: 5px;
+  }
+  
+  :deep(.el-table th),
+  :deep(.el-table td) {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+  
+  .role-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
 }
 </style>

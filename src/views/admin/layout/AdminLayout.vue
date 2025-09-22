@@ -2,13 +2,16 @@
   <div class="admin-container">
     <el-header class="admin-header">
       <div class="header-left">
-        <span class="admin-title">社团管理后台</span>
+        <el-icon class="menu-toggle" @click="toggleMenu" v-if="isMobile">
+          <component :is="isMenuCollapsed ? 'Expand' : 'Fold'" />
+        </el-icon>
+        <span class="admin-title">{{ isMobile && isMenuCollapsed ? '管理后台' : '社团管理后台' }}</span>
       </div>
       <div class="header-right">
         <el-dropdown trigger="hover" @command="handleCommand">
           <div class="user-info">
             <el-icon class="user-icon"><User /></el-icon>
-            <span class="username">{{ userInfo?.username }}</span>
+            <span class="username" v-if="!isMobile || !isMenuCollapsed">{{ userInfo?.username }}</span>
             <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
           </div>
           <template #dropdown>
@@ -31,7 +34,11 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside class="admin-aside" width="200px">
+      <el-aside 
+        class="admin-aside" 
+        :width="isMobile ? (isMenuCollapsed ? '0' : '200px') : '200px'"
+        :class="{ 'collapsed': isMobile && isMenuCollapsed }"
+      >
         <el-menu
           :default-active="currentRoutePath"
           class="el-menu-vertical-demo"
@@ -86,18 +93,46 @@
     Box,
     ArrowDown,
     SwitchButton,
+    Expand,
+    Fold
   } from '@element-plus/icons-vue'
 
   import { useRouter } from 'vue-router'
   import { useAdminStore } from '../../../stores/adminStore'
-  import { ref, onMounted, computed } from 'vue'
+  import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
   import { ElMessage } from 'element-plus'
 
   const router = useRouter()
   const adminStore = useAdminStore()
   const userInfo = ref(adminStore.userInfo)
+  const isMenuCollapsed = ref(false) // 移动端菜单是否折叠
+  const isMobile = ref(false) // 是否为移动端
+
+  // 检测屏幕尺寸
+  const checkIsMobile = () => {
+    isMobile.value = window.innerWidth <= 768
+    // 在移动端默认折叠菜单
+    if (isMobile.value) {
+      isMenuCollapsed.value = true
+    } else {
+      isMenuCollapsed.value = false
+    }
+  }
+
+  // 切换菜单显示状态
+  const toggleMenu = () => {
+    isMenuCollapsed.value = !isMenuCollapsed.value
+  }
+
+  // 监听窗口大小变化
+  const handleResize = () => {
+    checkIsMobile()
+  }
 
   onMounted(() => {
+    checkIsMobile()
+    window.addEventListener('resize', handleResize)
+    
     adminStore.checkLoginStatus()
     if (!adminStore.isLoggedIn) {
       router.push('/admin/login')
@@ -106,8 +141,16 @@
     }
   })
 
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleResize)
+  })
+
   const handleMenuSelect = (key: string) => {
     router.push(key)
+    // 在移动端选择菜单项后自动折叠菜单
+    if (isMobile.value) {
+      isMenuCollapsed.value = true
+    }
   }
 
   /**
@@ -161,66 +204,86 @@
     align-items: center;
     padding: 0 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    height: 60px;
   }
   .header-left {
     display: flex;
     align-items: center;
   }
+  .menu-toggle {
+    font-size: 24px;
+    margin-right: 15px;
+    cursor: pointer;
+    display: none;
+  }
   .admin-title {
     font-size: 20px;
     font-weight: 600;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .header-right {
     display: flex;
     align-items: center;
   }
   .user-info {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.user-info:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-}
-.user-icon {
-  font-size: 18px;
-  margin-right: 8px;
-  color: #ffffff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-}
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .user-info:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  .user-icon {
+    font-size: 18px;
+    margin-right: 8px;
+    color: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
   .username {
-  font-size: 14px;
-  font-weight: 500;
-  margin-right: 4px;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 4px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .dropdown-icon {
-  font-size: 12px;
-  transition: transform 0.3s ease;
-  color: #ffffff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-}
-.el-dropdown:hover .dropdown-icon {
-  transform: rotate(180deg);
-}
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    color: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
+  .el-dropdown:hover .dropdown-icon {
+    transform: rotate(180deg);
+  }
   .admin-aside {
     background-color: #304156;
     color: white;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+    overflow: hidden;
+  }
+  .admin-aside.collapsed {
+    width: 0;
   }
   .el-menu-vertical-demo {
     background-color: #304156;
     color: white;
     border-right: none;
+    height: 100%;
   }
   .el-menu-item {
     color: #bfcbd9;
@@ -242,5 +305,62 @@
     overflow-y: auto;
     background-color: #f5f7fa;
     min-height: calc(100vh - 60px);
+  }
+
+  /* 移动端样式 */
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+    
+    .admin-header {
+      padding: 0 15px;
+      height: 50px;
+    }
+    
+    .admin-title {
+      font-size: 18px;
+      max-width: 150px;
+    }
+    
+    .user-icon {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    
+    .username {
+      font-size: 13px;
+      max-width: 80px;
+    }
+    
+    .admin-main {
+      padding: 15px;
+    }
+    
+    .admin-aside {
+      position: absolute;
+      z-index: 1000;
+      height: calc(100vh - 50px);
+      transition: width 0.3s ease;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-header {
+      padding: 0 10px;
+    }
+    
+    .admin-title {
+      font-size: 16px;
+      max-width: 120px;
+    }
+    
+    .username {
+      max-width: 60px;
+    }
+    
+    .admin-main {
+      padding: 10px;
+    }
   }
 </style>

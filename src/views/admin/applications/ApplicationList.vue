@@ -9,20 +9,29 @@
               type="primary"
               icon="Download"
               @click="exportApplications"
+              :size="isMobile ? 'small' : 'default'"
             >
-              导出数据
+              {{ isMobile ? '' : '导出数据' }}
             </el-button>
           </div>
         </div>
       </template>
+      
+      <!-- 移动端搜索表单优化 -->
       <el-form :model="searchForm" class="search-form">
-        <el-row :gutter="20">
-          <el-col :span="6">
+        <el-row :gutter="isMobile ? 10 : 20">
+          <el-col :span="24" v-if="isMobile">
             <el-form-item label="姓名">
               <el-input v-model="searchForm.name" placeholder="请输入姓名" />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="12" v-else>
+            <el-form-item label="姓名">
+              <el-input v-model="searchForm.name" placeholder="请输入姓名" />
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="24" v-if="isMobile">
             <el-form-item label="学号">
               <el-input
                 v-model="searchForm.studentId"
@@ -30,7 +39,30 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="12" v-else>
+            <el-form-item label="学号">
+              <el-input
+                v-model="searchForm.studentId"
+                placeholder="请输入学号"
+              />
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="24" v-if="isMobile">
+            <el-form-item label="第一志愿部门">
+              <el-select
+                v-model="searchForm.department"
+                placeholder="请选择部门"
+                style="width: 100%"
+              >
+                <el-option label="技术部" value="技术部" />
+                <el-option label="宣传部" value="宣传部" />
+                <el-option label="组织部" value="组织部" />
+                <el-option label="外联部" value="外联部" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-else>
             <el-form-item label="第一志愿部门">
               <el-select
                 v-model="searchForm.department"
@@ -43,7 +75,22 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          
+          <el-col :span="24" v-if="isMobile">
+            <el-form-item label="第二志愿部门">
+              <el-select
+                v-model="searchForm.secondDepartment"
+                placeholder="请选择部门"
+                style="width: 100%"
+              >
+                <el-option label="技术部" value="技术部" />
+                <el-option label="宣传部" value="宣传部" />
+                <el-option label="组织部" value="组织部" />
+                <el-option label="外联部" value="外联部" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-else>
             <el-form-item label="第二志愿部门">
               <el-select
                 v-model="searchForm.secondDepartment"
@@ -56,7 +103,34 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          
+          <el-col :span="24" v-if="isMobile">
+            <div class="mobile-search-buttons">
+              <el-button 
+                type="primary" 
+                @click="handleSearch" 
+                class="search-btn"
+                style="width: 100%; margin-bottom: 10px"
+              >
+                搜索
+              </el-button>
+              <el-button 
+                @click="resetForm" 
+                style="width: 100%; margin-bottom: 10px"
+              >
+                重置
+              </el-button>
+              <el-button
+                type="danger"
+                @click="handleBatchDelete"
+                v-if="selectedRows.length > 0"
+                style="width: 100%"
+              >
+                批量删除
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="24" v-else>
             <el-button type="primary" @click="handleSearch" class="search-btn">
               搜索
             </el-button>
@@ -71,70 +145,106 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-table
-        :data="applicationsData.records"
-        style="width: 100%"
-        v-loading="loading"
-        @selection-change="handleSelectionChange"
-        border
-        stripe
-      >
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="姓名" width="100" />
-        <el-table-column prop="studentId" label="学号" width="120" />
-        <!-- 移除 className 列 -->
-        <el-table-column prop="major" label="专业" width="180" />
-        <el-table-column prop="phone" label="电话" width="150" />
-        <el-table-column prop="QQNumber" label="QQ号" width="150" />
-        <el-table-column prop="department" label="部门" width="100" />
-        <!-- 添加第二志愿部门列 -->
-        <el-table-column
-          prop="secondDepartment"
-          label="第二志愿部门"
-          width="120"
-        />
-        <el-table-column label="操作" width="150" fixed="right">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="viewDetail(scope.row)"
-            >
-              查看
-            </el-button>
-            <el-button
-              type="danger"
-              size="small"
-              @click="deleteApplication(scope.row.id)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      
+      <!-- 移动端表格优化 -->
+      <div class="table-container-wrapper">
+        <div 
+          class="table-container" 
+          ref="tableContainerRef"
+          @scroll="onTableScroll"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd">
+          <el-table
+            :data="applicationsData.records"
+            style="width: 100%"
+            v-loading="loading"
+            @selection-change="handleSelectionChange"
+            border
+            stripe
+            :class="{ 'mobile-table': isMobile }"
+            ref="tableRef"
+          >
+            <el-table-column type="selection" :width="isMobile ? 40 : 55" />
+            <el-table-column prop="name" label="姓名" :width="isMobile ? 80 : 100" />
+            <el-table-column prop="studentId" label="学号" :width="isMobile ? 100 : 120" />
+            <el-table-column prop="major" label="专业" :width="isMobile ? 120 : 180" />
+            <el-table-column prop="phone" label="电话" :width="isMobile ? 120 : 150" />
+            <el-table-column prop="QQNumber" label="QQ号" :width="isMobile ? 120 : 150" />
+            <el-table-column prop="department" label="部门" :width="isMobile ? 80 : 100" />
+            <el-table-column
+              prop="secondDepartment"
+              label="第二志愿"
+              :width="isMobile ? 100 : 120"
+            />
+            <el-table-column label="操作" :width="isMobile ? 120 : 150" fixed="right">
+              <template #default="scope">
+                <el-button
+                  type="primary"
+                  :size="isMobile ? 'small' : 'default'"
+                  @click="viewDetail(scope.row)"
+                >
+                  {{ isMobile ? '查看' : '查看详情' }}
+                </el-button>
+                <el-button
+                  type="danger"
+                  :size="isMobile ? 'small' : 'default'"
+                  @click="deleteApplication(scope.row.id)"
+                  style="margin-top: 5px"
+                  v-if="isMobile"
+                >
+                  删除
+                </el-button>
+                <el-button
+                  type="danger"
+                  :size="isMobile ? 'small' : 'default'"
+                  @click="deleteApplication(scope.row.id)"
+                  v-else
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <!-- 水平滚动指示器 -->
+        <div class="horizontal-scroll-indicator" v-if="showScrollIndicator">
+          <div class="scroll-thumb" :style="{ width: scrollThumbWidth, transform: `translateX(${scrollThumbPosition})` }"></div>
+        </div>
+      </div>
+      
       <div class="pagination-container">
         <el-pagination
           v-model:current-page="applicationsData.current"
           v-model:page-size="applicationsData.size"
-          :page-sizes="[10, 20, 50, 100]"
+          :page-sizes="isMobile ? [5, 10, 20] : [10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="applicationsData.total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          :small="isMobile"
         />
       </div>
     </el-card>
 
-    <!-- 详情对话框 -->
-    <el-dialog v-model="dialogVisible" title="报名详情" width="600px">
-      <el-form :model="currentApplication || {}" label-width="100px">
+    <!-- 详情对话框 - 移动端适配 -->
+    <el-dialog 
+      v-model="dialogVisible" 
+      title="报名详情" 
+      :width="isMobile ? '95%' : '600px'"
+      :fullscreen="isMobile"
+    >
+      <el-form 
+        :model="currentApplication || {}" 
+        label-width="100px"
+        :label-position="isMobile ? 'top' : 'right'"
+      >
         <el-form-item label="姓名">
           <span>{{ currentApplication?.name }}</span>
         </el-form-item>
         <el-form-item label="学号">
           <span>{{ currentApplication?.studentId }}</span>
         </el-form-item>
-        <!-- 移除班级字段 -->
         <el-form-item label="专业">
           <span>{{ currentApplication?.major }}</span>
         </el-form-item>
@@ -154,21 +264,31 @@
           <span>{{ currentApplication?.interests?.join("、") || "无" }}</span>
         </el-form-item>
         <el-form-item label="申请理由">
-          <span>{{ currentApplication?.reason }}</span>
+          <span class="text-content">{{ currentApplication?.reason }}</span>
         </el-form-item>
         <el-form-item label="个人介绍">
-          <span>{{ currentApplication?.introduction }}</span>
+          <span class="text-content">{{ currentApplication?.introduction }}</span>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">关闭</el-button>
+        <el-button 
+          @click="dialogVisible = false"
+          :size="isMobile ? 'large' : 'default'"
+          style="width: 100%"
+          v-if="isMobile"
+        >
+          关闭
+        </el-button>
+        <el-button @click="dialogVisible = false" v-else>
+          关闭
+        </el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue"
+import { ref, reactive, onMounted, computed, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import {
   getApplications,
@@ -177,6 +297,11 @@ import {
 } from "../../../services/adminService"
 import type { joinForm } from "../../../services/applicationsService"
 import * as XLSX from "xlsx"
+
+// 检测是否为移动端
+const isMobile = computed(() => {
+  return window.innerWidth <= 768
+})
 
 const searchForm = reactive<{
   name: string
@@ -189,17 +314,30 @@ const searchForm = reactive<{
   department: "",
   secondDepartment: "",
 })
+
 const applicationsData = ref<ApplicationPageData<joinForm & { id: number }>>({
   current: 1,
-  size: 10,
+  size: isMobile.value ? 5 : 10, // 移动端默认显示更少数据
   total: 0,
   pages: 0,
   records: [],
 })
+
 const dialogVisible = ref(false)
 const currentApplication = ref<(joinForm & { id: number }) | null>(null)
 const loading = ref(false)
 const selectedRows = ref<(joinForm & { id: number })[]>([])
+
+// 表格滚动相关引用
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tableRef = ref<InstanceType<typeof import('element-plus').ElTable> | null>(null)
+const showScrollIndicator = ref(false)
+const scrollThumbWidth = ref('0px')
+const scrollThumbPosition = ref('0px')
+
+// 触摸滑动相关变量
+const touchStartX = ref(0)
+const scrollStart = ref(0)
 
 // 加载报名数据
 const loadApplications = async () => {
@@ -220,6 +358,9 @@ const loadApplications = async () => {
     console.error("获取报名信息失败:", error)
   } finally {
     loading.value = false
+    nextTick(() => {
+      updateScrollIndicator()
+    })
   }
 }
 
@@ -234,7 +375,7 @@ const resetForm = () => {
   searchForm.name = ""
   searchForm.studentId = ""
   searchForm.department = ""
-  searchForm.secondDepartment = "" // 重置第二志愿部门
+  searchForm.secondDepartment = ""
   applicationsData.value.current = 1
   loadApplications()
 }
@@ -262,6 +403,8 @@ const deleteApplication = async (id: number) => {
   try {
     await ElMessageBox.confirm("确定要删除这条报名信息吗？", "确认删除", {
       type: "warning",
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
     })
 
     loading.value = true
@@ -288,6 +431,8 @@ const handleBatchDelete = async () => {
   try {
     await ElMessageBox.confirm("确定要删除选中的报名信息吗？", "确认删除", {
       type: "warning",
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
     })
 
     loading.value = true
@@ -372,8 +517,66 @@ const exportApplications = async () => {
   }
 }
 
+// 监听窗口大小变化
+const handleResize = () => {
+  // 响应式处理会在computed中自动更新
+  // 但需要更新分页大小
+  if (isMobile.value && applicationsData.value.size > 20) {
+    applicationsData.value.size = 5
+    loadApplications()
+  }
+  updateScrollIndicator()
+}
+
+// 处理表格滚动
+const onTableScroll = () => {
+  updateScrollIndicator()
+}
+
+// 更新滚动指示器
+const updateScrollIndicator = () => {
+  if (!isMobile.value || !tableContainerRef.value) return
+  
+  const container = tableContainerRef.value
+  const table = container.querySelector('.el-table')
+  
+  if (!table) return
+  
+  if (table.scrollWidth <= container.offsetWidth) {
+    showScrollIndicator.value = false
+    return
+  }
+  
+  showScrollIndicator.value = true
+  const scrollRatio = container.scrollLeft / (table.scrollWidth - container.offsetWidth)
+  const thumbRatio = container.offsetWidth / table.scrollWidth
+  
+  scrollThumbWidth.value = `${Math.max(20, thumbRatio * 100)}%`
+  scrollThumbPosition.value = `${scrollRatio * 100}%`
+}
+
+// 触摸事件处理
+const onTouchStart = (e: TouchEvent) => {
+  if (!tableContainerRef.value) return
+  touchStartX.value = e.touches[0].clientX
+  scrollStart.value = tableContainerRef.value.scrollLeft
+}
+
+const onTouchMove = (e: TouchEvent) => {
+  if (!tableContainerRef.value) return
+  e.preventDefault()
+  const touchX = e.touches[0].clientX
+  const diff = touchStartX.value - touchX
+  tableContainerRef.value.scrollLeft = scrollStart.value + diff
+}
+
+const onTouchEnd = () => {
+  // 触摸结束后的处理
+}
+
 onMounted(() => {
   loadApplications()
+  window.addEventListener('resize', handleResize)
 })
 </script>
 
@@ -381,22 +584,160 @@ onMounted(() => {
 .application-container {
   padding: 20px;
 }
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 18px;
   font-weight: bold;
+  flex-wrap: wrap;
+  gap: 10px;
 }
+
 .search-form {
   margin-bottom: 20px;
 }
+
 .search-btn {
   margin-right: 10px;
 }
+
 .pagination-container {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* 表格容器包装器 */
+.table-container-wrapper {
+  position: relative;
+}
+
+/* 表格容器 */
+.table-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+  margin-bottom: 5px;
+}
+
+.table-container::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
+
+/* 水平滚动指示器 */
+.horizontal-scroll-indicator {
+  height: 3px;
+  background-color: #e4e7ed;
+  border-radius: 2px;
+  margin: 0 10px 15px 10px;
+  position: relative;
+}
+
+.horizontal-scroll-indicator .scroll-thumb {
+  position: absolute;
+  height: 100%;
+  background-color: #409eff;
+  border-radius: 2px;
+  transition: transform 0.2s ease;
+}
+
+/* 移动端样式优化 */
+@media (max-width: 768px) {
+  .application-container {
+    padding: 10px;
+  }
+  
+  .card-header {
+    font-size: 16px;
+  }
+  
+  .search-form {
+    margin-bottom: 10px;
+  }
+  
+  .mobile-search-buttons {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .pagination-container {
+    margin-top: 10px;
+    justify-content: center;
+  }
+  
+  :deep(.el-table) {
+    font-size: 12px;
+  }
+  
+  :deep(.el-table th),
+  :deep(.el-table td) {
+    padding: 8px 0;
+  }
+  
+  :deep(.el-table .el-button) {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  
+  :deep(.el-dialog) {
+    --el-dialog-content-font-size: 14px;
+  }
+  
+  :deep(.el-form-item__label) {
+    font-size: 14px;
+  }
+  
+  .horizontal-scroll-indicator {
+    margin: 0 15px 10px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .application-container {
+    padding: 5px;
+  }
+  
+  :deep(.el-table th),
+  :deep(.el-table td) {
+    padding: 5px 0;
+    font-size: 11px;
+  }
+  
+  :deep(.el-table .el-button) {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  :deep(.el-pagination) {
+    font-size: 12px;
+  }
+  
+  :deep(.el-pagination .el-pagination__total),
+  :deep(.el-pagination .el-pagination__jump) {
+    font-size: 12px;
+  }
+  
+  :deep(.el-dialog__header) {
+    padding: 15px;
+  }
+  
+  :deep(.el-dialog__body) {
+    padding: 15px;
+  }
+  
+  :deep(.el-dialog__footer) {
+    padding: 15px;
+  }
+}
+
+/* 文本内容样式 */
+.text-content {
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
 }
 </style>

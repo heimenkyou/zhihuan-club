@@ -12,7 +12,7 @@
       </div>
     </el-card>
 
-    <el-row :gutter="20" class="stats-row">
+    <el-row :gutter="isMobile ? 10 : 20" class="stats-row">
       <el-col
         :xs="24"
         :sm="12"
@@ -36,11 +36,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { useAdminStore } from "../../stores/adminStore"
 import { getAwards, getApplications } from "../../services/adminService"
 import { getMessages } from "../../services/messageService"
 import { ElMessage } from "element-plus"
+
+// 检测是否为移动端
+const isMobile = computed(() => {
+  return window.innerWidth <= 768
+})
 
 const adminStore = useAdminStore()
 const userInfo = ref(adminStore.userInfo)
@@ -226,5 +231,92 @@ onMounted(async () => {
 .hover-scale:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 移动端样式优化 */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 10px;
+    gap: 15px;
+  }
+  
+  .card-header {
+    font-size: 18px;
+  }
+  
+  .welcome-content {
+    padding: 15px 0;
+    font-size: 14px;
+  }
+  
+  .stat-content {
+    padding: 15px 10px;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
+  .stat-title {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+  
+  .stat-desc {
+    font-size: 12px;
+  }
+  
+  .stats-row {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 5px;
+    gap: 10px;
+  }
+  
+  .card-header {
+    font-size: 16px;
+  }
+  
+  .welcome-content {
+    padding: 10px 0;
+    font-size: 13px;
+  }
+  
+  .stat-content {
+    padding: 12px 8px;
+  }
+  
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .stat-title {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+    margin-bottom: 5px;
+  }
+  
+  .stat-desc {
+    font-size: 11px;
+  }
 }
 </style>
