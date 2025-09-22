@@ -218,7 +218,7 @@ const resources = ref<Resource[]>([
     description:
       "全球知名算法刷题平台，提供海量题目和在线评测，适合算法学习和面试准备。",
     image: "https://placehold.co/300x200/10B981/FFFFFF?text=LeetCode",
-    link: "https://leetcode.com",
+    link: "https://leetcode.cn",
     author: "LeetCode",
   },
   {

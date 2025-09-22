@@ -68,10 +68,9 @@
                 v-model="searchForm.department"
                 placeholder="请选择部门"
               >
-                <el-option label="技术部" value="技术部" />
-                <el-option label="宣传部" value="宣传部" />
-                <el-option label="组织部" value="组织部" />
-                <el-option label="外联部" value="外联部" />
+                <el-option label="算法部" value="算法部" />
+                <el-option label="项目竞赛部" value="项目竞赛部" />
+                <el-option label="综合管理部" value="综合管理部" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -96,10 +95,10 @@
                 v-model="searchForm.secondDepartment"
                 placeholder="请选择部门"
               >
-                <el-option label="技术部" value="技术部" />
-                <el-option label="宣传部" value="宣传部" />
-                <el-option label="组织部" value="组织部" />
-                <el-option label="外联部" value="外联部" />
+                <el-option label="算法部" value="算法部" />
+                <el-option label="项目竞赛部" value="项目竞赛部" />
+                <el-option label="综合管理部" value="综合管理部" />
+                <el-option label="无" value="无" />
               </el-select>
             </el-form-item>
           </el-col>
