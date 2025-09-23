@@ -37,7 +37,7 @@
       <!-- 项目列表 -->
       <div
         v-else
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 items-stretch"
       >
         <!-- 无项目提示 -->
         <div
@@ -51,8 +51,9 @@
         <div
           v-for="(project, index) in projects"
           :key="project.id"
-          class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300 animate-fade-in"
+          class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300 animate-fade-in cursor-pointer h-full flex flex-col"
           :style="{ animationDelay: `${0.1 + index * 0.1}s` }"
+          @click="goToDetail(project.id)"
         >
           <img
             :src="project.coverImage || ''"
@@ -60,7 +61,7 @@
             class="w-full h-48 object-cover"
             loading="lazy"
           />
-          <div class="p-6">
+          <div class="p-6 flex flex-col flex-1">
             <div class="flex justify-between items-start mb-4">
               <h3 class="text-xl font-bold text-gray-800">
                 {{ project.title }}
@@ -87,12 +88,9 @@
                 {{ tag }}
               </span>
             </div>
-            <button
-              @click="goToDetail(project.id)"
-              class="w-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all px-4 py-2 rounded-lg font-medium"
-            >
-              查看详情
-            </button>
+            <div class="text-center text-gray-500 text-sm mt-auto pt-4">
+              点击卡片查看详情
+            </div>
           </div>
         </div>
       </div>

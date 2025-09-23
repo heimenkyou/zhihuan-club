@@ -314,7 +314,7 @@
           <el-table-column prop="awardLevel" label="等级" :width="isMobile ? 80 : 120" />
           <el-table-column prop="winners" label="获奖人员" :width="isMobile ? 100 : 120">
             <template #default="scope">
-              {{ scope.row.winners?.join('') || '' }}
+              {{ scope.row.winners?.join('、') || '' }}
             </template>
           </el-table-column>
           <el-table-column prop="year" label="年份" :width="isMobile ? 70 : 120" />
