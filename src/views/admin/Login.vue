@@ -29,7 +29,13 @@
             prefix-icon="Lock"
             show-password
             :disabled="loading"
+            @keyup.enter="handleLogin"
           />
+        </el-form-item>
+        <el-form-item>
+          <el-checkbox v-model="rememberPassword" :disabled="loading">
+            记住密码
+          </el-checkbox>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -47,7 +53,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from "vue"
+import { ref, reactive, onMounted } from "vue"
 import { ElMessage } from "element-plus"
 import { useRouter } from "vue-router"
 import { useAdminStore } from "../../stores/adminStore"
@@ -61,6 +67,7 @@ const loginForm = reactive<{ username: string; password: string }>({
   username: "",
   password: "",
 })
+const rememberPassword = ref(false)
 const loading = ref(false)
 const rules = {
   username: [
@@ -98,6 +105,17 @@ const handleLogin = async () => {
           token || undefined
         )
 
+        // 处理记住密码功能
+        if (rememberPassword.value) {
+          localStorage.setItem("rememberedUsername", loginForm.username)
+          localStorage.setItem("rememberedPassword", loginForm.password)
+          localStorage.setItem("rememberPassword", "true")
+        } else {
+          localStorage.removeItem("rememberedUsername")
+          localStorage.removeItem("rememberedPassword")
+          localStorage.removeItem("rememberPassword")
+        }
+
         ElMessage.success("登录成功，正在跳转...")
 
         // 延迟跳转，确保状态完全同步
@@ -129,6 +147,24 @@ const handleLogin = async () => {
     }
   })
 }
+  
+
+// 组件挂载时加载记住的密码
+onMounted(() => {
+  const rememberedUsername = localStorage.getItem("rememberedUsername")
+  const rememberedPassword = localStorage.getItem("rememberedPassword")
+  const rememberPasswordFlag = localStorage.getItem("rememberPassword")
+  
+  if (rememberedUsername) {
+    loginForm.username = rememberedUsername
+  }
+  if (rememberedPassword) {
+    loginForm.password = rememberedPassword
+  }
+  if (rememberPasswordFlag === "true") {
+    rememberPassword.value = true
+  }
+})
 </script>
 
 <style scoped>
