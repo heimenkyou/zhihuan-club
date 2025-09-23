@@ -253,8 +253,13 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
   const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 
   // 获取当前位置（从响应式状态读取）
-  const currentLeft = parseInt(playerPosition.left) || 10
-  const currentTop = parseInt(playerPosition.top) || 110
+  const currentLeft = parseInt(playerPosition.left) || 20
+  const currentBottom = parseInt(playerPosition.bottom) || 30
+  const windowHeight = window.innerHeight
+  const playerHeight = 80
+  
+  // 将bottom坐标转换为top坐标用于拖拽计算
+  const currentTop = windowHeight - currentBottom - playerHeight
 
   // 计算偏移量
   const offsetX = clientX - currentLeft
@@ -276,20 +281,17 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
     const playerWidth = 80 // 主按钮宽度
     const playerHeight = 80 // 主按钮高度
 
-    // 计算新位置（边界限制：顶部间距适配导航栏）
+    // 计算新位置（边界限制：适配左下角拖拽）
     let newX = moveClientX - offsetX
     let newY = moveClientY - offsetY
 
     newX = Math.max(10, Math.min(newX, windowWidth - playerWidth - 10))
-    newY = Math.max(
-      navbarHeight.value + 50,
-      Math.min(newY, windowHeight - playerHeight - 30)
-    )
+    newY = Math.max(10, Math.min(newY, windowHeight - playerHeight - 10))
 
     // 使用Vue响应式系统更新位置
     playerPosition.left = `${newX}px`
-    playerPosition.top = `${newY}px`
-    playerPosition.bottom = 'auto'
+    playerPosition.bottom = `${windowHeight - newY - playerHeight}px`
+    playerPosition.top = 'auto'
     playerPosition.right = 'auto'
   }
 
@@ -405,11 +407,11 @@ const handleDocumentClick = (e: MouseEvent) => {
   }
 }
 
-// 设置播放器初始位置（使用Vue响应式系统）
+// 设置播放器初始位置到左下角
 const setInitialPlayerPosition = () => {
-  playerPosition.left = '10px'
-  playerPosition.top = `${navbarHeight.value + 50}px`
-  playerPosition.bottom = 'auto'
+  playerPosition.left = '20px'
+  playerPosition.bottom = '30px'
+  playerPosition.top = 'auto'
   playerPosition.right = 'auto'
 }
 
@@ -428,7 +430,24 @@ onMounted(() => {
 
   window.addEventListener('resize', () => {
     getNavbarHeight()
-    setInitialPlayerPosition()
+    // 窗口大小改变时保持左下角位置，只在必要时调整边界
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+    const playerWidth = 80
+    const playerHeight = 80
+    
+    const currentLeft = parseInt(playerPosition.left) || 20
+    const currentBottom = parseInt(playerPosition.bottom) || 30
+    
+    // 确保不会超出边界
+    const newLeft = Math.max(10, Math.min(currentLeft, windowWidth - playerWidth - 10))
+    const newBottom = Math.max(10, Math.min(currentBottom, windowHeight - playerHeight - 10))
+    
+    playerPosition.left = `${newLeft}px`
+    playerPosition.bottom = `${newBottom}px`
+    playerPosition.top = 'auto'
+    playerPosition.right = 'auto'
+    
     updateButtonPositions() // 窗口大小改变时重新计算按钮位置
   })
 

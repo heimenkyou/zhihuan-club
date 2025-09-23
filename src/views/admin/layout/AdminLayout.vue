@@ -127,11 +127,12 @@
     checkIsMobile()
   }
 
-  onMounted(() => {
+  onMounted(async () => {
     checkIsMobile()
     window.addEventListener('resize', handleResize)
     
-    adminStore.checkLoginStatus()
+    // 异步验证登录状态，确保状态同步
+    await adminStore.checkLoginStatus()
     if (!adminStore.isLoggedIn) {
       router.push('/admin/login')
     } else {

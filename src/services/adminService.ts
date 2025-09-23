@@ -299,13 +299,6 @@ export const deleteApplication = async (id: number): Promise<void> => {
   }
 }
 
-// 项目类型定义
-// 更新项目类型定义，完全匹配新API的数据结构
-// 完善项目接口定义
-
-// 媒体资源类型定义 - 已移除重复定义，保留下面的export版本
-
-// 更新Project接口以适应新的数据格式
 export interface Project {
   id: number
   title: string

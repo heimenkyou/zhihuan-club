@@ -56,9 +56,15 @@ api.interceptors.response.use(
     // token相关错误码，统一处理为登录失效
     if (tokenErrorCodes.includes(code)) {
       const adminStore = useAdminStore()
+      const currentPath = router.currentRoute.value.path
+      
       adminStore.clearAuthState()
-      // 跳转到登录页
-      router.replace('/admin/login')
+      
+      // 只在访问管理员页面时才跳转到登录页
+      if (currentPath.startsWith('/admin')) {
+        router.replace('/admin/login')
+      }
+      
       return Promise.reject(new Error(message || '登录已失效，请重新登录'))
     }
     
@@ -75,9 +81,14 @@ api.interceptors.response.use(
     // HTTP 401 状态码处理
     if (error.response?.status === 401) {
       const adminStore = useAdminStore()
+      const currentPath = router.currentRoute.value.path
+      
       adminStore.clearAuthState()
-      // 跳转到登录页
-      router.replace('/admin/login')
+      
+      // 只在访问管理员页面时才跳转到登录页
+      if (currentPath.startsWith('/admin')) {
+        router.replace('/admin/login')
+      }
     }
 
     return Promise.reject(new Error(message))

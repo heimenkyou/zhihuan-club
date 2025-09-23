@@ -100,8 +100,10 @@ const handleLogin = async () => {
 
         ElMessage.success("登录成功，正在跳转...")
 
-        // 延迟跳转，让用户看到成功提示
-        setTimeout(() => {
+        // 延迟跳转，确保状态完全同步
+        setTimeout(async () => {
+          // 重新验证登录状态确保同步
+          await adminStore.checkLoginStatus()
           router.push("/admin/dashboard")
         }, 1000)
       } catch (error) {

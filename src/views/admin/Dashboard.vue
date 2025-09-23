@@ -62,14 +62,14 @@ onMounted(async () => {
   // 获取统计数据
   loading.value = true
   try {
-    // 先验证登录状态
+    // 验证登录状态 - 延迟检查确保状态同步
+    await adminStore.checkLoginStatus()
+    userInfo.value = adminStore.userInfo
+    
+    // 如果验证后仍未登录，提示并返回
     if (!adminStore.isLoggedIn) {
-      await adminStore.checkLoginStatus()
-      userInfo.value = adminStore.userInfo
-      if (!adminStore.isLoggedIn) {
-        ElMessage.error("登录状态无效，请重新登录")
-        return
-      }
+      ElMessage.error("登录状态无效，请重新登录")
+      return
     }
 
     // 获取奖项总数

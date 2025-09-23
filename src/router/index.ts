@@ -102,8 +102,19 @@ router.beforeEach(async (to, from, next) => {
   
   // 检查登录状态 - 本地有token就算登录
   if (to.meta.requiresAuth && !localStorage.getItem('adminToken')) {
-    next('/admin/login')
-    return
+    // 如果是管理员路由且未登录，尝试验证token
+    if (to.path.startsWith('/admin')) {
+      try {
+        await adminStore.checkLoginStatus()
+        if (!adminStore.isLoggedIn) {
+          next('/admin/login')
+          return
+        }
+      } catch (error) {
+        next('/admin/login')
+        return
+      }
+    }
   }
 
   // 检查是否为超级管理员
