@@ -47,7 +47,7 @@ export const getMessages = async (
   try {
     // 现在api.get返回正确的类型
     const response = await api.get<ApiResponse<PageData<MessageItem>>>(
-      '/public/messages',
+      '/messages',
       { params }
     )
     return response.data.data
@@ -67,7 +67,7 @@ export const toggleLike = async (
   try {
     // 调用点赞接口
     const response = await api.post<ApiResponse<LikeActionResult>>(
-      `/public/messages/${messageId}/like`
+      `/messages/${messageId}/like`
     )
 
     return response.data.data
@@ -85,7 +85,7 @@ export { toggleLike as toggleMessageLike }
 export const deleteMessage = async (messageId: number): Promise<void> => {
   try {
     // 调用删除接口
-    await api.delete<ApiResponse<null>>(`/public/messages/${messageId}`)
+    await api.delete<ApiResponse<null>>(`/messages/${messageId}`)
     // 不需要返回值
   } catch (error) {
     console.error('❌ 删除留言失败:', error)
@@ -100,7 +100,7 @@ export const createMessage = async (
   try {
     // 调用创建留言接口
     const response = await api.post<ApiResponse<MessageItem>>(
-      '/public/messages',
+      '/messages',
       params
     )
     return response.data.data

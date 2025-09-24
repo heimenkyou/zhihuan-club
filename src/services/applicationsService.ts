@@ -31,7 +31,7 @@ export interface MajorMapping {
  */
 export const getMajorMapping = async (): Promise<MajorMapping> => {
   try {
-    const response = await api.get<Result<MajorMapping>>('/public/majors')
+    const response = await api.get<Result<MajorMapping>>('/majors')
     return response.data.data
   } catch (error) {
     console.error('获取专业映射表失败:', error)
@@ -48,7 +48,7 @@ export const submitApplication = async (
 
     // 使用JSON格式发送请求
     const response = await api.post<Result<null>>(
-      '/public/applications',
+      '/applications',
       params // 直接传递参数对象，axios会自动转为JSON
     )
 

@@ -45,7 +45,7 @@ export interface ProjectDetail {
 // 获取项目详情
 export const getProjectDetail = async (id: string): Promise<ProjectDetail> => {
   try {
-    const response = await api.get<any>(`/public/projects/${id}`)
+    const response = await api.get<any>(`/projects/${id}`)
 
     // 直接返回接口数据，不再进行兼容性处理
     if (response.data.code === '0' && response.data.data) {
@@ -64,7 +64,7 @@ export const getProjects = async (
   params?: ProjectListParams
 ): Promise<Result<PageData<Project>>> => {
   try {
-    const response = await api.get<any>('/public/projects', { params })
+    const response = await api.get<any>('/projects', { params })
     return response.data
   } catch (error) {
     console.error('获取项目列表失败:', error)

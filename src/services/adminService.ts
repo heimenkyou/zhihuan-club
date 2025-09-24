@@ -42,7 +42,7 @@ export const getAwards = async (
 ): Promise<AwardItem[]> => {
   try {
     // 从API获取奖项数据
-    const response = await api.get<any>(`/public/awards`)
+    const response = await api.get<any>(`/awards`)
 
     // 检查响应是否存在
     if (!response || !response.data) {
@@ -230,7 +230,7 @@ export const login = async (params: {
 }): Promise<Admin> => {
   try {
     const response = await api.post<Result<Admin>>(
-      '/public/admins/login',
+      '/admins/login',
       params
     )
 
@@ -272,7 +272,7 @@ export const getApplications = async (
 ): Promise<ApplicationPageData<any>> => {
   try {
     const response = await api.get<Result<ApplicationPageData<any>>>(
-      `/public/applications`,
+      `/applications`,
       {
         params,
       }
@@ -292,7 +292,7 @@ export const getApplications = async (
 // 删除报名信息
 export const deleteApplication = async (id: number): Promise<void> => {
   try {
-    await api.delete(`/public/applications/${id}`)
+    await api.delete(`/applications/${id}`)
   } catch (error) {
     console.error('删除报名信息失败:', error)
     throw error
@@ -502,7 +502,7 @@ export interface Award {
  */
 export const getProject = async (id: number): Promise<Project> => {
   try {
-    const response = await api.get<any>(`/public/projects/${id}`)
+    const response = await api.get<any>(`/projects/${id}`)
 
     // 增强响应处理：支持多种返回格式
     if (typeof response.data === 'object') {
@@ -612,7 +612,7 @@ export const getProjects = async (params?: {
   keyword?: string
 }): Promise<ProjectPageData<Project>> => {
   try {
-    const response = await api.get<any>('/public/projects', { params })
+    const response = await api.get<any>('/projects', { params })
 
     if (typeof response.data === 'object') {
       // 支持标准响应格式 {success: true, data: {项目数据}}
