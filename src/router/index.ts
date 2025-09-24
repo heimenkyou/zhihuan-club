@@ -61,8 +61,12 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior(_to, _from, _savedPosition) {
-    // 始终滚动到顶部
+  scrollBehavior(to, from, savedPosition) {
+    // 如果有保存的位置（返回操作），则恢复到之前的位置
+    if (savedPosition) {
+      return savedPosition
+    }
+    // 新页面导航，滚动到顶部
     return { top: 0 }
   },
 })

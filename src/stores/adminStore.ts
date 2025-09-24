@@ -63,6 +63,7 @@ export const useAdminStore = defineStore('admin', () => {
    * 用于需要用户反馈的场景
    */
   const checkLoginStatus = async () => {
+    console.log('checkLoginStatus')
     if (isLoading.value) return
 
     isLoading.value = true

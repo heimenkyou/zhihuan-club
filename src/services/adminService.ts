@@ -9,6 +9,7 @@ export interface GetApplicationsParams {
   studentId?: string
   department?: string // 添加部门字段
   secondDepartment?: string // 添加第二志愿部门字段
+  majors?: string[] // 添加专业筛选（多选）
 }
 
 // 报名信息分页响应数据
@@ -19,7 +20,6 @@ export interface ApplicationPageData<T> {
   pages: number
   records: T[]
 }
-
 
 // 奖项定义
 export interface AwardItem {
@@ -177,10 +177,7 @@ export const createAdmin = async (
   params: Omit<Admin, 'id' | 'createTime' | 'updateTime'>
 ): Promise<Admin> => {
   try {
-    const response = await api.post<Result<Admin>>(
-      `/admin/admins/add`,
-      params
-    )
+    const response = await api.post<Result<Admin>>(`/admin/admins/add`, params)
     return response.data.data
   } catch (error) {
     console.error('添加管理员失败:', error)
@@ -229,10 +226,7 @@ export const login = async (params: {
   password: string
 }): Promise<Admin> => {
   try {
-    const response = await api.post<Result<Admin>>(
-      '/admins/login',
-      params
-    )
+    const response = await api.post<Result<Admin>>('/admins/login', params)
 
     // 验证响应格式
     if (!response.data) {
@@ -262,6 +256,22 @@ export const login = async (params: {
         throw new Error('账号被禁用，请联系管理员')
       }
     }
+    throw error
+  }
+}
+
+// 获取报名信息中所有不重复的专业名称
+export const getApplicationMajors = async (): Promise<string[]> => {
+  try {
+    const response = await api.get<Result<string[]>>(`/applications/majors`)
+
+    if (!response.data || !response.data.data) {
+      throw new Error('获取专业名称列表失败')
+    }
+
+    return response.data.data
+  } catch (error) {
+    console.error('获取专业名称列表失败:', error)
     throw error
   }
 }
@@ -520,7 +530,9 @@ export const getProject = async (id: number): Promise<Project> => {
 /**
  * 项目编辑回显 - 获取完整的项目数据包括关联的媒体资源和奖项
  */
-export const getProjectForEdit = async (id: number): Promise<ProjectEditRespDTO> => {
+export const getProjectForEdit = async (
+  id: number
+): Promise<ProjectEditRespDTO> => {
   try {
     const response = await api.get<any>(`/projects/${id}/edit`)
 

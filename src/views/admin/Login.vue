@@ -120,8 +120,6 @@ const handleLogin = async () => {
 
         // 延迟跳转，确保状态完全同步
         setTimeout(async () => {
-          // 重新验证登录状态确保同步
-          await adminStore.checkLoginStatus()
           router.push("/admin/dashboard")
         }, 1000)
       } catch (error) {

@@ -1,5 +1,6 @@
 import router from '@/router'
 import axios from 'axios'
+import qs from 'qs'
 import { useAdminStore } from '@/stores/adminStore'
 
 export interface Result<T> {
@@ -23,6 +24,9 @@ export interface PageData<T> {
 const api = axios.create({
   baseURL: '/api', // 根据实际情况设置
   timeout: 10000, // 设置超时时间
+  paramsSerializer: {
+    serialize: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
+  }
 })
 
 // 请求拦截器
