@@ -20,7 +20,7 @@ import java.util.Map;
 public class MajorMappingController {
     private final MajorMappingService majorMappingService;
 
-    @GetMapping("/public/majors")
+    @GetMapping("/majors")
     @Operation(summary = "获取专业代号与名称映射表")
     public Result<Map<String, MajorMappingDO>> list() {
         return Results.success(majorMappingService.majors());

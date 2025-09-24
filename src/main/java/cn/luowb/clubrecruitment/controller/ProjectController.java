@@ -26,7 +26,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @Operation(summary = "分页查询项目")
-    @GetMapping("/public/projects")
+    @GetMapping("/projects")
     public Result<PageData<ProjectRespDTO>> page(@ParameterObject PageReqDTO requestParam) {
         log.info("分页查询项目, 页码: {}, 每页数量: {}", requestParam.getCurrent(), requestParam.getSize());
         PageData<ProjectRespDTO> pageData = projectService.getPage(requestParam);
@@ -34,7 +34,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "查询指定项目详情")
-    @GetMapping("/public/projects/{projectId}")
+    @GetMapping("/projects/{projectId}")
     public Result<ProjectDetailRespDTO> getById(@PathVariable Long projectId) {
         log.info("查询指定项目详情, projectId: {}", projectId);
         ProjectDetailRespDTO projectDetailRespDTO = projectService.getProjectDetail(projectId);

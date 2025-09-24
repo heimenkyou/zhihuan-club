@@ -23,7 +23,7 @@ public class AwardController {
     private final AwardService awardService;
 
     @Operation(summary = "查询所有奖项")
-    @GetMapping("/public/awards")
+    @GetMapping("/awards")
     public Result<List<AwardRespDTO>> list() {
         List<AwardRespDTO> awardRespDTOS = awardService.list().stream()
                 .map(each -> {

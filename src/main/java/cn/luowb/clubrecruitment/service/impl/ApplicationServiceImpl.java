@@ -1,22 +1,26 @@
 package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.ApplicationDO;
 import cn.luowb.clubrecruitment.dao.mapper.ApplicationMapper;
+import cn.luowb.clubrecruitment.dto.req.ApplicationPageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.ApplicationReqDTO;
-import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.ApplicationPageDTO;
 import cn.luowb.clubrecruitment.service.ApplicationService;
 import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author heimenkyou
@@ -26,6 +30,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, ApplicationDO>
         implements ApplicationService {
+
+    private final ApplicationMapper applicationMapper;
+
+    public ApplicationServiceImpl(ApplicationMapper applicationMapper) {
+        this.applicationMapper = applicationMapper;
+    }
 
     @Override
     public void createApplication(ApplicationReqDTO requestParam) {
@@ -79,9 +89,14 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     }
 
     @Override
-    public PageData<ApplicationPageDTO> getApplicationList(PageReqDTO requestParam) {
+    public PageData<ApplicationPageDTO> getApplicationList(ApplicationPageReqDTO requestParam) {
         Page<ApplicationDO> page = new Page<>(requestParam.getCurrent(), requestParam.getSize());
-        page = this.page(page, new LambdaQueryWrapper<ApplicationDO>().orderByDesc(ApplicationDO::getCreateTime));
+        page = this.page(page, Wrappers.<ApplicationDO>lambdaQuery()
+                .like(StrUtil.isNotBlank(requestParam.getName()), ApplicationDO::getName, requestParam.getName())
+                .like(StrUtil.isNotBlank(requestParam.getStudentId()), ApplicationDO::getStudentId, requestParam.getStudentId())
+                .in(CollectionUtil.isNotEmpty(requestParam.getMajors()), ApplicationDO::getMajor, requestParam.getMajors())
+                .like(StrUtil.isNotBlank(requestParam.getDepartment()), ApplicationDO::getDepartment, requestParam.getDepartment())
+                .orderByDesc(ApplicationDO::getCreateTime));
         return PageData.of(page,
                 each -> {
                     ApplicationPageDTO pageDTO = BeanUtil.toBean(each, ApplicationPageDTO.class);
@@ -98,5 +113,10 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
         if (!this.removeById(id)) {
             throw new ServiceException("删除报名信息失败");
         }
+    }
+
+    @Override
+    public List<String> getApplicationMajors() {
+        return applicationMapper.selectDistinctMajors();
     }
 }

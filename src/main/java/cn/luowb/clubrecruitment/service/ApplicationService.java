@@ -2,10 +2,12 @@ package cn.luowb.clubrecruitment.service;
 
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.ApplicationDO;
+import cn.luowb.clubrecruitment.dto.req.ApplicationPageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.ApplicationReqDTO;
-import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.ApplicationPageDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * @author heimenkyou
@@ -27,7 +29,7 @@ public interface ApplicationService extends IService<ApplicationDO> {
      * @param requestParam 分页参数
      * @return 分页数据
      */
-    PageData<ApplicationPageDTO> getApplicationList(PageReqDTO requestParam);
+    PageData<ApplicationPageDTO> getApplicationList(ApplicationPageReqDTO requestParam);
 
     /**
      * 删除报名信息
@@ -35,4 +37,11 @@ public interface ApplicationService extends IService<ApplicationDO> {
      * @param id 报名ID
      */
     void deleteApplication(Long id);
+
+    /**
+     * 获取报名信息中所有不重复的专业名称
+     *
+     * @return 专业名称列表
+     */
+    List<String> getApplicationMajors();
 }
