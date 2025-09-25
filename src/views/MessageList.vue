@@ -1,11 +1,11 @@
 <script setup lang="ts">
   import { onMounted, ref, computed, onUnmounted, nextTick, watch } from 'vue'
-  import { useMessageStore } from '../stores/messageStore'
+  import { useMessageStore } from '@/stores/messageStore'
   import { showSuccess } from '@/utils/notification'
   import { Refresh, Edit } from '@element-plus/icons-vue'
   import { useRouter } from 'vue-router'
   import { ElMessageBox } from 'element-plus'
-  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonFooter from '@/components/CommonFooter.vue'
 
   const messageStore = useMessageStore()
   const debugInfo = ref('')

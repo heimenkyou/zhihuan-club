@@ -116,12 +116,12 @@
 </template>
 
 <script setup lang="ts">
-  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonFooter from '@/components/CommonFooter.vue'
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  import CommonNavbar from '../components/CommonNavbar.vue'
-  import { getProjects } from '../services/projectService'
-  import type { Project, ProjectListParams } from '../services/projectService'
+  import CommonNavbar from '@/components/CommonNavbar.vue'
+  import { getProjects } from '@/services/projectService'
+  import type { Project, ProjectListParams } from '@/services/projectService'
   import { ElPagination } from 'element-plus'
 
   const router = useRouter()

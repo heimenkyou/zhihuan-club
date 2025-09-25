@@ -513,7 +513,7 @@
     updateAward,
     deleteAward as deleteAwardApi,
     type AwardItem,
-  } from '../../../services/adminService'
+  } from '@/services/adminService'
 
   // 检测是否为移动端
   const isMobile = computed(() => {

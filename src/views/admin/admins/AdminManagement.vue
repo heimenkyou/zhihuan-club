@@ -138,14 +138,14 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed } from "vue"
 import { ElMessage, ElForm } from "element-plus"
-import { useAdminStore } from "../../../stores/adminStore"
+import { useAdminStore } from "@/stores/adminStore"
 import {
   getAdmins,
   createAdmin,
   deleteAdmin,
   updateAdmin,
   type Admin,
-} from "../../../services/adminService"
+} from "@/services/adminService"
 
 const adminStore = useAdminStore()
 const isSuperAdmin = adminStore.isSuperAdmin()

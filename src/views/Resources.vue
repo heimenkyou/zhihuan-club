@@ -183,7 +183,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import CommonNavbar from "../components/CommonNavbar.vue"
+import CommonNavbar from "@/components/CommonNavbar.vue"
 
 // 类型定义
 interface Resource {

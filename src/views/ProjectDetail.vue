@@ -272,7 +272,7 @@
 
 <script setup lang="ts">
   // 添加必要的导入
-  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonFooter from '@/components/CommonFooter.vue'
   import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import {
@@ -293,8 +293,8 @@
     ElCard,
     ElImage,
   } from 'element-plus'
-  import { getProjectDetail } from '../services/projectService'
-  import type { ProjectDetail as ProjectDetailType } from '../services/projectService'
+  import { getProjectDetail } from '@/services/projectService'
+  import type { ProjectDetail as ProjectDetailType } from '@/services/projectService'
 
   // 路由相关
   const route = useRoute()

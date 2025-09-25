@@ -559,7 +559,7 @@
     type MediaResource,
     type AwardItem,
     type ProjectEditRespDTO,
-  } from '../../../services/adminService'
+  } from '@/services/adminService'
 
   const router = useRouter()
   const route = useRoute()

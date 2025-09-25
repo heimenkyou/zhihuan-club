@@ -744,8 +744,8 @@
 <script setup lang="ts">
   import { onMounted } from 'vue'
   // import { useRouter } from "vue-router"
-  import CommonNavbar from '../components/CommonNavbar.vue'
-  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonNavbar from '@/components/CommonNavbar.vue'
+  import CommonFooter from '@/components/CommonFooter.vue'
 
   // const router = useRouter()
   // 跳转到相关赛事的官网

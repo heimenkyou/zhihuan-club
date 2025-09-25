@@ -10,6 +10,8 @@ export interface GetApplicationsParams {
   department?: string // 添加部门字段
   secondDepartment?: string // 添加第二志愿部门字段
   majors?: string[] // 添加专业筛选（多选）
+  QQNumber?: string // 添加QQ号查询
+  matchAllDepartments?: boolean // 部门匹配逻辑，true=AND同时匹配两个志愿，false=OR匹配任一志愿
 }
 
 // 报名信息分页响应数据

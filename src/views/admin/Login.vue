@@ -56,8 +56,8 @@
   import { ref, reactive, onMounted } from 'vue'
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
-  import { useAdminStore } from '../../stores/adminStore'
-  import { login } from '../../services/adminService'
+  import { useAdminStore } from '@/stores/adminStore'
+  import { login } from '@/services/adminService'
   import type { ElForm } from 'element-plus'
 
   const router = useRouter()

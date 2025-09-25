@@ -677,16 +677,16 @@
 </template>
 
 <script setup lang="ts">
-  import CommonFooter from '../components/CommonFooter.vue'
-  import CommonNavbar from '../components/CommonNavbar.vue' // 引入通用导航栏
+  import CommonFooter from '@/components/CommonFooter.vue'
+  import CommonNavbar from '@/components/CommonNavbar.vue' // 引入通用导航栏
   import { ref, onMounted } from 'vue'
   import { showSuccess } from '@/utils/notification' // 引入通知工具函数
   // 导入 submitApplication 函数（请确保此函数路径正确且能正常请求）
   import {
     submitApplication,
     getMajorMapping,
-  } from '../services/applicationsService'
-  import type { MajorMapping } from '../services/applicationsService'
+  } from '@/services/applicationsService'
+  import type { MajorMapping } from '@/services/applicationsService'
   type ElementRef = HTMLElement | null
 
   // 响应式状态定义

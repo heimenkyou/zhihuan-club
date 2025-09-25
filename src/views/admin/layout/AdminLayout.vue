@@ -96,7 +96,7 @@
   } from '@element-plus/icons-vue'
 
   import { useRouter } from 'vue-router'
-  import { useAdminStore } from '../../../stores/adminStore'
+  import { useAdminStore } from '@/stores/adminStore'
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
 import { logout as logoutApi } from '@/services/adminService'
@@ -134,6 +134,7 @@ import { logout as logoutApi } from '@/services/adminService'
     
     // 异步验证登录状态，确保状态同步
     await adminStore.checkLoginStatus()
+    console.debug('[管理员导航栏] 登录状态检查完成，当前登录状态：', adminStore.isLoggedIn)
     if (!adminStore.isLoggedIn) {
       router.push('/admin/login')
     } else {

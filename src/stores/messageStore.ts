@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { getMessages, toggleLike, deleteMessage, createMessage } from '../services/messageService'
-import type { MessageItem, GetMessagesParams, PageData, LikeActionResult, CreateMessageParams } from '../services/messageService'
+import { getMessages, toggleLike, deleteMessage, createMessage } from '@/services/messageService'
+import type { MessageItem, GetMessagesParams, PageData, LikeActionResult, CreateMessageParams } from '@/services/messageService'
 
 export const useMessageStore = defineStore('message', {
   state: () => ({

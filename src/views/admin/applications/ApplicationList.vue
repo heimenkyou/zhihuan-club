@@ -51,6 +51,25 @@
           </el-col>
           
           <el-col :span="24" v-if="isMobile">
+            <el-form-item label="QQ号">
+              <el-input
+                v-model="searchForm.QQNumber"
+                placeholder="请输入QQ号"
+                @keyup.enter="handleSearch"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-else>
+            <el-form-item label="QQ号">
+              <el-input
+                v-model="searchForm.QQNumber"
+                placeholder="请输入QQ号"
+                @keyup.enter="handleSearch"
+              />
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="24" v-if="isMobile">
             <el-form-item label="专业">
               <el-select
                 v-model="searchForm.majors"
@@ -146,6 +165,30 @@
                 <el-option label="综合管理部" value="综合管理部" />
                 <el-option label="无" value="无" />
               </el-select>
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="24" v-if="isMobile">
+            <el-form-item label="部门匹配">
+              <el-radio-group
+                v-model="searchForm.matchAllDepartments"
+                @change="handleSearch"
+                style="width: 100%"
+              >
+                <el-radio :label="false">匹配任一志愿</el-radio>
+                <el-radio :label="true">同时匹配两个志愿</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-else>
+            <el-form-item label="部门匹配">
+              <el-radio-group
+                v-model="searchForm.matchAllDepartments"
+                @change="handleSearch"
+              >
+                <el-radio :label="false">匹配任一志愿</el-radio>
+                <el-radio :label="true">同时匹配两个志愿</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           
@@ -333,8 +376,8 @@ import {
   deleteApplication as apiDeleteApplication,
   getApplicationMajors,
   type ApplicationPageData,
-} from "../../../services/adminService"
-import type { joinForm } from "../../../services/applicationsService"
+} from "@/services/adminService"
+import type { joinForm } from "@/services/applicationsService"
 import * as XLSX from "xlsx"
 
 // 检测是否为移动端
@@ -348,12 +391,16 @@ const searchForm = reactive<{
   department: string
   secondDepartment: string
   majors: string[]
+  QQNumber: string
+  matchAllDepartments: boolean
 }>({
   name: "",
   studentId: "",
   department: "",
   secondDepartment: "",
   majors: [],
+  QQNumber: "",
+  matchAllDepartments: false,
 })
 
 const applicationsData = ref<ApplicationPageData<joinForm & { id: number }>>({
@@ -408,6 +455,8 @@ const loadApplications = async () => {
       department: searchForm.department,
       secondDepartment: searchForm.secondDepartment,
       majors: searchForm.majors.length > 0 ? searchForm.majors : undefined,
+      QQNumber: searchForm.QQNumber,
+      matchAllDepartments: searchForm.matchAllDepartments,
     }
     const data = await getApplications(params)
     applicationsData.value = data
@@ -435,6 +484,8 @@ const resetForm = () => {
   searchForm.department = ""
   searchForm.secondDepartment = ""
   searchForm.majors = []
+  searchForm.QQNumber = ""
+  searchForm.matchAllDepartments = false
   applicationsData.value.current = 1
   loadApplications()
 }

@@ -593,9 +593,9 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted, nextTick, watch } from 'vue'
-  import CommonNavbar from '../components/CommonNavbar.vue'
-  import { getAwards } from '../services/adminService'
-  import CommonFooter from '../components/CommonFooter.vue'
+  import CommonNavbar from '@/components/CommonNavbar.vue'
+  import { getAwards } from '@/services/adminService'
+  import CommonFooter from '@/components/CommonFooter.vue'
 
   // 筛选组件定义
   interface FilterOption {

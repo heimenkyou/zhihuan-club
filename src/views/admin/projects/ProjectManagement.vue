@@ -136,7 +136,7 @@ import {
   deleteProject as deleteProjectApi,
   type Project,
   type ProjectPageData,
-} from "../../../services/adminService"
+} from "@/services/adminService"
 
 const router = useRouter()
 

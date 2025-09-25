@@ -5,54 +5,54 @@ import { useAdminStore } from '@/stores/adminStore'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', name: 'home', component: () => import('../views/Home.vue') },
+  { path: '/', name: 'home', component: () => import('@/views/Home.vue') },
   {
     path: '/projects',
     name: 'projects',
-    component: () => import('../views/Projects.vue'),
+    component: () => import('@/views/Projects.vue'),
   },
   {
     path: '/competitions',
     name: 'competitions',
-    component: () => import('../views/Competitions.vue'),
+    component: () => import('@/views/Competitions.vue'),
     meta: { requiresConfirmation: true }, // 需要确认访问
   },
   {
     path: '/awards',
     name: 'awards',
-    component: () => import('../views/Awards.vue'),
+    component: () => import('@/views/Awards.vue'),
   },
   {
     path: '/about',
     name: 'about',
-    component: () => import('../views/About.vue'),
+    component: () => import('@/views/About.vue'),
   },
   {
     path: '/resources',
     name: 'resources',
-    component: () => import('../views/Resources.vue'),
+    component: () => import('@/views/Resources.vue'),
     meta: { requiresConfirmation: true }, // 需要确认访问
   },
-  { path: '/join', name: 'join', component: () => import('../views/Join.vue') },
+  { path: '/join', name: 'join', component: () => import('@/views/Join.vue') },
   {
     path: '/messages',
     name: 'messageList',
-    component: () => import('../views/MessageList.vue'),
+    component: () => import('@/views/MessageList.vue'),
   },
   {
     path: '/projectdetail',
     name: 'projectDetail',
-    component: () => import('../views/ProjectDetail.vue'),
+    component: () => import('@/views/ProjectDetail.vue'),
   },
   {
     path: '/privacy-policy',
     name: 'privacyPolicy',
-    component: () => import('../views/PrivacyPolicy.vue'),
+    component: () => import('@/views/PrivacyPolicy.vue'),
   },
   {
     path: '/terms-of-service',
     name: 'termsOfService',
-    component: () => import('../views/TermsOfService.vue'),
+    component: () => import('@/views/TermsOfService.vue'),
   },
   // 添加管理员公共路由
   ...adminRoutes,
@@ -74,12 +74,12 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
   const adminStore = useAdminStore()
-  
+
   // 初始化认证状态（设置请求头）
   if (typeof window !== 'undefined') {
     adminStore.initAuthState()
   }
-  
+
   // 检查是否需要访问确认
   if (to.meta.requiresConfirmation) {
     try {
@@ -103,13 +103,17 @@ router.beforeEach(async (to, from, next) => {
       return
     }
   }
-  
+
   // 检查登录状态 - 本地有token就算登录
   if (to.meta.requiresAuth && !localStorage.getItem('adminToken')) {
     // 如果是管理员路由且未登录，尝试验证token
     if (to.path.startsWith('/admin')) {
       try {
         await adminStore.checkLoginStatus()
+        console.debug(
+          '[路由守卫] 登录状态检查完成, isLoggedIn:',
+          adminStore.isLoggedIn
+        )
         if (!adminStore.isLoggedIn) {
           next('/admin/login')
           return

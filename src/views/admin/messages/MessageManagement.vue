@@ -148,8 +148,8 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import {
   getMessages,
   deleteMessage as deleteMessageApi,
-} from "../../../services/messageService"
-import type { PageData, MessageItem } from "../../../services/messageService"
+} from "@/services/messageService"
+import type { PageData, MessageItem } from "@/services/messageService"
 
 // 检测是否为移动端
 const isMobile = computed(() => {

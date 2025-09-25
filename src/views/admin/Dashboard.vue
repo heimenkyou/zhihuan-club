@@ -37,9 +37,9 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue"
-import { useAdminStore } from "../../stores/adminStore"
-import { getAwards, getApplications } from "../../services/adminService"
-import { getMessages } from "../../services/messageService"
+import { useAdminStore } from "@/stores/adminStore"
+import { getAwards, getApplications } from "@/services/adminService"
+import { getMessages } from "@/services/messageService"
 import { ElMessage } from "element-plus"
 
 // 检测是否为移动端
@@ -62,8 +62,7 @@ onMounted(async () => {
   // 获取统计数据
   loading.value = true
   try {
-    // 验证登录状态 - 延迟检查确保状态同步
-    await adminStore.checkLoginStatus()
+    // 验证登录状态
     userInfo.value = adminStore.userInfo
     console.debug("登录状态检查完成, userInfo:", userInfo.value)
 

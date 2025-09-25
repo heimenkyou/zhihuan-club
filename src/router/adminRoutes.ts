@@ -1,11 +1,11 @@
-import AdminLayout from '../views/admin/layout/AdminLayout.vue';
-import Dashboard from '../views/admin/Dashboard.vue';
-import ApplicationList from '../views/admin/applications/ApplicationList.vue';
-import AwardManagement from '../views/admin/awards/AwardManagement.vue';
-import MessageManagement from '../views/admin/messages/MessageManagement.vue';
-import AdminManagement from '../views/admin/admins/AdminManagement.vue';
-import ProjectManagement from '../views/admin/projects/ProjectManagement.vue'
-import Profile from '../views/admin/Profile.vue';
+import AdminLayout from '@/views/admin/layout/AdminLayout.vue';
+import Dashboard from '@/views/admin/Dashboard.vue';
+import ApplicationList from '@/views/admin/applications/ApplicationList.vue';
+import AwardManagement from '@/views/admin/awards/AwardManagement.vue';
+import MessageManagement from '@/views/admin/messages/MessageManagement.vue';
+import AdminManagement from '@/views/admin/admins/AdminManagement.vue';
+import ProjectManagement from '@/views/admin/projects/ProjectManagement.vue'
+import Profile from '@/views/admin/Profile.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 const adminRoutes: RouteRecordRaw[] = [
@@ -51,7 +51,7 @@ const adminRoutes: RouteRecordRaw[] = [
       {
         path: 'projects/edit/:id?',
         name: 'ProjectEdit',
-        component: () => import('../views/admin/projects/ProjectEditPage.vue'),
+        component: () => import('@/views/admin/projects/ProjectEditPage.vue'),
         meta: { title: '编辑项目' }
       },
       // 个人资料页面路由
@@ -65,7 +65,7 @@ const adminRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/admin/login',
-    component: () => import('../views/admin/Login.vue'),
+    component: () => import('@/views/admin/Login.vue'),
     meta: { title: '管理员登录' },
   },
 ];
