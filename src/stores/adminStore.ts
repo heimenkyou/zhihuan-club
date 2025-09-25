@@ -14,7 +14,6 @@ export const useAdminStore = defineStore('admin', () => {
     userInfo.value = userData
     if (token) {
       localStorage.setItem('adminToken', token)
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
   }
 

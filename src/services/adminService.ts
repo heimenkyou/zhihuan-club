@@ -234,35 +234,16 @@ export const login = async (params: {
   try {
     const response = await api.post<Result<Admin>>('/admins/login', params)
 
-    // 验证响应格式
-    if (!response.data) {
-      throw new Error('登录失败，服务器响应异常')
-    }
-
-    if (
-      !response.data ||
-      !('success' in response.data) ||
-      !response.data.success
-    ) {
-      throw new Error(response.data.message || '登录失败')
-    }
-
     // 存储token到本地
-    if (response.data.data && response.data.data.token) {
-      localStorage.setItem('adminToken', response.data.data.token)
+    const token = response.data.data?.token
+    if (token) {
+      localStorage.setItem('adminToken', token)
     }
     return response.data.data
   } catch (error) {
-    console.error('登录失败:', error)
-    // 增强错误信息
-    if (error instanceof Error) {
-      if (error.message.includes('401')) {
-        throw new Error('用户名或密码错误')
-      } else if (error.message.includes('403')) {
-        throw new Error('账号被禁用，请联系管理员')
-      }
-    }
-    throw error
+    const message = error instanceof Error ? error.message : '登录失败'
+    console.error('登录失败:', message)
+    throw new Error(message)
   }
 }
 

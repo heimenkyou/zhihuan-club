@@ -37,7 +37,7 @@ export const showSuccess = (message: string) => {
 
 // 错误提示
 export const showError = (message: string) => {
-  showNotification('error', message, '错误', 3000)
+  showNotification('error', message, '错误', 2000)
 }
 
 // 警告提示

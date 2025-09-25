@@ -125,23 +125,6 @@
             router.push('/admin/dashboard')
             console.log('跳转成功')
           }, 1000)
-        } catch (error) {
-          // 优化错误处理，区分不同类型的错误
-          let errorMessage = '登录失败，请重试'
-          if (error instanceof Error) {
-            // 检查错误消息中是否包含特定关键词
-            if (error.message.includes('401')) {
-              errorMessage = '用户名或密码错误'
-            } else if (error.message.includes('403')) {
-              errorMessage = '账号被禁用，请联系管理员'
-            } else if (error.message.includes('timeout')) {
-              errorMessage = '网络超时，请检查网络连接'
-            } else {
-              errorMessage = error.message
-            }
-          }
-          ElMessage.error(errorMessage)
-          console.error('Login error:', error)
         } finally {
           loading.value = false
         }

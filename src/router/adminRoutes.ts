@@ -1,12 +1,12 @@
-import AdminLayout from '@/views/admin/layout/AdminLayout.vue';
-import Dashboard from '@/views/admin/Dashboard.vue';
-import ApplicationList from '@/views/admin/applications/ApplicationList.vue';
-import AwardManagement from '@/views/admin/awards/AwardManagement.vue';
-import MessageManagement from '@/views/admin/messages/MessageManagement.vue';
-import AdminManagement from '@/views/admin/admins/AdminManagement.vue';
+import AdminLayout from '@/views/admin/layout/AdminLayout.vue'
+import Dashboard from '@/views/admin/Dashboard.vue'
+import ApplicationList from '@/views/admin/applications/ApplicationList.vue'
+import AwardManagement from '@/views/admin/awards/AwardManagement.vue'
+import MessageManagement from '@/views/admin/messages/MessageManagement.vue'
+import AdminManagement from '@/views/admin/admins/AdminManagement.vue'
 import ProjectManagement from '@/views/admin/projects/ProjectManagement.vue'
-import Profile from '@/views/admin/Profile.vue';
-import type { RouteRecordRaw } from 'vue-router';
+import Profile from '@/views/admin/Profile.vue'
+import type { RouteRecordRaw } from 'vue-router'
 
 const adminRoutes: RouteRecordRaw[] = [
   {
@@ -44,30 +44,30 @@ const adminRoutes: RouteRecordRaw[] = [
         path: 'projects',
         name: 'ProjectManagement',
         component: ProjectManagement,
-        meta: { title: '项目管理' }
+        meta: { title: '项目管理' },
       },
-      
+
       // 项目编辑页面路由
       {
         path: 'projects/edit/:id?',
         name: 'ProjectEdit',
         component: () => import('@/views/admin/projects/ProjectEditPage.vue'),
-        meta: { title: '编辑项目' }
+        meta: { title: '编辑项目' },
       },
       // 个人资料页面路由
       {
         path: 'profile',
         name: 'AdminProfile',
         component: Profile,
-        meta: { title: '个人资料' }
+        meta: { title: '个人资料' },
       },
     ],
   },
   {
     path: '/admin/login',
     component: () => import('@/views/admin/Login.vue'),
-    meta: { title: '管理员登录' },
+    meta: { title: '管理员登录', requiresAuth: false },
   },
-];
+]
 
-export default adminRoutes;
+export default adminRoutes
