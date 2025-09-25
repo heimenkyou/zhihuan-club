@@ -10,14 +10,6 @@ export const useAdminStore = defineStore('admin', () => {
   // 登录状态 = 本地有token
   const isLoggedIn = computed(() => !!localStorage.getItem('adminToken'))
 
-  // 初始化时设置请求头
-  const initAuthState = () => {
-    const token = localStorage.getItem('adminToken')
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    }
-  }
-
   const login = (userData: Admin, token?: string) => {
     userInfo.value = userData
     if (token) {
@@ -32,7 +24,6 @@ export const useAdminStore = defineStore('admin', () => {
   const clearAuthState = () => {
     userInfo.value = null
     localStorage.removeItem('adminToken')
-    delete api.defaults.headers.common['Authorization']
   }
 
   /**
@@ -63,15 +54,16 @@ export const useAdminStore = defineStore('admin', () => {
    * 用于需要用户反馈的场景
    */
   const checkLoginStatus = async () => {
-    console.log('checkLoginStatus')
+    console.log('检查登录状态...')
     if (isLoading.value) return
 
     isLoading.value = true
     try {
       await fetchUserInfo()
+      return true
     } catch (error) {
       console.error('验证登录状态失败:', error)
-      // 验证失败时由调用方处理错误提示
+      return false
     } finally {
       isLoading.value = false
     }
@@ -104,7 +96,6 @@ export const useAdminStore = defineStore('admin', () => {
     isLoggedIn,
     userInfo,
     isLoading,
-    initAuthState,
     fetchUserInfo,
     login,
     logout,

@@ -75,11 +75,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const adminStore = useAdminStore()
 
-  // 初始化认证状态（设置请求头）
-  if (typeof window !== 'undefined') {
-    adminStore.initAuthState()
-  }
-
   // 检查是否需要访问确认
   if (to.meta.requiresConfirmation) {
     try {
@@ -105,20 +100,11 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 检查登录状态 - 本地有token就算登录
-  if (to.meta.requiresAuth && !localStorage.getItem('adminToken')) {
+  if (to.meta.requiresAuth) {
     // 如果是管理员路由且未登录，尝试验证token
     if (to.path.startsWith('/admin')) {
-      try {
-        await adminStore.checkLoginStatus()
-        console.debug(
-          '[路由守卫] 登录状态检查完成, isLoggedIn:',
-          adminStore.isLoggedIn
-        )
-        if (!adminStore.isLoggedIn) {
-          next('/admin/login')
-          return
-        }
-      } catch (error) {
+      if (!adminStore.isLoggedIn) {
+        ElMessage.error('请先登录')
         next('/admin/login')
         return
       }
@@ -131,7 +117,6 @@ router.beforeEach(async (to, from, next) => {
     next(from.path || '/admin/dashboard')
     return
   }
-
   next()
 })
 

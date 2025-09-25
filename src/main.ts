@@ -56,7 +56,6 @@ app.use(ElementPlus, {
 // 初始化认证状态（必须在pinia和router之后）
 import { useAdminStore } from '@/stores/adminStore'
 const adminStore = useAdminStore()
-adminStore.initAuthState()
 
 // 如果本地有token但用户信息为空，获取用户信息
 if (localStorage.getItem('adminToken') && !adminStore.userInfo) {

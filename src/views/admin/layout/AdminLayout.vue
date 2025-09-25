@@ -5,13 +5,17 @@
         <el-icon class="menu-toggle" @click="toggleMenu" v-if="isMobile">
           <component :is="isMenuCollapsed ? 'Expand' : 'Fold'" />
         </el-icon>
-        <span class="admin-title">{{ isMobile && isMenuCollapsed ? '管理后台' : '社团管理后台' }}</span>
+        <span class="admin-title">{{
+          isMobile && isMenuCollapsed ? '管理后台' : '社团管理后台'
+        }}</span>
       </div>
       <div class="header-right">
         <el-dropdown trigger="hover" @command="handleCommand">
           <div class="user-info">
             <el-icon class="user-icon"><User /></el-icon>
-            <span class="username" v-if="!isMobile || !isMenuCollapsed">{{ userInfo?.username }}</span>
+            <span class="username" v-if="!isMobile || !isMenuCollapsed">{{
+              userInfo?.username
+            }}</span>
             <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
           </div>
           <template #dropdown>
@@ -34,10 +38,10 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside 
-        class="admin-aside" 
+      <el-aside
+        class="admin-aside"
         :width="isMobile ? (isMenuCollapsed ? '0' : '200px') : '200px'"
-        :class="{ 'collapsed': isMobile && isMenuCollapsed }"
+        :class="{ collapsed: isMobile && isMenuCollapsed }"
       >
         <el-menu
           :default-active="currentRoutePath"
@@ -97,9 +101,9 @@
 
   import { useRouter } from 'vue-router'
   import { useAdminStore } from '@/stores/adminStore'
-import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
-import { ElMessage } from 'element-plus'
-import { logout as logoutApi } from '@/services/adminService'
+  import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
+  import { ElMessage } from 'element-plus'
+  import { logout as logoutApi } from '@/services/adminService'
 
   const router = useRouter()
   const adminStore = useAdminStore()
@@ -131,15 +135,10 @@ import { logout as logoutApi } from '@/services/adminService'
   onMounted(async () => {
     checkIsMobile()
     window.addEventListener('resize', handleResize)
-    
+
     // 异步验证登录状态，确保状态同步
     await adminStore.checkLoginStatus()
-    console.debug('[管理员导航栏] 登录状态检查完成，当前登录状态：', adminStore.isLoggedIn)
-    if (!adminStore.isLoggedIn) {
-      router.push('/admin/login')
-    } else {
-      userInfo.value = adminStore.userInfo
-    }
+    userInfo.value = adminStore.userInfo
   })
 
   onBeforeUnmount(() => {
@@ -175,21 +174,21 @@ import { logout as logoutApi } from '@/services/adminService'
   }
 
   /**
- * 处理退出登录 - 异步调用后端登出接口并立即清理本地状态
- * 不等待后端接口响应，立即清除本地token并跳转到登录页
- */
-const handleLogout = () => {
-  // 异步调用后端登出接口，不等待响应
-  logoutApi().catch(error => {
-    // 仅记录日志，不影响用户体验
-    console.warn('后端登出接口调用失败:', error)
-  })
-  
-  // 立即清除本地状态，不等待后端响应
-  adminStore.logout()
-  ElMessage.success('退出登录成功')
-  router.push('/admin/login')
-}
+   * 处理退出登录 - 异步调用后端登出接口并立即清理本地状态
+   * 不等待后端接口响应，立即清除本地token并跳转到登录页
+   */
+  const handleLogout = () => {
+    // 异步调用后端登出接口，不等待响应
+    logoutApi().catch(error => {
+      // 仅记录日志，不影响用户体验
+      console.warn('后端登出接口调用失败:', error)
+    })
+
+    // 立即清除本地状态，不等待后端响应
+    adminStore.logout()
+    ElMessage.success('退出登录成功')
+    router.push('/admin/login')
+  }
   // 获取当前路由路径
   const currentRoutePath = computed(() => router.currentRoute.value.path)
 </script>
@@ -316,31 +315,31 @@ const handleLogout = () => {
     .menu-toggle {
       display: block;
     }
-    
+
     .admin-header {
       padding: 0 15px;
       height: 50px;
     }
-    
+
     .admin-title {
       font-size: 18px;
       max-width: 150px;
     }
-    
+
     .user-icon {
       font-size: 16px;
       margin-right: 5px;
     }
-    
+
     .username {
       font-size: 13px;
       max-width: 80px;
     }
-    
+
     .admin-main {
       padding: 15px;
     }
-    
+
     .admin-aside {
       position: absolute;
       z-index: 1000;
@@ -348,21 +347,21 @@ const handleLogout = () => {
       transition: width 0.3s ease;
     }
   }
-  
+
   @media (max-width: 480px) {
     .admin-header {
       padding: 0 10px;
     }
-    
+
     .admin-title {
       font-size: 16px;
       max-width: 120px;
     }
-    
+
     .username {
       max-width: 60px;
     }
-    
+
     .admin-main {
       padding: 10px;
     }
