@@ -195,18 +195,18 @@ export const deleteAdmin = async (id: number): Promise<void> => {
   }
 }
 
-// 更新管理员信息
+/**
+ * 更新管理员信息
+ * @param id - 管理员ID
+ * @param params - 更新的管理员信息
+ * @returns 更新后的管理员信息
+ */
 export const updateAdmin = async (
   id: number,
   params: Partial<Omit<Admin, 'id' | 'createTime' | 'updateTime'>>
 ): Promise<Admin> => {
-  try {
-    const response = await api.put<Result<Admin>>(`/admins/${id}`, params)
-    return response.data.data
-  } catch (error) {
-    console.error('更新管理员信息失败:', error)
-    throw error
-  }
+  const response = await api.put<Result<Admin>>(`/admin/admins/${id}`, params)
+  return response.data.data
 }
 
 // 获取当前登录管理员信息
@@ -220,7 +220,11 @@ export const getCurrentAdmin = async (): Promise<Admin> => {
   }
 }
 
-// 登录
+/**
+ * 登录管理员
+ * @param params 登录参数（用户名和密码）
+ * @returns 管理员信息
+ */
 export const login = async (params: {
   username: string
   password: string
@@ -258,6 +262,14 @@ export const login = async (params: {
     }
     throw error
   }
+}
+
+/**
+ * 登出管理员 - 调用后端登出接口并清理本地状态
+ * @returns 无返回值
+ */
+export const logout = async (): Promise<void> => {
+  await api.post('/admins/logout')
 }
 
 // 获取报名信息中所有不重复的专业名称

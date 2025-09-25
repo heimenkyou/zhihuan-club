@@ -5,6 +5,7 @@ import AwardManagement from '../views/admin/awards/AwardManagement.vue';
 import MessageManagement from '../views/admin/messages/MessageManagement.vue';
 import AdminManagement from '../views/admin/admins/AdminManagement.vue';
 import ProjectManagement from '../views/admin/projects/ProjectManagement.vue'
+import Profile from '../views/admin/Profile.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 const adminRoutes: RouteRecordRaw[] = [
@@ -52,6 +53,13 @@ const adminRoutes: RouteRecordRaw[] = [
         name: 'ProjectEdit',
         component: () => import('../views/admin/projects/ProjectEditPage.vue'),
         meta: { title: '编辑项目' }
+      },
+      // 个人资料页面路由
+      {
+        path: 'profile',
+        name: 'AdminProfile',
+        component: Profile,
+        meta: { title: '个人资料' }
       },
     ],
   },

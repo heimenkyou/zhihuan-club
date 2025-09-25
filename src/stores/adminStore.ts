@@ -54,7 +54,7 @@ export const useAdminStore = defineStore('admin', () => {
     } catch (error) {
       // 获取失败时清除状态，让拦截器处理跳转
       userInfo.value = null
-      return false
+      throw new Error('获取用户信息失败:' + error)
     }
   }
 

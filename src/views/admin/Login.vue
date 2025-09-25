@@ -53,148 +53,150 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue"
-import { ElMessage } from "element-plus"
-import { useRouter } from "vue-router"
-import { useAdminStore } from "../../stores/adminStore"
-import { login } from "../../services/adminService"
-import type { ElForm } from "element-plus"
+  import { ref, reactive, onMounted } from 'vue'
+  import { ElMessage } from 'element-plus'
+  import { useRouter } from 'vue-router'
+  import { useAdminStore } from '../../stores/adminStore'
+  import { login } from '../../services/adminService'
+  import type { ElForm } from 'element-plus'
 
-const router = useRouter()
-const adminStore = useAdminStore()
-const loginFormRef = ref<InstanceType<typeof ElForm> | null>(null)
-const loginForm = reactive<{ username: string; password: string }>({
-  username: "",
-  password: "",
-})
-const rememberPassword = ref(false)
-const loading = ref(false)
-const rules = {
-  username: [
-    { required: true, message: "请输入用户名", trigger: "blur" },
-    {
-      min: 3,
-      max: 20,
-      message: "用户名长度应在3-20个字符之间",
-      trigger: "blur",
-    },
-  ],
-  password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 5, message: "密码长度不能少于5位", trigger: "blur" },
-    { max: 20, message: "密码长度不能超过20位", trigger: "blur" },
-  ],
-}
+  const router = useRouter()
+  const adminStore = useAdminStore()
+  const loginFormRef = ref<InstanceType<typeof ElForm> | null>(null)
+  const loginForm = reactive<{ username: string; password: string }>({
+    username: '',
+    password: '',
+  })
+  const rememberPassword = ref(false)
+  const loading = ref(false)
+  const rules = {
+    username: [
+      { required: true, message: '请输入用户名', trigger: 'blur' },
+      {
+        min: 3,
+        max: 20,
+        message: '用户名长度应在3-20个字符之间',
+        trigger: 'blur',
+      },
+    ],
+    password: [
+      { required: true, message: '请输入密码', trigger: 'blur' },
+      { min: 5, message: '密码长度不能少于5位', trigger: 'blur' },
+      { max: 20, message: '密码长度不能超过20位', trigger: 'blur' },
+    ],
+  }
 
-const handleLogin = async () => {
-  // 验证表单
-  loginFormRef.value?.validate(async (valid) => {
-    if (valid) {
-      loading.value = true
-      try {
-        // 调用登录API
-        const adminInfo = await login(loginForm)
-        // 从localStorage获取token
-        const token = localStorage.getItem("adminToken")
-        // 登录成功后存储管理员信息
-        adminStore.login(
-          {
-            ...adminInfo,
-            role: adminInfo.role as "super" | "normal",
-          },
-          token || undefined
-        )
+  const handleLogin = async () => {
+    // 验证表单
+    loginFormRef.value?.validate(async valid => {
+      if (valid) {
+        loading.value = true
+        try {
+          // 调用登录API
+          const adminInfo = await login(loginForm)
+          // 从localStorage获取token
+          const token = localStorage.getItem('adminToken')
+          console.debug('登录成功, token:', token)
+          // 登录成功后存储管理员信息
+          adminStore.login(
+            {
+              ...adminInfo,
+              role: adminInfo.role as 'super' | 'normal',
+            },
+            token || undefined
+          )
 
-        // 处理记住密码功能
-        if (rememberPassword.value) {
-          localStorage.setItem("rememberedUsername", loginForm.username)
-          localStorage.setItem("rememberedPassword", loginForm.password)
-          localStorage.setItem("rememberPassword", "true")
-        } else {
-          localStorage.removeItem("rememberedUsername")
-          localStorage.removeItem("rememberedPassword")
-          localStorage.removeItem("rememberPassword")
-        }
-
-        ElMessage.success("登录成功，正在跳转...")
-
-        // 延迟跳转，确保状态完全同步
-        setTimeout(async () => {
-          router.push("/admin/dashboard")
-        }, 1000)
-      } catch (error) {
-        // 优化错误处理，区分不同类型的错误
-        let errorMessage = "登录失败，请重试"
-        if (error instanceof Error) {
-          // 检查错误消息中是否包含特定关键词
-          if (error.message.includes("401")) {
-            errorMessage = "用户名或密码错误"
-          } else if (error.message.includes("403")) {
-            errorMessage = "账号被禁用，请联系管理员"
-          } else if (error.message.includes("timeout")) {
-            errorMessage = "网络超时，请检查网络连接"
+          // 处理记住密码功能
+          if (rememberPassword.value) {
+            localStorage.setItem('rememberedUsername', loginForm.username)
+            localStorage.setItem('rememberedPassword', loginForm.password)
+            localStorage.setItem('rememberPassword', 'true')
           } else {
-            errorMessage = error.message
+            localStorage.removeItem('rememberedUsername')
+            localStorage.removeItem('rememberedPassword')
+            localStorage.removeItem('rememberPassword')
           }
+
+          ElMessage.success('登录成功，正在跳转...')
+          console.log('登录成功, 正在跳转...')
+
+          // 延迟跳转，确保状态完全同步
+          setTimeout(async () => {
+            router.push('/admin/dashboard')
+            console.log('跳转成功')
+          }, 1000)
+        } catch (error) {
+          // 优化错误处理，区分不同类型的错误
+          let errorMessage = '登录失败，请重试'
+          if (error instanceof Error) {
+            // 检查错误消息中是否包含特定关键词
+            if (error.message.includes('401')) {
+              errorMessage = '用户名或密码错误'
+            } else if (error.message.includes('403')) {
+              errorMessage = '账号被禁用，请联系管理员'
+            } else if (error.message.includes('timeout')) {
+              errorMessage = '网络超时，请检查网络连接'
+            } else {
+              errorMessage = error.message
+            }
+          }
+          ElMessage.error(errorMessage)
+          console.error('Login error:', error)
+        } finally {
+          loading.value = false
         }
-        ElMessage.error(errorMessage)
-        console.error("Login error:", error)
-      } finally {
-        loading.value = false
       }
+    })
+  }
+
+  // 组件挂载时加载记住的密码
+  onMounted(() => {
+    const rememberedUsername = localStorage.getItem('rememberedUsername')
+    const rememberedPassword = localStorage.getItem('rememberedPassword')
+    const rememberPasswordFlag = localStorage.getItem('rememberPassword')
+
+    if (rememberedUsername) {
+      loginForm.username = rememberedUsername
+    }
+    if (rememberedPassword) {
+      loginForm.password = rememberedPassword
+    }
+    if (rememberPasswordFlag === 'true') {
+      rememberPassword.value = true
     }
   })
-}
-  
-
-// 组件挂载时加载记住的密码
-onMounted(() => {
-  const rememberedUsername = localStorage.getItem("rememberedUsername")
-  const rememberedPassword = localStorage.getItem("rememberedPassword")
-  const rememberPasswordFlag = localStorage.getItem("rememberPassword")
-  
-  if (rememberedUsername) {
-    loginForm.username = rememberedUsername
-  }
-  if (rememberedPassword) {
-    loginForm.password = rememberedPassword
-  }
-  if (rememberPasswordFlag === "true") {
-    rememberPassword.value = true
-  }
-})
 </script>
 
 <style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f7fa;
-  background-image: linear-gradient(120deg, #f5f7fa 0%, #e4e8f0 100%);
-}
-.login-card {
-  width: 400px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.card-header {
-  display: flex;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  padding: 16px 0;
-}
-.login-form {
-  padding: 30px 20px;
-}
-.login-btn {
-  width: 100%;
-  height: 40px;
-  font-size: 16px;
-  margin-top: 10px;
-}
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f7fa;
+    background-image: linear-gradient(120deg, #f5f7fa 0%, #e4e8f0 100%);
+  }
+  .login-card {
+    width: 400px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    padding: 16px 0;
+  }
+  .login-form {
+    padding: 30px 20px;
+  }
+  .login-btn {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    margin-top: 10px;
+  }
 </style>

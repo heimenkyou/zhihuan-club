@@ -65,6 +65,7 @@ onMounted(async () => {
     // 验证登录状态 - 延迟检查确保状态同步
     await adminStore.checkLoginStatus()
     userInfo.value = adminStore.userInfo
+    console.debug("登录状态检查完成, userInfo:", userInfo.value)
 
     // 获取奖项总数
     try {

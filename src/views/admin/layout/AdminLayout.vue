@@ -97,8 +97,9 @@
 
   import { useRouter } from 'vue-router'
   import { useAdminStore } from '../../../stores/adminStore'
-  import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
-  import { ElMessage } from 'element-plus'
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
+import { ElMessage } from 'element-plus'
+import { logout as logoutApi } from '@/services/adminService'
 
   const router = useRouter()
   const adminStore = useAdminStore()
@@ -159,8 +160,8 @@
   const handleCommand = (command: string) => {
     switch (command) {
       case 'profile':
-        // TODO: 跳转到个人资料页面
-        ElMessage.info('个人资料功能开发中')
+        // 跳转到个人资料页面
+        router.push('/admin/profile')
         break
       case 'home':
         // 返回前台首页
@@ -173,18 +174,21 @@
   }
 
   /**
-   * 处理退出登录
-   */
-  const handleLogout = () => {
-    try {
-      adminStore.logout()
-      ElMessage.success('退出登录成功')
-      router.push('/admin/login')
-    } catch (error) {
-      console.error('退出登录失败:', error)
-      ElMessage.error('退出登录失败')
-    }
-  }
+ * 处理退出登录 - 异步调用后端登出接口并立即清理本地状态
+ * 不等待后端接口响应，立即清除本地token并跳转到登录页
+ */
+const handleLogout = () => {
+  // 异步调用后端登出接口，不等待响应
+  logoutApi().catch(error => {
+    // 仅记录日志，不影响用户体验
+    console.warn('后端登出接口调用失败:', error)
+  })
+  
+  // 立即清除本地状态，不等待后端响应
+  adminStore.logout()
+  ElMessage.success('退出登录成功')
+  router.push('/admin/login')
+}
   // 获取当前路由路径
   const currentRoutePath = computed(() => router.currentRoute.value.path)
 </script>

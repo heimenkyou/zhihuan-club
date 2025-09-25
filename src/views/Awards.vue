@@ -512,7 +512,7 @@
     <el-dialog
       v-model="showAwardDetailDialog"
       :title="selectedAward?.competitionName || '奖项详情'"
-      width="90%"
+      :width="dialogWidth"
       :max-width="600"
       :before-close="closeAwardDetailDialog"
       class="award-detail-dialog"
@@ -702,6 +702,12 @@
     { label: '2020年', value: '2020', colorClass: 'bg-indigo-500' },
     { label: '2019年', value: '2019', colorClass: 'bg-indigo-500' }
   ])
+
+  // 响应式弹窗宽度：移动端90%，PC端40%
+  const dialogWidth = computed(() => {
+    // 使用matchMedia进行响应式判断，小于640px为移动端
+    return window.matchMedia('(max-width: 640px)').matches ? '90%' : '40%'
+  })
 
   // 修改 currentCompetitionTracks 计算属性，将没有赛道的项目归为"尚未区分赛道"
   const currentCompetitionTracks = computed(() => {
