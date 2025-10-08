@@ -114,6 +114,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
             throw new ClientException("用户不存在");
         }
         adminDO = BeanUtil.toBean(requestParam, AdminDO.class);
+        adminDO.setId(id);
         if (!StrUtil.isBlank(requestParam.getPassword())) {
             adminDO.setPasswordHash(BCrypt.hashpw(requestParam.getPassword()));
         }

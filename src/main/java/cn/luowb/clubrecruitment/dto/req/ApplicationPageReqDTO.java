@@ -1,5 +1,6 @@
 package cn.luowb.clubrecruitment.dto.req;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -34,6 +35,13 @@ public class ApplicationPageReqDTO {
     private String studentId;
 
     /**
+     * QQ号
+     */
+    @Schema(description = "QQ号")
+    @JsonProperty("QQNumber")
+    private String QQNumber;
+
+    /**
      * 专业名称列表
      */
     @Schema(description = "专业名称列表（可重复使用此参数）", example = "物联网工程,软件工程")
@@ -50,4 +58,10 @@ public class ApplicationPageReqDTO {
      */
     @Schema(description = "第二意向部门")
     private String secondDepartment;
+
+    /**
+     * 是否同时匹配所有意向部门（true=AND, false=OR）
+     */
+    @Schema(description = "是否同时匹配所有意向部门（true=AND, false=OR）", example = "false")
+    private boolean matchAllDepartments = false;
 }

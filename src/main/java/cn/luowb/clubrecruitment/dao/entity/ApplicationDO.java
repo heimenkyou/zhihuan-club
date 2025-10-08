@@ -55,7 +55,7 @@ public class ApplicationDO {
     private String phone;
 
     /**
-     * 电子邮箱
+     * QQ号
      */
     @TableField(value = "qq_number")
     private String QQNumber;

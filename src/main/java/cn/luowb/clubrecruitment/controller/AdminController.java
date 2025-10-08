@@ -1,5 +1,6 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.luowb.clubrecruitment.common.context.UserContext;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -27,7 +28,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @Operation(summary = "登录")
-    @PostMapping("/admins/login")
+     @PostMapping("/admins/login")
     public Result<AdminLoginRespDTO> login(@RequestBody AdminLoginReqDTO requestParam) {
         log.info("管理员登录，请求参数：{}", requestParam);
         AdminLoginRespDTO adminLoginRespDTO = adminService.login(requestParam);
@@ -37,6 +38,7 @@ public class AdminController {
     @Operation(summary = "登出")
     @PostMapping("/admins/logout")
     public Result<Void> logout(HttpServletRequest request) {
+        log.info("管理员登出, {}", UserContext.getUsername());
         String header = request.getHeader("Authorization");
         String token = header.replace("Bearer ", "");
         adminService.logout(token);

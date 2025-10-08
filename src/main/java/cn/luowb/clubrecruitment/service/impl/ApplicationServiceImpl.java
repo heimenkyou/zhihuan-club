@@ -90,13 +90,41 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
 
     @Override
     public PageData<ApplicationPageDTO> getApplicationList(ApplicationPageReqDTO requestParam) {
-        Page<ApplicationDO> page = new Page<>(requestParam.getCurrent(), requestParam.getSize());
-        page = this.page(page, Wrappers.<ApplicationDO>lambdaQuery()
+        LambdaQueryWrapper<ApplicationDO> queryWrapper = Wrappers.lambdaQuery(ApplicationDO.class);
+        queryWrapper
                 .like(StrUtil.isNotBlank(requestParam.getName()), ApplicationDO::getName, requestParam.getName())
                 .like(StrUtil.isNotBlank(requestParam.getStudentId()), ApplicationDO::getStudentId, requestParam.getStudentId())
                 .in(CollectionUtil.isNotEmpty(requestParam.getMajors()), ApplicationDO::getMajor, requestParam.getMajors())
-                .like(StrUtil.isNotBlank(requestParam.getDepartment()), ApplicationDO::getDepartment, requestParam.getDepartment())
-                .orderByDesc(ApplicationDO::getCreateTime));
+                .like(StrUtil.isNotBlank(requestParam.getQQNumber()), ApplicationDO::getQQNumber, requestParam.getQQNumber())
+                .orderByDesc(ApplicationDO::getCreateTime);
+        // 处理部门匹配逻辑
+        String first = requestParam.getDepartment();
+        String second = requestParam.getSecondDepartment();
+        boolean matchAll = requestParam.isMatchAllDepartments();
+        if (StrUtil.isNotBlank(first) && StrUtil.isNotBlank(second)) {
+            // 两个都填了: 根据 matchAll 决定 AND 或 OR
+            if (matchAll) {
+                // AND：两个都必须匹配
+                queryWrapper
+                        .like(ApplicationDO::getDepartment, first)
+                        .like(ApplicationDO::getSecondDepartment, second);
+            } else {
+                // OR：任一匹配
+                queryWrapper.and(wrapper ->
+                        wrapper.like(ApplicationDO::getDepartment, first)
+                                .or()
+                                .like(ApplicationDO::getSecondDepartment, second)
+                );
+            }
+        } else if (StrUtil.isNotBlank(first)) {
+            // 只有第一志愿
+            queryWrapper.like(ApplicationDO::getDepartment, first);
+        } else if (StrUtil.isNotBlank(second)) {
+            // 只有第二志愿
+            queryWrapper.like(ApplicationDO::getSecondDepartment, second);
+        }
+        Page<ApplicationDO> page = new Page<>(requestParam.getCurrent(), requestParam.getSize());
+        page = this.page(page, queryWrapper);
         return PageData.of(page,
                 each -> {
                     ApplicationPageDTO pageDTO = BeanUtil.toBean(each, ApplicationPageDTO.class);
