@@ -1,9 +1,9 @@
 <template>
-  <div class="project-edit-container">
-    <el-card>
+  <div class="project-edit-container full-width-container">
+    <el-card class="full-width-card">
       <template #header>
         <div class="card-header">
-          <span>{{ isEditMode ? '编辑项目' : '创建新项目' }}</span>
+          <span>{{ isEditMode ? '编辑项目' : '添加项目' }}</span>
           <el-button @click="handleBack" class="back-btn">
             <el-icon><ArrowLeft /></el-icon>
             返回项目列表
@@ -15,11 +15,10 @@
         ref="projectFormRef"
         :model="projectForm"
         :rules="rules"
-        label-width="120px"
-        v-loading="loading"
+        label-width="100px"
       >
         <!-- 基本信息 -->
-        <el-form-item label="项目标题" prop="title">
+        <el-form-item prop="title">
           <el-input
             v-model="projectForm.title"
             placeholder="请输入项目标题"
@@ -28,8 +27,7 @@
             maxlength="100"
           />
         </el-form-item>
-
-        <el-form-item label="项目分类" prop="category">
+        <el-form-item prop="category">
           <el-select
             v-model="projectForm.category"
             placeholder="请选择项目分类"
@@ -42,21 +40,19 @@
             <el-option label="其他" value="其他" />
           </el-select>
         </el-form-item>
-
-        <el-form-item label="时间范围" prop="timeRange">
+        <el-form-item prop="timeRange">
           <el-date-picker
             v-model="dateRange"
-            type="monthrange"
+            type="daterange"
             range-separator="至"
-            start-placeholder="开始月份 (如: 2024-11)"
-            end-placeholder="结束月份 (如: 2025-01)"
-            format="YYYY年MM月"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            format="YYYY.MM"
             value-format="YYYY.MM"
             @change="handleDateRangeChange"
           />
         </el-form-item>
-
-        <el-form-item label="项目简介" prop="briefIntro">
+        <el-form-item prop="briefIntro">
           <el-input
             v-model="projectForm.briefIntro"
             placeholder="请输入项目简介"
@@ -66,647 +62,431 @@
             maxlength="200"
           />
         </el-form-item>
+        <el-form-item prop="coverImage">
+          <div class="upload-container">
+            <div class="upload-main">
+              <el-upload
+                class="avatar-uploader"
+                :show-file-list="false"
+                :before-upload="beforeUpload"
+                :http-request="handleUpload"
+                accept="image/*"
+                :on-success="handleUploadSuccess"
+                :on-error="handleUploadError"
+              >
+                <img
+                  v-if="projectForm.coverImage"
+                  :src="projectForm.coverImage"
+                  class="avatar"
+                />
+                <div v-else class="upload-placeholder">
+                  <el-icon><Plus /></el-icon>
+                  <div>点击上传封面图片</div>
+                </div>
+              </el-upload>
+
+              <div class="upload-actions">
+                <el-button
+                  type="text"
+                  @click="showImageLibrary"
+                  style="margin-bottom: 10px"
+                >
+                  从图库选择</el-button
+                >
+                <el-input
+                  v-model="projectForm.coverImage"
+                  placeholder="或输入图片URL"
+                  style="width: 100%"
+                  clearable
+                />
+              </div>
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item prop="descriptionMd">
+          <div class="markdown-editor-container">
+            <div class="editor-tabs">
+              <el-tabs v-model="activeTab" type="card">
+                <el-tab-pane label="编辑" name="edit" />
+                <el-tab-pane label="预览" name="preview" />
+                <el-tab-pane label="分屏" name="split" />
+              </el-tabs>
+            </div>
+            <div v-if="activeTab === 'edit'" class="editor-full">
+              <v-md-editor
+                v-model="projectForm.descriptionMd"
+                :disabled-menus="['image']"
+                height="500px"
+                class="markdown-editor"
+              />
+            </div>
+            <div v-else-if="activeTab === 'preview'" class="editor-full">
+              <div class="markdown-preview">
+                <v-md-editor
+                  :value="projectForm.descriptionMd"
+                  mode="preview"
+                  height="500px"
+                />
+              </div>
+            </div>
+            <div v-else class="editor-split">
+              <div class="editor-left">
+                <v-md-editor
+                  v-model="projectForm.descriptionMd"
+                  :disabled-menus="['image']"
+                  height="500px"
+                  class="markdown-editor"
+                />
+              </div>
+              <div class="editor-right">
+                <div class="markdown-preview">
+                  <v-md-editor
+                    :value="projectForm.descriptionMd"
+                    mode="preview"
+                    height="500px"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-form-item>
+
+        <!-- 技术栈管理 -->
+        <el-form-item label="技术栈">
+          <el-input
+            v-model="techStackInput"
+            placeholder="请输入技术名称"
+            style="width: 200px; margin-right: 10px"
+            @keyup.enter="addTechStack"
+          />
+          <el-button type="primary" size="small" @click="addTechStack"
+            >添加</el-button
+          >
+
+          <!-- 技术栈标签展示区域 - 确保编辑时显示已添加的技术栈 -->
+          <div
+            class="tech-stack-list mt-3"
+            v-if="
+              projectForm.techStackTags && projectForm.techStackTags.length > 0
+            "
+          >
+            <el-tag
+              v-for="(tech, index) in projectForm.techStackTags"
+              :key="index"
+              closable
+              @close="removeTechStack(index)"
+              style="margin-right: 10px; margin-bottom: 10px"
+              class="tech-tag"
+            >
+              {{ tech }}
+            </el-tag>
+          </div>
+
+          <!-- 空状态提示 -->
+          <div v-else class="no-tech-stack-tip text-gray-500 text-sm mt-3">
+            暂无技术栈，请添加
+          </div>
+        </el-form-item>
+
+        <!-- 团队成员管理 -->
+        <el-form-item label="团队成员">
+          <div v-if="projectForm.teamDivision" class="team-members-list">
+            <div
+              v-for="(member, index) in projectForm.teamDivision"
+              :key="index"
+              class="team-member-item"
+            >
+              <el-input
+                v-model="member.name"
+                placeholder="成员姓名"
+                style="width: 150px; margin-right: 10px"
+              />
+              <el-input
+                v-model="member.role"
+                placeholder="成员角色"
+                style="width: 150px; margin-right: 10px"
+              />
+              <el-button
+                type="danger"
+                size="small"
+                @click="removeTeamMember(index)"
+                :disabled="projectForm.teamDivision!.length <= 1"
+              >
+                移除
+              </el-button>
+            </div>
+            <el-button
+              type="primary"
+              size="small"
+              class="mt-3"
+              @click="addTeamMember"
+            >
+              添加成员
+            </el-button>
+          </div>
+        </el-form-item>
 
         <!-- 轮播图管理 -->
-        <el-form-item label="轮播图片" prop="mediaResourceIds">
-          <div class="carousel-management">
-            <!-- 当前封面显示 -->
-            <div class="current-cover" v-if="projectForm.coverImage">
-              <div class="cover-info">
-                <span>当前封面：</span>
+        <el-form-item label="轮播图片">
+          <div class="media-resources-container">
+            <!-- 已选择的媒体资源列表 -->
+            <div
+              v-if="selectedMediaResources.length > 0"
+              class="selected-media-list"
+            >
+              <div
+                v-for="media in selectedMediaResources"
+                :key="media.id"
+                class="selected-media-item"
+              >
                 <img
-                  :src="projectForm.coverImage"
-                  alt="封面图"
-                  class="cover-thumbnail"
+                  :src="media.url"
+                  alt="预览"
+                  class="selected-media-thumbnail"
                 />
+                <div class="selected-media-info">
+                  <div class="selected-media-title">
+                    {{ media.title || '无标题' }}
+                  </div>
+                  <div class="selected-media-desc">
+                    {{ media.description || '无描述' }}
+                  </div>
+                </div>
                 <el-button
                   type="danger"
                   size="small"
-                  @click="projectForm.coverImage = ''"
+                  @click="removeSelectedMedia(media.id)"
                 >
-                  清除封面
+                  移除
                 </el-button>
               </div>
             </div>
-
-            <div class="carousel-images" v-if="carouselImages.length > 0">
-              <div
-                v-for="(image, index) in carouselImages"
-                :key="image.id"
-                class="carousel-image-item"
-                :class="{ 'is-cover': image.id === coverImageId }"
-              >
-                <img :src="image.url" :alt="image.title || '轮播图'" />
-                <div class="image-overlay">
-                  <div class="overlay-top">
-                    <el-tag
-                      v-if="image.id === coverImageId"
-                      type="success"
-                      size="small"
-                    >
-                      封面图
-                    </el-tag>
-                    <el-tag
-                      v-else
-                      type="info"
-                      size="small"
-                      @click="setAsCover(image)"
-                    >
-                      设为封面
-                    </el-tag>
-                  </div>
-                  <div class="overlay-bottom">
-                    <el-button
-                      type="danger"
-                      size="small"
-                      @click="removeCarouselImage(index)"
-                    >
-                      移除
-                    </el-button>
-                  </div>
-                </div>
-                <div class="image-info">
-                  <div class="image-title">{{ image.title || '无标题' }}</div>
-                  <div class="image-desc">
-                    {{ image.description || '无描述' }}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div v-else class="no-carousel-images">
-              <el-empty description="暂无轮播图">
-                <el-button type="primary" @click="showUploadDialog = true">
-                  上传图片
-                </el-button>
-                <el-button type="info" @click="openImageLibrary">
-                  从图库选择
-                </el-button>
-              </el-empty>
+            <div v-else class="no-selected-media text-gray-500 text-sm mb-3">
+              暂无轮播图，请从图库选择或上传
             </div>
 
-            <div class="carousel-actions" v-if="carouselImages.length > 0">
-              <el-button type="primary" @click="showUploadDialog = true">
-                <el-icon><Plus /></el-icon>
-                上传图片
-              </el-button>
-              <el-button type="info" @click="openImageLibrary">
-                <el-icon><Picture /></el-icon>
+            <!-- 操作按钮 -->
+            <div class="media-actions">
+              <el-button type="primary" size="small" @click="showImageLibrary">
                 从图库选择
               </el-button>
+              <el-button
+                type="success"
+                size="small"
+                @click="showMediaUploadDialog = true"
+                style="margin-left: 10px"
+              >
+                上传新图片
+              </el-button>
+            </div>
+
+            <div class="form-tip text-gray-500 text-sm mt-1">
+              请至少添加一张轮播图片
             </div>
           </div>
         </el-form-item>
 
-        <!-- Markdown编辑器 -->
-        <el-form-item label="项目详情" prop="descriptionMd">
-          <div class="markdown-editor-container w-full">
-            <div class="editor-tabs">
-              <el-radio-group v-model="editorMode" size="small">
-                <el-radio-button label="edit">编辑</el-radio-button>
-                <el-radio-button label="preview">预览</el-radio-button>
-                <el-radio-button label="split">分屏</el-radio-button>
-              </el-radio-group>
-            </div>
-
-            <div class="editor-content">
-              <div v-if="editorMode === 'edit'" class="editor-pane">
-                <MdEditor
-                  v-model="projectForm.descriptionMd"
-                  :toolbars="toolbars"
-                  :preview="false"
-                  :footers="[]"
-                  @onUploadImg="handleImageUpload"
-                  style="height: 400px"
-                />
-              </div>
-
-              <div v-else-if="editorMode === 'preview'" class="preview-pane">
-                <MdPreview
-                  :modelValue="projectForm.descriptionMd"
-                  style="height: 400px"
-                />
-              </div>
-
-              <div v-else class="split-pane">
-                <div class="split-left">
-                  <MdEditor
-                    v-model="projectForm.descriptionMd"
-                    :toolbars="toolbars"
-                    :preview="true"
-                    :footers="[]"
-                    @onUploadImg="handleImageUpload"
-                    style="height: 400px"
-                  />
-                </div>
-              </div>
+        <!-- 奖项管理 -->
+        <el-form-item label="获奖情况">
+          <div class="award-management">
+            <el-input
+              v-model="awardIdsInput"
+              placeholder="请输入奖项ID，用逗号分隔"
+              style="width: 100%"
+            />
+            <el-button
+              type="primary"
+              size="small"
+              class="mt-3"
+              @click="parseAwardIds"
+            >
+              确认奖项ID
+            </el-button>
+            <div class="form-tip text-gray-500 text-sm mt-1">
+              请输入与奖项系统中对应的ID
             </div>
           </div>
         </el-form-item>
-
-        <!-- 技术栈、团队成员、获奖情况 -->
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="技术栈">
-              <div class="tech-stack-container">
-                <div class="tech-stack-input">
-                  <el-input
-                    v-model="techStackInput"
-                    placeholder="输入技术名称后按回车添加"
-                    @keyup.enter="addTechStack"
-                    clearable
-                  />
-                  <el-button type="primary" @click="addTechStack"
-                    >添加</el-button
-                  >
-                </div>
-                <div
-                  class="tech-stack-tags"
-                  v-if="projectForm.techStackTags.length > 0"
-                >
-                  <el-tag
-                    v-for="(tech, index) in projectForm.techStackTags"
-                    :key="index"
-                    closable
-                    @close="removeTechStack(index)"
-                    type="info"
-                  >
-                    {{ tech }}
-                  </el-tag>
-                </div>
-                <div v-else class="no-tech-stack">
-                  <span class="text-gray-500 text-sm">暂无技术栈，请添加</span>
-                </div>
-              </div>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="8">
-            <el-form-item label="团队成员">
-              <div class="team-members-container">
-                <div
-                  class="team-members-list"
-                  v-if="projectForm.teamDivision.length > 0"
-                >
-                  <div
-                    v-for="(member, index) in projectForm.teamDivision"
-                    :key="index"
-                    class="team-member-item"
-                  >
-                    <el-input
-                      v-model="member.name"
-                      placeholder="成员姓名"
-                      clearable
-                    />
-                    <el-input
-                      v-model="member.role"
-                      placeholder="成员角色"
-                      clearable
-                    />
-                    <el-button
-                      type="danger"
-                      size="small"
-                      @click="removeTeamMember(index)"
-                      :disabled="projectForm.teamDivision.length <= 1"
-                    >
-                      移除
-                    </el-button>
-                  </div>
-                </div>
-                <el-button type="primary" size="small" @click="addTeamMember">
-                  <el-icon><Plus /></el-icon>
-                  添加成员
-                </el-button>
-              </div>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="8">
-            <el-form-item label="获奖情况">
-              <div class="award-management">
-                <el-select
-                  v-model="selectedAwardIds"
-                  multiple
-                  filterable
-                  remote
-                  reserve-keyword
-                  placeholder="输入奖项关键词搜索"
-                  :remote-method="searchAwards"
-                  :loading="awardLoading"
-                  style="width: 100%"
-                  collapse-tags
-                  :collapse-tags-tooltip="false"
-                  :max-collapse-tags="0"
-                >
-                  <el-option
-                    v-for="award in awardOptions"
-                    :key="award.id"
-                    :label="getAwardDisplayText(award.id)"
-                    :value="award.id"
-                  >
-                    <div class="award-option">
-                      <div class="award-name">
-                        {{ getAwardDisplayText(award.id) }}
-                      </div>
-                      <div
-                        class="award-detail"
-                        v-if="award.winners && award.winners.length > 0"
-                      >
-                        获奖者: {{ award.winners.join(', ') }}
-                      </div>
-                    </div>
-                  </el-option>
-                </el-select>
-                <div class="form-tip">
-                  支持按竞赛名称、级别、奖项等级和获奖者搜索
-                </div>
-                <!-- 已选择的奖项展示 -->
-                <div
-                  v-if="selectedAwardIds.length > 0"
-                  class="selected-awards-container mt-3"
-                >
-                  <div class="selected-awards-title">已选择的奖项：</div>
-                  <div class="selected-awards-list">
-                    <div
-                      v-for="awardId in selectedAwardIds"
-                      :key="awardId"
-                      class="selected-award-item"
-                    >
-                      <span class="award-text">{{
-                        getAwardDisplayText(awardId)
-                      }}</span>
-                      <el-button
-                        type="danger"
-                        size="small"
-                        circle
-                        @click="
-                          selectedAwardIds.splice(
-                            selectedAwardIds.indexOf(awardId),
-                            1
-                          )
-                        "
-                      >
-                        <el-icon><Close /></el-icon>
-                      </el-button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
       </el-form>
 
       <div class="form-actions">
         <el-button @click="handleBack">取消</el-button>
-        <el-button type="primary" @click="submitForm" :loading="submitLoading">
-          {{ isEditMode ? '更新项目' : '创建项目' }}
-        </el-button>
-        <el-button
-          v-if="isEditMode"
-          type="danger"
-          @click="handleDelete"
-          :loading="deleteLoading"
-        >
-          删除项目
-        </el-button>
+        <el-button type="primary" @click="submitForm">保存</el-button>
       </div>
     </el-card>
 
-    <!-- 图片上传对话框 -->
-    <el-dialog
-      v-model="showUploadDialog"
-      title="上传图片"
-      width="600px"
-      @close="resetUploadForm"
-    >
-      <el-form label-width="80px">
+    <!-- 图片图库对话框 -->
+    <el-dialog v-model="imageLibraryVisible" title="选择图片" width="800px">
+      <div class="image-library">
+        <div
+          class="image-item"
+          v-for="image in availableMediaResources"
+          :key="image.id"
+          :class="{
+            selected: projectForm.mediaResourceIds?.includes(image.id),
+          }"
+        >
+          <img :src="image.url" @click="selectMediaResource(image)" />
+          <div class="image-info">
+            <div class="image-title">{{ image.title || '无标题' }}</div>
+            <div class="image-actions">
+              <el-button
+                v-if="!projectForm.mediaResourceIds?.includes(image.id)"
+                type="text"
+                size="small"
+                @click.stop="selectMediaResource(image)"
+              >
+                选择
+              </el-button>
+              <el-button v-else type="text" size="small" style="color: #67c23a">
+                已选择
+              </el-button>
+            </div>
+          </div>
+        </div>
+        <div class="no-images" v-if="availableMediaResources.length === 0">
+          暂无图片，请先上传
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="imageLibraryVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 媒体资源上传对话框 -->
+    <el-dialog v-model="showMediaUploadDialog" title="上传图片" width="600px">
+      <el-form ref="uploadFormRef">
         <el-form-item label="图片标题">
-          <el-input
-            v-model="uploadForm.title"
-            placeholder="请输入图片标题（选填）"
-            clearable
-          />
+          <el-input v-model="uploadTitle" placeholder="请输入图片标题" />
         </el-form-item>
         <el-form-item label="图片描述">
           <el-input
-            v-model="uploadForm.description"
+            v-model="uploadDescription"
             type="textarea"
-            placeholder="请输入图片描述（选填）"
-            :rows="3"
+            placeholder="请输入图片描述"
           />
         </el-form-item>
         <el-form-item label="选择图片">
           <el-upload
             ref="uploadRef"
-            class="upload-area"
-            :class="{ 'has-image': uploadFileList.length > 0 }"
+            class="upload-demo"
             :before-upload="beforeUpload"
+            :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
             :auto-upload="false"
             accept="image/*"
-            list-type="picture-card"
-            :limit="1"
-            :on-exceed="handleExceed"
-            v-model:file-list="uploadFileList"
-            @change="handleUploadChange"
           >
-            <el-icon><Plus /></el-icon>
-
-            <template #file="{ file }">
-              <div>
-                <img
-                  class="el-upload-list__item-thumbnail"
-                  :src="file.url"
-                  alt=""
-                />
-                <span class="el-upload-list__item-actions">
-                  <span
-                    class="el-upload-list__item-preview"
-                    @click="handlePictureCardPreview(file)"
-                  >
-                    <el-icon><ZoomIn /></el-icon>
-                  </span>
-                  <span
-                    class="el-upload-list__item-delete"
-                    @click="handleRemove(file)"
-                  >
-                    <el-icon><Delete /></el-icon>
-                  </span>
-                </span>
-              </div>
-            </template>
+            <el-button slot="trigger" type="primary">选择图片</el-button>
           </el-upload>
-
-          <div class="upload-tip mt-2">
-            支持上传单张图片，JPG、PNG、GIF 格式，文件大小不超过 2MB
-          </div>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showUploadDialog = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="confirmUpload"
-          :loading="uploadLoading"
-        >
-          确认上传
-        </el-button>
+        <el-button @click="showMediaUploadDialog = false">取消</el-button>
+        <el-button type="primary" @click="confirmUpload">确认上传</el-button>
       </template>
-    </el-dialog>
-
-    <!-- 图库选择对话框 -->
-    <el-dialog
-      v-model="showImageLibraryDialog"
-      title="从图库选择图片"
-      width="900px"
-      top="5vh"
-    >
-      <div class="image-library">
-        <div class="library-toolbar">
-          <el-input
-            v-model="librarySearch"
-            placeholder="搜索图片标题或描述"
-            clearable
-            @input="filterLibrary"
-            style="width: 300px"
-          >
-            <template #prefix>
-              <el-icon><Search /></el-icon>
-            </template>
-          </el-input>
-          <el-button
-            type="primary"
-            @click="refreshLibrary"
-            :loading="libraryLoading"
-          >
-            <el-icon><Refresh /></el-icon>
-            刷新
-          </el-button>
-        </div>
-
-        <div v-loading="libraryLoading" class="library-grid">
-          <div
-            v-for="image in filteredLibraryImages"
-            :key="image.id"
-            class="library-image-item"
-            :class="{
-              selected: isImageSelected(image.id),
-              disabled: isImageDisabled(image.id),
-            }"
-            @click="toggleLibraryImage(image)"
-          >
-            <img :src="image.url" :alt="image.title" />
-            <div class="image-info">
-              <div class="image-title">{{ image.title || '无标题' }}</div>
-              <div class="image-desc">{{ image.description || '无描述' }}</div>
-            </div>
-            <div v-if="isImageSelected(image.id)" class="selected-badge">
-              <el-icon><Check /></el-icon>
-            </div>
-          </div>
-          <div
-            v-if="filteredLibraryImages.length === 0"
-            class="no-library-images"
-          >
-            <el-empty description="暂无图片" />
-          </div>
-        </div>
-
-        <div class="library-actions">
-          <el-button @click="showImageLibraryDialog = false">关闭</el-button>
-          <el-button type="primary" @click="confirmLibrarySelection">
-            确认选择 ({{ selectedLibraryImages.length }})
-          </el-button>
-        </div>
-      </div>
-    </el-dialog>
-
-    <!-- 图片预览对话框 -->
-    <el-dialog v-model="dialogVisible" title="图片预览" width="600px">
-      <img
-        w-full
-        :src="dialogImageUrl"
-        alt="预览图片"
-        style="width: 100%; height: auto"
-      />
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed, watch } from 'vue'
+  import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import type { FormInstance } from 'element-plus'
+  import { ElMessage, ElForm } from 'element-plus'
+  import { ArrowLeft, Plus } from '@element-plus/icons-vue'
   import {
-    ArrowLeft,
-    Plus,
-    Search,
-    Check,
-    Picture,
-    Refresh,
-    Delete,
-    ZoomIn,
-  } from '@element-plus/icons-vue'
-
-  import {
-    getUnreferencedMedia,
-    uploadMedia,
-    getAwards,
-    getProjectForEdit,
+    getProject,
     createProject,
     updateProject,
-    deleteProject,
+    type Project,
+    // 添加新导入的类型和函数
     type MediaResource,
-    type AwardItem,
-    type ProjectEditRespDTO,
-  } from '@/services/adminService'
-
+    getUnreferencedMedia,
+    // deleteMedia,
+    uploadMedia,
+    getAwards, // 添加奖项获取函数
+    type AwardItem, // 添加奖项类型
+  } from '../../../services/adminService'
+  // 移除本地导入，依赖全局注册的组件
+  // import VMdEditor from '@kangc/v-md-editor'
+  // import { getProjects } from "../../../services/projectService"
   const router = useRouter()
   const route = useRoute()
-
-  // 项目ID
   const projectId = computed(() => {
     const id = route.params.id
     return id ? Number(id) : null
   })
 
-  // 是否为编辑模式
   const isEditMode = computed(() => projectId.value !== null)
 
-  // 加载状态
-  const loading = ref(false)
-  const submitLoading = ref(false)
-  const deleteLoading = ref(false)
-  const uploadLoading = ref(false)
-  const libraryLoading = ref(false)
-  const awardLoading = ref(false)
-
   // 表单引用
-  const projectFormRef = ref<FormInstance>()
-  const uploadRef = ref()
+  const projectFormRef = ref<InstanceType<typeof ElForm> | null>(null)
 
-  // 表单数据
-  const projectForm = reactive({
+  // 媒体资源相关状态
+  const availableMediaResources = ref<MediaResource[]>([])
+  const selectedMediaResources = ref<MediaResource[]>([])
+  const imageLibraryVisible = ref(false)
+  const showMediaUploadDialog = ref(false)
+
+  // 奖项ID输入处理
+  const awardIdsInput = ref('')
+
+  // 添加奖项数据状态
+  const awardItems = ref<AwardItem[]>([])
+  const selectedAwards = ref<AwardItem[]>([])
+
+  // 日期范围选择
+  const dateRange = ref<string[]>([])
+
+  // Markdown编辑器相关
+  const activeTab = ref<string>('edit')
+  const techStackInput = ref('')
+
+  // 上传表单相关状态
+  const uploadTitle = ref('')
+  const uploadDescription = ref('')
+  const uploadRef = ref<any>(null)
+  const uploadFormRef = ref<any>(null)
+
+  // 项目表单 - 严格按照Project接口定义
+  const projectForm = reactive<Partial<Project>>({
     title: '',
-    category: '',
+    category: 'Web开发',
     timeRange: '',
     briefIntro: '',
     descriptionMd: '',
     coverImage: '',
     techStackTags: [] as string[],
-    teamDivision: [] as { name: string; role: string }[],
+    teamDivision: [{ name: '', role: '' }],
+    // 替换为媒体资源ID数组
     mediaResourceIds: [] as number[],
+    // 添加奖项ID数组
     awardIds: [] as number[],
+    createTime: new Date().toISOString(),
+    updateTime: new Date().toISOString(),
   })
-
-  // 日期范围
-  const dateRange = ref<string[]>([])
-
-  // 轮播图数据
-  const carouselImages = ref<MediaResource[]>([])
-  const coverImageId = ref<number | null>(null)
-
-  // 图库数据
-  const availableMediaResources = ref<MediaResource[]>([])
-  const librarySearch = ref('')
-  const filteredLibraryImages = ref<MediaResource[]>([])
-  const selectedLibraryImages = ref<MediaResource[]>([])
-
-  // 上传相关
-  const showUploadDialog = ref(false)
-  const uploadFileList = ref<any[]>([])
-  const uploadForm = reactive({
-    title: '',
-    description: '',
-  })
-
-  // 图片预览相关
-  const dialogImageUrl = ref('')
-  const dialogVisible = ref(false)
-
-  // 图库选择
-  const showImageLibraryDialog = ref(false)
-
-  // 技术栈
-  const techStackInput = ref('')
-
-  // 奖项相关
-  const awardOptions = ref<AwardItem[]>([])
-  const allAwards = ref<AwardItem[]>([]) // 存储所有奖项数据
-  const selectedAwardIds = ref<number[]>([])
-
-  // Markdown编辑器模式
-  const editorMode = ref('edit')
-
-  // MdEditor工具栏配置
-  const toolbars = [
-    'bold',
-    'underline',
-    'italic',
-    '-',
-    'title',
-    'strikeThrough',
-    'sub',
-    'sup',
-    'quote',
-    'unorderedList',
-    'orderedList',
-    'task',
-    '-',
-    'codeRow',
-    'code',
-    'link',
-    'image',
-    'table',
-    'mermaid',
-    'katex',
-    '-',
-    'revoke',
-    'next',
-    'save',
-    '=',
-    'pageFullscreen',
-    'fullscreen',
-    'preview',
-    'htmlPreview',
-    'catalog',
-    'github'
-  ]
 
   // 表单验证规则
   const rules = {
     title: [{ required: true, message: '请输入项目标题', trigger: 'blur' }],
-    category: [
-      { required: true, message: '请选择项目分类', trigger: 'change' },
-    ],
+    category: [{ required: true, message: '请选择项目分类', trigger: 'blur' }],
     timeRange: [
-      { required: true, message: '请选择时间范围', trigger: 'change' },
+      { required: true, message: '请输入开发时间范围', trigger: 'blur' },
     ],
     briefIntro: [
       { required: true, message: '请输入项目简介', trigger: 'blur' },
     ],
     descriptionMd: [
-      { required: true, message: '请输入项目详情', trigger: 'blur' },
+      { required: true, message: '请输入项目详细描述', trigger: 'blur' },
     ],
     coverImage: [
-      {
-        validator: (_: any, value: any, callback: any) => {
-          if (!value || value.trim() === '') {
-            // 使用字符串错误信息而不是Error对象，避免被全局错误处理器捕获
-            callback('请选择封面图片')
-          } else {
-            callback()
-          }
-        },
-        trigger: 'submit',
-      },
+      { required: true, message: '请上传项目展示图片', trigger: 'blur' },
     ],
+    // 自定义验证：确保至少有一个轮播图
     mediaResourceIds: [
       {
-        validator: (_: any, value: any, callback: any) => {
+        validator: (_: unknown, value: any, callback: any) => {
           if (!value || value.length === 0) {
-            // 使用字符串错误信息而不是Error对象，避免被全局错误处理器捕获
-            callback('请至少添加一张轮播图')
+            callback(new Error('请至少添加一张轮播图'))
           } else {
             callback()
           }
@@ -716,485 +496,396 @@
     ],
   }
 
-  /**
-   * 日期范围变化处理 - 格式：2024-11 - 2025-01
-   */
+  // 提交表单
+  const submitForm = async () => {
+    if (!projectFormRef.value) return
+
+    try {
+      // 先执行表单验证，而不是先验证轮播图
+      await projectFormRef.value.validate()
+
+      // 验证轮播图
+      if (
+        !projectForm.mediaResourceIds ||
+        projectForm.mediaResourceIds.length === 0
+      ) {
+        ElMessage.error('请至少添加一张轮播图')
+        return
+      }
+
+      // 准备提交数据，确保所有字段都符合API要求
+      const submitData = {
+        ...projectForm,
+        // 确保所有必填字段都有值
+        type: projectForm.type || 'project',
+        // 清理封面图片URL，添加类型检查
+        coverImage:
+          typeof projectForm.coverImage === 'string'
+            ? projectForm.coverImage.replace(/[`\s]/g, '')
+            : '',
+        // 确保所有数组字段都是数组类型
+        techStackTags: Array.isArray(projectForm.techStackTags)
+          ? projectForm.techStackTags
+          : [],
+        teamDivision: Array.isArray(projectForm.teamDivision)
+          ? projectForm.teamDivision
+          : [],
+        mediaResourceIds: Array.isArray(projectForm.mediaResourceIds)
+          ? projectForm.mediaResourceIds
+          : [],
+        awardIds: Array.isArray(projectForm.awardIds)
+          ? projectForm.awardIds
+          : [],
+      } as Omit<Project, 'id'>
+
+      // 打印提交数据，方便调试
+      console.log('提交数据:', JSON.stringify(submitData, null, 2))
+
+      if (isEditMode.value && projectId.value !== null) {
+        // 编辑项目
+        await updateProject(projectId.value, submitData)
+        ElMessage.success('更新项目成功')
+      } else {
+        // 添加项目
+        await createProject(submitData)
+        ElMessage.success('添加项目成功')
+      }
+
+      // 返回项目列表
+      handleBack()
+    } catch (error) {
+      // 当验证失败时，Element Plus会自动显示错误信息，这里可以不做额外处理
+      // 仅在API调用失败时显示错误
+      if (
+        error &&
+        !(error instanceof Error && error.message.includes('Validation failed'))
+      ) {
+        ElMessage.error(isEditMode.value ? '更新项目失败' : '添加项目失败')
+      }
+      console.error('提交表单失败:', error)
+    }
+  }
+
+  // 日期范围变化处理
   const handleDateRangeChange = (dates?: string[]) => {
     if (dates && dates.length === 2) {
-      projectForm.timeRange = `${dates[0]} - ${dates[1]}`
-    } else {
-      projectForm.timeRange = ''
+      projectForm.timeRange = `${dates[0]}-${dates[1]}`
     }
   }
 
-  /**
-   * 加载项目详情（编辑模式）
-   * 使用专门的编辑回显接口获取完整的项目数据包括关联的媒体资源和奖项
-   */
-  const loadProjectDetail = async () => {
-    if (!isEditMode.value || !projectId.value) return
-
-    loading.value = true
-    try {
-      // 使用专门的编辑回显接口获取完整数据
-      const projectData: ProjectEditRespDTO = await getProjectForEdit(
-        projectId.value
-      )
-
-      // 填充表单数据
-      Object.assign(projectForm, {
-        title: projectData.title || '',
-        category: projectData.category || '',
-        timeRange: projectData.timeRange || '',
-        briefIntro: projectData.briefIntro || '',
-        descriptionMd: projectData.descriptionMd || '',
-        coverImage: projectData.coverImage || '',
-        techStackTags: projectData.techStackTags || [],
-        teamDivision:
-          projectData.teamDivisions && projectData.teamDivisions.length > 0
-            ? projectData.teamDivisions
-            : [{ name: '', role: '' }],
-        mediaResourceIds: projectData.mediaResources
-          ? projectData.mediaResources.map(item => item.id)
-          : [],
-        awardIds: projectData.awards
-          ? projectData.awards.map(item => item.id)
-          : [],
-      })
-
-      /**
-       * 处理日期范围 - 格式：2024-11 - 2025-01
-       * 支持解析带空格和不带空格的格式
-       */
-      if (projectData.timeRange) {
-        const rangeParts = projectData.timeRange.split(' - ')
-        if (rangeParts.length === 2) {
-          dateRange.value = [rangeParts[0].trim(), rangeParts[1].trim()]
-        } else {
-          // 兼容旧格式（不带空格）
-          const oldRangeParts = projectData.timeRange.split('-')
-          if (oldRangeParts.length === 2) {
-            dateRange.value = [oldRangeParts[0].trim(), oldRangeParts[1].trim()]
-          }
-        }
-      }
-
-      // 设置轮播图数据
-      carouselImages.value = projectData.mediaResources || []
-
-      // 设置封面图ID - 从轮播图中找到封面图的ID
-      if (projectData.coverImage && carouselImages.value.length > 0) {
-        const coverImage = carouselImages.value.find(
-          img => img.url === projectData.coverImage
-        )
-        coverImageId.value = coverImage ? coverImage.id : null
-      } else {
-        coverImageId.value = null
-      }
-
-      // 设置已选奖项
-      selectedAwardIds.value = projectData.awards
-        ? projectData.awards.map(item => item.id)
-        : []
-
-      console.log('✅ 项目数据加载完成:', {
-        title: projectData.title,
-        mediaResourcesCount: projectData.mediaResources?.length || 0,
-        awardsCount: projectData.awards?.length || 0,
-        teamMembersCount: projectData.teamDivisions?.length || 0,
-      })
-    } catch (error) {
-      ElMessage.error(
-        `获取项目详情失败: ${
-          error instanceof Error ? error.message : '未知错误'
-        }`
-      )
-      console.error('获取项目详情失败:', error)
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // 搜索奖项
-  const searchAwards = async (query: string) => {
-    if (!query.trim()) {
-      awardOptions.value = []
-      return
-    }
-
-    awardLoading.value = true
-    try {
-      // 如果已经有奖项数据，直接使用本地数据过滤
-      if (allAwards.value.length > 0) {
-        const filtered = allAwards.value.filter(award => {
-          const searchText = query.toLowerCase()
-          return (
-            award.competitionName?.toLowerCase().includes(searchText) ||
-            award.competitionLevel?.toLowerCase().includes(searchText) ||
-            award.awardLevel?.toLowerCase().includes(searchText) ||
-            (award.winners &&
-              award.winners.some(winner =>
-                winner.toLowerCase().includes(searchText)
-              ))
-          )
-        })
-        awardOptions.value = filtered
-      } else {
-        // 如果没有本地数据，再从服务器查询
-        const awards = await getAwards({ keyword: query })
-        awardOptions.value = awards
-      }
-    } catch (error) {
-      console.error('搜索奖项失败:', error)
-      awardOptions.value = []
-    } finally {
-      awardLoading.value = false
-    }
-  }
-
-  // 获取奖项展示文本
-  const getAwardDisplayText = (awardId: number) => {
-    const award = allAwards.value.find(a => a.id === awardId)
-    if (!award) return '未知奖项'
-
-    const awardDate = award.awardDate
-      ? new Date(award.awardDate).toLocaleDateString()
-      : null
-
-    const winnersText = award.winners?.length
-      ? ` - [${award.winners.join(', ')}]`
-      : ''
-
-    return (
-      [
-        award.competitionName,
-        award.competitionLevel,
-        award.awardLevel,
-        awardDate,
-      ]
-        .filter(Boolean)
-        .join(' - ') + winnersText
-    )
-  }
-
-  // 图库相关函数
-  const loadUnreferencedMediaResources = async () => {
-    libraryLoading.value = true
-    try {
-      const media = await getUnreferencedMedia()
-      availableMediaResources.value = media
-      filterLibrary()
-    } catch (error) {
-      ElMessage.error('加载图库失败')
-      console.error('加载图库失败:', error)
-    } finally {
-      libraryLoading.value = false
-    }
-  }
-
-  const filterLibrary = () => {
-    const search = librarySearch.value.toLowerCase().trim()
-    if (!search) {
-      filteredLibraryImages.value = availableMediaResources.value
-    } else {
-      filteredLibraryImages.value = availableMediaResources.value.filter(
-        image =>
-          (image.title || '').toLowerCase().includes(search) ||
-          (image.description || '').toLowerCase().includes(search)
-      )
-    }
-  }
-
-  const refreshLibrary = () => {
-    loadUnreferencedMediaResources()
-  }
-
-  const isImageSelected = (imageId: number) => {
-    return selectedLibraryImages.value.some(img => img.id === imageId)
-  }
-
-  const isImageDisabled = (imageId: number) => {
-    return projectForm.mediaResourceIds.includes(imageId)
-  }
-
-  const toggleLibraryImage = (image: MediaResource) => {
-    if (isImageDisabled(image.id)) return
-
-    const index = selectedLibraryImages.value.findIndex(
-      img => img.id === image.id
-    )
-    if (index > -1) {
-      selectedLibraryImages.value.splice(index, 1)
-    } else {
-      selectedLibraryImages.value.push(image)
-    }
-  }
-
-  const confirmLibrarySelection = () => {
-    selectedLibraryImages.value.forEach(image => {
-      if (!projectForm.mediaResourceIds.includes(image.id)) {
-        projectForm.mediaResourceIds.push(image.id)
-        carouselImages.value.push(image)
-      }
-    })
-
-    selectedLibraryImages.value = []
-    showImageLibraryDialog.value = false
-    ElMessage.success(
-      `已添加 ${selectedLibraryImages.value.length} 张图片到轮播图`
-    )
-  }
-
-  const openImageLibrary = () => {
-    showImageLibraryDialog.value = true
-    selectedLibraryImages.value = []
-    loadUnreferencedMediaResources()
-  }
-
-  // 轮播图管理
-  const setAsCover = (image: MediaResource) => {
-    projectForm.coverImage = image.url
-    coverImageId.value = image.id
-    ElMessage.success('已设为封面图')
-  }
-
-  const removeCarouselImage = (index: number) => {
-    const image = carouselImages.value[index]
-    const mediaIndex = projectForm.mediaResourceIds.indexOf(image.id)
-
-    if (mediaIndex > -1) {
-      projectForm.mediaResourceIds.splice(mediaIndex, 1)
-    }
-
-    carouselImages.value.splice(index, 1)
-
-    // 如果移除的是封面图，清空封面
-    if (coverImageId.value === image.id) {
-      projectForm.coverImage = ''
-      coverImageId.value = null
-    }
-
-    ElMessage.success('已移除轮播图')
-  }
-
-  // 上传相关
+  // 图片上传前检查
   const beforeUpload = (file: File) => {
-    const isImage = file.type.startsWith('image/')
     const isLt2M = file.size / 1024 / 1024 < 2
-
-    if (!isImage) {
-      ElMessage.error('只能上传图片文件!')
-      return false
-    }
     if (!isLt2M) {
       ElMessage.error('图片大小不能超过 2MB!')
-      return false
     }
-    return true
+    return isLt2M
   }
 
-  /**
-   * 确认上传图片 - 单张上传，第一张自动设为封面
-   */
-  const confirmUpload = async () => {
-    if (uploadFileList.value.length === 0) {
-      ElMessage.warning('请先选择要上传的图片')
-      return
-    }
+  // 处理图片上传
+  const handleUpload = (options: any) => {
+    const { onSuccess } = options
+    // 模拟图片上传过程
+    const mockImageUrl = `https://picsum.photos/id/${Math.floor(
+      Math.random() * 100
+    )}/400/300`
 
-    uploadLoading.value = true
-    try {
-      const fileItem = uploadFileList.value[0]
-      const file = fileItem.raw
+    setTimeout(() => {
+      onSuccess({ url: mockImageUrl })
+    }, 1000)
 
-      const uploadedMedia = await uploadMedia({
-        file,
-        title: uploadForm.title,
-        description: uploadForm.description,
-      })
-
-      // 将上传的图片添加到项目
-      projectForm.mediaResourceIds.push(uploadedMedia.id)
-      carouselImages.value.push(uploadedMedia)
-
-      // 如果是第一张图片，自动设为封面
-      if (carouselImages.value.length === 1) {
-        projectForm.coverImage = uploadedMedia.url
-        coverImageId.value = uploadedMedia.id
-        ElMessage.success('图片上传成功，已自动设为封面')
-      } else {
-        ElMessage.success('图片上传成功')
-      }
-
-      showUploadDialog.value = false
-      resetUploadForm()
-    } catch (error) {
-      ElMessage.error('上传失败，请重试')
-      console.error('上传失败:', error)
-    } finally {
-      uploadLoading.value = false
-    }
+    // 返回一个Promise以满足UploadRequestHandler类型要求
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ url: mockImageUrl })
+      }, 1000)
+    })
   }
 
-  /**
-   * 处理文件变化
-   */
-  const handleUploadChange = (_file: any, fileList: any[]) => {
-    uploadFileList.value = fileList
+  // 图片上传成功处理
+  const handleUploadSuccess = (response: any) => {
+    projectForm.coverImage = response.url // 修复：只使用response中的url属性
+    ElMessage.success('图片上传成功')
   }
 
-  /**
-   * 处理文件超出限制 - 替换上一个文件
-   */
-  const handleExceed = (files: any) => {
-    // 替换现有文件
-    uploadFileList.value = [files[0]]
-    ElMessage.info('已替换为新选择的图片')
+  // 图片上传失败处理
+  const handleUploadError = () => {
+    ElMessage.error('图片上传失败，请重试')
   }
 
-  /**
-   * 处理图片预览
-   */
-  const handlePictureCardPreview = (file: any) => {
-    dialogImageUrl.value = file.url
-    dialogVisible.value = true
+  // 显示图片图库
+  const showImageLibrary = () => {
+    loadUnreferencedMedia()
+    imageLibraryVisible.value = true
   }
 
-  /**
-   * 处理图片移除
-   */
-  const handleRemove = (file: any) => {
-    const index = uploadFileList.value.findIndex(item => item.uid === file.uid)
-    if (index !== -1) {
-      uploadFileList.value.splice(index, 1)
-    }
-  }
+  // 从图库选择图片（用于封面）
+  // const selectImageFromLibrary = (image: MediaResource) => {
+  //   projectForm.coverImage = image.url
+  //   imageLibraryVisible.value = false
+  //   ElMessage.success("图片已选择")
+  // }
 
-  const resetUploadForm = () => {
-    uploadForm.title = ''
-    uploadForm.description = ''
-    uploadFileList.value = []
-  }
-
-  // Markdown图片上传
-  const handleImageUpload = async (files: File[]) => {
-    const file = files[0]
-    if (!file) return
-
-    try {
-      const uploadedMedia = await uploadMedia({
-        file,
-        title: 'Markdown图片',
-        description: 'Markdown编辑器插入的图片',
-      })
-
-      // 返回图片URL给MdEditor
-      return [uploadedMedia.url]
-    } catch (error) {
-      ElMessage.error('图片上传失败')
-      console.error('Markdown图片上传失败:', error)
-      return []
-    }
-  }
-
-  // 技术栈管理
+  // 添加技术栈
   const addTechStack = () => {
-    const tech = techStackInput.value.trim()
-    if (!tech) return
-
-    if (projectForm.techStackTags.includes(tech)) {
-      ElMessage.warning('该技术栈已存在')
-      return
+    const techValue = techStackInput.value.trim()
+    if (techValue && projectForm.techStackTags) {
+      const exists = projectForm.techStackTags.some(tech => tech === techValue)
+      if (!exists) {
+        projectForm.techStackTags.push(techValue)
+        techStackInput.value = ''
+      } else {
+        ElMessage.warning('该技术已存在')
+      }
     }
-
-    projectForm.techStackTags.push(tech)
-    techStackInput.value = ''
   }
 
+  // 移除技术栈
   const removeTechStack = (index: number) => {
-    projectForm.techStackTags.splice(index, 1)
+    if (projectForm.techStackTags) {
+      projectForm.techStackTags.splice(index, 1)
+    }
   }
 
-  // 团队成员管理
+  // 添加团队成员
   const addTeamMember = () => {
-    projectForm.teamDivision.push({ name: '', role: '' })
+    if (projectForm.teamDivision) {
+      projectForm.teamDivision.push({ name: '', role: '' })
+    }
   }
 
+  // 移除团队成员
   const removeTeamMember = (index: number) => {
-    if (projectForm.teamDivision.length > 1) {
+    if (projectForm.teamDivision && projectForm.teamDivision.length > 1) {
       projectForm.teamDivision.splice(index, 1)
     }
   }
 
-  /**
-   * 提交表单 - 创建或更新项目
-   * 正确处理表单验证，避免验证错误被全局错误处理器捕获
-   */
-  const submitForm = async () => {
-    if (!projectFormRef.value) return
+  // 解析奖项ID
+  const parseAwardIds = () => {
+    if (awardIdsInput.value) {
+      const ids = awardIdsInput.value
+        .split(',')
+        .map(id => parseInt(id.trim()))
+        .filter(id => !isNaN(id))
 
-    // 使用validate的回调函数形式来处理验证结果，避免抛出错误到全局处理器
-    const isValid = await new Promise<boolean>((resolve) => {
-      projectFormRef.value!.validate((valid: boolean) => {
-        resolve(valid)
-      })
-    })
+      projectForm.awardIds = ids
 
-    if (!isValid) {
-      // 验证失败，直接返回，错误信息会由Element Plus自动显示在表单字段下方
-      return
-    }
-
-    submitLoading.value = true
-
-    try {
-      // 准备提交数据
-      const submitData = {
-        ...projectForm,
-        awardIds: selectedAwardIds.value,
-        teamDivision: projectForm.teamDivision.filter(
-          member => member.name.trim() || member.role.trim()
-        ),
-        type: 'project',
-        createTime: new Date().toISOString(),
-        updateTime: new Date().toISOString(),
-      }
-
-      if (isEditMode.value && projectId.value) {
-        await updateProject(projectId.value, submitData)
-        ElMessage.success('项目更新成功')
-      } else {
-        await createProject(submitData)
-        ElMessage.success('项目创建成功')
-      }
-
-      handleBack()
-    } finally {
-      submitLoading.value = false
+      // 立即加载奖项详情
+      loadAwardDetails()
     }
   }
 
-  /**
-   * 删除项目 - 让拦截器处理错误
-   */
-  const handleDelete = async () => {
-    if (!projectId.value) return
+  // 加载未引用的媒体资源
+  const loadUnreferencedMedia = async () => {
+    try {
+      const media = await getUnreferencedMedia()
+      availableMediaResources.value = media
 
-    await ElMessageBox.confirm(
-      '此操作将永久删除该项目，是否继续？',
-      '删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
+      // 将已选择的媒体资源也加入列表，方便查看
+      if (selectedMediaResources.value.length > 0) {
+        availableMediaResources.value = [
+          ...availableMediaResources.value,
+          ...selectedMediaResources.value,
+        ]
+        // 去重
+        const seen = new Set()
+        availableMediaResources.value = availableMediaResources.value.filter(
+          media => {
+            const duplicate = seen.has(media.id)
+            seen.add(media.id)
+            return !duplicate
+          }
+        )
       }
-    )
+    } catch (error) {
+      ElMessage.error('加载媒体资源失败')
+      console.error('加载媒体资源失败:', error)
+    }
+  }
 
-    deleteLoading.value = true
-    await deleteProject(projectId.value)
-    ElMessage.success('项目删除成功')
-    handleBack()
-    deleteLoading.value = false
+  // 选择媒体资源（用于轮播图）
+  const selectMediaResource = (media: MediaResource) => {
+    if (!projectForm.mediaResourceIds) {
+      projectForm.mediaResourceIds = []
+    }
+
+    if (!projectForm.mediaResourceIds.includes(media.id)) {
+      projectForm.mediaResourceIds.push(media.id)
+      selectedMediaResources.value.push(media)
+      ElMessage.success('已添加到轮播图')
+    } else {
+      ElMessage.warning('该图片已在轮播图中')
+    }
+  }
+
+  // 移除已选媒体资源
+  const removeSelectedMedia = (mediaId: number) => {
+    if (projectForm.mediaResourceIds) {
+      projectForm.mediaResourceIds = projectForm.mediaResourceIds.filter(
+        id => id !== mediaId
+      )
+      selectedMediaResources.value = selectedMediaResources.value.filter(
+        media => media.id !== mediaId
+      )
+      ElMessage.success('已从轮播图移除')
+    }
+  }
+
+  // 上传新的媒体资源
+  const handleMediaUpload = async (
+    file: File,
+    title: string,
+    description: string
+  ) => {
+    try {
+      const newMedia = await uploadMedia({ file, title, description })
+      availableMediaResources.value.push(newMedia)
+      selectedMediaResources.value.push(newMedia)
+      projectForm.mediaResourceIds?.push(newMedia.id)
+      showMediaUploadDialog.value = false
+      ElMessage.success('媒体资源上传成功')
+    } catch (error) {
+      ElMessage.error('媒体资源上传失败')
+      console.error('上传媒体资源失败:', error)
+    }
+  }
+
+  // 确认上传
+  const confirmUpload = async () => {
+    const uploader = uploadRef.value?.uploadFiles
+    if (uploader && uploader.length > 0) {
+      const file = uploader[0].raw
+      if (file) {
+        await handleMediaUpload(
+          file,
+          uploadTitle.value,
+          uploadDescription.value
+        )
+        // 重置表单
+        uploadTitle.value = ''
+        uploadDescription.value = ''
+        uploadRef.value.clearFiles()
+      }
+    } else {
+      ElMessage.warning('请先选择要上传的图片')
+    }
+  }
+
+  // 加载项目详情（编辑模式）
+  const loadProjectDetail = async () => {
+    if (!isEditMode.value || projectId.value === null) return
+
+    try {
+      // 只请求项目详情API
+      const projectDetail = await getProject(projectId.value)
+
+      // 打印项目详情数据，方便调试
+      console.log('项目详情数据:', JSON.stringify(projectDetail, null, 2))
+
+      // 清理图片URL中的空格和反引号
+      if (projectDetail.coverImage) {
+        projectDetail.coverImage = projectDetail.coverImage.replace(
+          /[`\s]/g,
+          ''
+        )
+      }
+
+      // 应用清理后的数据到表单
+      Object.assign(projectForm, projectDetail)
+
+      // 处理日期范围
+      if (projectDetail.timeRange) {
+        const rangeParts = projectDetail.timeRange.split('-')
+        if (rangeParts.length === 2) {
+          dateRange.value = [rangeParts[0], rangeParts[1]]
+        }
+      }
+
+      // 确保所有数组字段都已初始化
+      if (!Array.isArray(projectForm.techStackTags)) {
+        projectForm.techStackTags = []
+      }
+
+      if (
+        !Array.isArray(projectForm.teamDivision) ||
+        projectForm.teamDivision.length === 0
+      ) {
+        projectForm.teamDivision = [{ name: '', role: '' }]
+      }
+
+      if (!Array.isArray(projectForm.mediaResourceIds)) {
+        projectForm.mediaResourceIds = []
+      }
+
+      if (!Array.isArray(projectForm.awardIds)) {
+        projectForm.awardIds = []
+      }
+
+      // 如果有awardIds，设置到输入框
+      if (
+        Array.isArray(projectForm.awardIds) &&
+        projectForm.awardIds.length > 0
+      ) {
+        awardIdsInput.value = projectForm.awardIds.join(',')
+        // 加载奖项详情
+        await loadAwardDetails()
+      }
+
+      // 加载未引用的媒体资源和已选择的媒体资源
+      await loadUnreferencedMedia()
+      await loadSelectedMediaResources()
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '未知错误'
+      ElMessage.error(`获取项目详情失败: ${errorMessage}`)
+      console.error('获取项目详情失败:', error)
+    }
+  }
+  // 新增：加载已选择的媒体资源详情
+  const loadSelectedMediaResources = async () => {
+    if (
+      !projectForm.mediaResourceIds ||
+      projectForm.mediaResourceIds.length === 0
+    ) {
+      selectedMediaResources.value = []
+      return
+    }
+
+    try {
+      // 从可用媒体资源中筛选出已选择的
+      const selected = availableMediaResources.value.filter(media =>
+        projectForm.mediaResourceIds?.includes(media.id)
+      )
+      selectedMediaResources.value = selected
+
+      // 如果有些媒体资源不在可用列表中，记录日志
+      const missingIds = projectForm.mediaResourceIds?.filter(
+        id => !availableMediaResources.value.some(media => media.id === id)
+      )
+
+      if (missingIds && missingIds.length > 0) {
+        console.warn('部分媒体资源不在可用列表中:', missingIds)
+      }
+    } catch (error) {
+      console.error('加载已选择媒体资源失败:', error)
+    }
+  }
+
+  // 新增：加载奖项详情
+  const loadAwardDetails = async () => {
+    try {
+      const allAwards = await getAwards()
+      awardItems.value = allAwards
+
+      // 筛选出项目已选择的奖项
+      if (projectForm.awardIds && Array.isArray(projectForm.awardIds)) {
+        selectedAwards.value = allAwards.filter(award =>
+          projectForm.awardIds?.includes(award.id)
+        )
+      }
+    } catch (error) {
+      console.error('加载奖项详情失败:', error)
+    }
   }
 
   // 返回项目列表
@@ -1202,613 +893,390 @@
     router.push('/admin/projects')
   }
 
-  // 监听奖项选择变化
-  watch(selectedAwardIds, newVal => {
-    projectForm.awardIds = newVal
+  // 页面加载时初始化数据
+  onMounted(() => {
+    loadProjectDetail()
+    loadUnreferencedMedia()
+    // 同时加载奖项数据，用于奖项选择预览
+    loadAwardDetails()
   })
 
-  // 监听轮播图变化，更新封面图ID
-  watch(
-    carouselImages,
-    newImages => {
-      if (
-        coverImageId.value &&
-        !newImages.some(img => img.id === coverImageId.value)
-      ) {
-        coverImageId.value = null
-        if (projectForm.coverImage) {
-          projectForm.coverImage = ''
+  // 添加对编辑器实例的引用，用于清理
+  const editorRefs = ref<Array<HTMLElement | null>>([])
+
+  // 页面卸载时清理资源
+  onUnmounted(() => {
+    // 清理所有可能的 ResizeObserver 实例
+    if (typeof window !== 'undefined' && window.ResizeObserver) {
+      // 尝试通过覆盖 ResizeObserver 原型来清理所有实例
+      const originalObserve = ((window.ResizeObserver as any).prototype.observe(
+        window.ResizeObserver as any
+      ).prototype.observe = function (target: Element, options?: any) {
+        try {
+          originalObserve.call(this, target, options)
+        } catch (e) {
+          console.warn('ResizeObserver 观察失败:', e)
         }
-      }
-    },
-    { deep: true }
-  )
-
-  // 页面加载时初始化数据
-  onMounted(async () => {
-    if (isEditMode.value) {
-      await loadProjectDetail()
-    } else {
-      // 创建模式，初始化默认值
-      projectForm.teamDivision = [{ name: '', role: '' }]
-      projectForm.techStackTags = []
-      projectForm.mediaResourceIds = []
-      projectForm.awardIds = []
+      })
     }
 
-    // 加载奖项选项
-    try {
-      const awards = await getAwards()
-      allAwards.value = awards // 存储所有奖项数据
-      awardOptions.value = awards
-    } catch (error) {
-      console.error('加载奖项失败:', error)
-    }
+    // 清理编辑器相关引用
+    editorRefs.value = []
   })
 </script>
 
 <style scoped>
   .project-edit-container {
     padding: 20px;
-    min-height: 100vh;
-    background-color: #f5f7fa;
+  }
+
+  .full-width-container {
+    max-width: 100%;
+  }
+
+  .full-width-card {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
   }
 
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
-    font-weight: 600;
-    color: #303133;
+    margin-bottom: 20px;
   }
 
   .back-btn {
-    background-color: #909399;
-    border-color: #909399;
+    background-color: #6c757d;
     color: white;
   }
 
   .back-btn:hover {
-    background-color: #82848a;
-    border-color: #82848a;
+    background-color: #5a6268;
+    color: white;
   }
 
-  /* 封面图样式 */
-  .cover-image-container {
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #fafafa;
-  }
-
-  .cover-image-preview {
-    text-align: center;
-  }
-
-  .cover-image-preview img {
-    max-width: 300px;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-  }
-
-  .cover-image-empty {
-    text-align: center;
-    padding: 40px 0;
-  }
-
-  /* 轮播图管理样式 */
-  .carousel-management {
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #fafafa;
-  }
-
-  .current-cover {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f0f9ff;
-    border-radius: 8px;
-    border: 1px solid #b3d8ff;
-  }
-
-  .cover-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  .cover-thumbnail {
-    width: 60px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 2px solid #409eff;
-  }
-
-  .carousel-images {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-  }
-
-  .carousel-images::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .carousel-images::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-  }
-
-  .carousel-images::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-  }
-
-  .carousel-images::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-
-  .carousel-image-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    flex: 0 0 200px;
-    height: 150px;
-  }
-
-  .carousel-image-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  .carousel-image-item.is-cover {
-    border: 3px solid #67c23a;
-    box-shadow: 0 0 0 3px rgba(103, 194, 58, 0.3);
-  }
-
-  .carousel-image-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.7));
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
-  }
-
-  .overlay-top {
+  .form-actions {
     display: flex;
     justify-content: flex-end;
+    margin-top: 30px;
+    gap: 10px;
   }
 
-  .overlay-bottom {
+  /* 图片上传样式 */
+  .upload-container {
     display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .upload-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .avatar-uploader .avatar {
+    width: 250px;
+    height: 250px;
+    display: block;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .avatar-uploader .avatar:hover {
+    transform: scale(1.02);
+  }
+
+  .upload-placeholder {
+    width: 250px;
+    height: 250px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    border: 2px dashed #d9d9d9;
+    border-radius: 8px;
+    background-color: #fafafa;
+    flex-direction: column;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .upload-placeholder:hover {
+    border-color: #4096ff;
+    color: #4096ff;
+    background-color: #f0f7ff;
+  }
+
+  .upload-placeholder .el-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  .upload-placeholder div {
+    font-size: 14px;
+  }
+
+  /* 图库按钮和URL输入框样式优化 */
+  .upload-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+    min-width: 300px;
+  }
+
+  /* 图片图库样式优化 */
+  .image-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .image-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .image-item:hover {
+    border-color: #4096ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .image-item.selected {
+    border-color: #4096ff;
+  }
+
+  .image-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
   }
 
   .image-info {
     padding: 10px;
-    background: white;
+    background-color: rgba(0, 0, 0, 0.05);
   }
 
   .image-title {
-    font-weight: 500;
+    font-size: 12px;
     margin-bottom: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .image-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .no-images {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #909399;
+    padding: 60px 0;
     font-size: 14px;
   }
 
-  .image-desc {
-    color: #909399;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .no-carousel-images {
-    text-align: center;
-    padding: 40px 0;
-  }
-
-  .carousel-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  /* Markdown编辑器样式 */
+  /* Markdown编辑器样式优化 - 增加宽度和高度 */
   .markdown-editor-container {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 100%; /* 确保编辑器容器占满宽度 */
   }
 
-  .editor-tabs {
-    padding: 10px 10px 0;
-    background-color: #f5f7fa;
-    border-bottom: 1px solid #e4e7ed;
+  .editor-full {
+    height: 600px; /* 增加高度以提供更好的编辑体验 */
   }
 
-  .editor-content {
-    height: 400px;
-  }
-
-  .editor-pane,
-  .preview-pane {
-    height: 100%;
-  }
-
-  .split-pane {
+  .editor-split {
     display: flex;
-    height: 100%;
+    height: 600px;
+    width: 100%; /* 确保分屏模式占满宽度 */
   }
 
-  .split-left,
-  .split-right {
+  .editor-left,
+  .editor-right {
     flex: 1;
     border-right: 1px solid #e4e7ed;
   }
 
-  .split-right {
+  .editor-right {
     border-right: none;
     border-left: 1px solid #e4e7ed;
   }
 
-  /* 技术栈样式 */
-  .tech-stack-container {
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    padding: 15px;
+  .markdown-editor {
+    height: 100%;
+  }
+
+  .markdown-preview {
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
     background-color: #fafafa;
   }
 
-  .tech-stack-input {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-
-  .tech-stack-tags {
+  /* 技术栈列表样式优化 */
+  .tech-stack-list {
+    margin-top: 15px;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .no-tech-stack {
-    text-align: center;
-    color: #909399;
-    font-size: 14px;
+    gap: 10px;
   }
 
   /* 团队成员样式 */
-  .team-members-container {
+  .team-members-list {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
-    padding: 15px;
+    padding: 20px;
     background-color: #fafafa;
-  }
-
-  .team-members-list {
-    margin-bottom: 15px;
   }
 
   .team-member-item {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
     align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #ebeef5;
   }
 
-  .team-member-item:last-child {
-    margin-bottom: 0;
+  /* 媒体资源样式 */
+  .media-resources-container {
+    border: 1px solid #e4e7ed;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fafafa;
   }
 
-  /* 奖项管理样式 */
+  .selected-media-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+
+  .selected-media-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #ebeef5;
+  }
+
+  .selected-media-thumbnail {
+    width: 100px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+  }
+
+  .selected-media-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .selected-media-title {
+    font-weight: 500;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .selected-media-desc {
+    color: #909399;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .media-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .no-selected-media {
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  /* 奖项样式 */
   .award-management {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
-    padding: 15px;
+    padding: 20px;
     background-color: #fafafa;
-  }
-
-  .award-option {
-    padding: 8px 0;
-  }
-
-  .award-name {
-    font-weight: 500;
-    margin-bottom: 4px;
-    font-size: 14px;
-  }
-
-  .award-detail {
-    color: #909399;
-    font-size: 12px;
   }
 
   .form-tip {
-    margin-top: 8px;
     color: #909399;
     font-size: 12px;
+    margin-top: 5px;
   }
 
-  /* 已选择奖项展示样式 */
-  .selected-awards-container {
-    background-color: white;
-    border: 1px solid #e4e7ed;
-    border-radius: 6px;
-    padding: 12px;
-  }
-
-  .selected-awards-title {
-    font-weight: 500;
-    margin-bottom: 10px;
-    color: #303133;
-    font-size: 14px;
-  }
-
-  .selected-awards-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .selected-award-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    background-color: #f5f7fa;
-    border-radius: 6px;
-    border: 1px solid #e4e7ed;
-  }
-
-  .selected-award-item .award-text {
-    flex: 1;
-    font-size: 14px;
-    color: #303133;
-    line-height: 1.4;
-  }
-
-  .selected-award-item .el-button {
-    margin-left: 10px;
-    flex-shrink: 0;
-  }
-
-  /* 表单操作 */
-  .form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #e4e7ed;
-  }
-
-  /* 上传对话框样式 */
-  .upload-area {
-    width: 100%;
-  }
-
-  .upload-icon {
-    font-size: 48px;
-    color: #c0c4cc;
-    margin-bottom: 10px;
-  }
-
-  .upload-text {
-    color: #606266;
-    font-size: 14px;
-  }
-
-  .upload-text em {
-    color: #409eff;
-    font-style: normal;
-  }
-
-  .upload-tip {
-    color: #909399;
-    font-size: 12px;
-    margin-top: 10px;
-    text-align: center;
-  }
-
-  /* 隐藏上传按钮当已有图片时 */
-  .upload-area.has-image :deep(.el-upload--picture-card) {
-    display: none;
-  }
-
-  /* 图库样式 */
-  .image-library {
-    max-height: 70vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .library-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 15px;
-  }
-
-  .library-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    overflow-y: auto;
-    max-height: 400px;
-    padding: 10px;
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    background-color: #fafafa;
-  }
-
-  .library-image-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-  }
-
-  .library-image-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  .library-image-item.selected {
-    border-color: #409eff;
-    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.3);
-  }
-
-  .library-image-item.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .library-image-item img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-  }
-
-  .library-image-item .image-info {
-    padding: 8px;
-    background: white;
-  }
-
-  .library-image-item .image-title {
-    font-weight: 500;
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 12px;
-  }
-
-  .library-image-item .image-desc {
-    color: #909399;
-    font-size: 11px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .selected-badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #409eff;
-    color: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  .no-library-images {
-    text-align: center;
-    padding: 40px 0;
-    grid-column: 1 / -1;
-  }
-
-  .library-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e4e7ed;
-  }
-
-  /* 响应式设计 */
+  /* 响应式调整 */
   @media (max-width: 768px) {
     .project-edit-container {
       padding: 10px;
     }
 
-    .carousel-images {
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-
-    .library-grid {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-
-    .team-member-item {
+    .upload-main {
       flex-direction: column;
       align-items: stretch;
     }
 
-    .tech-stack-input {
-      flex-direction: column;
+    .avatar-uploader .avatar,
+    .upload-placeholder {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
     }
 
-    .library-toolbar {
+    .editor-full,
+    .editor-split {
+      height: 400px;
+    }
+
+    .team-member-item,
+    .selected-media-item {
       flex-direction: column;
       align-items: stretch;
     }
 
-    .library-toolbar .el-input {
-      width: 100% !important;
-    }
-  }
-
-  /* 深色模式适配 */
-  @media (prefers-color-scheme: dark) {
-    .project-edit-container {
-      background-color: #141414;
+    .team-member-item .el-input,
+    .team-member-item .el-select {
+      margin-right: 0 !important;
+      margin-bottom: 10px;
     }
 
-    .el-card {
-      background-color: #1f1f1f;
-      color: #e8e8e8;
-    }
-
-    .carousel-management,
-    .cover-image-container,
-    .tech-stack-container,
-    .team-members-container,
-    .award-management {
-      background-color: #1f1f1f;
-      border-color: #434343;
-    }
-
-    .library-grid {
-      background-color: #1f1f1f;
-      border-color: #434343;
+    .selected-media-thumbnail {
+      margin-right: 0;
+      margin-bottom: 10px;
+      max-width: 100%;
     }
   }
 </style>

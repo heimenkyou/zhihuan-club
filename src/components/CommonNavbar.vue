@@ -143,6 +143,7 @@
     { id: 6, text: '资源墙', path: '/resources' },
     { id: 7, text: '加入我们', path: '/join' },
     { id: 8, text: '留言板', path: '/messages' },
+    { id: 9, text: '代码提交', path: '/code-submit' },
   ]
 
   // 3. 响应式状态
