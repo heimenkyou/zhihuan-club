@@ -177,6 +177,27 @@
       </el-card>
     </main>
   </div>
+
+  <!-- 提交进度条对话框 -->
+  <el-dialog
+    v-model="showProgressDialog"
+    title="正在提交..."
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    :show-close="false"
+    width="400px"
+  >
+    <div class="progress-container">
+      <div class="progress-info mb-2">
+        <span>{{ progressMessage }}</span>
+      </div>
+      <el-progress :percentage="uploadProgress" />
+      <div class="progress-details mt-2 text-sm text-gray-600">
+        <span>上传速度: {{ uploadSpeed }}</span>
+        <span class="float-right">文件总大小: {{ totalFileSize }}</span>
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -192,6 +213,14 @@
   const videoFileUploadRef = ref()
   const isSubmitting = ref(false)
 
+  // 进度条相关
+  const showProgressDialog = ref(false)
+  const uploadProgress = ref(0)
+  const progressMessage = ref('准备上传...')
+  const uploadSpeed = ref('0 MB/s')
+  const totalFileSize = ref('0 MB')
+  let progressInterval: number | null = null
+
   // 表单数据
   const formData = reactive({
     studentId: '',
@@ -202,6 +231,15 @@
     videoFile: null as File | null,
     videoFileList: [] as UploadFile[],
   })
+
+  // 格式化文件大小
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
 
   // 表单验证规则
   const rules = {
@@ -294,6 +332,46 @@
     return true
   }
 
+  // 模拟上传进度
+  const simulateUploadProgress = () => {
+    let startTime = Date.now()
+    let currentProgress = 0
+    const totalSize =
+      (formData.codeFile?.size || 0) + (formData.videoFile?.size || 0)
+    totalFileSize.value = formatFileSize(totalSize)
+
+    // 清除之前的定时器
+    if (progressInterval) {
+      clearInterval(progressInterval)
+    }
+
+    // 设置新的定时器
+    progressInterval = window.setInterval(() => {
+      // 计算已上传大小
+      const elapsedTime = (Date.now() - startTime) / 1000 // 秒
+
+      // 模拟随机但总体向前的进度
+      const randomIncrement = Math.random() * 5 + 1 // 1-6% 的随机增量
+      currentProgress = Math.min(currentProgress + randomIncrement, 95) // 最多到95%
+
+      uploadProgress.value = Math.floor(currentProgress)
+
+      // 计算上传速度（模拟）
+      const simulatedUploadedBytes = (currentProgress / 100) * totalSize
+      const speed = simulatedUploadedBytes / elapsedTime // B/s
+      uploadSpeed.value = formatFileSize(speed) + '/s'
+
+      // 更新进度消息
+      if (currentProgress < 30) {
+        progressMessage.value = '正在准备文件...'
+      } else if (currentProgress < 70) {
+        progressMessage.value = '正在上传文件...'
+      } else {
+        progressMessage.value = '正在处理数据...'
+      }
+    }, 500) as unknown as number
+  }
+
   // 提交表单
   const handleSubmit = async () => {
     if (!formRef.value) return
@@ -308,6 +386,11 @@
       }
 
       isSubmitting.value = true
+      showProgressDialog.value = true
+      uploadProgress.value = 0
+
+      // 开始模拟上传进度
+      simulateUploadProgress()
 
       // 构建FormData
       const formDataToSubmit = new FormData()
@@ -320,14 +403,35 @@
       // 调用API提交数据
       const response = await submitUserCode(formDataToSubmit)
 
-      ElMessage.success('提交成功！我们将尽快审核您的作品')
-      handleReset()
+      // 完成上传进度
+      uploadProgress.value = 100
+      progressMessage.value = '上传完成！'
+
+      // 延迟关闭进度对话框，让用户看到完成状态
+      setTimeout(() => {
+        showProgressDialog.value = false
+        ElMessage.success('提交成功！我们将尽快审核您的作品')
+        handleReset()
+      }, 1000)
     } catch (error) {
+      // 清除进度定时器
+      if (progressInterval) {
+        clearInterval(progressInterval)
+        progressInterval = null
+      }
+
+      showProgressDialog.value = false
       const errorMessage = error instanceof Error ? error.message : '未知错误'
       ElMessage.error(`提交失败: ${errorMessage}`)
       console.error('提交失败:', error)
     } finally {
       isSubmitting.value = false
+
+      // 确保清除定时器
+      if (progressInterval) {
+        clearInterval(progressInterval)
+        progressInterval = null
+      }
     }
   }
 
@@ -340,6 +444,13 @@
     formData.videoFileList = []
     formData.codeFile = null
     formData.videoFile = null
+
+    // 清除进度定时器
+    if (progressInterval) {
+      clearInterval(progressInterval)
+      progressInterval = null
+    }
+    showProgressDialog.value = false
   }
 </script>
 
@@ -360,5 +471,20 @@
 
   .upload-demo {
     width: 100%;
+  }
+
+  .progress-container {
+    padding: 10px 0;
+  }
+
+  .progress-info {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .progress-details {
+    margin-top: 10px;
+    font-size: 12px;
   }
 </style>
