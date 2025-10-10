@@ -323,7 +323,7 @@
   }
 
   // 移除文件前的钩子
-  const beforeRemove = (file: UploadFile, uploadFiles: UploadFile[]) => {
+  const beforeRemove = (file: UploadFile) => {
     if (file.raw === formData.codeFile) {
       formData.codeFile = null
     } else if (file.raw === formData.videoFile) {
@@ -401,7 +401,7 @@
       formDataToSubmit.append('videoFile', formData.videoFile)
 
       // 调用API提交数据
-      const response = await submitUserCode(formDataToSubmit)
+      await submitUserCode(formDataToSubmit)
 
       // 完成上传进度
       uploadProgress.value = 100
