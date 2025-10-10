@@ -149,7 +149,7 @@ public class MinioService {
             String endpoint = minioProperties.getEndpoint();
             // 检查 URL 是否以 MinIO endpoint 开头
             if (!fileUrl.startsWith(endpoint)) {
-                log.info("URL 不是当前系统的 MinIO 资源, 不删除: {}", fileUrl);
+                log.warn("URL 不是当前系统的 MinIO 资源, 不删除: {}", fileUrl);
                 return;
             }
             // 从URL中提取对象名称

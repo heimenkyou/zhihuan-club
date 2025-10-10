@@ -19,7 +19,7 @@ spring:
       database: ${rec.redis.database:2}
   servlet:
     multipart:
-      max-file-size: 50MB
+      max-file-size: 200MB
       max-request-size: 500MB
 server:
   port: 12321

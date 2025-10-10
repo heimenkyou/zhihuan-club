@@ -18,4 +18,31 @@ public interface MajorMappingService extends IService<MajorMappingDO> {
      * @return 专业列表
      */
     Map<String, MajorMappingDO> majors();
+
+    /**
+     * 查询专业简称
+     *
+     * @param studentId 学号
+     * @return 专业简称
+     */
+    String getAbbreviation(String studentId);
+
+    /**
+     * 拼接班级姓名, 如物工B231张三
+     * 通过学号查询报名表获取姓名
+     *
+     * @param studentId 学号
+     * @return 班级姓名
+     */
+    String buildClassName(String studentId);
+
+    /**
+     * 拼接班级姓名, 如物工B231张三
+     * 使用提供的姓名, 无需查询报名表
+     *
+     * @param studentId 学号
+     * @param name 姓名
+     * @return 班级姓名
+     */
+    String buildClassName(String studentId, String name);
 }
