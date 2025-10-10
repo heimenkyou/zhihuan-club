@@ -23,7 +23,7 @@ export interface PageData<T> {
 // 创建axios实例
 const api = axios.create({
   baseURL: '/api', // 根据实际情况设置
-  timeout: 30000, // 设置超时时间
+  timeout: 600000, // 设置超时时间
   paramsSerializer: {
     serialize: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
   }
