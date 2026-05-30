@@ -1,7 +1,10 @@
 # 默认忽略根目录下所有内容，只保留 monorepo 有效目录
 *
+.claude/
+.vscode/
 !/.gitignore
 !/backend/
 !/backend/**
 !/frontend/
 !/frontend/**
+!README.md
