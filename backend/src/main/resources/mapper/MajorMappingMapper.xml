@@ -5,12 +5,13 @@
 <mapper namespace="cn.luowb.clubrecruitment.dao.mapper.MajorMappingMapper">
 
     <resultMap id="BaseResultMap" type="cn.luowb.clubrecruitment.dao.entity.MajorMappingDO">
-            <id property="code" column="code" />
-            <id property="shortName" column="short_name" />
-            <result property="fullName" column="full_name" />
+        <id property="code" column="code"/>
+        <id property="shortName" column="short_name"/>
+        <result property="fullName" column="full_name"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        code,short_name,full_name
+        code
+        ,short_name,full_name
     </sql>
 </mapper>

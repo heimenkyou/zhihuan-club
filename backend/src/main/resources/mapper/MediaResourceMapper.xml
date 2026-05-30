@@ -15,7 +15,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,type,url,title,description,create_time,
+        id
+        ,type,url,title,description,create_time,
         update_time
     </sql>
     <update id="updateRefIdByIds">

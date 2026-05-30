@@ -17,7 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,competition_name,competition_level,award_level,winners,year,
+        id
+        ,competition_name,competition_level,award_level,winners,year,
         award_date,create_time,update_time
     </sql>
 </mapper>

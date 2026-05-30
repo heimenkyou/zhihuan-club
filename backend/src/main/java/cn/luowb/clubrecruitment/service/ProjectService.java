@@ -43,6 +43,7 @@ public interface ProjectService extends IService<ProjectDO> {
 
     /**
      * 查询项目编辑回显信息
+     *
      * @param projectId 项目id
      * @return 项目编辑回显信息
      */
@@ -50,6 +51,7 @@ public interface ProjectService extends IService<ProjectDO> {
 
     /**
      * 删除项目
+     *
      * @param projectId 项目id
      */
     void delete(Long projectId);

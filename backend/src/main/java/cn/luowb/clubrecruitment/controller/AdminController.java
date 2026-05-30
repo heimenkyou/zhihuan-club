@@ -28,7 +28,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @Operation(summary = "登录")
-     @PostMapping("/admins/login")
+    @PostMapping("/admins/login")
     public Result<AdminLoginRespDTO> login(@RequestBody AdminLoginReqDTO requestParam) {
         log.info("管理员登录，请求参数：{}", requestParam);
         AdminLoginRespDTO adminLoginRespDTO = adminService.login(requestParam);

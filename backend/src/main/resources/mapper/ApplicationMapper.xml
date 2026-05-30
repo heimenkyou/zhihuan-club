@@ -20,7 +20,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,student_id,class_name,major,phone,
+        id
+        ,name,student_id,class_name,major,phone,
         qq_number,department,introduction,reason,create_time,
         update_time
     </sql>

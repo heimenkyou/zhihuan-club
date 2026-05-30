@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.Map;
 
 /**
-* @author heimenkyou
-* @description 针对表【major_mapping(专业代号与名称映射表)】的数据库操作Service
-* @createDate 2025-09-14 23:34:31
-*/
+ * @author heimenkyou
+ * @description 针对表【major_mapping(专业代号与名称映射表)】的数据库操作Service
+ * @createDate 2025-09-14 23:34:31
+ */
 public interface MajorMappingService extends IService<MajorMappingDO> {
 
     /**
@@ -41,7 +41,7 @@ public interface MajorMappingService extends IService<MajorMappingDO> {
      * 使用提供的姓名, 无需查询报名表
      *
      * @param studentId 学号
-     * @param name 姓名
+     * @param name      姓名
      * @return 班级姓名
      */
     String buildClassName(String studentId, String name);

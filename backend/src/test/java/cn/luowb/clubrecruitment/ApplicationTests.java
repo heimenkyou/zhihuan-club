@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @Slf4j
 @ActiveProfiles("dev")
-class ClubRecruitmentApplicationTests {
+class ApplicationTests {
     @Autowired
     private MessageMapper messageMapper;
     @Autowired

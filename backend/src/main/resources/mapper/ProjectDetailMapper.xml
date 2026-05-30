@@ -17,7 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,project_id,time_range,media_resources,tech_stack_tags,description_md,
+        id
+        ,project_id,time_range,media_resources,tech_stack_tags,description_md,
         team_division,award_ids,create_time,update_time
     </sql>
 </mapper>

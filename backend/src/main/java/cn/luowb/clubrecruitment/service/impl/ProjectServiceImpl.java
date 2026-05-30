@@ -182,7 +182,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         respDTO.setTeamDivisions(teamDivisions);
         // 查询媒体资源
         List<MediaResourceRespDTO> mediaResources = mediaResourceMapper.selectListByRefIdAndRefType(
-                projectId, "project")
+                        projectId, "project")
                 .stream()
                 .map(each -> BeanUtil.toBean(each, MediaResourceRespDTO.class))
                 .toList();
@@ -192,14 +192,14 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         List<AwardRespDTO> awardList = CollectionUtil.isEmpty(awardIds)
                 ? Collections.emptyList()
                 : awardService.listByIds(awardIds).stream()
-                        .map(each -> {
-                            AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
-                            // 反序列化 获奖人
-                            List<String> winners = JSON.parseArray(each.getWinners(), String.class);
-                            awardRespDTO.setWinners(winners);
-                            return awardRespDTO;
-                        })
-                        .toList();
+                  .map(each -> {
+                      AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
+                      // 反序列化 获奖人
+                      List<String> winners = JSON.parseArray(each.getWinners(), String.class);
+                      awardRespDTO.setWinners(winners);
+                      return awardRespDTO;
+                  })
+                  .toList();
         respDTO.setAwards(awardList);
         return respDTO;
     }

@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @MapperScan("cn.luowb.clubrecruitment.dao.mapper")
 @SpringBootApplication
-public class ClubRecruitmentApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(ClubRecruitmentApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

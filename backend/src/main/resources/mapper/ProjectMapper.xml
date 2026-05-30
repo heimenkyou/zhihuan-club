@@ -17,7 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category,cover_image,title,brief_intro,tech_stack_tags,
+        id
+        ,category,cover_image,title,brief_intro,tech_stack_tags,
         team_members,create_time,update_time
     </sql>
 </mapper>

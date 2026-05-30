@@ -21,6 +21,9 @@ spring:
     multipart:
       max-file-size: 200MB
       max-request-size: 500MB
+  threads:
+    virtual:
+      enabled: true # Java 19引入的虚拟线程
 server:
   port: 12321
 mybatis-plus:

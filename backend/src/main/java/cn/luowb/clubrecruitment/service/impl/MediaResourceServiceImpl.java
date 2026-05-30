@@ -11,7 +11,6 @@ import cn.luowb.clubrecruitment.dto.req.MediaUploadReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MediaResourceRespDTO;
 import cn.luowb.clubrecruitment.service.MediaResourceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

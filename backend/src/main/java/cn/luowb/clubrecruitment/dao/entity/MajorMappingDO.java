@@ -7,9 +7,10 @@ import lombok.Data;
 
 /**
  * 专业代号与名称映射表
+ *
  * @TableName major_mapping
  */
-@TableName(value ="major_mapping")
+@TableName(value = "major_mapping")
 @Data
 public class MajorMappingDO {
     /**

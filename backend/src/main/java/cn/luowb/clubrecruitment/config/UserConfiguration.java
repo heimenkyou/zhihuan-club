@@ -75,7 +75,7 @@ public class UserConfiguration implements WebMvcConfigurer {
                 // token不存在直接放行，不拦截
                 return true;
             }
-            
+
             // 从redis中获取用户信息
             String key = redisKeyUtil.buildAdminTokenKey(token);
             String userInfoStr = stringRedisTemplate.opsForValue().get(key);
@@ -83,7 +83,7 @@ public class UserConfiguration implements WebMvcConfigurer {
                 // redis中没有用户信息，直接放行，不拦截
                 return true;
             }
-            
+
             UserInfoDTO userInfoDTO;
             try {
                 userInfoDTO = JSON.parseObject(userInfoStr, UserInfoDTO.class);
@@ -95,7 +95,7 @@ public class UserConfiguration implements WebMvcConfigurer {
                 // 用户信息为空，直接放行，不拦截
                 return true;
             }
-            
+
             userInfoDTO.setToken(token);
             long ttlSeconds = stringRedisTemplate.getExpire(key, TimeUnit.SECONDS);
             long threshold = Duration.ofMinutes(20).getSeconds();   // 20 分钟以内续期
