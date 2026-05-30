@@ -1,29 +1,29 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { CodeSubmission } from '@/services/codeSubmissionService'
 
 export const useCodeSubmissionStore = defineStore('codeSubmission', () => {
-  // 代码提交记录列表
-  const submissionList = ref<CodeSubmission[]>([])
-  
-  // 加载状态
+  const submissionList = ref([])
   const isLoading = ref(false)
-  
-  // 错误信息
-  const error = ref<string | null>(null)
-  
-  // 设置提交记录列表
-  const setSubmissions = (submissions: CodeSubmission[]) => {
+  const error = ref(null)
+
+  /**
+   * 批量覆盖记录，保证列表来源单一。
+   */
+  const setSubmissions = submissions => {
     submissionList.value = submissions
   }
-  
-  // 添加单条提交记录
-  const addSubmission = (submission: CodeSubmission) => {
+
+  /**
+   * 新提交默认插到顶部，保持列表时序一致。
+   */
+  const addSubmission = submission => {
     submissionList.value.unshift(submission)
   }
-  
-  // 更新提交记录
-  const updateSubmission = (updatedSubmission: CodeSubmission) => {
+
+  /**
+   * 原地替换记录，避免打断依赖该数组的响应式引用。
+   */
+  const updateSubmission = updatedSubmission => {
     const index = submissionList.value.findIndex(
       item => item.id === updatedSubmission.id
     )
@@ -31,42 +31,35 @@ export const useCodeSubmissionStore = defineStore('codeSubmission', () => {
       submissionList.value[index] = updatedSubmission
     }
   }
-  
-  // 删除提交记录
-  const removeSubmission = (id: number) => {
+
+  const removeSubmission = id => {
     submissionList.value = submissionList.value.filter(item => item.id !== id)
   }
-  
-  // 设置加载状态
-  const setLoading = (loading: boolean) => {
+
+  const setLoading = loading => {
     isLoading.value = loading
   }
-  
-  // 设置错误信息
-  const setError = (err: string | null) => {
+
+  const setError = err => {
     error.value = err
   }
-  
-  // 清空错误信息
+
   const clearError = () => {
     error.value = null
   }
-  
-  // 清空提交记录
+
   const clearSubmissions = () => {
     submissionList.value = []
   }
-  
-  // 查找提交记录
-  const findSubmissionById = (id: number): CodeSubmission | undefined => {
+
+  const findSubmissionById = id => {
     return submissionList.value.find(item => item.id === id)
   }
-  
-  // 查找提交记录（按学号）
-  const findSubmissionByStudentId = (studentId: string): CodeSubmission | undefined => {
+
+  const findSubmissionByStudentId = studentId => {
     return submissionList.value.find(item => item.studentId === studentId)
   }
-  
+
   return {
     submissionList,
     isLoading,
@@ -80,6 +73,6 @@ export const useCodeSubmissionStore = defineStore('codeSubmission', () => {
     clearError,
     clearSubmissions,
     findSubmissionById,
-    findSubmissionByStudentId
+    findSubmissionByStudentId,
   }
 })
