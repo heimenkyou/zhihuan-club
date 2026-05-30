@@ -104,7 +104,7 @@ public class MinioService {
 
             // 构建文件访问URL
             return String.format("%s/%s/%s",
-                    minioProperties.getEndpoint(),
+                    minioProperties.getPublicEndpoint(),
                     bucketName,
                     objectName);
 
@@ -148,7 +148,7 @@ public class MinioService {
         try {
             String endpoint = minioProperties.getEndpoint();
             // 检查 URL 是否以 MinIO endpoint 开头
-            if (!fileUrl.startsWith(endpoint)) {
+            if (!fileUrl.startsWith(endpoint) && !fileUrl.startsWith(minioProperties.getPublicEndpoint())) {
                 log.warn("URL 不是当前系统的 MinIO 资源, 不删除: {}", fileUrl);
                 return;
             }
