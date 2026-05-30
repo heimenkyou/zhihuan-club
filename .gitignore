@@ -1,14 +1,7 @@
-# monorepo 有效代码目录
+# 默认忽略根目录下所有内容，只保留 monorepo 有效目录
+*
+!/.gitignore
 !/backend/
+!/backend/**
 !/frontend/
-
-# 旧仓库目录
-club-recruitment-backend/
-message-board-frontend/
-club-recruitment-frontend/
-front/
-
-# 其他本地资料
-素材/
-素材.zip
-招新原型页面/
+!/frontend/**
