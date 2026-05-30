@@ -126,7 +126,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { Plus } from "@element-plus/icons-vue"
@@ -134,8 +134,6 @@ import { useRouter } from "vue-router"
 import {
   getProjects,
   deleteProject as deleteProjectApi,
-  type Project,
-  type ProjectPageData,
 } from "@/services/adminService"
 
 const router = useRouter()
@@ -144,7 +142,7 @@ const router = useRouter()
 const searchKeyword = ref("")
 
 // 项目数据与加载状态
-const projectsData = ref<Project[]>([])
+const projectsData = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -179,7 +177,7 @@ const totalCount = computed(() => {
 const loadProjects = async () => {
   loading.value = true
   try {
-    const response: ProjectPageData<Project> = await getProjects({
+    const response = await getProjects({
       current: currentPage.value,
       size: pageSize.value,
       keyword: searchKeyword.value,
@@ -213,14 +211,14 @@ const resetFilter = () => {
 }
 
 // 分页大小变化
-const handleSizeChange = (size: number) => {
+const handleSizeChange = size => {
   pageSize.value = size
   currentPage.value = 1
   loadProjects()
 }
 
 // 页码变化
-const handleCurrentChange = (current: number) => {
+const handleCurrentChange = current => {
   currentPage.value = current
   loadProjects()
 }
@@ -231,12 +229,12 @@ const openAddDialog = () => {
 }
 
 // 打开编辑页面
-const handleEdit = (row: Project) => {
+const handleEdit = row => {
   router.push(`/admin/projects/edit/${row.id}`)
 }
 
 // 删除项目 - 改进错误处理
-const deleteProject = async (id?: number) => {
+const deleteProject = async id => {
   if (!id) {
     ElMessage.warning("项目ID不存在")
     return

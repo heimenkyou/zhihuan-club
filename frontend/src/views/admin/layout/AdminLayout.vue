@@ -87,110 +87,112 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-  // 导入Element Plus图标组件
-  import {
-    House,
-    User,
-    Message,
-    Trophy,
-    Box,
-    ArrowDown,
-    SwitchButton,
-  } from '@element-plus/icons-vue'
+<script setup>
+import {
+  House,
+  User,
+  Message,
+  Trophy,
+  Box,
+  ArrowDown,
+  SwitchButton,
+} from '@element-plus/icons-vue'
 
-  import { useRouter } from 'vue-router'
-  import { useAdminStore } from '@/stores/adminStore'
-  import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
-  import { ElMessage } from 'element-plus'
-  import { logout as logoutApi } from '@/services/adminService'
+import { useRouter } from 'vue-router'
+import { useAdminStore } from '@/stores/adminStore'
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
+import { ElMessage } from 'element-plus'
+import { logout as logoutApi } from '@/services/adminService'
 
-  const router = useRouter()
-  const adminStore = useAdminStore()
-  const userInfo = ref(adminStore.userInfo)
-  const isMenuCollapsed = ref(false) // 移动端菜单是否折叠
-  const isMobile = ref(false) // 是否为移动端
+const router = useRouter()
+const adminStore = useAdminStore()
+const userInfo = ref(adminStore.userInfo)
+const isMenuCollapsed = ref(false)
+const isMobile = ref(false)
 
-  // 检测屏幕尺寸
-  const checkIsMobile = () => {
-    isMobile.value = window.innerWidth <= 768
-    // 在移动端默认折叠菜单
-    if (isMobile.value) {
-      isMenuCollapsed.value = true
-    } else {
-      isMenuCollapsed.value = false
-    }
+/**
+ * 根据屏幕宽度切换菜单折叠策略，避免移动端侧栏遮挡主体内容。
+ */
+const checkIsMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+  if (isMobile.value) {
+    isMenuCollapsed.value = true
+  } else {
+    isMenuCollapsed.value = false
   }
+}
 
-  // 切换菜单显示状态
-  const toggleMenu = () => {
-    isMenuCollapsed.value = !isMenuCollapsed.value
+/**
+ * 切换移动端菜单展开状态。
+ */
+const toggleMenu = () => {
+  isMenuCollapsed.value = !isMenuCollapsed.value
+}
+
+/**
+ * 响应窗口尺寸变化，保持菜单状态与当前设备形态一致。
+ */
+const handleResize = () => {
+  checkIsMobile()
+}
+
+onMounted(async () => {
+  checkIsMobile()
+  window.addEventListener('resize', handleResize)
+
+  await adminStore.checkLoginStatus()
+  userInfo.value = adminStore.userInfo
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+/**
+ * 处理侧边栏导航，并在移动端点击后自动收起菜单。
+ *
+ * @param {string} key
+ */
+const handleMenuSelect = key => {
+  router.push(key)
+  if (isMobile.value) {
+    isMenuCollapsed.value = true
   }
+}
 
-  // 监听窗口大小变化
-  const handleResize = () => {
-    checkIsMobile()
+/**
+ * 处理右上角下拉菜单命令。
+ *
+ * @param {string} command
+ */
+const handleCommand = command => {
+  switch (command) {
+    case 'profile':
+      router.push('/admin/profile')
+      break
+    case 'home':
+      router.push('/')
+      break
+    case 'logout':
+      handleLogout()
+      break
   }
+}
 
-  onMounted(async () => {
-    checkIsMobile()
-    window.addEventListener('resize', handleResize)
-
-    // 异步验证登录状态，确保状态同步
-    await adminStore.checkLoginStatus()
-    userInfo.value = adminStore.userInfo
+/**
+ * 退出登录时先清理本地状态，再异步通知后端，避免页面停留在无效登录态。
+ */
+const handleLogout = () => {
+  logoutApi().catch(error => {
+    console.warn('后端登出接口调用失败:', error)
   })
 
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', handleResize)
-  })
+  adminStore.logout()
+  ElMessage.success('退出登录成功')
+  router.push('/admin/login')
+}
 
-  const handleMenuSelect = (key: string) => {
-    router.push(key)
-    // 在移动端选择菜单项后自动折叠菜单
-    if (isMobile.value) {
-      isMenuCollapsed.value = true
-    }
-  }
-
-  /**
-   * 处理下拉菜单命令
-   * @param command 菜单命令
-   */
-  const handleCommand = (command: string) => {
-    switch (command) {
-      case 'profile':
-        // 跳转到个人资料页面
-        router.push('/admin/profile')
-        break
-      case 'home':
-        // 返回前台首页
-        router.push('/')
-        break
-      case 'logout':
-        handleLogout()
-        break
-    }
-  }
-
-  /**
-   * 处理退出登录 - 异步调用后端登出接口并立即清理本地状态
-   * 不等待后端接口响应，立即清除本地token并跳转到登录页
-   */
-  const handleLogout = () => {
-    // 异步调用后端登出接口，不等待响应
-    logoutApi().catch(error => {
-      // 仅记录日志，不影响用户体验
-      console.warn('后端登出接口调用失败:', error)
-    })
-
-    // 立即清除本地状态，不等待后端响应
-    adminStore.logout()
-    ElMessage.success('退出登录成功')
-    router.push('/admin/login')
-  }
-  // 获取当前路由路径
-  const currentRoutePath = computed(() => router.currentRoute.value.path)
+const currentRoutePath = computed(() => router.currentRoute.value.path)
 </script>
 
 <style scoped>

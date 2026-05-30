@@ -52,102 +52,96 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-  import { ref, reactive, onMounted } from 'vue'
-  import { ElMessage } from 'element-plus'
-  import { useRouter } from 'vue-router'
-  import { useAdminStore } from '@/stores/adminStore'
-  import { login } from '@/services/adminService'
-  import type { ElForm } from 'element-plus'
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { useAdminStore } from '@/stores/adminStore'
+import { login } from '@/services/adminService'
 
-  const router = useRouter()
-  const adminStore = useAdminStore()
-  const loginFormRef = ref<InstanceType<typeof ElForm> | null>(null)
-  const loginForm = reactive<{ username: string; password: string }>({
-    username: '',
-    password: '',
-  })
-  const rememberPassword = ref(false)
-  const loading = ref(false)
-  const rules = {
-    username: [
-      { required: true, message: '请输入用户名', trigger: 'blur' },
-      {
-        min: 3,
-        max: 20,
-        message: '用户名长度应在3-20个字符之间',
-        trigger: 'blur',
-      },
-    ],
-    password: [
-      { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 5, message: '密码长度不能少于5位', trigger: 'blur' },
-      { max: 20, message: '密码长度不能超过20位', trigger: 'blur' },
-    ],
-  }
+const router = useRouter()
+const adminStore = useAdminStore()
+const loginFormRef = ref(null)
+const loginForm = reactive({
+  username: '',
+  password: '',
+})
+const rememberPassword = ref(false)
+const loading = ref(false)
+const rules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    {
+      min: 3,
+      max: 20,
+      message: '用户名长度应在3-20个字符之间',
+      trigger: 'blur',
+    },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 5, message: '密码长度不能少于5位', trigger: 'blur' },
+    { max: 20, message: '密码长度不能超过20位', trigger: 'blur' },
+  ],
+}
 
-  const handleLogin = async () => {
-    // 验证表单
-    loginFormRef.value?.validate(async valid => {
-      if (valid) {
-        loading.value = true
-        try {
-          // 调用登录API
-          const adminInfo = await login(loginForm)
-          // 从localStorage获取token
-          const token = localStorage.getItem('adminToken')
-          console.debug('登录成功, token:', token)
-          // 登录成功后存储管理员信息
-          adminStore.login(
-            {
-              ...adminInfo,
-              role: adminInfo.role as 'super' | 'normal',
-            },
-            token || undefined
-          )
+/**
+ * 提交登录表单，并在状态写入完成后跳转后台首页。
+ */
+const handleLogin = async () => {
+  loginFormRef.value?.validate(async valid => {
+    if (valid) {
+      loading.value = true
+      try {
+        const adminInfo = await login(loginForm)
+        const token = localStorage.getItem('adminToken')
+        console.debug('登录成功, token:', token)
 
-          // 处理记住密码功能
-          if (rememberPassword.value) {
-            localStorage.setItem('rememberedUsername', loginForm.username)
-            localStorage.setItem('rememberedPassword', loginForm.password)
-            localStorage.setItem('rememberPassword', 'true')
-          } else {
-            localStorage.removeItem('rememberedUsername')
-            localStorage.removeItem('rememberedPassword')
-            localStorage.removeItem('rememberPassword')
-          }
+        adminStore.login(adminInfo, token || undefined)
 
-          ElMessage.success('登录成功，正在跳转...')
-          console.log('登录成功, 正在跳转...')
-
-          // 延迟跳转，确保状态完全同步
-          setTimeout(async () => {
-            router.push('/admin/dashboard')
-            console.log('跳转成功')
-          }, 1000)
-        } finally {
-          loading.value = false
+        if (rememberPassword.value) {
+          localStorage.setItem('rememberedUsername', loginForm.username)
+          localStorage.setItem('rememberedPassword', loginForm.password)
+          localStorage.setItem('rememberPassword', 'true')
+        } else {
+          localStorage.removeItem('rememberedUsername')
+          localStorage.removeItem('rememberedPassword')
+          localStorage.removeItem('rememberPassword')
         }
+
+        ElMessage.success('登录成功，正在跳转...')
+        console.log('登录成功, 正在跳转...')
+
+        // 延迟跳转，避免页面切换早于登录态写入。
+        setTimeout(() => {
+          router.push('/admin/dashboard')
+          console.log('跳转成功')
+        }, 1000)
+      } finally {
+        loading.value = false
       }
-    })
-  }
-
-  // 组件挂载时加载记住的密码
-  onMounted(() => {
-    const rememberedUsername = localStorage.getItem('rememberedUsername')
-    const rememberedPassword = localStorage.getItem('rememberedPassword')
-    const rememberPasswordFlag = localStorage.getItem('rememberPassword')
-
-    if (rememberedUsername) {
-      loginForm.username = rememberedUsername
-    }
-    if (rememberedPassword) {
-      loginForm.password = rememberedPassword
-    }
-    if (rememberPasswordFlag === 'true') {
-      rememberPassword.value = true
     }
   })
+}
+
+/**
+ * 恢复“记住密码”缓存，避免管理员每次都重新输入账号密码。
+ */
+onMounted(() => {
+  const rememberedUsername = localStorage.getItem('rememberedUsername')
+  const rememberedPassword = localStorage.getItem('rememberedPassword')
+  const rememberPasswordFlag = localStorage.getItem('rememberPassword')
+
+  if (rememberedUsername) {
+    loginForm.username = rememberedUsername
+  }
+  if (rememberedPassword) {
+    loginForm.password = rememberedPassword
+  }
+  if (rememberPasswordFlag === 'true') {
+    rememberPassword.value = true
+  }
+})
 </script>
 
 <style scoped>

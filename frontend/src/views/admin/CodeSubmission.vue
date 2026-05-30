@@ -162,7 +162,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { ref, reactive } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useAdminStore } from '@/stores/adminStore'
@@ -172,8 +172,6 @@
     getCodeSubmissions,
     updateCodeSubmission,
     deleteCodeSubmission,
-    type CodeSubmission,
-    type CodeSubmissionReq,
   } from '@/services/codeSubmissionService'
 
   const adminStore = useAdminStore()
@@ -181,7 +179,7 @@
   const isSuperAdmin = adminStore.isSuperAdmin()
 
   // 表单数据
-  const formData = reactive<CodeSubmissionReq>({
+  const formData = reactive({
     studentId: '',
     name: '',
     description: '',
@@ -227,7 +225,7 @@
 
   // 编辑对话框
   const dialogVisible = ref(false)
-  const editFormData = reactive<CodeSubmissionReq>({
+  const editFormData = reactive({
     studentId: '',
     name: '',
     description: '',
@@ -324,7 +322,7 @@
   }
 
   // 编辑提交记录
-  const handleEdit = (row: CodeSubmission) => {
+  const handleEdit = (row) => {
     currentSubmissionId.value = row.id
     editFormData.studentId = row.studentId
     editFormData.name = row.name
@@ -352,7 +350,7 @@
   }
 
   // 删除提交记录
-  const handleDelete = async (id: number) => {
+  const handleDelete = async id => {
     try {
       await ElMessageBox.confirm('确定要删除这条提交记录吗？', '确认删除', {
         confirmButtonText: '确定',
@@ -377,13 +375,13 @@
   }
 
   // 分页大小变化
-  const handleSizeChange = (size: number) => {
+  const handleSizeChange = size => {
     pagination.size = size
     loadSubmissions()
   }
 
   // 分页当前页变化
-  const handleCurrentChange = (current: number) => {
+  const handleCurrentChange = current => {
     pagination.current = current
     loadSubmissions()
   }

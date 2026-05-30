@@ -142,24 +142,23 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, reactive, onMounted, computed, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import {
   getMessages,
   deleteMessage as deleteMessageApi,
 } from "@/services/messageService"
-import type { PageData, MessageItem } from "@/services/messageService"
 
 // 检测是否为移动端
 const isMobile = computed(() => {
   return window.innerWidth <= 768
 })
 
-const searchForm = reactive<{ keyword: string }>({
+const searchForm = reactive({
   keyword: "",
 })
-const messagesData = ref<PageData<MessageItem>>({
+const messagesData = ref({
   current: 1,
   size: isMobile.value ? 5 : 10,
   total: 0,
@@ -167,9 +166,9 @@ const messagesData = ref<PageData<MessageItem>>({
   records: [],
 })
 const loading = ref(false)
-const selectedRows = ref<MessageItem[]>([])
-const pageContainerRef = ref<HTMLElement | null>(null)
-const pageNumbersRef = ref<HTMLElement | null>(null)
+const selectedRows = ref([])
+const pageContainerRef = ref(null)
+const pageNumbersRef = ref(null)
 const showScrollIndicator = ref(false)
 const scrollThumbWidth = ref('0px')
 const scrollThumbPosition = ref('0px')
@@ -221,20 +220,20 @@ const resetForm = () => {
 }
 
 // 分页大小变化
-const handleSizeChange = (size: number) => {
+const handleSizeChange = size => {
   messagesData.value.size = size
   messagesData.value.current = 1
   loadMessages()
 }
 
 // 当前页变化
-const handleCurrentChange = (current: number) => {
+const handleCurrentChange = current => {
   messagesData.value.current = current
   loadMessages()
 }
 
 // 跳转到指定页
-const goToPage = (page: number) => {
+const goToPage = page => {
   messagesData.value.current = page
   loadMessages()
 }
@@ -242,18 +241,18 @@ const goToPage = (page: number) => {
 // 滚动到当前页
 const scrollToCurrentPage = () => {
   if (!isMobile.value || !pageContainerRef.value || !pageNumbersRef.value) return
-  
+
   nextTick(() => {
-    const container = pageContainerRef.value!
-    const buttons = pageNumbersRef.value!.querySelectorAll('.el-button')
+    const container = pageContainerRef.value
+    const buttons = pageNumbersRef.value.querySelectorAll('.el-button')
     const currentPageButton = buttons[messagesData.value.current - 1]
-    
+
     if (currentPageButton) {
       const containerWidth = container.offsetWidth
-      const buttonLeft = (currentPageButton as HTMLElement).offsetLeft
-      const buttonWidth = (currentPageButton as HTMLElement).offsetWidth
+      const buttonLeft = currentPageButton.offsetLeft
+      const buttonWidth = currentPageButton.offsetWidth
       const scrollLeft = buttonLeft - (containerWidth / 2) + (buttonWidth / 2)
-      
+
       container.scrollTo({
         left: Math.max(0, scrollLeft),
         behavior: 'smooth'
@@ -288,13 +287,13 @@ const onPageScroll = () => {
 }
 
 // 触摸事件处理
-const onTouchStart = (e: TouchEvent) => {
+const onTouchStart = e => {
   if (!pageContainerRef.value) return
   touchStartX.value = e.touches[0].clientX
   scrollStart.value = pageContainerRef.value.scrollLeft
 }
 
-const onTouchMove = (e: TouchEvent) => {
+const onTouchMove = e => {
   if (!pageContainerRef.value) return
   e.preventDefault()
   const touchX = e.touches[0].clientX
@@ -307,7 +306,7 @@ const onTouchEnd = () => {
 }
 
 // 删除留言
-const deleteMessage = async (id: number) => {
+const deleteMessage = async id => {
   try {
     await ElMessageBox.confirm("确定要删除这条留言吗？", "确认删除", {
       type: "warning",
@@ -330,7 +329,7 @@ const deleteMessage = async (id: number) => {
 }
 
 // 处理选择变化
-const handleSelectionChange = (rows: MessageItem[]) => {
+const handleSelectionChange = rows => {
   selectedRows.value = rows
 }
 

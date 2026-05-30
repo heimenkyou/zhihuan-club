@@ -84,13 +84,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Edit } from '@element-plus/icons-vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { updateAdmin } from '@/services/adminService'
-import type { FormInstance, FormRules } from 'element-plus'
 
 const adminStore = useAdminStore()
 const loading = ref(false)
@@ -98,45 +97,46 @@ const saving = ref(false)
 const changingPassword = ref(false)
 const isEditing = ref(false)
 
-const profileFormRef = ref<FormInstance>()
-const passwordFormRef = ref<FormInstance>()
+const profileFormRef = ref(null)
+const passwordFormRef = ref(null)
 
-// 个人资料表单
 const profileForm = ref({
   id: 0,
   username: '',
   role: '',
   createTime: '',
-  updateTime: ''
+  updateTime: '',
 })
 
-// 原始资料（用于取消编辑时恢复）
 const originalProfile = ref({
   id: 0,
   username: '',
   role: '',
   createTime: '',
-  updateTime: ''
+  updateTime: '',
 })
 
-// 密码表单
 const passwordForm = ref({
   newPassword: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
-// 表单验证规则
-const profileRules: FormRules = {
+const profileRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度应在3-20个字符之间', trigger: 'blur' }
-  ]
+    {
+      min: 3,
+      max: 20,
+      message: '用户名长度应在3-20个字符之间',
+      trigger: 'blur',
+    },
+  ],
 }
 
-const passwordRules: FormRules = {
+const passwordRules = {
   newPassword: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+    { min: 6, message: '密码长度至少6位', trigger: 'blur' },
   ],
   confirmPassword: [
     { required: true, message: '请确认新密码', trigger: 'blur' },
@@ -148,70 +148,68 @@ const passwordRules: FormRules = {
           callback()
         }
       },
-      trigger: 'blur'
-    }
-  ]
+      trigger: 'blur',
+    },
+  ],
 }
 
-// 角色标签样式
 const roleTagType = computed(() => {
   return profileForm.value.role === 'super' ? 'danger' : 'primary'
 })
 
-// 角色文本
 const roleText = computed(() => {
   return profileForm.value.role === 'super' ? '超级管理员' : '管理员'
 })
 
 /**
- * 格式化日期
+ * 格式化时间字段，避免后台原始时间字符串直接暴露给界面。
+ *
+ * @param {string} dateString
+ * @returns {string}
  */
-const formatDate = (dateString: string) => {
+const formatDate = dateString => {
   if (!dateString) return '-'
   return new Date(dateString).toLocaleString('zh-CN')
 }
 
 /**
- * 加载用户资料 - 如果store中没有用户信息则主动获取
+ * 加载当前管理员资料；若 store 为空则主动向后端补拉一次。
  */
 const loadProfile = async () => {
   loading.value = true
-  
-  // 如果store中没有用户信息，尝试获取
+
   if (!adminStore.userInfo) {
     try {
       await adminStore.fetchUserInfo()
     } catch (error) {
-      // 获取失败时由全局错误处理处理
       loading.value = false
       throw error
     }
   }
-  
-  // 填充表单数据
+
   if (adminStore.userInfo) {
     profileForm.value = {
       id: adminStore.userInfo.id,
       username: adminStore.userInfo.username,
       role: adminStore.userInfo.role,
       createTime: adminStore.userInfo.createTime,
-      updateTime: adminStore.userInfo.updateTime
+      updateTime: adminStore.userInfo.updateTime,
     }
     originalProfile.value = { ...profileForm.value }
   }
-  
+
   loading.value = false
 }
 
 /**
- * 开始编辑
+ * 进入编辑态，允许当前管理员修改用户名。
  */
 const handleEdit = () => {
   isEditing.value = true
 }
 
 /**
- * 取消编辑
+ * 放弃本次编辑并恢复到加载时的原始资料。
  */
 const cancelEdit = () => {
   profileForm.value = { ...originalProfile.value }
@@ -220,26 +218,24 @@ const cancelEdit = () => {
 }
 
 /**
- * 保存个人资料 - 更新管理员用户名信息
+ * 保存个人资料，并同步更新 store 中的用户名显示。
  */
 const saveProfile = async () => {
   if (!profileFormRef.value) return
-  
+
   await profileFormRef.value.validate()
   saving.value = true
-  
+
   try {
-    // 调用更新个人资料的API
     await updateAdmin(profileForm.value.id, {
       username: profileForm.value.username,
-      role: profileForm.value.role as 'super' | 'normal'
+      role: profileForm.value.role,
     })
-    
+
     ElMessage.success('个人资料更新成功')
     originalProfile.value = { ...profileForm.value }
     isEditing.value = false
-    
-    // 更新store中的用户信息
+
     if (adminStore.userInfo) {
       adminStore.userInfo.username = profileForm.value.username
     }
@@ -249,29 +245,28 @@ const saveProfile = async () => {
 }
 
 /**
- * 修改密码 - 通过更新管理员接口修改密码
+ * 修改当前管理员密码，并复用现有更新管理员接口落库。
  */
 const changePassword = async () => {
   if (!passwordFormRef.value) return
-  
+
   await passwordFormRef.value.validate()
-  
+
   await ElMessageBox.confirm('确定要修改密码吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'warning'
+    type: 'warning',
   })
-  
+
   changingPassword.value = true
-  
+
   try {
-    // 调用修改密码的API - 使用更新管理员接口
     await updateAdmin(profileForm.value.id, {
       username: profileForm.value.username,
       password: passwordForm.value.newPassword,
-      role: profileForm.value.role as 'super' | 'normal'
+      role: profileForm.value.role,
     })
-    
+
     ElMessage.success('密码修改成功')
     passwordFormRef.value.resetFields()
   } finally {

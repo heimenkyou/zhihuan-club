@@ -135,25 +135,24 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, reactive, onMounted, computed } from "vue"
-import { ElMessage, ElForm } from "element-plus"
+import { ElMessage } from "element-plus"
 import { useAdminStore } from "@/stores/adminStore"
 import {
   getAdmins,
   createAdmin,
   deleteAdmin,
   updateAdmin,
-  type Admin,
 } from "@/services/adminService"
 
 const adminStore = useAdminStore()
 const isSuperAdmin = adminStore.isSuperAdmin()
-const adminsList = ref<Admin[]>([])
+const adminsList = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref("添加管理员")
-const editingAdminId = ref<number | null>(null)
-const adminFormRef = ref<InstanceType<typeof ElForm> | null>(null)
+const editingAdminId = ref(null)
+const adminFormRef = ref(null)
 
 // 检测是否为移动端
 const isMobile = computed(() => {
@@ -164,7 +163,7 @@ const adminForm = reactive({
   username: "",
   password: "",
   newPassword: "",
-  role: "normal" as "super" | "normal",
+  role: "normal",
 })
 
 const rules = {
@@ -195,18 +194,15 @@ const handleAddAdmin = () => {
   dialogTitle.value = "添加管理员"
   editingAdminId.value = null
   // 重置表单
-  Object.keys(adminForm).forEach((key) => {
-    if (key === "role") {
-      adminForm[key as keyof typeof adminForm] = "normal"
-    } else {
-      adminForm[key as keyof typeof adminForm] = "super"
-    }
-  })
+  adminForm.username = ""
+  adminForm.password = ""
+  adminForm.newPassword = ""
+  adminForm.role = "normal"
   dialogVisible.value = true
 }
 
 // 处理编辑管理员
-const handleEditAdmin = (admin: Admin) => {
+const handleEditAdmin = admin => {
   dialogTitle.value = "编辑管理员"
   editingAdminId.value = admin.id
   adminForm.username = admin.username
@@ -217,7 +213,7 @@ const handleEditAdmin = (admin: Admin) => {
 }
 
 // 处理删除管理员
-const handleDeleteAdmin = async (id: number) => {
+const handleDeleteAdmin = async id => {
   try {
     await deleteAdmin(id)
     ElMessage.success("删除管理员成功")
@@ -235,7 +231,7 @@ const handleSubmit = async () => {
       try {
         if (editingAdminId.value) {
           // 更新管理员
-          const params: Partial<Admin> = {
+          const params = {
             username: adminForm.username,
           }
           if (adminForm.newPassword) {
