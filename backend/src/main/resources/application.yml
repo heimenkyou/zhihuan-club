@@ -4,19 +4,19 @@ spring:
   application:
     name: club-recruitment
   datasource:
-    url: jdbc:mysql://${rec.datasource.host}:${rec.datasource.port:3306}/${rec.datasource.database:club-recruitment}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
-    username: ${rec.datasource.username}
-    password: ${rec.datasource.password}
-    driver-class-name: ${rec.datasource.driver-class-name}
+    url: jdbc:mysql://${app.mysql.host}:${app.mysql.port:3306}/${app.mysql.database:club-recruitment}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: ${app.mysql.username}
+    password: ${app.mysql.password}
+    driver-class-name: ${app.mysql.driver-class-name}
     druid:
       connect-timeout: 3000
       max-pool-prepared-statement-per-connection-size: 20
   data:
     redis:
-      host: ${rec.redis.host}
-      port: ${rec.redis.port:6379}
-      password: ${rec.redis.password}
-      database: ${rec.redis.database:2}
+      host: ${app.redis.host}
+      port: ${app.redis.port:6379}
+      password: ${app.redis.password}
+      database: ${app.redis.database:2}
   servlet:
     multipart:
       max-file-size: 200MB
@@ -50,14 +50,27 @@ knife4j:
   setting:
     language: zh_cn
 
-rec:
+app:
+  mysql:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: ${DATABASE_HOST:127.0.0.1}
+    port: ${DATABASE_PORT:3306}
+    database: ${DATABASE_NAME:app}
+    username: ${DATABASE_USERNAME:}
+    password: ${DATABASE_PASSWORD:}
+  redis:
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DATABASE:2}
+  minio:
+    endpoint: ${MINIO_ENDPOINT:}
+    public-endpoint: ${MINIO_PUBLIC_ENDPOINT:}
+    access-key: ${MINIO_ACCESS_KEY:}
+    secret-key: ${MINIO_SECRET_KEY:}
+    bucket-name: ${MINIO_BUCKET_NAME:}
   # 点赞防刷时间间隔(秒)
   like-interval-seconds: 86400
   # 管理员登录token有效期
   admin-token-expire-minutes: 30
-minio:
-  endpoint: ${minio.endpoint}
-  access-key: ${minio.access-key}
-  secret-key: ${minio.secret-key}
-  bucket-name: ${minio.bucket-name}
 

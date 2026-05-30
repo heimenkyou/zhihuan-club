@@ -36,17 +36,8 @@ public class GlobalExceptionHandler {
         String exceptionStr = Optional.ofNullable(firstFieldError)
                 .map(FieldError::getDefaultMessage)
                 .orElse(StrUtil.EMPTY);
-        log.error("[{}] {} [ex] {}", request.getMethod(), getUrl(request), exceptionStr);
+        log.error("[{}] {} [ex] {}", request.getMethod(), getUrl(request), exceptionStr, ex);
         return Results.failure(BaseErrorCode.CLIENT_ERROR.code(), exceptionStr);
-    }
-
-    /**
-     * 拦截404异常
-     */
-    @ExceptionHandler(value = NoResourceFoundException.class)
-    public Result<Void> noHandlerFoundException(HttpServletRequest request, NoResourceFoundException ex) {
-        log.error("[{}] {} [ex] {}", request.getMethod(), getUrl(request), ex.getMessage());
-        return Results.failure(BaseErrorCode.NO_HANDLE_ERROR.code(), BaseErrorCode.NO_HANDLE_ERROR.message());
     }
 
     /**
@@ -54,17 +45,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = {AbstractException.class})
     public Result<Void> abstractException(HttpServletRequest request, AbstractException ex) {
-        if (ex.getCause() != null) {
-            log.error("[{}] {} [ex] {}", request.getMethod(), request.getRequestURL().toString(), ex, ex.getCause());
-            return Results.failure(ex);
-        }
-        StringBuilder stackTraceBuilder = new StringBuilder();
-        stackTraceBuilder.append(ex.getClass().getName()).append(": ").append(ex.getErrorMessage()).append("\n");
-        StackTraceElement[] stackTrace = ex.getStackTrace();
-        for (int i = 0; i < Math.min(5, stackTrace.length); i++) {
-            stackTraceBuilder.append("\tat ").append(stackTrace[i]).append("\n");
-        }
-        log.error("[{}] {} [ex] {} \n\n{}", request.getMethod(), request.getRequestURL().toString(), ex, stackTraceBuilder);
+        log.error("[{}] {} 业务异常: {}", request.getMethod(), getUrl(request), ex.getErrorMessage(), ex);
         return Results.failure(ex);
     }
 
@@ -73,8 +54,19 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Throwable.class)
     public Result<Void> defaultErrorHandler(HttpServletRequest request, Throwable throwable) {
-        log.error("[{}] {} ", request.getMethod(), getUrl(request), throwable);
+        log.error("[{}] {} 系统未知异常 | 异常类型: {} | 信息: {}",
+                request.getMethod(), getUrl(request), throwable.getClass().getName(), throwable.getMessage(), throwable);
         return Results.failure();
+    }
+
+    /**
+     * 拦截 404 异常
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public Result<Void> handle404(HttpServletRequest request, NoResourceFoundException ex) {
+        // 针对 404 这种非逻辑错误的异常，只打一行 Warn，不打印堆栈
+        log.warn("[404] 资源不存在: {} {}", request.getMethod(), request.getRequestURI());
+        return Results.failure(BaseErrorCode.CLIENT_ERROR.code(), "资源不存在");
     }
 
     private String getUrl(HttpServletRequest request) {

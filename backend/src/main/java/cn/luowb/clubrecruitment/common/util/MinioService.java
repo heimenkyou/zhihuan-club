@@ -72,7 +72,7 @@ public class MinioService {
             log.info("已设置Minio桶 {} 为公共读", bucketName);
         } catch (Exception e) {
             log.error("初始化Minio桶失败", e);
-            throw new RuntimeException("Minio初始化失败", e);
+//            throw new RuntimeException("Minio初始化失败", e);
         }
     }
 

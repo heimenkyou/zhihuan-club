@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisKeyUtil {
     // 点赞防刷时间
-    @Value("${rec.like-interval-seconds:3600}")
+    @Value("${app.like-interval-seconds:3600}")
     public long likeIntervalSeconds;
     // 管理员token过期时间
-    @Value("${rec.admin-token-expire-minutes:30}")
+    @Value("${app.admin-token-expire-minutes:30}")
     public long adminTokenExpireMinutes;
     // 自动注入 spring.application.name 项目前缀, 避免不同项目冲突
     @Value("${spring.application.name}")

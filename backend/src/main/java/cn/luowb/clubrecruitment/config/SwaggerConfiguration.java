@@ -31,12 +31,7 @@ public class SwaggerConfiguration implements ApplicationRunner {
         return new OpenAPI()
                 .info(new Info() // 基本信息配置
                                 .title("社团招新网站") // 标题
-                                .description("发布留言, 查看留言, 提交报名等") // 描述 Api 接口文档的基本信息
                                 .version("v1.0.0") // 版本
-                                // 设置 OpenAPI 文档的联系信息，包括联系人姓名为"ding.ma"，邮箱为"machen@apache.org"
-                                .contact(new Contact().name("罗文彬").email("Wenbin.Lo@outlook.com"))
-                        // 设置 OpenAPI 文档的许可证信息，包括许可证名称和许可证URL
-//                        .license(new License().name("").url(""))
                 );
     }
 
