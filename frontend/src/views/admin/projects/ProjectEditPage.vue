@@ -87,7 +87,7 @@
 
               <div class="upload-actions">
                 <el-button
-                  type="text"
+                  link
                   @click="showImageLibrary"
                   style="margin-bottom: 10px"
                 >
@@ -113,37 +113,35 @@
               </el-tabs>
             </div>
             <div v-if="activeTab === 'edit'" class="editor-full">
-              <v-md-editor
+              <MdEditor
                 v-model="projectForm.descriptionMd"
-                :disabled-menus="['image']"
-                height="500px"
+                :toolbars-exclude="['image']"
+                style="height: 500px"
                 class="markdown-editor"
               />
             </div>
             <div v-else-if="activeTab === 'preview'" class="editor-full">
               <div class="markdown-preview">
-                <v-md-editor
-                  :value="projectForm.descriptionMd"
-                  mode="preview"
-                  height="500px"
+                <MdPreview
+                  :modelValue="projectForm.descriptionMd"
+                  style="height: 500px; overflow-y: auto"
                 />
               </div>
             </div>
             <div v-else class="editor-split">
               <div class="editor-left">
-                <v-md-editor
+                <MdEditor
                   v-model="projectForm.descriptionMd"
-                  :disabled-menus="['image']"
-                  height="500px"
+                  :toolbars-exclude="['image']"
+                  style="height: 500px"
                   class="markdown-editor"
                 />
               </div>
               <div class="editor-right">
                 <div class="markdown-preview">
-                  <v-md-editor
-                    :value="projectForm.descriptionMd"
-                    mode="preview"
-                    height="500px"
+                  <MdPreview
+                    :modelValue="projectForm.descriptionMd"
+                    style="height: 500px; overflow-y: auto"
                   />
                 </div>
               </div>
@@ -210,7 +208,7 @@
                 type="danger"
                 size="small"
                 @click="removeTeamMember(index)"
-                :disabled="projectForm.teamDivision!.length <= 1"
+                :disabled="projectForm.teamDivision.length <= 1"
               >
                 移除
               </el-button>
@@ -388,23 +386,19 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
-  import { ElMessage, ElForm } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import { ArrowLeft, Plus } from '@element-plus/icons-vue'
   import {
     getProject,
     createProject,
     updateProject,
-    type Project,
-    // 添加新导入的类型和函数
-    type MediaResource,
     getUnreferencedMedia,
     // deleteMedia,
     uploadMedia,
     getAwards, // 添加奖项获取函数
-    type AwardItem, // 添加奖项类型
   } from '../../../services/adminService'
   // 移除本地导入，依赖全局注册的组件
   // import VMdEditor from '@kangc/v-md-editor'
@@ -419,11 +413,11 @@
   const isEditMode = computed(() => projectId.value !== null)
 
   // 表单引用
-  const projectFormRef = ref<InstanceType<typeof ElForm> | null>(null)
+  const projectFormRef = ref(null)
 
   // 媒体资源相关状态
-  const availableMediaResources = ref<MediaResource[]>([])
-  const selectedMediaResources = ref<MediaResource[]>([])
+  const availableMediaResources = ref([])
+  const selectedMediaResources = ref([])
   const imageLibraryVisible = ref(false)
   const showMediaUploadDialog = ref(false)
 
@@ -431,36 +425,36 @@
   const awardIdsInput = ref('')
 
   // 添加奖项数据状态
-  const awardItems = ref<AwardItem[]>([])
-  const selectedAwards = ref<AwardItem[]>([])
+  const awardItems = ref([])
+  const selectedAwards = ref([])
 
   // 日期范围选择
-  const dateRange = ref<string[]>([])
+  const dateRange = ref([])
 
   // Markdown编辑器相关
-  const activeTab = ref<string>('edit')
+  const activeTab = ref('edit')
   const techStackInput = ref('')
 
   // 上传表单相关状态
   const uploadTitle = ref('')
   const uploadDescription = ref('')
-  const uploadRef = ref<any>(null)
-  const uploadFormRef = ref<any>(null)
+  const uploadRef = ref(null)
+  const uploadFormRef = ref(null)
 
   // 项目表单 - 严格按照Project接口定义
-  const projectForm = reactive<Partial<Project>>({
+  const projectForm = reactive({
     title: '',
     category: 'Web开发',
     timeRange: '',
     briefIntro: '',
     descriptionMd: '',
     coverImage: '',
-    techStackTags: [] as string[],
+    techStackTags: [],
     teamDivision: [{ name: '', role: '' }],
     // 替换为媒体资源ID数组
-    mediaResourceIds: [] as number[],
+    mediaResourceIds: [],
     // 添加奖项ID数组
-    awardIds: [] as number[],
+    awardIds: [],
     createTime: new Date().toISOString(),
     updateTime: new Date().toISOString(),
   })
@@ -484,7 +478,7 @@
     // 自定义验证：确保至少有一个轮播图
     mediaResourceIds: [
       {
-        validator: (_: unknown, value: any, callback: any) => {
+        validator: (_, value, callback) => {
           if (!value || value.length === 0) {
             callback(new Error('请至少添加一张轮播图'))
           } else {
@@ -536,7 +530,7 @@
         awardIds: Array.isArray(projectForm.awardIds)
           ? projectForm.awardIds
           : [],
-      } as Omit<Project, 'id'>
+      }
 
       // 打印提交数据，方便调试
       console.log('提交数据:', JSON.stringify(submitData, null, 2))
@@ -567,14 +561,14 @@
   }
 
   // 日期范围变化处理
-  const handleDateRangeChange = (dates?: string[]) => {
+  const handleDateRangeChange = dates => {
     if (dates && dates.length === 2) {
       projectForm.timeRange = `${dates[0]}-${dates[1]}`
     }
   }
 
   // 图片上传前检查
-  const beforeUpload = (file: File) => {
+  const beforeUpload = file => {
     const isLt2M = file.size / 1024 / 1024 < 2
     if (!isLt2M) {
       ElMessage.error('图片大小不能超过 2MB!')
@@ -583,7 +577,7 @@
   }
 
   // 处理图片上传
-  const handleUpload = (options: any) => {
+  const handleUpload = options => {
     const { onSuccess } = options
     // 模拟图片上传过程
     const mockImageUrl = `https://picsum.photos/id/${Math.floor(
@@ -603,7 +597,7 @@
   }
 
   // 图片上传成功处理
-  const handleUploadSuccess = (response: any) => {
+  const handleUploadSuccess = response => {
     projectForm.coverImage = response.url // 修复：只使用response中的url属性
     ElMessage.success('图片上传成功')
   }
@@ -620,7 +614,7 @@
   }
 
   // 从图库选择图片（用于封面）
-  // const selectImageFromLibrary = (image: MediaResource) => {
+  // const selectImageFromLibrary = image => {
   //   projectForm.coverImage = image.url
   //   imageLibraryVisible.value = false
   //   ElMessage.success("图片已选择")
@@ -641,7 +635,7 @@
   }
 
   // 移除技术栈
-  const removeTechStack = (index: number) => {
+  const removeTechStack = index => {
     if (projectForm.techStackTags) {
       projectForm.techStackTags.splice(index, 1)
     }
@@ -655,7 +649,7 @@
   }
 
   // 移除团队成员
-  const removeTeamMember = (index: number) => {
+  const removeTeamMember = index => {
     if (projectForm.teamDivision && projectForm.teamDivision.length > 1) {
       projectForm.teamDivision.splice(index, 1)
     }
@@ -705,7 +699,7 @@
   }
 
   // 选择媒体资源（用于轮播图）
-  const selectMediaResource = (media: MediaResource) => {
+  const selectMediaResource = media => {
     if (!projectForm.mediaResourceIds) {
       projectForm.mediaResourceIds = []
     }
@@ -720,7 +714,7 @@
   }
 
   // 移除已选媒体资源
-  const removeSelectedMedia = (mediaId: number) => {
+  const removeSelectedMedia = mediaId => {
     if (projectForm.mediaResourceIds) {
       projectForm.mediaResourceIds = projectForm.mediaResourceIds.filter(
         id => id !== mediaId
@@ -734,9 +728,9 @@
 
   // 上传新的媒体资源
   const handleMediaUpload = async (
-    file: File,
-    title: string,
-    description: string
+    file,
+    title,
+    description
   ) => {
     try {
       const newMedia = await uploadMedia({ file, title, description })
@@ -902,24 +896,10 @@
   })
 
   // 添加对编辑器实例的引用，用于清理
-  const editorRefs = ref<Array<HTMLElement | null>>([])
+  const editorRefs = ref([])
 
   // 页面卸载时清理资源
   onUnmounted(() => {
-    // 清理所有可能的 ResizeObserver 实例
-    if (typeof window !== 'undefined' && window.ResizeObserver) {
-      // 尝试通过覆盖 ResizeObserver 原型来清理所有实例
-      const originalObserve = ((window.ResizeObserver as any).prototype.observe(
-        window.ResizeObserver as any
-      ).prototype.observe = function (target: Element, options?: any) {
-        try {
-          originalObserve.call(this, target, options)
-        } catch (e) {
-          console.warn('ResizeObserver 观察失败:', e)
-        }
-      })
-    }
-
     // 清理编辑器相关引用
     editorRefs.value = []
   })

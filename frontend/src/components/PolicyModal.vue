@@ -51,7 +51,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, onUnmounted } from "vue"
 import { useRouter } from "vue-router"
 
@@ -59,7 +59,7 @@ const router = useRouter()
 const visible = ref(false)
 
 // 保存原始的body样式，用于弹窗关闭时恢复
-let originalBodyStyle: string = ""
+let originalBodyStyle = ""
 
 // 监听组件挂载，检查是否已同意协议
 onMounted(() => {

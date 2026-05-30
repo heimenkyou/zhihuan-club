@@ -104,15 +104,14 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed, reactive } from 'vue'
-import type { CSSProperties } from 'vue'
 
 // 核心状态定义
-const audioRef = ref<HTMLAudioElement | null>(null)
+const audioRef = ref(null)
 const isPlaying = ref(false)
 const volume = ref(0.3)
-const playerRef = ref<HTMLDivElement | null>(null)
+const playerRef = ref(null)
 const navbarHeight = ref(0)
 const isExpanded = ref(false)
 const isDragging = ref(false)
@@ -130,15 +129,15 @@ const playerPosition = reactive({
 
 // 子按钮位置状态
 const buttonPositions = reactive({
-  playPause: {} as CSSProperties,
-  volume: {} as CSSProperties,
-  move: {} as CSSProperties
+  playPause: {},
+  volume: {},
+  move: {}
 })
 
 // 音量百分比计算属性
 const volumePercent = computed({
   get: () => Math.round(volume.value * 100),
-  set: (value: number) => {
+  set: value => {
     volume.value = value / 100
     if (audioRef.value) audioRef.value.volume = volume.value
     storePlayState({ isPlaying: isPlaying.value, volume: volume.value })
@@ -163,7 +162,7 @@ const getStoredPlayState = () => {
 }
 
 // 存储播放状态到localStorage
-const storePlayState = (state: { isPlaying: boolean; volume: number }) => {
+const storePlayState = state => {
   try {
     localStorage.setItem('musicPlayerState', JSON.stringify(state))
   } catch (error) {
@@ -202,7 +201,7 @@ const togglePlay = () => {
 }
 
 // 播放指定歌曲
-const playSong = (index: number) => {
+const playSong = index => {
   if (!audioRef.value) return
 
   currentSongIndex.value = index
@@ -230,7 +229,7 @@ const nextSong = () => {
 }
 
 // 音量控制（使用Element Plus滑块）
-const changeVolume = (value: number | number[]) => {
+const changeVolume = value => {
   const volumeValue = Array.isArray(value) ? value[0] : value
   volume.value = volumeValue / 100
   if (audioRef.value) audioRef.value.volume = volume.value
@@ -244,7 +243,7 @@ const toggleExpand = () => {
 }
 
 // 开始拖拽（使用Vue响应式系统替代直接DOM操作）
-const startDrag = (e: MouseEvent | TouchEvent) => {
+const startDrag = e => {
   e.stopPropagation()
   isDragging.value = true
 
@@ -266,8 +265,8 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
   const offsetY = clientY - currentTop
 
   // 处理拖拽移动
-  const handleMove = (moveEvent: Event) => {
-    const e = moveEvent as MouseEvent | TouchEvent
+  const handleMove = moveEvent => {
+    const e = moveEvent
     if (!isDragging.value) return
 
     // 阻止移动端屏幕滚动
@@ -298,19 +297,19 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
   // 结束拖拽
   const handleEnd = () => {
     isDragging.value = false
-    document.removeEventListener('mousemove', handleMove as EventListener)
-    document.removeEventListener('mouseup', handleEnd as EventListener)
-    document.removeEventListener('touchmove', handleMove as EventListener)
-    document.removeEventListener('touchend', handleEnd as EventListener)
+    document.removeEventListener('mousemove', handleMove)
+    document.removeEventListener('mouseup', handleEnd)
+    document.removeEventListener('touchmove', handleMove)
+    document.removeEventListener('touchend', handleEnd)
   }
 
   // 添加事件监听器
-  document.addEventListener('mousemove', handleMove as EventListener)
-  document.addEventListener('mouseup', handleEnd as EventListener)
-  document.addEventListener('touchmove', handleMove as EventListener, {
+  document.addEventListener('mousemove', handleMove)
+  document.addEventListener('mouseup', handleEnd)
+  document.addEventListener('touchmove', handleMove, {
     passive: false,
   })
-  document.addEventListener('touchend', handleEnd as EventListener)
+  document.addEventListener('touchend', handleEnd)
 }
 
 
@@ -355,7 +354,7 @@ const updateButtonPositions = () => {
 
   // 清空位置
   Object.keys(buttonPositions).forEach(key => {
-    buttonPositions[key as keyof typeof buttonPositions] = {}
+    buttonPositions[key] = {}
   })
 
   // 计算每个按钮的位置
@@ -368,7 +367,7 @@ const updateButtonPositions = () => {
     const relLeft = targetX - subBtnRadius
     const relTop = targetY - subBtnRadius
 
-    buttonPositions[btn.key as keyof typeof buttonPositions] = {
+    buttonPositions[btn.key] = {
       left: `${relLeft}px`,
       top: `${relTop}px`
     }
@@ -399,9 +398,9 @@ const handleUserInteraction = async () => {
 }
 
 // 点击页面其他地方关闭音量控制和展开的按钮
-const handleDocumentClick = (e: MouseEvent) => {
-  const target = e.target as HTMLElement
-  if (playerRef.value && !playerRef.value.contains(target)) {
+const handleDocumentClick = e => {
+  const target = e.target
+  if (playerRef.value && target && !playerRef.value.contains(target)) {
     showVolumeControl.value = false
     isExpanded.value = false
   }

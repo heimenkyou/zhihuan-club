@@ -741,7 +741,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { onMounted } from 'vue'
   // import { useRouter } from "vue-router"
   import CommonNavbar from '@/components/CommonNavbar.vue'

@@ -456,7 +456,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { onMounted } from 'vue'
   import { CircleCheck } from '@element-plus/icons-vue'
   import CommonNavbar from '@/components/CommonNavbar.vue'

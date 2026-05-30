@@ -114,8 +114,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-  import { ref, onMounted, onUnmounted, watch } from 'vue'
+<script setup>
+  import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
 
   // 1. 路由相关
@@ -129,12 +129,7 @@
   })
 
   // 2. 导航数据（带路由路径）
-  interface NavItem {
-    id: number
-    text: string
-    path: string
-  }
-  const navItems: NavItem[] = [
+  const navItems = [
     { id: 1, text: '首页', path: '/' },
     { id: 2, text: '项目库', path: '/projects' },
     { id: 3, text: '竞赛天地', path: '/competitions' },
@@ -151,11 +146,11 @@
   const isSidebarOpen = ref(false) // 侧边栏是否打开
   const currentTime = ref('') // iOS状态栏时间
   const isIosDevice = ref(false) // 是否iOS设备
-  let timeInterval: ReturnType<typeof setInterval> | null = null
+  let timeInterval = null
 
   // 4. 核心交互
   /** 导航项点击：路由跳转+关闭侧边栏 */
-  const handleNavClick = (item: NavItem) => {
+  const handleNavClick = item => {
     router.push(item.path)
     isSidebarOpen.value = false // 移动端点击后关闭侧边栏
   }
@@ -223,7 +218,6 @@
   }
 
   // 计算当前页面标题
-  import { computed } from 'vue'
   const currentPageTitle = computed(() => {
     const item = navItems.find(item => item.path === currentRoutePath.value)
     return item ? item.text : '智环学创融合协会'

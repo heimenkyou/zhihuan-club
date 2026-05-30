@@ -676,34 +676,20 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import CommonFooter from '@/components/CommonFooter.vue'
   import CommonNavbar from '@/components/CommonNavbar.vue' // 引入通用导航栏
   import { ref, onMounted } from 'vue'
   import { showSuccess } from '@/utils/notification' // 引入通知工具函数
-  // 导入 submitApplication 函数（请确保此函数路径正确且能正常请求）
+  // 导入 submitApplication 函数
   import {
     submitApplication,
     getMajorMapping,
   } from '@/services/applicationsService'
-  import type { MajorMapping } from '@/services/applicationsService'
-  type ElementRef = HTMLElement | null
 
   // 响应式状态定义
   // 表单数据状态（类型化管理）-------------申请表收集
-  interface FormData {
-    name: string
-    studentId: string
-    major: string
-    phone: string
-    QQNumber: string
-    department: string // algorithm/project/management
-    secondDepartment: string // algorithm/project/management/""
-    interests: string[] // 兴趣方向（多选）
-    reason: string
-    introduction: string
-  }
-  const formData = ref<FormData>({
+  const formData = ref({
     name: '',
     studentId: '',
     major: '',
@@ -717,7 +703,7 @@
   })
 
   // 专业映射表
-  const majorMapping = ref<MajorMapping>({})
+  const majorMapping = ref({})
 
   // 兴趣方向选项（统一管理）
   const interests = ref([
@@ -749,12 +735,7 @@
   }
 
   // FAQ状态（类型化管理）---------问题
-  interface FaqItem {
-    question: string
-    answer: string
-    isOpen: boolean
-  }
- const faqList = ref<FaqItem[]>([
+ const faqList = ref([
   {
     question: '加入有什么条件？',
     answer:
@@ -794,12 +775,12 @@
 ])
 
   // 页面section的Ref（用于滚动动画）
-  const homeRef = ref<ElementRef | null>(null)
-  const highlightsRef = ref<ElementRef | null>(null)
-  const processRef = ref<ElementRef | null>(null)
-  const departmentsRef = ref<ElementRef | null>(null)
-  const formRef = ref<ElementRef | null>(null)
-  const faqRef = ref<ElementRef | null>(null)
+  const homeRef = ref(null)
+  const highlightsRef = ref(null)
+  const processRef = ref(null)
+  const departmentsRef = ref(null)
+  const formRef = ref(null)
+  const faqRef = ref(null)
 
   // 弹窗相关状态
   const showSuccessModal = ref(false)
@@ -809,8 +790,8 @@
 
   // 2. 方法定义
   // 二维码加载失败处理（兜底提示）
-  const handleQrError = (e: Event) => {
-    const img = e.target as HTMLImageElement
+  const handleQrError = e => {
+    const img = e.target
     img.src =
       'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRR5YiG5Lq65Yqo5pyN5Lq6PC90ZXh0Pjwvc3ZnPg=='
     img.alt = 'QQ群二维码加载失败，可通过群号967370226或链接加群'
@@ -818,14 +799,14 @@
 
   // 滚动动画：监听section进入视口
   const observeSections = () => {
-    const observerOptions: IntersectionObserverInit = {
+    const observerOptions = {
       root: null,
       rootMargin: '0px',
       threshold: 0.1,
     }
 
     // 定义观察者回调（添加类型）
-    const observerCallback: IntersectionObserverCallback = entries => {
+    const observerCallback = entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           // 添加动画类
@@ -845,13 +826,13 @@
       departmentsRef.value,
       formRef.value,
       faqRef.value,
-    ].filter(Boolean) as Element[]
+    ].filter(Boolean)
 
     sections.forEach(section => observer.observe(section))
   }
 
   // FAQ展开/折叠（通过索引控制，替代原DOM查找）
-  const toggleFaq = (index: number) => {
+  const toggleFaq = index => {
     faqList.value[index].isOpen = !faqList.value[index].isOpen
   }
 

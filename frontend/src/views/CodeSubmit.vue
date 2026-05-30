@@ -200,10 +200,9 @@
   </el-dialog>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { ref, reactive } from 'vue'
   import { ElMessage } from 'element-plus'
-  import type { UploadFile } from 'element-plus'
   import CommonNavbar from '@/components/CommonNavbar.vue'
   import { submitUserCode } from '@/services/codeSubmissionService'
 
@@ -219,21 +218,21 @@
   const progressMessage = ref('准备上传...')
   const uploadSpeed = ref('0 MB/s')
   const totalFileSize = ref('0 MB')
-  let progressInterval: number | null = null
+  let progressInterval = null
 
   // 表单数据
   const formData = reactive({
     studentId: '',
     name: '',
     description: '',
-    codeFile: null as File | null,
-    codeFileList: [] as UploadFile[],
-    videoFile: null as File | null,
-    videoFileList: [] as UploadFile[],
+    codeFile: null,
+    codeFileList: [],
+    videoFile: null,
+    videoFileList: [],
   })
 
   // 格式化文件大小
-  const formatFileSize = (bytes: number): string => {
+  const formatFileSize = bytes => {
     if (bytes === 0) return '0 Bytes'
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
@@ -273,7 +272,7 @@
   }
 
   // 处理代码文件选择
-  const handleCodeFileChange = (file: UploadFile) => {
+  const handleCodeFileChange = file => {
     // 验证文件大小不超过50MB
     if (file.size && file.size > 50 * 1024 * 1024) {
       ElMessage.error('代码文件大小不能超过50MB')
@@ -293,12 +292,12 @@
     }
 
     formData.codeFileList = [file]
-    formData.codeFile = file.raw as File
+    formData.codeFile = file.raw
     return false
   }
 
   // 处理视频文件选择
-  const handleVideoFileChange = (file: UploadFile) => {
+  const handleVideoFileChange = file => {
     // 验证文件大小不超过200MB
     if (file.size && file.size > 200 * 1024 * 1024) {
       ElMessage.error('视频文件大小不能超过200MB')
@@ -318,12 +317,12 @@
     }
 
     formData.videoFileList = [file]
-    formData.videoFile = file.raw as File
+    formData.videoFile = file.raw
     return false
   }
 
   // 移除文件前的钩子
-  const beforeRemove = (file: UploadFile) => {
+  const beforeRemove = file => {
     if (file.raw === formData.codeFile) {
       formData.codeFile = null
     } else if (file.raw === formData.videoFile) {
@@ -369,7 +368,7 @@
       } else {
         progressMessage.value = '正在处理数据...'
       }
-    }, 500) as unknown as number
+    }, 500)
   }
 
   // 提交表单

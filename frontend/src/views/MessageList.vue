@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
   import { onMounted, ref, computed, onUnmounted, nextTick, watch } from 'vue'
   import { useMessageStore } from '@/stores/messageStore'
   import { showSuccess } from '@/utils/notification'
@@ -12,7 +12,7 @@
   const router = useRouter() // 初始化router
 
   // 根元素引用
-  const messageBoard = ref<null | any>(null)
+  const messageBoard = ref(null)
 
   // 分页相关数据
   const currentPage = ref(1)
@@ -35,16 +35,16 @@
   const threshold = 80 // 下拉刷新阈值
 
   // 点赞按钮加载状态（防止重复点击，仅防重复请求，不是防刷）
-  const likeLoading = ref<Record<number, boolean>>({})
+  const likeLoading = ref({})
 
   // 控制留言内容展开/收起状态
-  const expandedMessages = ref<Record<number, boolean>>({})
+  const expandedMessages = ref({})
 
   // 存储每个留言内容元素的引用
-  const contentRefs = ref<Record<number, HTMLElement | null>>({})
+  const contentRefs = ref({})
 
   // 存储每个留言是否需要展开按钮的状态
-  const showExpandButtons = ref<Record<number, boolean>>({})
+  const showExpandButtons = ref({})
 
   // 计算可见的页码
   const visiblePages = computed(() => {
@@ -85,13 +85,13 @@
   // 下拉刷新处理 - 使用Vue 3响应式方式
   const pullDistanceStyle = ref('0px')
 
-  const handleTouchStart = (e: any) => {
+  const handleTouchStart = e => {
     if (window.scrollY === 0) {
       startY.value = e.touches[0].clientY
     }
   }
 
-  const handleTouchMove = (e: any) => {
+  const handleTouchMove = e => {
     // 下拉刷新处理 - 优化为仅在页面顶部时触发
     if (messageBoard.value && window.scrollY === 0 && startY.value > 0) {
       currentY.value = e.touches[0].clientY
@@ -129,7 +129,7 @@
     }
   }
 
-  const handlePageChange = async (page: number | string) => {
+  const handlePageChange = async page => {
     if (typeof page === 'number') {
       currentPage.value = page
       await fetchMessages()
@@ -196,7 +196,7 @@
   })
 
   // 点赞/取消点赞
-  const handleLike = async (messageId: number) => {
+  const handleLike = async messageId => {
     // 防止重复点击（仅阻止短时间内重复请求，不是防刷）
     if (likeLoading.value[messageId]) return
     likeLoading.value[messageId] = true
@@ -234,7 +234,7 @@
   }
 
   // 实现删除功能 - 使用Vue 3的方式处理确认对话框
-  const handleDelete = async (messageId: number) => {
+  const handleDelete = async messageId => {
     try {
       await ElMessageBox.confirm(
         '确定要删除这条留言吗？此操作不可恢复。',
@@ -262,7 +262,7 @@
       }
     } catch (error) {
       // 用户点击取消
-      if ((error as any).msg !== 'cancel') {
+      if (error?.msg !== 'cancel') {
         console.error('删除确认框异常:', error)
       }
     }
@@ -317,7 +317,7 @@
   }
 
   // 格式化时间显示
-  const formatTime = (timeString: string) => {
+  const formatTime = timeString => {
     try {
       const date = new Date(timeString)
       const now = new Date()
@@ -359,7 +359,7 @@
   }
 
   // 切换留言内容展开/收起状态
-  const toggleMessageExpansion = (messageId: number) => {
+  const toggleMessageExpansion = messageId => {
     expandedMessages.value[messageId] = !expandedMessages.value[messageId]
   }
 
@@ -543,7 +543,7 @@
                 <p
                   class="content-text"
                   :class="{ expanded: expandedMessages[msg.id] }"
-                  :ref="(el) => (contentRefs[msg.id] = el as HTMLElement)"
+                  :ref="el => (contentRefs[msg.id] = el)"
                 >
                   {{ msg.content }}
                 </p>

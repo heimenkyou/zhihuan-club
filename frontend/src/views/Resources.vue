@@ -181,24 +181,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from "vue"
 import CommonNavbar from "@/components/CommonNavbar.vue"
 
-// 类型定义
-interface Resource {
-  id: number
-  name: string
-  category: "algorithm" | "project" | "design" | "tool" | "book"
-  types: Array<"book" | "website" | "video" | "tool" | "code">
-  description: string
-  image: string
-  link: string
-  author: string
-}
-
 // 响应式状态
-const resources = ref<Resource[]>([
+const resources = ref([
   {
     id: 1,
     name: "代码随想录",
@@ -267,10 +255,10 @@ const selectedCategory = ref("")
 const selectedType = ref("")
 const searchKeyword = ref("")
 const isModalOpen = ref(false)
-const currentResource = ref<Resource | null>(null)
+const currentResource = ref(null)
 
 // 辅助函数
-const getTypeName = (type: Resource["types"][number]): string => {
+const getTypeName = type => {
   const typeMap = {
     book: "书籍",
     website: "网站",
@@ -281,7 +269,7 @@ const getTypeName = (type: Resource["types"][number]): string => {
   return typeMap[type] || type
 }
 
-const getCategoryName = (category: Resource["category"]): string => {
+const getCategoryName = category => {
   const categoryMap = {
     algorithm: "算法竞赛",
     project: "项目开发",
@@ -293,14 +281,14 @@ const getCategoryName = (category: Resource["category"]): string => {
 }
 
 // 筛选资源：关键修复【资源类型匹配逻辑】
-const filteredResources = computed<Resource[]>(() => {
+const filteredResources = computed(() => {
   return resources.value.filter((resource) => {
     const matchCategory =
       !selectedCategory.value || resource.category === selectedCategory.value
     // 修复点：检查【资源的types数组】是否包含【选中的类型】（原逻辑写反了）
     const matchType =
       !selectedType.value ||
-      resource.types.includes(selectedType.value as Resource["types"][number])
+      resource.types.includes(selectedType.value)
     const matchSearch = !searchKeyword.value
       ? true
       : resource.name
@@ -314,7 +302,7 @@ const filteredResources = computed<Resource[]>(() => {
 })
 
 // 模态框控制
-const showResourceDetail = (resource: Resource) => {
+const showResourceDetail = resource => {
   currentResource.value = resource
   isModalOpen.value = true
   document.body.style.overflow = "hidden"

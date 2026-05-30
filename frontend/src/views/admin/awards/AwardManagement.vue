@@ -504,15 +504,14 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
   import { ref, reactive, computed, onMounted, watch } from 'vue'
-  import { ElMessage, ElMessageBox, ElForm } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import {
     getAwards,
     createAward,
     updateAward,
     deleteAward as deleteAwardApi,
-    type AwardItem,
   } from '@/services/adminService'
 
   // 检测是否为移动端
@@ -521,7 +520,7 @@
   })
 
   // 表单引用
-  const awardFormRef = ref<InstanceType<typeof ElForm> | null>(null)
+  const awardFormRef = ref(null)
 
   // 搜索与筛选
   const searchKeyword = ref('')
@@ -534,14 +533,14 @@
   })
 
   // 奖项数据与加载状态
-  const awardsData = ref<AwardItem[]>([])
+  const awardsData = ref([])
   const loading = ref(false)
   const dialogVisible = ref(false)
   const dialogTitle = ref('添加奖项')
-  const currentAwardId = ref<number | null>(null)
+  const currentAwardId = ref(null)
   const currentPage = ref(1)
   const pageSize = ref(isMobile.value ? 5 : 10) // 移动端默认显示更少数据
-  const winnersList = ref<string[]>([])
+  const winnersList = ref([])
   const newWinnerName = ref('')
 
   // 可用年份列表
@@ -554,7 +553,7 @@
   const currentCompetitionTracks = computed(() => {
     if (!filter.competitionName) return []
 
-    const tracks = new Set<string>()
+    const tracks = new Set()
     awardsData.value.forEach(award => {
       if (
         award.competitionName === filter.competitionName &&
@@ -572,7 +571,7 @@
   const sortOrder = ref('desc')
 
   // 奖项表单
-  const awardForm = reactive<Partial<AwardItem>>({
+  const awardForm = reactive({
     competitionName: '',
     competitionLevel: '国家级',
     competitionTrack: '',
@@ -599,14 +598,14 @@
   }
 
   // 竞赛级别优先级
-  const competitionLevelPriority: Record<string, number> = {
+  const competitionLevelPriority = {
     国家级: 1,
     省级: 2,
     校级: 3,
   }
-  
+
   // 奖项级别优先级
-  const awardLevelPriority: Record<string, number> = {
+  const awardLevelPriority = {
     一等奖: 1,
     金牌: 2,
     二等奖: 3,
@@ -636,7 +635,7 @@
         !filter.competitionLevel ||
         award.competitionLevel === filter.competitionLevel
 
-      const awardLevelMap: Record<string, string[]> = {
+      const awardLevelMap = {
         一等奖: ['一等奖', '金牌'],
         二等奖: ['二等奖', '银牌'],
         三等奖: ['三等奖', '铜牌'],
@@ -765,7 +764,7 @@
 
   // 竞赛名称列表
   const competitionNames = computed(() => {
-    const names = new Set<string>()
+    const names = new Set()
     awardsData.value.forEach(award => {
       if (award.competitionName) names.add(award.competitionName)
     })
@@ -807,13 +806,13 @@
   }
 
   // 分页大小变化
-  const handleSizeChange = (size: number) => {
+  const handleSizeChange = size => {
     pageSize.value = size
     currentPage.value = 1
   }
 
   // 页码变化
-  const handleCurrentChange = (current: number) => {
+  const handleCurrentChange = current => {
     currentPage.value = current
   }
 
@@ -835,7 +834,7 @@
   }
 
   // 打开编辑对话框
-  const openEditDialog = (row: AwardItem) => {
+  const openEditDialog = row => {
     dialogTitle.value = '编辑奖项'
     currentAwardId.value = row.id
     Object.assign(awardForm, row)
@@ -855,7 +854,7 @@
   }
 
   // 删除获奖人员
-  const removeWinner = (index: number) => {
+  const removeWinner = index => {
     winnersList.value.splice(index, 1)
   }
 
@@ -879,20 +878,22 @@
       await awardFormRef.value.validate()
       loading.value = true
 
+      const payload = {
+        competitionName: awardForm.competitionName || '',
+        competitionLevel: awardForm.competitionLevel || '',
+        competitionTrack: awardForm.competitionTrack || '',
+        awardLevel: awardForm.awardLevel || '一等奖',
+        winners: awardForm.winners || [],
+        year: awardForm.year || new Date().getFullYear(),
+        awardDate:
+          awardForm.awardDate || new Date().toISOString().slice(0, 7),
+      }
+
       if (currentAwardId.value) {
-        await updateAward(currentAwardId.value, {
-          competitionName: awardForm.competitionName || '',
-          competitionLevel: awardForm.competitionLevel || '',
-          competitionTrack: awardForm.competitionTrack || '',
-          awardLevel: awardForm.awardLevel || '一等奖',
-          winners: awardForm.winners || [],
-          year: awardForm.year || new Date().getFullYear(),
-          awardDate:
-            awardForm.awardDate || new Date().toISOString().slice(0, 7),
-        })
+        await updateAward(currentAwardId.value, payload)
         ElMessage.success('更新奖项成功')
       } else {
-        await createAward(awardForm as Omit<AwardItem, 'id'>)
+        await createAward(payload)
         ElMessage.success('添加奖项成功')
       }
 
@@ -907,7 +908,7 @@
   }
 
   // 删除奖项
-  const deleteAward = async (id: number) => {
+  const deleteAward = async id => {
     try {
       await ElMessageBox.confirm('确定要删除这个奖项吗？', '确认删除', {
         type: 'warning',
@@ -933,7 +934,7 @@
   onMounted(() => {
     loadAwards()
   })
-  
+
   // 监听获奖日期变化，自动更新年份
   watch(
     () => awardForm.awardDate,
@@ -943,14 +944,14 @@
       }
     }
   )
-  
+
   watch(
     () => filter.competitionName,
     () => {
       filter.competitionTrack = ''
     }
   )
-  
+
   // 监听窗口大小变化
   const handleResize = () => {
     // 根据屏幕大小调整分页大小
@@ -960,7 +961,7 @@
       pageSize.value = 10
     }
   }
-  
+
   onMounted(() => {
     window.addEventListener('resize', handleResize)
   })

@@ -64,7 +64,7 @@
 
         <!-- 向下滚动指示 -->
         <div class="scroll-down fixed-bottom flex-center">
-          <el-link href="#about" :underline="false" class="text-center">
+          <el-link href="#about" underline="never" class="text-center">
             <div
               style="
                 display: flex;
@@ -624,7 +624,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import CommonNavbar from '@/components/CommonNavbar.vue'

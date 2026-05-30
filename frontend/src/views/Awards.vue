@@ -591,33 +591,14 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
   import { ref, computed, onMounted, nextTick, watch } from 'vue'
   import CommonNavbar from '@/components/CommonNavbar.vue'
   import { getAwards } from '@/services/adminService'
   import CommonFooter from '@/components/CommonFooter.vue'
 
-  // 筛选组件定义
-  interface FilterOption {
-    label: string
-    value: string
-    colorClass: string
-  }
-
-  // 定义奖项数据结构
-  interface Award {
-    id: number
-    competitionName: string // 竞赛名称
-    competitionLevel: string // 竞赛级别（现在直接用中文）
-    competitionTrack?: string // 新增：赛道（可选）
-    awardLevel: string // 奖项级别
-    winners: string[] // 获奖人员数组
-    year: number // 年份
-    awardDate: string // 获奖日期
-  }
-
   // 奖项级别排序权重映射 - 确保这个对象被正确使用
-  const awardLevelPriority: Record<string, number> = {
+  const awardLevelPriority = {
     一等奖: 1,
     金奖: 2,
     二等奖: 3,
@@ -628,8 +609,8 @@
   }
 
   // 新增：根据奖项级别返回对应的徽章样式（只修改样式，不改变原始文本）
-  const getAwardBadgeClass = (level: string): string => {
-    const badgeClasses: Record<string, string> = {
+  const getAwardBadgeClass = level => {
+    const badgeClasses = {
       一等奖: 'bg-yellow-100 text-yellow-800',
       金奖: 'bg-yellow-100 text-yellow-800',
       二等奖: 'bg-gray-100 text-gray-800',
@@ -643,11 +624,11 @@
   }
 
   // 响应式状态管理
-  const awards = ref<Award[]>([]) // 奖项数据
+  const awards = ref([]) // 奖项数据
   const loading = ref(true) // 加载状态
-  const error = ref<string | null>(null) // 错误信息
+  const error = ref(null) // 错误信息
   const searchKeyword = ref('') // 搜索关键词
-  let searchTimeout: number | null = null // 搜索防抖计时器
+  let searchTimeout = null // 搜索防抖计时器
 
   // 筛选条件状态
   const filter = ref({
@@ -656,17 +637,11 @@
     year: '',
     competitionName: '',
     competitionTrack: '', // 新增赛道筛选字段
-  }) as import('vue').Ref<{
-    competitionLevel: string
-    awardLevel: string
-    year: string
-    competitionName: string
-    competitionTrack: string
-  }>
+  })
 
   // 动态提取的竞赛名称列表
   const competitionNames = computed(() => {
-    const names = new Set<string>()
+    const names = new Set()
     awards.value.forEach(award => {
       if (award.competitionName) {
         names.add(award.competitionName)
@@ -676,14 +651,14 @@
   })
 
   // 筛选配置数据
-  const competitionLevelOptions = computed<FilterOption[]>(() => [
+  const competitionLevelOptions = computed(() => [
     { label: '全部', value: '', colorClass: 'bg-primary' },
     { label: '国家级', value: '国家级', colorClass: 'bg-blue-600' },
     { label: '省级', value: '省级', colorClass: 'bg-blue-500' },
     { label: '校级', value: '校级', colorClass: 'bg-blue-400' }
   ])
 
-  const awardLevelOptions = computed<FilterOption[]>(() => [
+  const awardLevelOptions = computed(() => [
     { label: '全部', value: '', colorClass: 'bg-primary' },
     { label: '一等奖(金奖)', value: '一等奖', colorClass: 'bg-yellow-500' },
     { label: '二等奖(银奖)', value: '二等奖', colorClass: 'bg-gray-400' },
@@ -692,7 +667,7 @@
     { label: '其他', value: '其他', colorClass: 'bg-purple-500' }
   ])
 
-  const yearOptions = computed<FilterOption[]>(() => [
+  const yearOptions = computed(() => [
     { label: '全部', value: '', colorClass: 'bg-primary' },
     { label: '2025年', value: '2025', colorClass: 'bg-indigo-500' },
     { label: '2024年', value: '2024', colorClass: 'bg-indigo-500' },
@@ -713,7 +688,7 @@
   const currentCompetitionTracks = computed(() => {
     if (!filter.value.competitionName) return []
 
-    const tracks = new Set<string>()
+    const tracks = new Set()
 
     // 首先添加"尚未区分赛道"选项
     let hasNoTrack = false
@@ -753,11 +728,11 @@
       // 确保数据格式正确
       if (Array.isArray(data)) {
         // 直接使用返回的奖项数组
-        awards.value = data.map((item: any) => ({
+        awards.value = data.map(item => ({
           ...item,
           year: parseInt(item.year), // 将 year 从字符串转换为数字
-          winners: item.winners as Array<string>,
-        })) as Award[]
+          winners: Array.isArray(item.winners) ? item.winners : [],
+        }))
       } else {
         // 如果响应不是预期格式，使用空数组
         awards.value = []
@@ -781,7 +756,7 @@
     }
     searchTimeout = setTimeout(() => {
       fetchAwards()
-    }, 300) as unknown as number // 类型转换处理
+    }, 300) // 类型转换处理
   }
 
   // 重置筛选条件
@@ -917,9 +892,9 @@
       const yearKey = award.year.toString()
       if (!acc[yearKey]) {
         acc[yearKey] = {
-          国家级: [] as Award[],
-          省级: [] as Award[],
-          校级: [] as Award[],
+          国家级: [],
+          省级: [],
+          校级: [],
         }
       }
       // 直接使用中文级别作为键
@@ -931,7 +906,7 @@
         acc[yearKey][level].push(award) // 这里直接push原始的award对象，不修改其属性
       }
       return acc
-    }, {} as Record<string, { 国家级: Award[]; 省级: Award[]; 校级: Award[] }>)
+    }, {})
   })
 
   // 年份排序：按降序排列
@@ -942,13 +917,13 @@
   })
 
   // 当前选中的奖项（用于弹窗显示详情）
-  const selectedAward = ref<Award | null>(null)
+  const selectedAward = ref(null)
   const showAwardDetailDialog = ref(false)
 
 
 
   // 显示奖项详情弹窗
-  const showAwardDetail = (award: Award) => {
+  const showAwardDetail = award => {
     selectedAward.value = award
     showAwardDetailDialog.value = true
   }

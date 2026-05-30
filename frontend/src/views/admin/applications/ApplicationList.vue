@@ -368,16 +368,14 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, reactive, onMounted, computed, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import {
   getApplications,
   deleteApplication as apiDeleteApplication,
   getApplicationMajors,
-  type ApplicationPageData,
 } from "@/services/adminService"
-import type { joinForm } from "@/services/applicationsService"
 import * as XLSX from "xlsx"
 
 // 检测是否为移动端
@@ -385,15 +383,7 @@ const isMobile = computed(() => {
   return window.innerWidth <= 768
 })
 
-const searchForm = reactive<{
-  name: string
-  studentId: string
-  department: string
-  secondDepartment: string
-  majors: string[]
-  QQNumber: string
-  matchAllDepartments: boolean
-}>({
+const searchForm = reactive({
   name: "",
   studentId: "",
   department: "",
@@ -403,7 +393,7 @@ const searchForm = reactive<{
   matchAllDepartments: false,
 })
 
-const applicationsData = ref<ApplicationPageData<joinForm & { id: number }>>({
+const applicationsData = ref({
   current: 1,
   size: isMobile.value ? 5 : 10, // 移动端默认显示更少数据
   total: 0,
@@ -412,15 +402,15 @@ const applicationsData = ref<ApplicationPageData<joinForm & { id: number }>>({
 })
 
 const dialogVisible = ref(false)
-const currentApplication = ref<(joinForm & { id: number }) | null>(null)
+const currentApplication = ref(null)
 const loading = ref(false)
-const selectedRows = ref<(joinForm & { id: number })[]>([])
-const majorOptions = ref<string[]>([])
+const selectedRows = ref([])
+const majorOptions = ref([])
 const majorLoading = ref(false)
 
 // 表格滚动相关引用
-const tableContainerRef = ref<HTMLElement | null>(null)
-const tableRef = ref<InstanceType<typeof import('element-plus').ElTable> | null>(null)
+const tableContainerRef = ref(null)
+const tableRef = ref(null)
 const showScrollIndicator = ref(false)
 const scrollThumbWidth = ref('0px')
 const scrollThumbPosition = ref('0px')
@@ -491,25 +481,25 @@ const resetForm = () => {
 }
 
 // 分页大小变化
-const handleSizeChange = (size: number) => {
+const handleSizeChange = size => {
   applicationsData.value.size = size
   loadApplications()
 }
 
 // 当前页变化
-const handleCurrentChange = (current: number) => {
+const handleCurrentChange = current => {
   applicationsData.value.current = current
   loadApplications()
 }
 
 // 查看详情
-const viewDetail = (row: joinForm) => {
-  currentApplication.value = { ...row, id: (row as any).id }
+const viewDetail = row => {
+  currentApplication.value = { ...row, id: row.id }
   dialogVisible.value = true
 }
 
 // 删除报名信息
-const deleteApplication = async (id: number) => {
+const deleteApplication = async id => {
   try {
     await ElMessageBox.confirm("确定要删除这条报名信息吗？", "确认删除", {
       type: "warning",
@@ -532,8 +522,8 @@ const deleteApplication = async (id: number) => {
 }
 
 // 处理选择变化
-const handleSelectionChange = (rows: joinForm[]) => {
-  selectedRows.value = rows.map((row) => ({ ...row, id: (row as any).id }))
+const handleSelectionChange = rows => {
+  selectedRows.value = rows.map(row => ({ ...row, id: row.id }))
 }
 
 // 批量删除
@@ -547,7 +537,7 @@ const handleBatchDelete = async () => {
 
     loading.value = true
     // 假设每行数据都有id属性
-    const ids = selectedRows.value.map((row) => (row as any).id)
+    const ids = selectedRows.value.map(row => row.id)
     // 循环删除（如果没有批量删除API）
     for (const id of ids) {
       await apiDeleteApplication(id)
@@ -664,13 +654,13 @@ const updateScrollIndicator = () => {
 }
 
 // 触摸事件处理
-const onTouchStart = (e: TouchEvent) => {
+const onTouchStart = e => {
   if (!tableContainerRef.value) return
   touchStartX.value = e.touches[0].clientX
   scrollStart.value = tableContainerRef.value.scrollLeft
 }
 
-const onTouchMove = (e: TouchEvent) => {
+const onTouchMove = e => {
   if (!tableContainerRef.value) return
   e.preventDefault()
   const touchX = e.touches[0].clientX
