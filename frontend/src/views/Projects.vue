@@ -115,129 +115,148 @@
   </div>
 </template>
 
-<script setup lang="ts">
-  import CommonFooter from '@/components/CommonFooter.vue'
-  import { ref, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
-  import CommonNavbar from '@/components/CommonNavbar.vue'
-  import { getProjects } from '@/services/projectService'
-  import type { Project, ProjectListParams } from '@/services/projectService'
-  import { ElPagination } from 'element-plus'
+<script setup>
+import CommonFooter from '@/components/CommonFooter.vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import CommonNavbar from '@/components/CommonNavbar.vue'
+import { getProjects } from '@/services/projectService'
+import { ElPagination } from 'element-plus'
 
-  const router = useRouter()
-  const pageSize = ref(8) // 每页显示8个项目
-  const current = ref(1) // 当前页码
-  const projects = ref<Project[]>([])
-  const totalProjects = ref(0)
-  const totalPages = ref(0)
-  const loading = ref(false)
-  const error = ref('')
+const router = useRouter()
+const pageSize = ref(8)
+const current = ref(1)
+const projects = ref([])
+const totalProjects = ref(0)
+const totalPages = ref(0)
+const loading = ref(false)
+const error = ref('')
 
-  // 获取项目列表数据
-  const fetchProjects = async () => {
-    loading.value = true
-    error.value = ''
+/**
+ * 获取项目列表，并在失败时重置分页区，避免界面残留旧数据。
+ */
+const fetchProjects = async () => {
+  loading.value = true
+  error.value = ''
 
-    try {
-      const params: ProjectListParams = {
-        current: current.value,
-        size: pageSize.value,
-      }
-
-      const response = await getProjects(params)
-
-      if (response && response.data && response.data.records) {
-        projects.value = response.data.records || []
-        totalProjects.value = response.data.total || 0
-        totalPages.value = response.data.pages || 0
-        current.value = response.data.current || 1
-      }
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : '获取项目列表失败，请稍后重试'
-      console.error('获取项目列表失败:', err)
-      projects.value = []
-      totalProjects.value = 0
-      totalPages.value = 0
-    } finally {
-      loading.value = false
+  try {
+    const params = {
+      current: current.value,
+      size: pageSize.value,
     }
-  }
 
-  // 当前页码变化处理
-  const handleCurrentChange = (page: number) => {
-    current.value = page
-    fetchProjects()
-  }
+    const response = await getProjects(params)
 
-  // 标签颜色映射
-  const getTagBg = (tag: string): string => {
-    const tagBgMap: Record<string, string> = {
-      物联网: 'bg-blue-100',
-      传感器: 'bg-green-100',
-      嵌入式: 'bg-purple-100',
-      机器人: 'bg-yellow-100',
-      计算机视觉: 'bg-red-100',
-      语音识别: 'bg-indigo-100',
-      移动端: 'bg-pink-100',
-      'React Native': 'bg-cyan-100',
-      'Node.js': 'bg-orange-100',
-      机器学习: 'bg-purple-100',
-      Python: 'bg-green-100',
-      TensorFlow: 'bg-blue-100',
-      后端: 'bg-blue-100',
-      Java: 'bg-yellow-100',
-      开源: 'bg-gray-100',
-      硬件: 'bg-green-100',
-      Arduino: 'bg-red-100',
-      教育: 'bg-orange-100',
-      VR: 'bg-pink-100',
-      Unity: 'bg-purple-100',
-      Web前端: 'bg-blue-100',
-      大数据: 'bg-green-100',
-      可视化: 'bg-yellow-100',
+    if (response && response.data && response.data.records) {
+      projects.value = response.data.records || []
+      totalProjects.value = response.data.total || 0
+      totalPages.value = response.data.pages || 0
+      current.value = response.data.current || 1
     }
-    return tagBgMap[tag] || 'bg-gray-100'
+  } catch (err) {
+    error.value =
+      err instanceof Error ? err.message : '获取项目列表失败，请稍后重试'
+    console.error('获取项目列表失败:', err)
+    projects.value = []
+    totalProjects.value = 0
+    totalPages.value = 0
+  } finally {
+    loading.value = false
   }
+}
 
-  const getTagText = (tag: string): string => {
-    const tagTextMap: Record<string, string> = {
-      物联网: 'text-blue-800',
-      传感器: 'text-green-800',
-      嵌入式: 'text-purple-800',
-      机器人: 'text-yellow-800',
-      计算机视觉: 'text-red-800',
-      语音识别: 'text-indigo-800',
-      移动端: 'text-pink-800',
-      'React Native': 'text-cyan-800',
-      'Node.js': 'text-orange-800',
-      机器学习: 'text-purple-800',
-      Python: 'text-green-800',
-      TensorFlow: 'text-blue-800',
-      后端: 'text-blue-800',
-      Java: 'text-yellow-800',
-      开源: 'text-gray-800',
-      硬件: 'text-green-800',
-      Arduino: 'text-red-800',
-      教育: 'text-orange-800',
-      VR: 'text-pink-800',
-      Unity: 'text-purple-800',
-      Web前端: 'text-blue-800',
-      大数据: 'text-green-800',
-      可视化: 'text-yellow-800',
-    }
-    return tagTextMap[tag] || 'text-gray-800'
+/**
+ * 切换分页后重新拉取列表，保持分页与服务端结果同步。
+ *
+ * @param {number} page
+ */
+const handleCurrentChange = page => {
+  current.value = page
+  fetchProjects()
+}
+
+/**
+ * 根据技术标签返回背景色类名，维持卡片标签的一致视觉分组。
+ *
+ * @param {string} tag
+ * @returns {string}
+ */
+const getTagBg = tag => {
+  const tagBgMap = {
+    物联网: 'bg-blue-100',
+    传感器: 'bg-green-100',
+    嵌入式: 'bg-purple-100',
+    机器人: 'bg-yellow-100',
+    计算机视觉: 'bg-red-100',
+    语音识别: 'bg-indigo-100',
+    移动端: 'bg-pink-100',
+    'React Native': 'bg-cyan-100',
+    'Node.js': 'bg-orange-100',
+    机器学习: 'bg-purple-100',
+    Python: 'bg-green-100',
+    TensorFlow: 'bg-blue-100',
+    后端: 'bg-blue-100',
+    Java: 'bg-yellow-100',
+    开源: 'bg-gray-100',
+    硬件: 'bg-green-100',
+    Arduino: 'bg-red-100',
+    教育: 'bg-orange-100',
+    VR: 'bg-pink-100',
+    Unity: 'bg-purple-100',
+    Web前端: 'bg-blue-100',
+    大数据: 'bg-green-100',
+    可视化: 'bg-yellow-100',
   }
+  return tagBgMap[tag] || 'bg-gray-100'
+}
 
-  // 跳转详情页
-  const goToDetail = (projectId: number) => {
-    router.push({ path: `/projectdetail`, query: { id: projectId } })
+/**
+ * 根据技术标签返回文字色类名，与背景色映射保持配套。
+ *
+ * @param {string} tag
+ * @returns {string}
+ */
+const getTagText = tag => {
+  const tagTextMap = {
+    物联网: 'text-blue-800',
+    传感器: 'text-green-800',
+    嵌入式: 'text-purple-800',
+    机器人: 'text-yellow-800',
+    计算机视觉: 'text-red-800',
+    语音识别: 'text-indigo-800',
+    移动端: 'text-pink-800',
+    'React Native': 'text-cyan-800',
+    'Node.js': 'text-orange-800',
+    机器学习: 'text-purple-800',
+    Python: 'text-green-800',
+    TensorFlow: 'text-blue-800',
+    后端: 'text-blue-800',
+    Java: 'text-yellow-800',
+    开源: 'text-gray-800',
+    硬件: 'text-green-800',
+    Arduino: 'text-red-800',
+    教育: 'text-orange-800',
+    VR: 'text-pink-800',
+    Unity: 'text-purple-800',
+    Web前端: 'text-blue-800',
+    大数据: 'text-green-800',
+    可视化: 'text-yellow-800',
   }
+  return tagTextMap[tag] || 'text-gray-800'
+}
 
-  // 组件挂载时获取数据
-  onMounted(() => {
-    fetchProjects()
-  })
+/**
+ * 跳转到项目详情页，并通过 query 传递当前项目 ID。
+ *
+ * @param {number} projectId
+ */
+const goToDetail = projectId => {
+  router.push({ path: '/projectdetail', query: { id: projectId } })
+}
+
+onMounted(() => {
+  fetchProjects()
+})
 </script>
 
 <style scoped>

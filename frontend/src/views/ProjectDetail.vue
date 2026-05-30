@@ -164,7 +164,7 @@
               <el-tag
                 v-for="(tech, index) in projectDetail.techStackTags"
                 :key="index"
-                :type="tagTypes[index % tagTypes.length] as 'primary' | 'success' | 'warning' | 'info' | 'danger'"
+                :type="tagTypes[index % tagTypes.length]"
                 size="large"
                 effect="light"
                 class="tech-tag"
@@ -270,145 +270,140 @@
   </div>
 </template>
 
-<script setup lang="ts">
-  // 添加必要的导入
-  import CommonFooter from '@/components/CommonFooter.vue'
-  import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  import {
-    User,
-    Cpu,
-    Trophy,
-    Document,
-    Picture,
-    Finished,
-    ArrowLeft,
-  } from '@element-plus/icons-vue'
-  import {
-    ElCarousel,
-    ElCarouselItem,
-    ElTag,
-    ElTimeline,
-    ElTimelineItem,
-    ElCard,
-    ElImage,
-  } from 'element-plus'
-  import { getProjectDetail } from '@/services/projectService'
-  import type { ProjectDetail as ProjectDetailType } from '@/services/projectService'
+<script setup>
+import CommonFooter from '@/components/CommonFooter.vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  User,
+  Cpu,
+  Trophy,
+  Document,
+  Picture,
+  Finished,
+  ArrowLeft,
+} from '@element-plus/icons-vue'
+import {
+  ElCarousel,
+  ElCarouselItem,
+  ElTag,
+  ElTimeline,
+  ElTimelineItem,
+  ElCard,
+  ElImage,
+} from 'element-plus'
+import { getProjectDetail } from '@/services/projectService'
 
-  // 路由相关
-  const route = useRoute()
-  const router = useRouter()
-  const projectId = computed(() => {
-    const id = route.query.id
-    return id ? String(id) : ''
-  })
+const route = useRoute()
+const router = useRouter()
+const projectId = computed(() => {
+  const id = route.query.id
+  return id ? String(id) : ''
+})
 
-  // 响应式数据
-  const isMobile = ref(false)
-  const loading = ref(false)
-  const error = ref('')
-  const projectDetail = ref<ProjectDetailType | null>(null)
+const isMobile = ref(false)
+const loading = ref(false)
+const error = ref('')
+const projectDetail = ref(null)
 
-  // 技术标签类型数组
-  const tagTypes = ref<
-    Array<'primary' | 'success' | 'warning' | 'info' | 'danger'>
-  >(['primary', 'info', 'success', 'warning', 'danger', 'primary'])
+const tagTypes = ref(['primary', 'info', 'success', 'warning', 'danger', 'primary'])
 
-  // 获取预览图片列表
-  const previewImageList = computed(() => {
-    return projectDetail.value?.mediaResources?.map(resource => resource.url) || []
-  })
+/**
+ * 汇总轮播图预览资源，保证点击任意图片都能进入完整预览列表。
+ */
+const previewImageList = computed(() => {
+  return projectDetail.value?.mediaResources?.map(resource => resource.url) || []
+})
 
-  // 轮播图响应式处理
-  const handleCarouselResize = () => {
-    isMobile.value = window.innerWidth < 768
+/**
+ * 根据窗口宽度切换轮播图展示模式，避免移动端继续使用卡片布局。
+ */
+const handleCarouselResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+/**
+ * 格式化团队成员信息，避免标题区直接渲染原始结构。
+ *
+ * @param {{ name?: string, role?: string }[]=} members
+ * @returns {string}
+ */
+const formatTeamMembers = members => {
+  if (!members || members.length === 0) {
+    return '暂无团队成员信息'
+  }
+  return members
+    .map(member => `${member.name || '匿名成员'}（${member.role || '暂无职责'}）`)
+    .join('、')
+}
+
+/**
+ * 映射奖项等级到 Element Plus 标签类型，统一奖项区的视觉语义。
+ *
+ * @param {string=} type
+ * @returns {'primary' | 'success' | 'warning' | 'info' | 'danger'}
+ */
+const getAwardType = type => {
+  const typeMap = {
+    primary: 'primary',
+    success: 'success',
+    warning: 'warning',
+    info: 'info',
+    danger: 'danger',
+    一等奖: 'success',
+    金奖: 'warning',
+    二等奖: 'primary',
+    银奖: 'primary',
+    三等奖: 'info',
+    铜奖: 'info',
+    优秀奖: 'danger',
+  }
+  return typeMap[type || 'primary'] || 'primary'
+}
+
+/**
+ * 拉取项目详情；失败时保留错误信息，便于用户直接重试当前页面。
+ */
+const fetchProjectDetail = async () => {
+  if (!projectId.value) {
+    error.value = '项目ID不存在'
+    return
   }
 
-  // 格式化团队成员显示
-  const formatTeamMembers = (
-    members?: Array<{ name?: string; role?: string }>
-  ) => {
-    if (!members || members.length === 0) {
-      return '暂无团队成员信息'
-    }
-    return members
-      .map(
-        member => `${member.name || '匿名成员'}（${member.role || '暂无职责'}）`
-      )
-      .join('、')
+  loading.value = true
+  error.value = ''
+
+  try {
+    const data = await getProjectDetail(projectId.value)
+    projectDetail.value = data
+  } catch (err) {
+    error.value =
+      err instanceof Error ? err.message : '获取项目详情失败，请稍后重试'
+    console.error('获取项目详情失败:', err)
+    console.log('完整错误对象:', JSON.stringify(err, null, 2))
+  } finally {
+    loading.value = false
   }
+}
 
-  // 获取奖项类型对应的Element Plus样式
-  const getAwardType = (
-    type?: string
-  ): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
-    const typeMap: Record<
-      string,
-      'primary' | 'success' | 'warning' | 'info' | 'danger'
-    > = {
-      primary: 'primary',
-      success: 'success',
-      warning: 'warning',
-      info: 'info',
-      danger: 'danger',
-      // 映射奖项等级到颜色
-      一等奖: 'success',
-      金奖: 'warning',
-      二等奖: 'primary',
-      银奖: 'primary',
-      三等奖: 'info',
-      铜奖: 'info',
-      优秀奖: 'danger',
-    }
-    return typeMap[type || 'primary'] || 'primary'
-  }
+onMounted(() => {
+  handleCarouselResize()
+  window.addEventListener('resize', handleCarouselResize)
+  fetchProjectDetail()
+})
 
-  // 获取项目详情数据
-  const fetchProjectDetail = async () => {
-    if (!projectId.value) {
-      error.value = '项目ID不存在'
-      return
-    }
+onUnmounted(() => {
+  window.removeEventListener('resize', handleCarouselResize)
+})
 
-    loading.value = true
-    error.value = ''
-
-    try {
-      // 使用修改后的API请求
-      const data = await getProjectDetail(projectId.value)
-      projectDetail.value = data
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : '获取项目详情失败，请稍后重试'
-      console.error('获取项目详情失败:', err)
-      // 在控制台打印更详细的错误信息，帮助调试
-      console.log('完整错误对象:', JSON.stringify(err, null, 2))
-    } finally {
-      loading.value = false
+watch(
+  () => route.query.id,
+  newId => {
+    if (newId) {
+      fetchProjectDetail()
     }
   }
-
-  // 生命周期钩子
-  onMounted(() => {
-    handleCarouselResize()
-    window.addEventListener('resize', handleCarouselResize)
-    fetchProjectDetail()
-  })
-
-  onUnmounted(() => {
-    window.removeEventListener('resize', handleCarouselResize)
-  })
-
-  // 监听路由参数变化，重新获取数据
-  watch(
-    () => route.query.id,
-    newId => {
-      if (newId) {
-        fetchProjectDetail()
-      }
-    }
-  )
+)
 </script>
 
 <style scoped lang="scss">
