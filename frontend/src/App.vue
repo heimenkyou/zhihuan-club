@@ -4,7 +4,7 @@
   <router-view />
 </template>
 
-<script setup lang="ts">
+<script setup>
 import PolicyModal from './components/PolicyModal.vue'
 import MusicPlayer from './components/MusicPlayer.vue'
 </script>

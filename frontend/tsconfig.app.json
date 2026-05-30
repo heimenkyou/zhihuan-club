@@ -4,6 +4,9 @@
     // 设置基础路径
     "baseUrl": ".",
     "types": ["element-plus/global"],
+    // 允许逐步引入 JS 文件，但不对 JS 做类型检查
+    "allowJs": true,
+    "checkJs": false,
     // 配置路径别名
     "paths": {
       "@/*": ["src/*"]
@@ -16,5 +19,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/shims.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx", "src/**/*.vue", "src/shims.d.ts"]
 }

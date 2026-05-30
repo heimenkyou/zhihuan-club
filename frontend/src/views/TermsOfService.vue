@@ -92,15 +92,16 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// 导入必要的导航功能
-import { useRouter } from "vue-router"
+<script setup>
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// 添加导航到首页的方法
+/**
+ * 返回首页，避免条款页形成无出口的独立浏览路径。
+ */
 const navigateToHome = () => {
-  router.push("/")
+  router.push('/')
 }
 </script>
 

@@ -78,8 +78,8 @@
   </footer>
 </template>
 
-<script setup lang="ts">
-  import { showWarning } from '@/utils/notification'
+<script setup>
+import { showWarning } from '@/utils/notification'
 </script>
 
 <style scoped>
