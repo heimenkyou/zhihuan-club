@@ -13,13 +13,7 @@
     </el-card>
 
     <el-row :gutter="isMobile ? 10 : 20" class="stats-row">
-      <el-col
-        :xs="24"
-        :sm="12"
-        :md="8"
-        v-for="(stat, index) in stats"
-        :key="index"
-      >
+      <el-col :xs="24" :sm="12" :md="8" v-for="(stat, index) in stats" :key="index">
         <el-card class="stat-card shadow-card hover-scale">
           <div class="stat-content">
             <div class="stat-icon" :style="{ backgroundColor: stat.color }">
@@ -47,7 +41,7 @@ const isMobile = computed(() => {
 })
 
 const adminStore = useAdminStore()
-const userInfo = ref(adminStore.userInfo)
+const userInfo = computed(() => adminStore.userInfo)
 const applicationCount = ref(0)
 const newApplications = ref(0)
 const messageCount = ref(0)
@@ -55,17 +49,12 @@ const newMessages = ref(0)
 const awardCount = ref(0)
 const lastAward = ref('暂无')
 const stats = ref([])
-const loading = ref(true)
 
 /**
  * 加载首页统计卡片；真实数据失败时保留原有模拟兜底，避免后台首页空白。
  */
 onMounted(async () => {
-  loading.value = true
   try {
-    userInfo.value = adminStore.userInfo
-    console.debug('登录状态检查完成, userInfo:', userInfo.value)
-
     try {
       const awardData = await getAwards()
       awardCount.value = awardData.length
@@ -126,8 +115,6 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取统计数据失败', error)
     ElMessage.error('加载数据失败，请稍后重试')
-  } finally {
-    loading.value = false
   }
 })
 </script>
@@ -229,41 +216,41 @@ onMounted(async () => {
     padding: 10px;
     gap: 15px;
   }
-  
+
   .card-header {
     font-size: 18px;
   }
-  
+
   .welcome-content {
     padding: 15px 0;
     font-size: 14px;
   }
-  
+
   .stat-content {
     padding: 15px 10px;
   }
-  
+
   .stat-icon {
     width: 50px;
     height: 50px;
     font-size: 20px;
     margin-bottom: 12px;
   }
-  
+
   .stat-title {
     font-size: 16px;
     margin-bottom: 6px;
   }
-  
+
   .stat-value {
     font-size: 28px;
     margin-bottom: 6px;
   }
-  
+
   .stat-desc {
     font-size: 12px;
   }
-  
+
   .stats-row {
     margin-top: 5px;
   }
@@ -274,37 +261,37 @@ onMounted(async () => {
     padding: 5px;
     gap: 10px;
   }
-  
+
   .card-header {
     font-size: 16px;
   }
-  
+
   .welcome-content {
     padding: 10px 0;
     font-size: 13px;
   }
-  
+
   .stat-content {
     padding: 12px 8px;
   }
-  
+
   .stat-icon {
     width: 40px;
     height: 40px;
     font-size: 18px;
     margin-bottom: 10px;
   }
-  
+
   .stat-title {
     font-size: 14px;
     margin-bottom: 5px;
   }
-  
+
   .stat-value {
     font-size: 24px;
     margin-bottom: 5px;
   }
-  
+
   .stat-desc {
     font-size: 11px;
   }

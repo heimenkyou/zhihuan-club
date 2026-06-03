@@ -106,9 +106,9 @@ import { logout as logoutApi } from '@/services/adminService'
 
 const router = useRouter()
 const adminStore = useAdminStore()
-const userInfo = ref(adminStore.userInfo)
 const isMenuCollapsed = ref(false)
 const isMobile = ref(false)
+const userInfo = computed(() => adminStore.userInfo)
 
 /**
  * 根据屏幕宽度切换菜单折叠策略，避免移动端侧栏遮挡主体内容。
@@ -141,7 +141,6 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize)
 
   await adminStore.checkLoginStatus()
-  userInfo.value = adminStore.userInfo
 })
 
 onBeforeUnmount(() => {

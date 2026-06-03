@@ -10,7 +10,7 @@
         >
           我们的项目
         </h1>
-        <p class="text-gray-600 max-w-3xl">
+        <p class="text-gray-600">
           探索我们团队开发的各类创新项目，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
         </p>
       </div>
@@ -34,12 +34,12 @@
         </button>
       </div>
 
-      <!-- 项目列表 -->
+      <!-- 项目卡片列表 -->
       <div
         v-else
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 items-stretch"
       >
-        <!-- 无项目提示 -->
+        <!-- 空状态 -->
         <div
           v-if="projects.length === 0"
           class="col-span-full text-center text-gray-500 py-12"
@@ -95,7 +95,7 @@
         </div>
       </div>
 
-      <!-- Element Plus 分页组件 -->
+      <!-- 分页 -->
       <div
         class="mt-12 text-center"
         v-if="!loading && !error && totalPages > 0"
@@ -121,7 +121,6 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonNavbar from '@/components/CommonNavbar.vue'
 import { getProjects } from '@/services/projectService'
-import { ElPagination } from 'element-plus'
 
 const router = useRouter()
 const pageSize = ref(8)
@@ -132,8 +131,35 @@ const totalPages = ref(0)
 const loading = ref(false)
 const error = ref('')
 
+// 技术标签颜色映射
+const tagStyles = {
+  物联网: { bg: 'bg-blue-100', text: 'text-blue-800' },
+  传感器: { bg: 'bg-green-100', text: 'text-green-800' },
+  嵌入式: { bg: 'bg-purple-100', text: 'text-purple-800' },
+  机器人: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+  计算机视觉: { bg: 'bg-red-100', text: 'text-red-800' },
+  语音识别: { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+  移动端: { bg: 'bg-pink-100', text: 'text-pink-800' },
+  'React Native': { bg: 'bg-cyan-100', text: 'text-cyan-800' },
+  'Node.js': { bg: 'bg-orange-100', text: 'text-orange-800' },
+  机器学习: { bg: 'bg-purple-100', text: 'text-purple-800' },
+  Python: { bg: 'bg-green-100', text: 'text-green-800' },
+  TensorFlow: { bg: 'bg-blue-100', text: 'text-blue-800' },
+  后端: { bg: 'bg-blue-100', text: 'text-blue-800' },
+  Java: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+  开源: { bg: 'bg-gray-100', text: 'text-gray-800' },
+  硬件: { bg: 'bg-green-100', text: 'text-green-800' },
+  Arduino: { bg: 'bg-red-100', text: 'text-red-800' },
+  教育: { bg: 'bg-orange-100', text: 'text-orange-800' },
+  VR: { bg: 'bg-pink-100', text: 'text-pink-800' },
+  Unity: { bg: 'bg-purple-100', text: 'text-purple-800' },
+  Web前端: { bg: 'bg-blue-100', text: 'text-blue-800' },
+  大数据: { bg: 'bg-green-100', text: 'text-green-800' },
+  可视化: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+}
+
 /**
- * 获取项目列表，并在失败时重置分页区，避免界面残留旧数据。
+ * 拉取项目分页数据，并在失败时清空当前列表。
  */
 const fetchProjects = async () => {
   loading.value = true
@@ -146,13 +172,16 @@ const fetchProjects = async () => {
     }
 
     const response = await getProjects(params)
+    const pageData = response?.data
 
-    if (response && response.data && response.data.records) {
-      projects.value = response.data.records || []
-      totalProjects.value = response.data.total || 0
-      totalPages.value = response.data.pages || 0
-      current.value = response.data.current || 1
+    if (!pageData?.records) {
+      throw new Error('获取项目列表失败')
     }
+
+    projects.value = pageData.records
+    totalProjects.value = pageData.total || 0
+    totalPages.value = pageData.pages || 0
+    current.value = pageData.current || 1
   } catch (err) {
     error.value =
       err instanceof Error ? err.message : '获取项目列表失败，请稍后重试'
@@ -166,7 +195,7 @@ const fetchProjects = async () => {
 }
 
 /**
- * 切换分页后重新拉取列表，保持分页与服务端结果同步。
+ * 切换分页后重新拉取列表。
  *
  * @param {number} page
  */
@@ -176,77 +205,27 @@ const handleCurrentChange = page => {
 }
 
 /**
- * 根据技术标签返回背景色类名，维持卡片标签的一致视觉分组。
+ * 根据技术标签返回背景色。
  *
  * @param {string} tag
  * @returns {string}
  */
 const getTagBg = tag => {
-  const tagBgMap = {
-    物联网: 'bg-blue-100',
-    传感器: 'bg-green-100',
-    嵌入式: 'bg-purple-100',
-    机器人: 'bg-yellow-100',
-    计算机视觉: 'bg-red-100',
-    语音识别: 'bg-indigo-100',
-    移动端: 'bg-pink-100',
-    'React Native': 'bg-cyan-100',
-    'Node.js': 'bg-orange-100',
-    机器学习: 'bg-purple-100',
-    Python: 'bg-green-100',
-    TensorFlow: 'bg-blue-100',
-    后端: 'bg-blue-100',
-    Java: 'bg-yellow-100',
-    开源: 'bg-gray-100',
-    硬件: 'bg-green-100',
-    Arduino: 'bg-red-100',
-    教育: 'bg-orange-100',
-    VR: 'bg-pink-100',
-    Unity: 'bg-purple-100',
-    Web前端: 'bg-blue-100',
-    大数据: 'bg-green-100',
-    可视化: 'bg-yellow-100',
-  }
-  return tagBgMap[tag] || 'bg-gray-100'
+  return tagStyles[tag]?.bg || 'bg-gray-100'
 }
 
 /**
- * 根据技术标签返回文字色类名，与背景色映射保持配套。
+ * 根据技术标签返回文字色。
  *
  * @param {string} tag
  * @returns {string}
  */
 const getTagText = tag => {
-  const tagTextMap = {
-    物联网: 'text-blue-800',
-    传感器: 'text-green-800',
-    嵌入式: 'text-purple-800',
-    机器人: 'text-yellow-800',
-    计算机视觉: 'text-red-800',
-    语音识别: 'text-indigo-800',
-    移动端: 'text-pink-800',
-    'React Native': 'text-cyan-800',
-    'Node.js': 'text-orange-800',
-    机器学习: 'text-purple-800',
-    Python: 'text-green-800',
-    TensorFlow: 'text-blue-800',
-    后端: 'text-blue-800',
-    Java: 'text-yellow-800',
-    开源: 'text-gray-800',
-    硬件: 'text-green-800',
-    Arduino: 'text-red-800',
-    教育: 'text-orange-800',
-    VR: 'text-pink-800',
-    Unity: 'text-purple-800',
-    Web前端: 'text-blue-800',
-    大数据: 'text-green-800',
-    可视化: 'text-yellow-800',
-  }
-  return tagTextMap[tag] || 'text-gray-800'
+  return tagStyles[tag]?.text || 'text-gray-800'
 }
 
 /**
- * 跳转到项目详情页，并通过 query 传递当前项目 ID。
+ * 跳转到项目详情页。
  *
  * @param {number} projectId
  */
@@ -260,7 +239,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  /* 1. 定义自定义颜色类（适配CDN） */
   .bg-primary {
     background-color: #3b82f6;
   }
@@ -274,15 +252,9 @@ onMounted(() => {
     color: #f59e0b;
   }
 
-  /* 2. 动画样式 */
   .animate-fade-in {
-    opacity: 0; /* 初始状态为不可见 */
-    animation: fadeIn 0.8s ease-in-out forwards;
-  }
-  .animate-slide-up {
     opacity: 0;
-    transform: translateY(20px);
-    animation: slideUp 0.6s ease-out forwards;
+    animation: fadeIn 0.8s ease-in-out forwards;
   }
 
   @keyframes fadeIn {
@@ -293,34 +265,13 @@ onMounted(() => {
       opacity: 1;
     }
   }
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  /* 3. 响应式适配 */
   @media (max-width: 640px) {
     .grid {
       grid-template-columns: 1fr;
     }
   }
 
-  /* 4. 分页组件样式 */
-  .pagination-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 32px;
-  }
-
-  /* 优化分页组件样式 - PC版 */
   :deep(.el-pagination) {
-    /* 调整分页组件整体样式 */
     font-size: 14px;
   }
 
@@ -330,7 +281,7 @@ onMounted(() => {
   }
 
   :deep(.el-pagination__sizes) {
-    display: none; /* 确保不显示每页数量选择 */
+    display: none;
   }
 
   :deep(.el-pagination__prev),
@@ -385,7 +336,6 @@ onMounted(() => {
     margin: 0 5px;
   }
 
-  /* 响应式设计 - 移动端适配 */
   @media screen and (max-width: 768px) {
     .grid {
       grid-template-columns: 1fr;
@@ -420,7 +370,6 @@ onMounted(() => {
       font-size: 12px;
     }
 
-    /* 小屏幕上可能需要隐藏部分元素以保持美观 */
     @media screen and (max-width: 360px) {
       :deep(.el-pagination__total) {
         display: none;

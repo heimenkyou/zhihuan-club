@@ -6,7 +6,7 @@ export const useAdminStore = defineStore('admin', () => {
   const userInfo = ref(null)
   const isLoading = ref(false)
 
-  // 登录状态 = 本地有 token
+  // 本地有 token 就认为存在登录态，再由接口校验真伪。
   const isLoggedIn = computed(() => !!localStorage.getItem('adminToken'))
 
   /**
@@ -52,7 +52,6 @@ export const useAdminStore = defineStore('admin', () => {
    * 主动校验当前登录状态，避免重复并发请求。
    */
   const checkLoginStatus = async () => {
-    console.log('检查登录状态...')
     if (isLoading.value) return
 
     isLoading.value = true
@@ -74,27 +73,6 @@ export const useAdminStore = defineStore('admin', () => {
     return userInfo.value?.role === 'super'
   }
 
-  /**
-   * 按角色判断当前用户是否拥有指定权限。
-   */
-  const hasPermission = permission => {
-    if (userInfo.value?.role === 'super') {
-      return true
-    }
-    const normalAdminPermissions = ['viewApplications', 'viewAwards']
-    return normalAdminPermissions.includes(permission)
-  }
-
-  /**
-   * 输出当前认证状态，便于排查登录态异常。
-   */
-  const debug = () => {
-    console.log('登录状态:', isLoggedIn.value)
-    console.log('用户信息:', userInfo.value)
-    console.log('Token是否存在:', !!localStorage.getItem('adminToken'))
-    console.log('是否为超级管理员:', isSuperAdmin())
-  }
-
   return {
     isLoggedIn,
     userInfo,
@@ -105,7 +83,5 @@ export const useAdminStore = defineStore('admin', () => {
     clearAuthState,
     checkLoginStatus,
     isSuperAdmin,
-    hasPermission,
-    debug,
   }
 })

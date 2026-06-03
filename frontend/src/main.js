@@ -7,10 +7,6 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { dom } from '@fortawesome/fontawesome-svg-core'
-
-// 启用自动替换 <i class="fas fa-home"> → SVG
-dom.watch()
 
 // 将整个图标集加入库中
 library.add(fas, fab, far) // fas = 所有实心图标，fab = 所有品牌图标，far = 线框

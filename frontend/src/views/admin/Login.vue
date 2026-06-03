@@ -95,7 +95,6 @@ const handleLogin = async () => {
       try {
         const adminInfo = await login(loginForm)
         const token = localStorage.getItem('adminToken')
-        console.debug('登录成功, token:', token)
 
         adminStore.login(adminInfo, token || undefined)
 
@@ -110,12 +109,10 @@ const handleLogin = async () => {
         }
 
         ElMessage.success('登录成功，正在跳转...')
-        console.log('登录成功, 正在跳转...')
 
         // 延迟跳转，避免页面切换早于登录态写入。
         setTimeout(() => {
           router.push('/admin/dashboard')
-          console.log('跳转成功')
         }, 1000)
       } finally {
         loading.value = false
