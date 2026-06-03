@@ -15,7 +15,7 @@
         </div>
       </template>
 
-      <!-- 搜索输入框 - 移动端适配 -->
+      <!-- 搜索 -->
       <div class="mb-4">
         <div class="relative">
           <input
@@ -31,139 +31,55 @@
         </div>
       </div>
 
-      <!-- 多条件筛选栏 - 移动端适配 -->
+      <!-- 筛选 -->
       <div class="bg-white rounded-xl shadow-md p-4 mb-4">
         <h3 class="text-lg font-bold text-dark mb-3">奖项筛选</h3>
 
-        <!-- 竞赛级别筛选 -->
+        <!-- 竞赛级别 -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700 mb-2"
             >竞赛级别</label
           >
           <div class="flex flex-wrap gap-1">
             <button
+              v-for="option in competitionLevelOptions"
+              :key="option.value || 'all'"
               :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.competitionLevel === ''
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                filterChipClass,
+                filter.competitionLevel === option.value
+                  ? option.activeClass
+                  : filterChipInactiveClass,
               ]"
-              @click="filter.competitionLevel = ''"
+              @click="filter.competitionLevel = option.value"
             >
-              全部
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.competitionLevel === '国家级'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.competitionLevel = '国家级'"
-            >
-              国家级
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.competitionLevel === '省级'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.competitionLevel = '省级'"
-            >
-              省级
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.competitionLevel === '校级'
-                  ? 'bg-blue-400 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.competitionLevel = '校级'"
-            >
-              校级
+              {{ option.label }}
             </button>
           </div>
         </div>
 
-        <!-- 奖项级别筛选 -->
+        <!-- 奖项级别 -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700 mb-2"
             >奖项级别</label
           >
           <div class="flex flex-wrap gap-1">
             <button
+              v-for="option in awardLevelOptions"
+              :key="option.value || 'all'"
               :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.awardLevel === ''
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                filterChipClass,
+                filter.awardLevel === option.value
+                  ? option.activeClass
+                  : filterChipInactiveClass,
               ]"
-              @click="filter.awardLevel = ''"
+              @click="filter.awardLevel = option.value"
             >
-              全部
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.awardLevel === '一等奖'
-                  ? 'bg-yellow-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '一等奖'"
-            >
-              一等奖
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.awardLevel === '二等奖'
-                  ? 'bg-gray-400 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '二等奖'"
-            >
-              二等奖
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.awardLevel === '三等奖'
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '三等奖'"
-            >
-              三等奖
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.awardLevel === '优秀奖'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '优秀奖'"
-            >
-              优秀奖
-            </button>
-            <button
-              :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
-                filter.awardLevel === '其他'
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]"
-              @click="filter.awardLevel = '其他'"
-            >
-              其他
+              {{ option.label }}
             </button>
           </div>
         </div>
 
-        <!-- 竞赛年份筛选 -->
+        <!-- 竞赛年份 -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700 mb-2"
             >竞赛年份</label
@@ -196,7 +112,7 @@
           </div>
         </div>
 
-        <!-- 竞赛项目筛选 -->
+        <!-- 竞赛项目 -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700 mb-2"
             >竞赛项目</label
@@ -218,7 +134,7 @@
           </el-select>
         </div>
         
-        <!-- 赛道筛选 -->
+        <!-- 赛道 -->
         <div
           class="mb-3"
           v-if="filter.competitionName && currentCompetitionTracks.length > 0"
@@ -229,10 +145,10 @@
           <div class="flex flex-wrap gap-1">
             <button
               :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
+                filterChipClass,
                 filter.competitionTrack === ''
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                  : filterChipInactiveClass,
               ]"
               @click="filter.competitionTrack = ''"
             >
@@ -242,10 +158,10 @@
               v-for="track in currentCompetitionTracks"
               :key="track"
               :class="[
-                'px-3 py-1 rounded-full text-xs transition-all',
+                filterChipClass,
                 filter.competitionTrack === track
                   ? 'bg-teal-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                  : filterChipInactiveClass,
               ]"
               @click="filter.competitionTrack = track"
             >
@@ -254,20 +170,20 @@
           </div>
         </div>
         
-        <!-- 重置按钮 -->
+        <!-- 重置 -->
         <div class="mt-3">
           <el-button 
             @click="resetFilter" 
             class="reset-btn"
             :size="isMobile ? 'small' : 'default'"
-            style="width: 100%"
+            :class="{ 'mobile-full-button': isMobile }"
           >
             重置筛选
           </el-button>
         </div>
       </div>
 
-      <!-- 排序栏 - 移动端适配 -->
+      <!-- 排序 -->
       <div class="sort-container mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-start gap-2">
         <span class="text-sm text-gray-600">排序方式：</span>
         <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
@@ -276,7 +192,7 @@
             placeholder="排序依据"
             :size="isMobile ? 'small' : 'default'"
             @change="handleSortChange"
-            style="width: 100%"
+            class="full-width-control"
           >
             <el-option label="竞赛级别" value="competitionLevel" />
             <el-option label="获奖日期" value="awardDate" />
@@ -287,7 +203,7 @@
             placeholder="排序顺序"
             :size="isMobile ? 'small' : 'default'"
             @change="handleSortChange"
-            style="width: 100%"
+            class="full-width-control"
           >
             <el-option label="降序" value="desc" />
             <el-option label="升序" value="asc" />
@@ -295,7 +211,7 @@
         </div>
       </div>
 
-      <!-- 奖项数据表格 - 移动端适配 -->
+      <!-- 列表 -->
       <div class="table-container">
         <el-table
           :data="filteredAwardsData"
@@ -325,16 +241,7 @@
                   type="primary"
                   :size="isMobile ? 'small' : 'default'"
                   @click="openEditDialog(scope.row)"
-                  style="margin-bottom: 5px; width: 100%"
-                  v-if="isMobile"
-                >
-                  编辑
-                </el-button>
-                <el-button
-                  type="primary"
-                  :size="isMobile ? 'small' : 'default'"
-                  @click="openEditDialog(scope.row)"
-                  v-else
+                  :class="{ 'mobile-action-button': isMobile }"
                 >
                   编辑
                 </el-button>
@@ -342,16 +249,7 @@
                   type="danger"
                   :size="isMobile ? 'small' : 'default'"
                   @click="deleteAward(scope.row.id)"
-                  style="width: 100%"
-                  v-if="isMobile"
-                >
-                  删除
-                </el-button>
-                <el-button
-                  type="danger"
-                  :size="isMobile ? 'small' : 'default'"
-                  @click="deleteAward(scope.row.id)"
-                  v-else
+                  :class="{ 'mobile-action-button': isMobile }"
                 >
                   删除
                 </el-button>
@@ -361,7 +259,7 @@
         </el-table>
       </div>
 
-      <!-- 分页 - 移动端适配 -->
+      <!-- 分页 -->
       <div class="pagination-container" v-if="totalCount > 0">
         <el-pagination
           v-model:current-page="currentPage"
@@ -375,7 +273,7 @@
         />
       </div>
 
-      <!-- 添加/编辑对话框 - 移动端适配 -->
+      <!-- 编辑弹窗 -->
       <el-dialog 
         v-model="dialogVisible" 
         :title="dialogTitle" 
@@ -405,7 +303,7 @@
             <el-select
               v-model="awardForm.competitionLevel"
               placeholder="请选择竞赛级别"
-              style="width: 100%"
+              class="full-width-control"
             >
               <el-option label="国家级" value="国家级" />
               <el-option label="省级" value="省级" />
@@ -419,7 +317,7 @@
               allow-create
               filterable
               default-first-option
-              style="width: 100%"
+              class="full-width-control"
             >
               <el-option label="一等奖" value="一等奖" />
               <el-option label="金牌" value="金牌" />
@@ -467,34 +365,26 @@
               placeholder="请选择获奖日期"
               format="YYYY-MM"
               value-format="YYYY-MM"
-              style="width: 100%"
+              class="full-width-control"
               :size="isMobile ? 'small' : 'default'"
             />
           </el-form-item>
         </el-form>
         <template #footer>
           <div class="dialog-footer">
-            <el-button 
+            <el-button
               @click="dialogVisible = false"
               :size="isMobile ? 'large' : 'default'"
-              style="width: 100%"
-              v-if="isMobile"
+              :class="{ 'mobile-full-button': isMobile }"
             >
               取消
             </el-button>
-            <el-button @click="dialogVisible = false" v-else>
-              取消
-            </el-button>
-            <el-button 
-              type="primary" 
+            <el-button
+              type="primary"
               @click="submitForm"
               :size="isMobile ? 'large' : 'default'"
-              style="width: 100%; margin-top: 10px"
-              v-if="isMobile"
+              :class="{ 'mobile-full-button': isMobile }"
             >
-              确定
-            </el-button>
-            <el-button type="primary" @click="submitForm" v-else>
               确定
             </el-button>
           </div>
@@ -505,7 +395,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, computed, onMounted, watch } from 'vue'
+  import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import {
     getAwards,
@@ -514,15 +404,46 @@
     deleteAward as deleteAwardApi,
   } from '@/services/adminService'
 
-  // 检测是否为移动端
-  const isMobile = computed(() => {
-    return window.innerWidth <= 768
-  })
+  const filterChipClass = 'px-3 py-1 rounded-full text-xs transition-all'
+  const filterChipInactiveClass = 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+  const competitionLevelOptions = [
+    { label: '全部', value: '', activeClass: 'bg-primary text-white' },
+    { label: '国家级', value: '国家级', activeClass: 'bg-blue-600 text-white' },
+    { label: '省级', value: '省级', activeClass: 'bg-blue-500 text-white' },
+    { label: '校级', value: '校级', activeClass: 'bg-blue-400 text-white' },
+  ]
+  const awardLevelOptions = [
+    { label: '全部', value: '', activeClass: 'bg-primary text-white' },
+    { label: '一等奖', value: '一等奖', activeClass: 'bg-yellow-500 text-white' },
+    { label: '二等奖', value: '二等奖', activeClass: 'bg-gray-400 text-white' },
+    { label: '三等奖', value: '三等奖', activeClass: 'bg-orange-600 text-white' },
+    { label: '优秀奖', value: '优秀奖', activeClass: 'bg-green-500 text-white' },
+    { label: '其他', value: '其他', activeClass: 'bg-purple-500 text-white' },
+  ]
+  const awardLevelMap = {
+    一等奖: ['一等奖', '金牌'],
+    二等奖: ['二等奖', '银牌'],
+    三等奖: ['三等奖', '铜牌'],
+  }
+  const competitionLevelPriority = {
+    国家级: 1,
+    省级: 2,
+    校级: 3,
+  }
+  const awardLevelPriority = {
+    一等奖: 1,
+    金牌: 2,
+    二等奖: 3,
+    银牌: 4,
+    三等奖: 5,
+    铜牌: 6,
+    优秀奖: 7,
+    其他: 8,
+  }
 
-  // 表单引用
+  const viewportWidth = ref(window.innerWidth)
+  const isMobile = computed(() => viewportWidth.value <= 768)
   const awardFormRef = ref(null)
-
-  // 搜索与筛选
   const searchKeyword = ref('')
   const filter = reactive({
     competitionLevel: '',
@@ -531,25 +452,31 @@
     competitionName: '',
     competitionTrack: '',
   })
-
-  // 奖项数据与加载状态
   const awardsData = ref([])
   const loading = ref(false)
   const dialogVisible = ref(false)
   const dialogTitle = ref('添加奖项')
   const currentAwardId = ref(null)
   const currentPage = ref(1)
-  const pageSize = ref(isMobile.value ? 5 : 10) // 移动端默认显示更少数据
+  const pageSize = ref(isMobile.value ? 5 : 10)
   const winnersList = ref([])
   const newWinnerName = ref('')
 
-  // 可用年份列表
+  /**
+   * 生成可选年份列表。
+   *
+   * @returns {number[]}
+   */
   const availableYears = computed(() => {
     const currentYear = new Date().getFullYear()
     return [currentYear, currentYear - 1, currentYear - 2, currentYear - 3, currentYear - 4]
   })
 
-  // 当前竞赛项目的赛道列表
+  /**
+   * 返回当前竞赛名称下的赛道列表。
+   *
+   * @returns {string[]}
+   */
   const currentCompetitionTracks = computed(() => {
     if (!filter.competitionName) return []
 
@@ -566,11 +493,9 @@
     return Array.from(tracks).sort()
   })
 
-  // 排序配置
   const sortBy = ref('competitionLevel')
   const sortOrder = ref('desc')
 
-  // 奖项表单
   const awardForm = reactive({
     competitionName: '',
     competitionLevel: '国家级',
@@ -581,7 +506,6 @@
     awardDate: new Date().toISOString().slice(0, 7),
   })
 
-  // 表单验证规则
   const rules = {
     competitionName: [
       { required: true, message: '请输入奖项名称', trigger: 'blur' },
@@ -597,78 +521,73 @@
     awardDate: [{ required: true, message: '请选择获奖日期', trigger: 'blur' }],
   }
 
-  // 竞赛级别优先级
-  const competitionLevelPriority = {
-    国家级: 1,
-    省级: 2,
-    校级: 3,
+  /**
+   * 重置奖项表单到默认值。
+   */
+  const resetAwardForm = () => {
+    awardForm.competitionName = ''
+    awardForm.competitionLevel = '国家级'
+    awardForm.competitionTrack = ''
+    awardForm.awardLevel = '一等奖'
+    awardForm.winners = []
+    awardForm.year = new Date().getFullYear()
+    const now = new Date()
+    awardForm.awardDate = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, '0')}`
+    winnersList.value = []
+    newWinnerName.value = ''
   }
 
-  // 奖项级别优先级
-  const awardLevelPriority = {
-    一等奖: 1,
-    金牌: 2,
-    二等奖: 3,
-    银牌: 4,
-    三等奖: 5,
-    铜牌: 6,
-    优秀奖: 7,
-    其他: 8,
+  /**
+   * 判断奖项是否命中当前筛选条件。
+   *
+   * @param {any} award
+   * @returns {boolean}
+   */
+  const matchesAwardFilters = award => {
+    const matchesKeyword =
+      !searchKeyword.value ||
+      award.competitionName?.includes(searchKeyword.value) ||
+      award.winners?.some(winner => winner.includes(searchKeyword.value)) ||
+      award.awardLevel?.includes(searchKeyword.value)
+
+    const matchesLevel =
+      !filter.competitionLevel ||
+      award.competitionLevel === filter.competitionLevel
+
+    const matchesAwardLevel =
+      !filter.awardLevel ||
+      (filter.awardLevel in awardLevelMap &&
+        awardLevelMap[filter.awardLevel].includes(award.awardLevel)) ||
+      award.awardLevel === filter.awardLevel
+
+    const matchesYear = !filter.year || award.year?.toString() === filter.year
+    const matchesCompetitionName =
+      !filter.competitionName ||
+      award.competitionName?.includes(filter.competitionName)
+    const matchesTrack =
+      !filter.competitionTrack ||
+      award.competitionTrack === filter.competitionTrack
+
+    return (
+      matchesKeyword &&
+      matchesLevel &&
+      matchesAwardLevel &&
+      matchesYear &&
+      matchesCompetitionName &&
+      matchesTrack
+    )
   }
 
-  // 排序变化处理
-  const handleSortChange = () => {
-    currentPage.value = 1
-  }
-
-  // 筛选、排序、分页后的数据
-  const filteredAwardsData = computed(() => {
-    // 1. 筛选逻辑
-    const filtered = awardsData.value.filter(award => {
-      const matchesKeyword =
-        !searchKeyword.value ||
-        award.competitionName?.includes(searchKeyword.value) ||
-        award.winners?.some(w => w.includes(searchKeyword.value)) ||
-        award.awardLevel?.includes(searchKeyword.value)
-
-      const matchesLevel =
-        !filter.competitionLevel ||
-        award.competitionLevel === filter.competitionLevel
-
-      const awardLevelMap = {
-        一等奖: ['一等奖', '金牌'],
-        二等奖: ['二等奖', '银牌'],
-        三等奖: ['三等奖', '铜牌'],
-      }
-
-      const matchesAwardLevel =
-        !filter.awardLevel ||
-        (filter.awardLevel in awardLevelMap &&
-          awardLevelMap[filter.awardLevel].includes(award.awardLevel)) ||
-        award.awardLevel === filter.awardLevel
-
-      const matchesYear = !filter.year || award.year?.toString() === filter.year
-
-      const matchesCompetitionName =
-        !filter.competitionName ||
-        award.competitionName?.includes(filter.competitionName)
-
-      const matchesTrack =
-        !filter.competitionTrack ||
-        award.competitionTrack === filter.competitionTrack
-
-      return (
-        matchesKeyword &&
-        matchesLevel &&
-        matchesAwardLevel &&
-        matchesYear &&
-        matchesCompetitionName &&
-        matchesTrack
-      )
-    })
-
-    // 2. 排序逻辑
-    filtered.sort((a, b) => {
+  /**
+   * 按当前排序方式排序奖项列表。
+   *
+   * @param {any[]} awards
+   * @returns {any[]}
+   */
+  const sortAwards = awards => {
+    return [...awards].sort((a, b) => {
       let compareResult = 0
       switch (sortBy.value) {
         case 'competitionLevel': {
@@ -695,17 +614,12 @@
           }
           break
         }
-
         case 'awardDate': {
           const dateA = new Date(a.awardDate || '').getTime() || 0
           const dateB = new Date(b.awardDate || '').getTime() || 0
-          compareResult =
-            sortOrder.value === 'desc'
-              ? dateB - dateA
-              : dateA - dateB
+          compareResult = sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
           break
         }
-
         case 'competitionName': {
           const nameA = a.competitionName || ''
           const nameB = b.competitionName || ''
@@ -718,51 +632,42 @@
       }
       return compareResult
     })
+  }
 
-    // 3. 分页逻辑
+  /**
+   * 切换排序后回到第一页。
+   */
+  const handleSortChange = () => {
+    currentPage.value = 1
+  }
+
+  /**
+   * 返回筛选、排序、分页后的奖项列表。
+   *
+   * @returns {any[]}
+   */
+  const filteredAwardsData = computed(() => {
+    const filtered = awardsData.value.filter(matchesAwardFilters)
+    const sorted = sortAwards(filtered)
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
-    return filtered.slice(start, end)
+    return sorted.slice(start, end)
   })
 
-  // 总数据量
+  /**
+   * 返回筛选后的奖项总数。
+   *
+   * @returns {number}
+   */
   const totalCount = computed(() => {
-    return awardsData.value.filter(award => {
-      const matchesKeyword =
-        !searchKeyword.value ||
-        award.competitionName?.includes(searchKeyword.value) ||
-        award.winners?.some(w => w.includes(searchKeyword.value)) ||
-        award.awardLevel?.includes(searchKeyword.value)
-
-      const matchesLevel =
-        !filter.competitionLevel ||
-        award.competitionLevel === filter.competitionLevel
-
-      const matchesAwardLevel =
-        !filter.awardLevel || award.awardLevel === filter.awardLevel
-
-      const matchesYear = !filter.year || award.year?.toString() === filter.year
-
-      const matchesCompetitionName =
-        !filter.competitionName ||
-        award.competitionName?.includes(filter.competitionName)
-
-      const matchesTrack =
-        !filter.competitionTrack ||
-        award.competitionTrack === filter.competitionTrack
-
-      return (
-        matchesKeyword &&
-        matchesLevel &&
-        matchesAwardLevel &&
-        matchesYear &&
-        matchesCompetitionName &&
-        matchesTrack
-      )
-    }).length
+    return awardsData.value.filter(matchesAwardFilters).length
   })
 
-  // 竞赛名称列表
+  /**
+   * 返回竞赛名称选项。
+   *
+   * @returns {string[]}
+   */
   const competitionNames = computed(() => {
     const names = new Set()
     awardsData.value.forEach(award => {
@@ -771,7 +676,11 @@
     return Array.from(names).sort()
   })
 
-  // 加载奖项数据
+  /**
+   * 加载奖项列表。
+   *
+   * @returns {Promise<void>}
+   */
   const loadAwards = async () => {
     loading.value = true
     try {
@@ -787,12 +696,16 @@
     }
   }
 
-  // 搜索事件
+  /**
+   * 根据当前条件刷新第一页。
+   */
   const handleSearch = () => {
     currentPage.value = 1
   }
 
-  // 重置筛选
+  /**
+   * 重置筛选条件与排序方式。
+   */
   const resetFilter = () => {
     searchKeyword.value = ''
     filter.competitionLevel = ''
@@ -805,35 +718,40 @@
     currentPage.value = 1
   }
 
-  // 分页大小变化
+  /**
+   * 处理分页大小变化。
+   *
+   * @param {number} size
+   */
   const handleSizeChange = size => {
     pageSize.value = size
     currentPage.value = 1
   }
 
-  // 页码变化
+  /**
+   * 处理页码变化。
+   *
+   * @param {number} current
+   */
   const handleCurrentChange = current => {
     currentPage.value = current
   }
 
-  // 打开添加对话框
+  /**
+   * 打开新增奖项对话框。
+   */
   const openAddDialog = () => {
     dialogTitle.value = '添加奖项'
     currentAwardId.value = null
-    awardForm.competitionName = ''
-    awardForm.competitionLevel = '国家级'
-    awardForm.awardLevel = '一等奖'
-    awardForm.winners = []
-    awardForm.year = new Date().getFullYear()
-    const now = new Date()
-    awardForm.awardDate = `${now.getFullYear()}-${String(
-      now.getMonth() + 1
-    ).padStart(2, '0')}`
-    winnersList.value = []
+    resetAwardForm()
     dialogVisible.value = true
   }
 
-  // 打开编辑对话框
+  /**
+   * 打开编辑奖项对话框。
+   *
+   * @param {any} row
+   */
   const openEditDialog = row => {
     dialogTitle.value = '编辑奖项'
     currentAwardId.value = row.id
@@ -842,7 +760,9 @@
     dialogVisible.value = true
   }
 
-  // 添加获奖人员
+  /**
+   * 添加获奖人员标签。
+   */
   const addWinner = () => {
     const name = newWinnerName.value.trim()
     if (name && !winnersList.value.includes(name)) {
@@ -853,12 +773,20 @@
     }
   }
 
-  // 删除获奖人员
+  /**
+   * 移除指定获奖人员。
+   *
+   * @param {number} index
+   */
   const removeWinner = index => {
     winnersList.value.splice(index, 1)
   }
 
-  // 提交表单
+  /**
+   * 提交奖项表单。
+   *
+   * @returns {Promise<void>}
+   */
   const submitForm = async () => {
     if (!awardFormRef.value) return
 
@@ -907,7 +835,12 @@
     }
   }
 
-  // 删除奖项
+  /**
+   * 删除指定奖项。
+   *
+   * @param {number} id
+   * @returns {Promise<void>}
+   */
   const deleteAward = async id => {
     try {
       await ElMessageBox.confirm('确定要删除这个奖项吗？', '确认删除', {
@@ -930,12 +863,9 @@
     }
   }
 
-  // 页面加载时初始化数据
-  onMounted(() => {
-    loadAwards()
-  })
-
-  // 监听获奖日期变化，自动更新年份
+  /**
+   * 同步获奖日期对应的年份。
+   */
   watch(
     () => awardForm.awardDate,
     (newDate) => {
@@ -945,6 +875,9 @@
     }
   )
 
+  /**
+   * 切换竞赛名称时清空赛道筛选。
+   */
   watch(
     () => filter.competitionName,
     () => {
@@ -952,9 +885,11 @@
     }
   )
 
-  // 监听窗口大小变化
+  /**
+   * 处理窗口尺寸变化。
+   */
   const handleResize = () => {
-    // 根据屏幕大小调整分页大小
+    viewportWidth.value = window.innerWidth
     if (isMobile.value && pageSize.value > 10) {
       pageSize.value = 5
     } else if (!isMobile.value && pageSize.value === 5) {
@@ -962,8 +897,19 @@
     }
   }
 
+  /**
+   * 初始化页面与监听器。
+   */
   onMounted(() => {
+    loadAwards()
     window.addEventListener('resize', handleResize)
+  })
+
+  /**
+   * 清理窗口监听器。
+   */
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleResize)
   })
 </script>
 
@@ -988,6 +934,10 @@
     padding: 10px 15px;
     background-color: #f8f9fa;
     border-radius: 8px;
+  }
+
+  .full-width-control {
+    width: 100%;
   }
   
   .pagination-container {
@@ -1015,7 +965,6 @@
     background-color: #4096ff !important;
   }
   
-  /* 获奖人员标签样式 */
   .winners-tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -1054,14 +1003,21 @@
     display: flex;
     flex-direction: column;
   }
+
+  .mobile-action-button {
+    width: 100%;
+  }
   
   .dialog-footer {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
+
+  .mobile-full-button {
+    width: 100%;
+  }
   
-  /* 移动端样式优化 */
   @media (max-width: 768px) {
     .award-container {
       padding: 10px;
@@ -1080,7 +1036,6 @@
       justify-content: center;
     }
     
-    /* 表格在移动端的优化显示 */
     .table-container {
       overflow-x: auto;
     }

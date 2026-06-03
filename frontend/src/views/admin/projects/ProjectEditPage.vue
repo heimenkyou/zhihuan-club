@@ -27,19 +27,20 @@
             maxlength="100"
           />
         </el-form-item>
-        <el-form-item prop="category">
-          <el-select
-            v-model="projectForm.category"
-            placeholder="请选择项目分类"
-            clearable
-          >
-            <el-option label="Web开发" value="Web开发" />
-            <el-option label="人工智能" value="人工智能" />
-            <el-option label="移动应用" value="移动应用" />
-            <el-option label="数据科学" value="数据科学" />
-            <el-option label="其他" value="其他" />
-          </el-select>
-        </el-form-item>
+          <el-form-item prop="category">
+            <el-select
+              v-model="projectForm.category"
+              placeholder="请选择项目分类"
+              clearable
+            >
+              <el-option
+                v-for="category in projectCategories"
+                :key="category"
+                :label="category"
+                :value="category"
+              />
+            </el-select>
+          </el-form-item>
         <el-form-item prop="timeRange">
           <el-date-picker
             v-model="dateRange"
@@ -89,14 +90,14 @@
                 <el-button
                   link
                   @click="showImageLibrary"
-                  style="margin-bottom: 10px"
+                  class="library-button"
                 >
                   从图库选择</el-button
                 >
                 <el-input
                   v-model="projectForm.coverImage"
                   placeholder="或输入图片URL"
-                  style="width: 100%"
+                  class="cover-image-input"
                   clearable
                 />
               </div>
@@ -116,7 +117,7 @@
               <MdEditor
                 v-model="projectForm.descriptionMd"
                 :toolbars-exclude="['image']"
-                style="height: 500px"
+                :style="{ height: editorHeight }"
                 class="markdown-editor"
               />
             </div>
@@ -124,7 +125,7 @@
               <div class="markdown-preview">
                 <MdPreview
                   :modelValue="projectForm.descriptionMd"
-                  style="height: 500px; overflow-y: auto"
+                  :style="{ height: editorHeight, overflowY: 'auto' }"
                 />
               </div>
             </div>
@@ -133,7 +134,7 @@
                 <MdEditor
                   v-model="projectForm.descriptionMd"
                   :toolbars-exclude="['image']"
-                  style="height: 500px"
+                  :style="{ height: editorHeight }"
                   class="markdown-editor"
                 />
               </div>
@@ -141,7 +142,7 @@
                 <div class="markdown-preview">
                   <MdPreview
                     :modelValue="projectForm.descriptionMd"
-                    style="height: 500px; overflow-y: auto"
+                    :style="{ height: editorHeight, overflowY: 'auto' }"
                   />
                 </div>
               </div>
@@ -154,14 +155,12 @@
           <el-input
             v-model="techStackInput"
             placeholder="请输入技术名称"
-            style="width: 200px; margin-right: 10px"
+            class="tech-stack-input"
             @keyup.enter="addTechStack"
           />
           <el-button type="primary" size="small" @click="addTechStack"
             >添加</el-button
           >
-
-          <!-- 技术栈标签展示区域 - 确保编辑时显示已添加的技术栈 -->
           <div
             class="tech-stack-list mt-3"
             v-if="
@@ -173,14 +172,11 @@
               :key="index"
               closable
               @close="removeTechStack(index)"
-              style="margin-right: 10px; margin-bottom: 10px"
               class="tech-tag"
             >
               {{ tech }}
             </el-tag>
           </div>
-
-          <!-- 空状态提示 -->
           <div v-else class="no-tech-stack-tip text-gray-500 text-sm mt-3">
             暂无技术栈，请添加
           </div>
@@ -197,12 +193,12 @@
               <el-input
                 v-model="member.name"
                 placeholder="成员姓名"
-                style="width: 150px; margin-right: 10px"
+                class="team-member-input"
               />
               <el-input
                 v-model="member.role"
                 placeholder="成员角色"
-                style="width: 150px; margin-right: 10px"
+                class="team-member-input"
               />
               <el-button
                 type="danger"
@@ -272,7 +268,7 @@
                 type="success"
                 size="small"
                 @click="showMediaUploadDialog = true"
-                style="margin-left: 10px"
+                class="media-upload-button"
               >
                 上传新图片
               </el-button>
@@ -287,11 +283,11 @@
         <!-- 奖项管理 -->
         <el-form-item label="获奖情况">
           <div class="award-management">
-            <el-input
-              v-model="awardIdsInput"
-              placeholder="请输入奖项ID，用逗号分隔"
-              style="width: 100%"
-            />
+              <el-input
+                v-model="awardIdsInput"
+                placeholder="请输入奖项ID，用逗号分隔"
+                class="award-input"
+              />
             <el-button
               type="primary"
               size="small"
@@ -336,7 +332,12 @@
               >
                 选择
               </el-button>
-              <el-button v-else type="text" size="small" style="color: #67c23a">
+              <el-button
+                v-else
+                type="text"
+                size="small"
+                class="selected-label-button"
+              >
                 已选择
               </el-button>
             </div>
@@ -353,7 +354,7 @@
 
     <!-- 媒体资源上传对话框 -->
     <el-dialog v-model="showMediaUploadDialog" title="上传图片" width="600px">
-      <el-form ref="uploadFormRef">
+      <el-form>
         <el-form-item label="图片标题">
           <el-input v-model="uploadTitle" placeholder="请输入图片标题" />
         </el-form-item>
@@ -387,22 +388,30 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+  import { ref, reactive, onMounted, computed } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { ElMessage } from 'element-plus'
   import { ArrowLeft, Plus } from '@element-plus/icons-vue'
   import {
-    getProject,
+    getUnreferencedMedia,
+    uploadMedia,
+  } from '../../../services/adminService'
+  import {
+    getProjectForEdit,
     createProject,
     updateProject,
-    getUnreferencedMedia,
-    // deleteMedia,
-    uploadMedia,
-    getAwards, // 添加奖项获取函数
-  } from '../../../services/adminService'
-  // 移除本地导入，依赖全局注册的组件
-  // import VMdEditor from '@kangc/v-md-editor'
-  // import { getProjects } from "../../../services/projectService"
+  } from '../../../services/projectService'
+
+  const defaultCategory = 'Web开发'
+  const editorHeight = '500px'
+  const projectCategories = [
+    'Web开发',
+    '人工智能',
+    '移动应用',
+    '数据科学',
+    '其他',
+  ]
+
   const router = useRouter()
   const route = useRoute()
   const projectId = computed(() => {
@@ -412,54 +421,95 @@
 
   const isEditMode = computed(() => projectId.value !== null)
 
-  // 表单引用
   const projectFormRef = ref(null)
-
-  // 媒体资源相关状态
   const availableMediaResources = ref([])
   const selectedMediaResources = ref([])
   const imageLibraryVisible = ref(false)
   const showMediaUploadDialog = ref(false)
-
-  // 奖项ID输入处理
   const awardIdsInput = ref('')
-
-  // 添加奖项数据状态
-  const awardItems = ref([])
-  const selectedAwards = ref([])
-
-  // 日期范围选择
   const dateRange = ref([])
-
-  // Markdown编辑器相关
   const activeTab = ref('edit')
   const techStackInput = ref('')
-
-  // 上传表单相关状态
   const uploadTitle = ref('')
   const uploadDescription = ref('')
   const uploadRef = ref(null)
-  const uploadFormRef = ref(null)
 
-  // 项目表单 - 严格按照Project接口定义
+  /**
+   * 创建默认团队成员。
+   *
+   * @returns {{ name: string, role: string }}
+   */
+  const createEmptyTeamMember = () => ({
+    name: '',
+    role: '',
+  })
+
+  /**
+   * 清理封面图片地址中的空白字符。
+   *
+   * @param {unknown} coverImage
+   * @returns {string}
+   */
+  const sanitizeCoverImage = coverImage => {
+    return typeof coverImage === 'string' ? coverImage.replace(/[`\s]/g, '') : ''
+  }
+
+  /**
+   * 保证输入值始终为数组。
+   *
+   * @param {unknown} value
+   * @returns {any[]}
+   */
+  const ensureArray = value => {
+    return Array.isArray(value) ? value : []
+  }
+
+  /**
+   * 合并媒体列表并按 id 去重。
+   *
+   * @param {Array<{ id: number }>} mediaList
+   * @returns {Array<{ id: number }>}
+   */
+  const dedupeMediaList = mediaList => {
+    const seen = new Set()
+    return mediaList.filter(media => {
+      if (seen.has(media.id)) {
+        return false
+      }
+      seen.add(media.id)
+      return true
+    })
+  }
+
+  /**
+   * 生成提交接口需要的项目数据。
+   *
+   * @returns {Object}
+   */
+  const buildSubmitData = () => {
+    return {
+      ...projectForm,
+      coverImage: sanitizeCoverImage(projectForm.coverImage),
+      techStackTags: ensureArray(projectForm.techStackTags),
+      teamDivision: ensureArray(projectForm.teamDivision),
+      mediaResourceIds: ensureArray(projectForm.mediaResourceIds),
+      awardIds: ensureArray(projectForm.awardIds),
+    }
+  }
+
   const projectForm = reactive({
     title: '',
-    category: 'Web开发',
+    category: defaultCategory,
     timeRange: '',
     briefIntro: '',
     descriptionMd: '',
     coverImage: '',
     techStackTags: [],
-    teamDivision: [{ name: '', role: '' }],
-    // 替换为媒体资源ID数组
+    teamDivision: [createEmptyTeamMember()],
     mediaResourceIds: [],
-    // 添加奖项ID数组
     awardIds: [],
-    createTime: new Date().toISOString(),
-    updateTime: new Date().toISOString(),
   })
 
-  // 表单验证规则
   const rules = {
     title: [{ required: true, message: '请输入项目标题', trigger: 'blur' }],
     category: [{ required: true, message: '请选择项目分类', trigger: 'blur' }],
@@ -475,7 +525,6 @@
     coverImage: [
       { required: true, message: '请上传项目展示图片', trigger: 'blur' },
     ],
-    // 自定义验证：确保至少有一个轮播图
     mediaResourceIds: [
       {
         validator: (_, value, callback) => {
@@ -490,15 +539,15 @@
     ],
   }
 
-  // 提交表单
+  /**
+   * 提交项目表单。
+   */
   const submitForm = async () => {
     if (!projectFormRef.value) return
 
     try {
-      // 先执行表单验证，而不是先验证轮播图
       await projectFormRef.value.validate()
 
-      // 验证轮播图
       if (
         !projectForm.mediaResourceIds ||
         projectForm.mediaResourceIds.length === 0
@@ -507,49 +556,18 @@
         return
       }
 
-      // 准备提交数据，确保所有字段都符合API要求
-      const submitData = {
-        ...projectForm,
-        // 确保所有必填字段都有值
-        type: projectForm.type || 'project',
-        // 清理封面图片URL，添加类型检查
-        coverImage:
-          typeof projectForm.coverImage === 'string'
-            ? projectForm.coverImage.replace(/[`\s]/g, '')
-            : '',
-        // 确保所有数组字段都是数组类型
-        techStackTags: Array.isArray(projectForm.techStackTags)
-          ? projectForm.techStackTags
-          : [],
-        teamDivision: Array.isArray(projectForm.teamDivision)
-          ? projectForm.teamDivision
-          : [],
-        mediaResourceIds: Array.isArray(projectForm.mediaResourceIds)
-          ? projectForm.mediaResourceIds
-          : [],
-        awardIds: Array.isArray(projectForm.awardIds)
-          ? projectForm.awardIds
-          : [],
-      }
-
-      // 打印提交数据，方便调试
-      console.log('提交数据:', JSON.stringify(submitData, null, 2))
+      const submitData = buildSubmitData()
 
       if (isEditMode.value && projectId.value !== null) {
-        // 编辑项目
         await updateProject(projectId.value, submitData)
         ElMessage.success('更新项目成功')
       } else {
-        // 添加项目
         await createProject(submitData)
         ElMessage.success('添加项目成功')
       }
 
-      // 返回项目列表
       handleBack()
     } catch (error) {
-      // 当验证失败时，Element Plus会自动显示错误信息，这里可以不做额外处理
-      // 仅在API调用失败时显示错误
       if (
         error &&
         !(error instanceof Error && error.message.includes('Validation failed'))
@@ -560,14 +578,23 @@
     }
   }
 
-  // 日期范围变化处理
+  /**
+   * 同步日期范围到表单字段。
+   *
+   * @param {string[]} dates
+   */
   const handleDateRangeChange = dates => {
     if (dates && dates.length === 2) {
       projectForm.timeRange = `${dates[0]}-${dates[1]}`
     }
   }
 
-  // 图片上传前检查
+  /**
+   * 校验封面图片体积。
+   *
+   * @param {File} file
+   * @returns {boolean}
+   */
   const beforeUpload = file => {
     const isLt2M = file.size / 1024 / 1024 < 2
     if (!isLt2M) {
@@ -576,10 +603,14 @@
     return isLt2M
   }
 
-  // 处理图片上传
+  /**
+   * 模拟封面上传结果，保持现有交互不变。
+   *
+   * @param {{ onSuccess: Function }} options
+   * @returns {Promise<{ url: string }>}
+   */
   const handleUpload = options => {
     const { onSuccess } = options
-    // 模拟图片上传过程
     const mockImageUrl = `https://picsum.photos/id/${Math.floor(
       Math.random() * 100
     )}/400/300`
@@ -588,7 +619,6 @@
       onSuccess({ url: mockImageUrl })
     }, 1000)
 
-    // 返回一个Promise以满足UploadRequestHandler类型要求
     return new Promise(resolve => {
       setTimeout(() => {
         resolve({ url: mockImageUrl })
@@ -596,31 +626,34 @@
     })
   }
 
-  // 图片上传成功处理
+  /**
+   * 回写封面图片地址。
+   *
+   * @param {{ url: string }} response
+   */
   const handleUploadSuccess = response => {
-    projectForm.coverImage = response.url // 修复：只使用response中的url属性
+    projectForm.coverImage = response.url
     ElMessage.success('图片上传成功')
   }
 
-  // 图片上传失败处理
+  /**
+   * 提示封面上传失败。
+   */
   const handleUploadError = () => {
     ElMessage.error('图片上传失败，请重试')
   }
 
-  // 显示图片图库
+  /**
+   * 打开图片库并刷新媒体列表。
+   */
   const showImageLibrary = () => {
     loadUnreferencedMedia()
     imageLibraryVisible.value = true
   }
 
-  // 从图库选择图片（用于封面）
-  // const selectImageFromLibrary = image => {
-  //   projectForm.coverImage = image.url
-  //   imageLibraryVisible.value = false
-  //   ElMessage.success("图片已选择")
-  // }
-
-  // 添加技术栈
+  /**
+   * 添加技术栈标签。
+   */
   const addTechStack = () => {
     const techValue = techStackInput.value.trim()
     if (techValue && projectForm.techStackTags) {
@@ -634,28 +667,40 @@
     }
   }
 
-  // 移除技术栈
+  /**
+   * 移除技术栈标签。
+   *
+   * @param {number} index
+   */
   const removeTechStack = index => {
     if (projectForm.techStackTags) {
       projectForm.techStackTags.splice(index, 1)
     }
   }
 
-  // 添加团队成员
+  /**
+   * 添加团队成员输入项。
+   */
   const addTeamMember = () => {
     if (projectForm.teamDivision) {
-      projectForm.teamDivision.push({ name: '', role: '' })
+      projectForm.teamDivision.push(createEmptyTeamMember())
     }
   }
 
-  // 移除团队成员
+  /**
+   * 移除团队成员输入项。
+   *
+   * @param {number} index
+   */
   const removeTeamMember = index => {
     if (projectForm.teamDivision && projectForm.teamDivision.length > 1) {
       projectForm.teamDivision.splice(index, 1)
     }
   }
 
-  // 解析奖项ID
+  /**
+   * 解析奖项 ID 输入框。
+   */
   const parseAwardIds = () => {
     if (awardIdsInput.value) {
       const ids = awardIdsInput.value
@@ -664,41 +709,30 @@
         .filter(id => !isNaN(id))
 
       projectForm.awardIds = ids
-
-      // 立即加载奖项详情
-      loadAwardDetails()
     }
   }
 
-  // 加载未引用的媒体资源
+  /**
+   * 加载可选媒体资源，并补上当前项目已选图片。
+   */
   const loadUnreferencedMedia = async () => {
     try {
       const media = await getUnreferencedMedia()
-      availableMediaResources.value = media
-
-      // 将已选择的媒体资源也加入列表，方便查看
-      if (selectedMediaResources.value.length > 0) {
-        availableMediaResources.value = [
-          ...availableMediaResources.value,
-          ...selectedMediaResources.value,
-        ]
-        // 去重
-        const seen = new Set()
-        availableMediaResources.value = availableMediaResources.value.filter(
-          media => {
-            const duplicate = seen.has(media.id)
-            seen.add(media.id)
-            return !duplicate
-          }
-        )
-      }
+      availableMediaResources.value = dedupeMediaList([
+        ...media,
+        ...selectedMediaResources.value,
+      ])
     } catch (error) {
       ElMessage.error('加载媒体资源失败')
       console.error('加载媒体资源失败:', error)
     }
   }
 
-  // 选择媒体资源（用于轮播图）
+  /**
+   * 选择轮播图资源。
+   *
+   * @param {{ id: number, url: string, title?: string, description?: string }} media
+   */
   const selectMediaResource = media => {
     if (!projectForm.mediaResourceIds) {
       projectForm.mediaResourceIds = []
@@ -713,7 +747,11 @@
     }
   }
 
-  // 移除已选媒体资源
+  /**
+   * 移除已选轮播图资源。
+   *
+   * @param {number} mediaId
+   */
   const removeSelectedMedia = mediaId => {
     if (projectForm.mediaResourceIds) {
       projectForm.mediaResourceIds = projectForm.mediaResourceIds.filter(
@@ -726,7 +764,13 @@
     }
   }
 
-  // 上传新的媒体资源
+  /**
+   * 上传新图片并加入当前项目。
+   *
+   * @param {File} file
+   * @param {string} title
+   * @param {string} description
+   */
   const handleMediaUpload = async (
     file,
     title,
@@ -745,7 +789,9 @@
     }
   }
 
-  // 确认上传
+  /**
+   * 提交图片上传对话框。
+   */
   const confirmUpload = async () => {
     const uploader = uploadRef.value?.uploadFiles
     if (uploader && uploader.length > 0) {
@@ -756,7 +802,6 @@
           uploadTitle.value,
           uploadDescription.value
         )
-        // 重置表单
         uploadTitle.value = ''
         uploadDescription.value = ''
         uploadRef.value.clearFiles()
@@ -766,29 +811,38 @@
     }
   }
 
-  // 加载项目详情（编辑模式）
+  /**
+   * 加载编辑态项目数据。
+   */
   const loadProjectDetail = async () => {
     if (!isEditMode.value || projectId.value === null) return
 
     try {
-      // 只请求项目详情API
-      const projectDetail = await getProject(projectId.value)
+      const projectDetail = await getProjectForEdit(projectId.value)
+      const mediaResources = Array.isArray(projectDetail.mediaResources)
+        ? projectDetail.mediaResources
+        : []
+      const awards = Array.isArray(projectDetail.awards) ? projectDetail.awards : []
 
-      // 打印项目详情数据，方便调试
-      console.log('项目详情数据:', JSON.stringify(projectDetail, null, 2))
+      Object.assign(projectForm, {
+        title: projectDetail.title || '',
+        category: projectDetail.category || defaultCategory,
+        timeRange: projectDetail.timeRange || '',
+        briefIntro: projectDetail.briefIntro || '',
+        descriptionMd: projectDetail.descriptionMd || '',
+        coverImage: sanitizeCoverImage(projectDetail.coverImage),
+        techStackTags: ensureArray(projectDetail.techStackTags),
+        teamDivision:
+          Array.isArray(projectDetail.teamDivisions) &&
+          projectDetail.teamDivisions.length > 0
+            ? projectDetail.teamDivisions
+            : [createEmptyTeamMember()],
+        mediaResourceIds: mediaResources.map(item => item.id),
+        awardIds: awards.map(item => item.id),
+      })
 
-      // 清理图片URL中的空格和反引号
-      if (projectDetail.coverImage) {
-        projectDetail.coverImage = projectDetail.coverImage.replace(
-          /[`\s]/g,
-          ''
-        )
-      }
+      selectedMediaResources.value = mediaResources
 
-      // 应用清理后的数据到表单
-      Object.assign(projectForm, projectDetail)
-
-      // 处理日期范围
       if (projectDetail.timeRange) {
         const rangeParts = projectDetail.timeRange.split('-')
         if (rangeParts.length === 2) {
@@ -796,112 +850,33 @@
         }
       }
 
-      // 确保所有数组字段都已初始化
-      if (!Array.isArray(projectForm.techStackTags)) {
-        projectForm.techStackTags = []
-      }
-
-      if (
-        !Array.isArray(projectForm.teamDivision) ||
-        projectForm.teamDivision.length === 0
-      ) {
-        projectForm.teamDivision = [{ name: '', role: '' }]
-      }
-
-      if (!Array.isArray(projectForm.mediaResourceIds)) {
-        projectForm.mediaResourceIds = []
-      }
-
-      if (!Array.isArray(projectForm.awardIds)) {
-        projectForm.awardIds = []
-      }
-
-      // 如果有awardIds，设置到输入框
-      if (
-        Array.isArray(projectForm.awardIds) &&
-        projectForm.awardIds.length > 0
-      ) {
+      if (projectForm.awardIds.length > 0) {
         awardIdsInput.value = projectForm.awardIds.join(',')
-        // 加载奖项详情
-        await loadAwardDetails()
       }
 
-      // 加载未引用的媒体资源和已选择的媒体资源
       await loadUnreferencedMedia()
-      await loadSelectedMediaResources()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '未知错误'
       ElMessage.error(`获取项目详情失败: ${errorMessage}`)
       console.error('获取项目详情失败:', error)
     }
   }
-  // 新增：加载已选择的媒体资源详情
-  const loadSelectedMediaResources = async () => {
-    if (
-      !projectForm.mediaResourceIds ||
-      projectForm.mediaResourceIds.length === 0
-    ) {
-      selectedMediaResources.value = []
-      return
-    }
 
-    try {
-      // 从可用媒体资源中筛选出已选择的
-      const selected = availableMediaResources.value.filter(media =>
-        projectForm.mediaResourceIds?.includes(media.id)
-      )
-      selectedMediaResources.value = selected
-
-      // 如果有些媒体资源不在可用列表中，记录日志
-      const missingIds = projectForm.mediaResourceIds?.filter(
-        id => !availableMediaResources.value.some(media => media.id === id)
-      )
-
-      if (missingIds && missingIds.length > 0) {
-        console.warn('部分媒体资源不在可用列表中:', missingIds)
-      }
-    } catch (error) {
-      console.error('加载已选择媒体资源失败:', error)
-    }
-  }
-
-  // 新增：加载奖项详情
-  const loadAwardDetails = async () => {
-    try {
-      const allAwards = await getAwards()
-      awardItems.value = allAwards
-
-      // 筛选出项目已选择的奖项
-      if (projectForm.awardIds && Array.isArray(projectForm.awardIds)) {
-        selectedAwards.value = allAwards.filter(award =>
-          projectForm.awardIds?.includes(award.id)
-        )
-      }
-    } catch (error) {
-      console.error('加载奖项详情失败:', error)
-    }
-  }
-
-  // 返回项目列表
+  /**
+   * 返回项目列表页。
+   */
   const handleBack = () => {
     router.push('/admin/projects')
   }
 
-  // 页面加载时初始化数据
+  /**
+   * 初始化页面数据。
+   */
   onMounted(() => {
-    loadProjectDetail()
-    loadUnreferencedMedia()
-    // 同时加载奖项数据，用于奖项选择预览
-    loadAwardDetails()
-  })
-
-  // 添加对编辑器实例的引用，用于清理
-  const editorRefs = ref([])
-
-  // 页面卸载时清理资源
-  onUnmounted(() => {
-    // 清理编辑器相关引用
-    editorRefs.value = []
+    if (isEditMode.value) {
+      loadProjectDetail()
+      return
+    }
   })
 </script>
 
@@ -944,7 +919,6 @@
     gap: 10px;
   }
 
-  /* 图片上传样式 */
   .upload-container {
     display: flex;
     align-items: flex-start;
@@ -1002,7 +976,6 @@
     font-size: 14px;
   }
 
-  /* 图库按钮和URL输入框样式优化 */
   .upload-actions {
     display: flex;
     flex-direction: column;
@@ -1011,7 +984,29 @@
     min-width: 300px;
   }
 
-  /* 图片图库样式优化 */
+  .library-button {
+    justify-content: flex-start;
+    padding-left: 0;
+  }
+
+  .cover-image-input,
+  .tech-stack-input,
+  .award-input {
+    width: 100%;
+  }
+
+  .team-member-input {
+    margin-right: 12px;
+  }
+
+  .media-upload-button {
+    margin-left: 0;
+  }
+
+  .selected-label-button {
+    color: #67c23a;
+  }
+
   .image-library {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -1074,23 +1069,22 @@
     font-size: 14px;
   }
 
-  /* Markdown编辑器样式优化 - 增加宽度和高度 */
   .markdown-editor-container {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    width: 100%; /* 确保编辑器容器占满宽度 */
+    width: 100%;
   }
 
   .editor-full {
-    height: 600px; /* 增加高度以提供更好的编辑体验 */
+    height: 600px;
   }
 
   .editor-split {
     display: flex;
     height: 600px;
-    width: 100%; /* 确保分屏模式占满宽度 */
+    width: 100%;
   }
 
   .editor-left,
@@ -1115,7 +1109,6 @@
     background-color: #fafafa;
   }
 
-  /* 技术栈列表样式优化 */
   .tech-stack-list {
     margin-top: 15px;
     display: flex;
@@ -1123,7 +1116,6 @@
     gap: 10px;
   }
 
-  /* 团队成员样式 */
   .team-members-list {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
@@ -1141,7 +1133,6 @@
     border: 1px solid #ebeef5;
   }
 
-  /* 媒体资源样式 */
   .media-resources-container {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
@@ -1204,7 +1195,6 @@
     padding: 40px 0;
   }
 
-  /* 奖项样式 */
   .award-management {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
@@ -1218,7 +1208,6 @@
     margin-top: 5px;
   }
 
-  /* 响应式调整 */
   @media (max-width: 768px) {
     .project-edit-container {
       padding: 10px;

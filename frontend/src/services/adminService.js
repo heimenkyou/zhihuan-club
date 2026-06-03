@@ -1,66 +1,144 @@
 import api from '@/services/api'
 
-// 报名信息分页查询参数
+/**
+ * 读取接口响应体。
+ *
+ * @param {import('axios').AxiosResponse<any>=} response
+ * @returns {any}
+ */
+const getBody = response => response?.data
 
-// 获取奖项列表
+/**
+ * 读取标准响应体中的 data 字段。
+ *
+ * @param {any} body
+ * @returns {any}
+ */
+const getResultData = body => {
+  if (!body || typeof body !== 'object') {
+    return undefined
+  }
+  return body.data
+}
+
+/**
+ * 判断响应体是否表示成功。
+ *
+ * @param {any} body
+ * @returns {boolean}
+ */
+const isSuccessBody = body => {
+  return Boolean(body && (body.success || body.code === '0' || body.code === '3'))
+}
+
+/**
+ * 从响应体中提取数组数据。
+ *
+ * @param {any} body
+ * @returns {any[]}
+ */
+const getArrayData = body => {
+  const data = getResultData(body)
+
+  if (Array.isArray(data)) {
+    return data
+  }
+
+  if (data && Array.isArray(data.awards)) {
+    return data.awards
+  }
+
+  if (Array.isArray(body)) {
+    return body
+  }
+
+  return []
+}
+
+/**
+ * 从媒体相关响应体中提取媒体数组。
+ *
+ * @param {any} body
+ * @returns {any[]}
+ */
+const getMediaList = body => {
+  const data = getResultData(body)
+
+  if (Array.isArray(data)) {
+    return data
+  }
+
+  if (Array.isArray(body)) {
+    return body
+  }
+
+  if (data && Array.isArray(data.mediaResources)) {
+    return data.mediaResources
+  }
+
+  if (data && typeof data === 'object' && data.id && data.url) {
+    return [data]
+  }
+
+  const possibleMediaFields = ['media', 'medias', 'resources', 'files', 'items']
+  for (const field of possibleMediaFields) {
+    if (Array.isArray(body?.[field])) {
+      return body[field]
+    }
+  }
+
+  return []
+}
+
+/**
+ * 获取奖项列表。
+ *
+ * @param {{ keyword?: string }} [params]
+ * @returns {Promise<any[]>}
+ */
 export const getAwards = async (params = {}) => {
   try {
     const response = await api.get('/awards')
+    const rawAwards = getArrayData(getBody(response))
 
-    if (!response || !response.data) {
-      console.warn('API响应为空')
-      return []
+    if (!params.keyword) {
+      return rawAwards
     }
 
-    let rawAwards = []
-
-    if (Array.isArray(response.data.data)) {
-      rawAwards = response.data.data
-    } else if (response.data.data && Array.isArray(response.data.data.awards)) {
-      rawAwards = response.data.data.awards
-    } else if (Array.isArray(response.data)) {
-      rawAwards = response.data
-    } else {
-      console.warn('API响应格式不符合预期，返回空数组')
-      return []
-    }
-
-    let filteredAwards = rawAwards
-
-    if (params.keyword) {
-      const keyword = params.keyword.toLowerCase()
-      filteredAwards = rawAwards.filter(
-        award =>
-          award.competitionName?.toLowerCase().includes(keyword) ||
-          award.competitionLevel?.toLowerCase().includes(keyword) ||
-          award.awardLevel?.toLowerCase().includes(keyword) ||
-          (Array.isArray(award.winners)
-            ? award.winners.some(winner =>
-                winner?.toLowerCase().includes(keyword)
-              )
-            : false) ||
-          award.year?.toString().includes(keyword)
-      )
-    }
-
-    return filteredAwards
+    const keyword = params.keyword.toLowerCase()
+    return rawAwards.filter(
+      award =>
+        award.competitionName?.toLowerCase().includes(keyword) ||
+        award.competitionLevel?.toLowerCase().includes(keyword) ||
+        award.awardLevel?.toLowerCase().includes(keyword) ||
+        (Array.isArray(award.winners)
+          ? award.winners.some(winner => winner?.toLowerCase().includes(keyword))
+          : false) ||
+        award.year?.toString().includes(keyword)
+    )
   } catch (error) {
     console.error('获取奖项列表失败:', error)
     return []
   }
 }
 
-// 创建奖项
+/**
+ * 创建奖项。
+ *
+ * @param {Object} params
+ * @returns {Promise<Object>}
+ */
 export const createAward = async params => {
   try {
     const response = await api.post('/admin/awards', params)
+    const body = getBody(response)
 
-    if (!response.data) {
-      throw new Error(response?.data ? String(response.data) : '创建奖项失败')
+    if (!body) {
+      throw new Error('创建奖项失败')
     }
 
     return {
-      id: response.data?.data?.id,
+      id: getResultData(body)?.id,
       ...params,
     }
   } catch (error) {
@@ -69,7 +147,13 @@ export const createAward = async params => {
   }
 }
 
-// 更新奖项
+/**
+ * 更新奖项。
+ *
+ * @param {number} id
+ * @param {Object} params
+ * @returns {Promise<Object>}
+ */
 export const updateAward = async (id, params) => {
   try {
     await api.put(`/admin/awards/${id}`, params)
@@ -83,7 +167,12 @@ export const updateAward = async (id, params) => {
   }
 }
 
-// 删除奖项
+/**
+ * 删除奖项。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 export const deleteAward = async id => {
   try {
     await api.delete(`/admin/awards/${id}`)
@@ -93,29 +182,43 @@ export const deleteAward = async id => {
   }
 }
 
-// 获取所有管理员列表
+/**
+ * 获取管理员分页数据。
+ *
+ * @returns {Promise<any>}
+ */
 export const getAdmins = async () => {
   try {
     const response = await api.get('/admin/admins/page')
-    return response.data.data
+    return getResultData(getBody(response))
   } catch (error) {
     console.error('获取管理员列表失败:', error)
     throw error
   }
 }
 
-// 添加管理员
+/**
+ * 创建管理员。
+ *
+ * @param {Object} params
+ * @returns {Promise<any>}
+ */
 export const createAdmin = async params => {
   try {
     const response = await api.post('/admin/admins/add', params)
-    return response.data.data
+    return getResultData(getBody(response))
   } catch (error) {
     console.error('添加管理员失败:', error)
     throw error
   }
 }
 
-// 删除管理员
+/**
+ * 删除管理员。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 export const deleteAdmin = async id => {
   try {
     await api.delete(`/admin/admins/${id}`)
@@ -126,20 +229,26 @@ export const deleteAdmin = async id => {
 }
 
 /**
- * 更新管理员信息
+ * 更新管理员信息。
+ *
  * @param {number} id
  * @param {Object} params
+ * @returns {Promise<any>}
  */
 export const updateAdmin = async (id, params) => {
   const response = await api.put(`/admin/admins/${id}`, params)
-  return response.data.data
+  return getResultData(getBody(response))
 }
 
-// 获取当前登录管理员信息
+/**
+ * 获取当前登录管理员信息。
+ *
+ * @returns {Promise<any>}
+ */
 export const getCurrentAdmin = async () => {
   try {
     const response = await api.get('/admin/admins/me')
-    return response.data.data
+    return getResultData(getBody(response))
   } catch (error) {
     console.error('获取当前管理员信息失败:', error)
     throw error
@@ -147,17 +256,22 @@ export const getCurrentAdmin = async () => {
 }
 
 /**
- * 登录管理员
+ * 登录管理员。
+ *
  * @param {{ username: string, password: string }} params
+ * @returns {Promise<any>}
  */
 export const login = async params => {
   try {
     const response = await api.post('/admins/login', params)
-    const token = response.data.data?.token
+    const data = getResultData(getBody(response))
+    const token = data?.token
+
     if (token) {
       localStorage.setItem('adminToken', token)
     }
-    return response.data.data
+
+    return data
   } catch (error) {
     const message = error instanceof Error ? error.message : '登录失败'
     console.error('登录失败:', message)
@@ -166,47 +280,63 @@ export const login = async params => {
 }
 
 /**
- * 登出管理员
+ * 登出管理员。
+ *
+ * @returns {Promise<void>}
  */
 export const logout = async () => {
   await api.post('/admins/logout')
 }
 
-// 获取报名信息中所有不重复的专业名称
+/**
+ * 获取报名专业列表。
+ *
+ * @returns {Promise<any>}
+ */
 export const getApplicationMajors = async () => {
   try {
     const response = await api.get('/applications/majors')
+    const data = getResultData(getBody(response))
 
-    if (!response.data || !response.data.data) {
+    if (!data) {
       throw new Error('获取专业名称列表失败')
     }
 
-    return response.data.data
+    return data
   } catch (error) {
     console.error('获取专业名称列表失败:', error)
     throw error
   }
 }
 
-// 获取报名信息列表
+/**
+ * 获取报名分页数据。
+ *
+ * @param {Object} [params={}]
+ * @returns {Promise<any>}
+ */
 export const getApplications = async (params = {}) => {
   try {
-    const response = await api.get('/applications', {
-      params,
-    })
+    const response = await api.get('/applications', { params })
+    const data = getResultData(getBody(response))
 
-    if (!response.data || !response.data.data) {
+    if (!data) {
       throw new Error('获取报名信息失败')
     }
 
-    return response.data.data
+    return data
   } catch (error) {
     console.error('获取报名信息失败:', error)
     throw error
   }
 }
 
-// 删除报名信息
+/**
+ * 删除报名信息。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 export const deleteApplication = async id => {
   try {
     await api.delete(`/applications/${id}`)
@@ -216,71 +346,33 @@ export const deleteApplication = async id => {
   }
 }
 
-// 获取未引用的媒体资源
+/**
+ * 获取未被业务引用的媒体资源。
+ *
+ * @returns {Promise<any[]>}
+ */
 export const getUnreferencedMedia = async () => {
   try {
     const response = await api.get('/admin/media/unreferenced')
-
-    console.log('未引用媒体资源API响应:', response)
-    console.log('响应数据结构:', JSON.stringify(response.data, null, 2))
-
-    if (!response || !response.data) {
-      console.warn('获取未引用媒体资源：响应为空')
-      return []
-    }
-
-    if (response.data.success && Array.isArray(response.data.data)) {
-      console.log('匹配格式1：success=true, data为数组')
-      return response.data.data
-    } else if (response.data.data && Array.isArray(response.data.data)) {
-      console.log(`匹配格式2：data字段为数组（code=${response.data.code}）`)
-      return response.data.data
-    } else if (Array.isArray(response.data)) {
-      console.log('匹配格式3：response.data为数组')
-      return response.data
-    } else if (
-      response.data.mediaResources &&
-      Array.isArray(response.data.mediaResources)
-    ) {
-      console.log('匹配格式4：response.data.mediaResources为数组')
-      return response.data.mediaResources
-    } else if (
-      typeof response.data === 'object' &&
-      response.data.id &&
-      response.data.url
-    ) {
-      console.log('匹配格式5：response.data是单一媒体资源对象')
-      return [response.data]
-    }
-
-    const possibleMediaFields = ['media', 'medias', 'resources', 'files', 'items']
-    for (const field of possibleMediaFields) {
-      if (response.data[field] && Array.isArray(response.data[field])) {
-        console.log(`匹配格式6：找到${field}字段为数组`)
-        return response.data[field]
-      }
-    }
-
-    console.warn('获取未引用媒体资源失败：响应格式不符合预期')
-    console.warn('无法识别的响应格式：', response.data)
-    return []
+    return getMediaList(getBody(response))
   } catch (error) {
     console.error('获取未引用媒体资源失败:', error)
     return []
   }
 }
 
-// 删除媒体资源
+/**
+ * 删除媒体资源。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 export const deleteMedia = async id => {
   try {
     const response = await api.delete(`/admin/media/${id}`)
-
-    if (typeof response.data === 'object') {
-      if (response.data.success || response.data.code === '0') {
-        return
-      }
+    if (isSuccessBody(getBody(response))) {
+      return
     }
-
     throw new Error('删除媒体资源失败')
   } catch (error) {
     console.error('删除媒体资源失败:', error)
@@ -289,8 +381,10 @@ export const deleteMedia = async id => {
 }
 
 /**
- * 上传媒体资源
+ * 上传媒体资源。
+ *
  * @param {{ file: File, title: string, description: string }} params
+ * @returns {Promise<any>}
  */
 export const uploadMedia = async params => {
   try {
@@ -305,140 +399,20 @@ export const uploadMedia = async params => {
       },
     })
 
-    if (typeof response.data === 'object') {
-      if (response.data.success && response.data.data) {
-        return response.data.data
-      } else if (response.data.code === '0' && response.data.data) {
-        return response.data.data
-      } else if (response.data) {
-        return response.data
-      }
+    const body = getBody(response)
+    const data = getResultData(body)
+
+    if (isSuccessBody(body) && data) {
+      return data
+    }
+
+    if (body) {
+      return body
     }
 
     throw new Error('上传媒体资源失败')
   } catch (error) {
     console.error('上传媒体资源失败:', error)
-    throw error
-  }
-}
-
-/**
- * 项目编辑回显 - 获取完整的项目数据包括关联的媒体资源和奖项
- * @param {number} id
- */
-export const getProjectForEdit = async id => {
-  try {
-    const response = await api.get(`/projects/${id}/edit`)
-
-    if (typeof response.data === 'object') {
-      if (response.data.success && response.data.data) {
-        return response.data.data
-      } else if (response.data.code === '0' && response.data.data) {
-        return response.data.data
-      }
-    }
-
-    throw new Error('获取项目编辑数据失败')
-  } catch (error) {
-    console.error('获取项目编辑数据失败:', error)
-    throw error
-  }
-}
-
-/**
- * 获取项目详情 - 用于展示
- * @param {number} id
- */
-export const getProject = async id => {
-  try {
-    const response = await api.get(`/projects/${id}`)
-
-    if (typeof response.data === 'object') {
-      return response.data.data
-    }
-
-    throw new Error('获取项目详情失败')
-  } catch (error) {
-    console.error('获取项目详情失败:', error)
-    throw error
-  }
-}
-
-// 创建项目
-export const createProject = async params => {
-  try {
-    const response = await api.post('/admin/projects', params)
-
-    if (typeof response.data === 'object') {
-      return response.data
-    }
-
-    throw new Error('创建项目失败')
-  } catch (error) {
-    console.error('创建项目失败:', error)
-    throw error
-  }
-}
-
-// 更新项目
-export const updateProject = async (id, params) => {
-  try {
-    const response = await api.put(`/admin/projects/${id}`, params)
-
-    if (typeof response.data === 'object') {
-      return response.data
-    }
-
-    throw new Error('更新项目失败')
-  } catch (error) {
-    console.error('更新项目失败:', error)
-    throw error
-  }
-}
-
-// 删除项目
-export const deleteProject = async id => {
-  try {
-    const response = await api.delete(`/admin/projects/${id}`)
-
-    if (
-      typeof response.data === 'object' &&
-      (response.data.success || response.data.code === '0')
-    ) {
-      return
-    }
-
-    throw new Error('删除项目失败')
-  } catch (error) {
-    console.error('删除项目失败:', error)
-    throw error
-  }
-}
-
-/**
- * 获取项目列表
- * @param {{ current?: number, size?: number, keyword?: string }} [params]
- */
-export const getProjects = async params => {
-  try {
-    const response = await api.get('/projects', { params })
-
-    if (typeof response.data === 'object') {
-      if (response.data.success && response.data.data) {
-        return response.data.data
-      } else if (
-        (response.data.code === '0' || response.data.code === '3') &&
-        response.data.data
-      ) {
-        return response.data.data
-      } else if (response.data.records) {
-        return response.data
-      }
-    }
-
-    throw new Error('获取项目列表失败')
-  } catch (error) {
-    console.error('获取项目列表失败:', error)
     throw error
   }
 }

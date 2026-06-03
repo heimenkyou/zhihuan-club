@@ -59,13 +59,6 @@ const adminRoutes = [
         component: Profile,
         meta: { title: '个人资料' },
       },
-      // 代码提交页面路由
-      {
-        path: '/code-submissions',
-        name: 'CodeSubmission',
-        component: () => import('@/views/admin/CodeSubmission.vue'),
-        meta: { title: '代码提交' },
-      },
     ],
   },
   {

@@ -17,29 +17,21 @@
           v-model="searchKeyword"
           placeholder="搜索项目标题"
           prefix-icon="Search"
-          style="width: 300px"
+          class="search-input"
           @keyup.enter="handleSearch"
         />
-        <el-button
-          type="primary"
-          @click="handleSearch"
-          style="margin-left: 10px"
-        >
+        <el-button type="primary" @click="handleSearch" class="action-button">
           搜索
         </el-button>
-        <el-button
-          @click="resetFilter"
-          class="reset-btn"
-          style="margin-left: 10px"
-        >
+        <el-button @click="resetFilter" class="reset-btn action-button">
           重置
         </el-button>
       </div>
 
       <!-- 项目数据表格 -->
       <el-table
-        :data="filteredProjectsData"
-        style="width: 100%"
+        :data="projectsData"
+        class="project-table"
         v-loading="loading"
       >
         <el-table-column prop="id" label="ID" width="80" />
@@ -63,7 +55,7 @@
                 v-for="(tech, index) in scope.row.techStackTags.slice(0, 3)"
                 :key="index"
                 type="primary"
-                style="margin-right: 4px"
+                class="tech-tag"
                 >{{ tech }}</el-tag
               >
             </div>
@@ -127,53 +119,29 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, onMounted } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { Plus } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
 import {
   getProjects,
   deleteProject as deleteProjectApi,
-} from "@/services/adminService"
+} from "@/services/projectService"
 
 const router = useRouter()
 
-// 搜索与筛选
 const searchKeyword = ref("")
-
-// 项目数据与加载状态
 const projectsData = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const totalCount = ref(0)
 
-// 筛选后的数据 - 加强类型安全
-const filteredProjectsData = computed(() => {
-  const filtered = projectsData.value.filter((project) => {
-    const matchesKeyword =
-      !searchKeyword.value ||
-      (project.title && project.title.includes(searchKeyword.value))
-
-    return matchesKeyword
-  })
-
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return filtered.slice(start, end)
-})
-
-// 总数据量 - 加强类型安全
-const totalCount = computed(() => {
-  return projectsData.value.filter((project) => {
-    const matchesKeyword =
-      !searchKeyword.value ||
-      (project.title && project.title.includes(searchKeyword.value))
-
-    return matchesKeyword
-  }).length
-})
-
-// 加载项目数据 - 改进错误处理
+/**
+ * 加载项目分页数据。
+ *
+ * @returns {Promise<void>}
+ */
 const loadProjects = async () => {
   loading.value = true
   try {
@@ -183,10 +151,16 @@ const loadProjects = async () => {
       keyword: searchKeyword.value,
     })
 
-    if (response && response.records) {
-      projectsData.value = response.records
+    const pageData = response?.data
+
+    if (pageData?.records) {
+      projectsData.value = pageData.records
+      currentPage.value = Number(pageData.current ?? currentPage.value)
+      pageSize.value = Number(pageData.size ?? pageSize.value)
+      totalCount.value = Number(pageData.total ?? 0)
     } else {
       projectsData.value = []
+      totalCount.value = 0
     }
   } catch (error) {
     ElMessage.error("获取项目信息失败")
@@ -197,43 +171,66 @@ const loadProjects = async () => {
   }
 }
 
-// 搜索事件
+/**
+ * 按关键字重新查询项目。
+ */
 const handleSearch = () => {
   currentPage.value = 1
   loadProjects()
 }
 
-// 重置筛选
+/**
+ * 重置搜索条件并刷新列表。
+ */
 const resetFilter = () => {
   searchKeyword.value = ""
   currentPage.value = 1
   loadProjects()
 }
 
-// 分页大小变化
+/**
+ * 处理分页大小变化。
+ *
+ * @param {number} size
+ */
 const handleSizeChange = size => {
   pageSize.value = size
   currentPage.value = 1
   loadProjects()
 }
 
-// 页码变化
+/**
+ * 处理页码变化。
+ *
+ * @param {number} current
+ */
 const handleCurrentChange = current => {
   currentPage.value = current
   loadProjects()
 }
 
-// 打开添加页面
+/**
+ * 跳转到新增项目页。
+ */
 const openAddDialog = () => {
   router.push("/admin/projects/edit")
 }
 
-// 打开编辑页面
+/**
+ * 跳转到编辑项目页。
+ *
+ * @param {{ id: number }} row
+ */
 const handleEdit = row => {
   router.push(`/admin/projects/edit/${row.id}`)
 }
 
-// 删除项目 - 改进错误处理
+/**
+ * 删除指定项目。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 const deleteProject = async id => {
   if (!id) {
     ElMessage.warning("项目ID不存在")
@@ -250,7 +247,6 @@ const deleteProject = async id => {
     ElMessage.success("删除项目成功")
     loadProjects()
   } catch (error) {
-    // 如果是用户取消确认，不显示错误消息
     if (error instanceof Error && error.message !== "cancel") {
       ElMessage.error("删除项目失败")
       console.error("删除项目失败:", error)
@@ -260,7 +256,9 @@ const deleteProject = async id => {
   }
 }
 
-// 页面加载时初始化数据
+/**
+ * 初始化项目管理页。
+ */
 onMounted(() => {
   loadProjects()
 })
@@ -282,6 +280,16 @@ onMounted(() => {
   display: flex;
   margin-bottom: 20px;
   align-items: center;
+  gap: 10px;
+}
+.project-table {
+  width: 100%;
+}
+.search-input {
+  width: 300px;
+}
+.action-button {
+  margin-left: 0;
 }
 .pagination-container {
   margin-top: 20px;
@@ -300,6 +308,9 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+}
+.tech-tag {
+  margin-right: 4px;
 }
 .more-tags {
   color: #909399;

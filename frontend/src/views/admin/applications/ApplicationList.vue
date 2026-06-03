@@ -17,30 +17,16 @@
         </div>
       </template>
       
-      <!-- 移动端搜索表单优化 -->
+      <!-- 搜索 -->
       <el-form :model="searchForm" class="search-form">
         <el-row :gutter="isMobile ? 10 : 20">
-          <el-col :span="24" v-if="isMobile">
-            <el-form-item label="姓名">
-              <el-input v-model="searchForm.name" placeholder="请输入姓名" @keyup.enter="handleSearch" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="姓名">
               <el-input v-model="searchForm.name" placeholder="请输入姓名" @keyup.enter="handleSearch" />
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
-            <el-form-item label="学号">
-              <el-input
-                v-model="searchForm.studentId"
-                placeholder="请输入学号"
-                @keyup.enter="handleSearch"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="学号">
               <el-input
                 v-model="searchForm.studentId"
@@ -50,16 +36,7 @@
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
-            <el-form-item label="QQ号">
-              <el-input
-                v-model="searchForm.QQNumber"
-                placeholder="请输入QQ号"
-                @keyup.enter="handleSearch"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="QQ号">
               <el-input
                 v-model="searchForm.QQNumber"
@@ -69,33 +46,14 @@
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="专业">
               <el-select
                 v-model="searchForm.majors"
                 placeholder="请选择专业（可多选）"
                 multiple
                 collapse-tags
-                style="width: 100%"
-                @change="handleSearch"
-                :loading="majorLoading"
-              >
-                <el-option
-                  v-for="major in majorOptions"
-                  :key="major"
-                  :label="major"
-                  :value="major"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
-            <el-form-item label="专业">
-              <el-select
-                v-model="searchForm.majors"
-                placeholder="请选择专业（可多选）"
-                multiple
-                collapse-tags
+                class="full-width-control"
                 @change="handleSearch"
                 :loading="majorLoading"
               >
@@ -109,82 +67,48 @@
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="第一志愿部门">
               <el-select
                 v-model="searchForm.department"
                 placeholder="请选择部门"
-                style="width: 100%"
+                :class="{ 'full-width-control': isMobile }"
                 @change="handleSearch"
               >
-                <el-option label="技术部" value="技术部" />
-                <el-option label="宣传部" value="宣传部" />
-                <el-option label="组织部" value="组织部" />
-                <el-option label="外联部" value="外联部" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
-            <el-form-item label="第一志愿部门">
-              <el-select
-                v-model="searchForm.department"
-                placeholder="请选择部门"
-                @change="handleSearch"
-              >
-                <el-option label="算法部" value="算法部" />
-                <el-option label="项目竞赛部" value="项目竞赛部" />
-                <el-option label="综合管理部" value="综合管理部" />
+                <el-option
+                  v-for="department in primaryDepartmentOptions"
+                  :key="department"
+                  :label="department"
+                  :value="department"
+                />
               </el-select>
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="第二志愿部门">
               <el-select
                 v-model="searchForm.secondDepartment"
                 placeholder="请选择部门"
-                style="width: 100%"
+                :class="{ 'full-width-control': isMobile }"
                 @change="handleSearch"
               >
-                <el-option label="技术部" value="技术部" />
-                <el-option label="宣传部" value="宣传部" />
-                <el-option label="组织部" value="组织部" />
-                <el-option label="外联部" value="外联部" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
-            <el-form-item label="第二志愿部门">
-              <el-select
-                v-model="searchForm.secondDepartment"
-                placeholder="请选择部门"
-                @change="handleSearch"
-              >
-                <el-option label="算法部" value="算法部" />
-                <el-option label="项目竞赛部" value="项目竞赛部" />
-                <el-option label="综合管理部" value="综合管理部" />
-                <el-option label="无" value="无" />
+                <el-option
+                  v-for="department in secondaryDepartmentOptions"
+                  :key="department"
+                  :label="department"
+                  :value="department"
+                />
               </el-select>
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
+          <el-col :span="isMobile ? 24 : 12">
             <el-form-item label="部门匹配">
               <el-radio-group
                 v-model="searchForm.matchAllDepartments"
                 @change="handleSearch"
-                style="width: 100%"
-              >
-                <el-radio :label="false">匹配任一志愿</el-radio>
-                <el-radio :label="true">同时匹配两个志愿</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-else>
-            <el-form-item label="部门匹配">
-              <el-radio-group
-                v-model="searchForm.matchAllDepartments"
-                @change="handleSearch"
+                :class="{ 'full-width-control': isMobile }"
               >
                 <el-radio :label="false">匹配任一志愿</el-radio>
                 <el-radio :label="true">同时匹配两个志愿</el-radio>
@@ -192,19 +116,18 @@
             </el-form-item>
           </el-col>
           
-          <el-col :span="24" v-if="isMobile">
-            <div class="mobile-search-buttons">
-              <el-button 
-                type="primary" 
-                @click="handleSearch" 
-                class="search-btn"
-                style="width: 100%; margin-bottom: 10px"
+          <el-col :span="24">
+            <div :class="isMobile ? 'mobile-search-buttons' : 'desktop-search-buttons'">
+              <el-button
+                type="primary"
+                @click="handleSearch"
+                :class="isMobile ? 'mobile-full-button mobile-button-gap' : 'search-btn'"
               >
                 搜索
               </el-button>
-              <el-button 
-                @click="resetForm" 
-                style="width: 100%; margin-bottom: 10px"
+              <el-button
+                @click="resetForm"
+                :class="{ 'mobile-full-button mobile-button-gap': isMobile }"
               >
                 重置
               </el-button>
@@ -212,29 +135,16 @@
                 type="danger"
                 @click="handleBatchDelete"
                 v-if="selectedRows.length > 0"
-                style="width: 100%"
+                :class="{ 'mobile-full-button': isMobile }"
               >
                 批量删除
               </el-button>
             </div>
           </el-col>
-          <el-col :span="24" v-else>
-            <el-button type="primary" @click="handleSearch" class="search-btn">
-              搜索
-            </el-button>
-            <el-button @click="resetForm">重置</el-button>
-            <el-button
-              type="danger"
-              @click="handleBatchDelete"
-              v-if="selectedRows.length > 0"
-            >
-              批量删除
-            </el-button>
-          </el-col>
         </el-row>
       </el-form>
       
-      <!-- 移动端表格优化 -->
+      <!-- 列表 -->
       <div class="table-container-wrapper">
         <div 
           class="table-container" 
@@ -251,7 +161,6 @@
             border
             stripe
             :class="{ 'mobile-table': isMobile }"
-            ref="tableRef"
             :max-height="isMobile ? '400' : undefined"
           >
             <el-table-column type="selection" :width="isMobile ? 35 : 55" />
@@ -288,7 +197,7 @@
             </el-table-column>
           </el-table>
         </div>
-        <!-- 水平滚动指示器 -->
+        <!-- 滚动指示器 -->
         <div class="horizontal-scroll-indicator" v-if="showScrollIndicator">
           <div class="scroll-thumb" :style="{ width: scrollThumbWidth, transform: `translateX(${scrollThumbPosition})` }"></div>
         </div>
@@ -308,7 +217,7 @@
       </div>
     </el-card>
 
-    <!-- 详情对话框 - 移动端适配 -->
+    <!-- 详情弹窗 -->
     <el-dialog 
       v-model="dialogVisible" 
       title="报名详情" 
@@ -355,7 +264,7 @@
         <el-button 
           @click="dialogVisible = false"
           :size="isMobile ? 'large' : 'default'"
-          style="width: 100%"
+          :class="{ 'mobile-full-button': isMobile }"
           v-if="isMobile"
         >
           关闭
@@ -369,7 +278,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, nextTick } from "vue"
+import { ref, reactive, onMounted, onBeforeUnmount, computed, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import {
   getApplications,
@@ -378,10 +287,10 @@ import {
 } from "@/services/adminService"
 import * as XLSX from "xlsx"
 
-// 检测是否为移动端
-const isMobile = computed(() => {
-  return window.innerWidth <= 768
-})
+const primaryDepartmentOptions = ["算法部", "项目竞赛部", "综合管理部"]
+const secondaryDepartmentOptions = [...primaryDepartmentOptions, "无"]
+const viewportWidth = ref(window.innerWidth)
+const isMobile = computed(() => viewportWidth.value <= 768)
 
 const searchForm = reactive({
   name: "",
@@ -395,7 +304,7 @@ const searchForm = reactive({
 
 const applicationsData = ref({
   current: 1,
-  size: isMobile.value ? 5 : 10, // 移动端默认显示更少数据
+  size: isMobile.value ? 5 : 10,
   total: 0,
   pages: 0,
   records: [],
@@ -408,18 +317,19 @@ const selectedRows = ref([])
 const majorOptions = ref([])
 const majorLoading = ref(false)
 
-// 表格滚动相关引用
 const tableContainerRef = ref(null)
-const tableRef = ref(null)
 const showScrollIndicator = ref(false)
 const scrollThumbWidth = ref('0px')
 const scrollThumbPosition = ref('0px')
 
-// 触摸滑动相关变量
 const touchStartX = ref(0)
 const scrollStart = ref(0)
 
-// 加载专业选项
+/**
+ * 加载专业筛选项。
+ *
+ * @returns {Promise<void>}
+ */
 const loadMajorOptions = async () => {
   majorLoading.value = true
   try {
@@ -433,7 +343,11 @@ const loadMajorOptions = async () => {
   }
 }
 
-// 加载报名数据
+/**
+ * 加载报名分页数据。
+ *
+ * @returns {Promise<void>}
+ */
 const loadApplications = async () => {
   loading.value = true
   try {
@@ -461,13 +375,17 @@ const loadApplications = async () => {
   }
 }
 
-// 搜索
+/**
+ * 按当前条件重新查询报名列表。
+ */
 const handleSearch = () => {
   applicationsData.value.current = 1
   loadApplications()
 }
 
-// 重置表单
+/**
+ * 重置筛选表单并刷新列表。
+ */
 const resetForm = () => {
   searchForm.name = ""
   searchForm.studentId = ""
@@ -480,25 +398,42 @@ const resetForm = () => {
   loadApplications()
 }
 
-// 分页大小变化
+/**
+ * 处理分页大小变化。
+ *
+ * @param {number} size
+ */
 const handleSizeChange = size => {
   applicationsData.value.size = size
   loadApplications()
 }
 
-// 当前页变化
+/**
+ * 处理页码变化。
+ *
+ * @param {number} current
+ */
 const handleCurrentChange = current => {
   applicationsData.value.current = current
   loadApplications()
 }
 
-// 查看详情
+/**
+ * 打开报名详情弹窗。
+ *
+ * @param {any} row
+ */
 const viewDetail = row => {
   currentApplication.value = { ...row, id: row.id }
   dialogVisible.value = true
 }
 
-// 删除报名信息
+/**
+ * 删除指定报名记录。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
 const deleteApplication = async id => {
   try {
     await ElMessageBox.confirm("确定要删除这条报名信息吗？", "确认删除", {
@@ -521,12 +456,20 @@ const deleteApplication = async id => {
   }
 }
 
-// 处理选择变化
+/**
+ * 同步表格选中行。
+ *
+ * @param {any[]} rows
+ */
 const handleSelectionChange = rows => {
   selectedRows.value = rows.map(row => ({ ...row, id: row.id }))
 }
 
-// 批量删除
+/**
+ * 批量删除当前选中的报名记录。
+ *
+ * @returns {Promise<void>}
+ */
 const handleBatchDelete = async () => {
   try {
     await ElMessageBox.confirm("确定要删除选中的报名信息吗？", "确认删除", {
@@ -536,9 +479,7 @@ const handleBatchDelete = async () => {
     })
 
     loading.value = true
-    // 假设每行数据都有id属性
     const ids = selectedRows.value.map(row => row.id)
-    // 循环删除（如果没有批量删除API）
     for (const id of ids) {
       await apiDeleteApplication(id)
     }
@@ -554,16 +495,19 @@ const handleBatchDelete = async () => {
   }
 }
 
-// 导出数据
+/**
+ * 导出当前筛选条件下的报名数据。
+ *
+ * @returns {Promise<void>}
+ */
 const exportApplications = async () => {
   try {
     loading.value = true
     ElMessage.info("正在导出数据，请稍候...")
 
-    // 获取所有数据（不分页）
     const allData = await getApplications({
       current: 1,
-      size: 1000, // 设置一个足够大的值以获取所有数据
+      size: 1000,
       name: searchForm.name,
       studentId: searchForm.studentId,
       department: searchForm.department,
@@ -571,7 +515,6 @@ const exportApplications = async () => {
       majors: searchForm.majors.length > 0 ? searchForm.majors : undefined,
     })
 
-    // 准备导出数据
     const exportData = allData.records.map((item) => ({
       姓名: item.name,
       学号: item.studentId,
@@ -585,28 +528,24 @@ const exportApplications = async () => {
       个人介绍: item.introduction,
     }))
 
-    // 创建工作表
     const ws = XLSX.utils.json_to_sheet(exportData)
 
-    // 设置列宽 - 根据内容长度调整各列宽度
     ws["!cols"] = [
-      { wch: 10 }, // 姓名
-      { wch: 15 }, // 学号
-      { wch: 20 }, // 专业
-      { wch: 15 }, // 电话
-      { wch: 15 }, // QQ号
-      { wch: 10 }, // 部门
-      { wch: 15 }, // 第二志愿部门
-      { wch: 30 }, // 兴趣方向（设置较宽以显示多个兴趣）
-      { wch: 40 }, // 申请理由
-      { wch: 60 }, // 个人介绍（设置最宽以显示完整内容）
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 30 },
+      { wch: 40 },
+      { wch: 60 },
     ]
 
-    // 创建工作簿
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, "报名信息")
 
-    // 导出文件
     XLSX.writeFile(wb, `报名信息_${new Date().toLocaleDateString()}.xlsx`)
 
     ElMessage.success("导出成功")
@@ -618,23 +557,31 @@ const exportApplications = async () => {
   }
 }
 
-// 监听窗口大小变化
+/**
+ * 处理窗口尺寸变化。
+ */
 const handleResize = () => {
-  // 响应式处理会在computed中自动更新
-  // 但需要更新分页大小
+  viewportWidth.value = window.innerWidth
   if (isMobile.value && applicationsData.value.size > 20) {
     applicationsData.value.size = 5
+    loadApplications()
+  } else if (!isMobile.value && applicationsData.value.size === 5) {
+    applicationsData.value.size = 10
     loadApplications()
   }
   updateScrollIndicator()
 }
 
-// 处理表格滚动
+/**
+ * 同步表格滚动状态。
+ */
 const onTableScroll = () => {
   updateScrollIndicator()
 }
 
-// 更新滚动指示器
+/**
+ * 更新水平滚动指示器。
+ */
 const updateScrollIndicator = () => {
   if (!isMobile.value || !tableContainerRef.value) return
   
@@ -653,13 +600,22 @@ const updateScrollIndicator = () => {
   scrollThumbPosition.value = `${scrollRatio * 100}%`
 }
 
-// 触摸事件处理
+/**
+ * 记录触摸起点。
+ *
+ * @param {TouchEvent} e
+ */
 const onTouchStart = e => {
   if (!tableContainerRef.value) return
   touchStartX.value = e.touches[0].clientX
   scrollStart.value = tableContainerRef.value.scrollLeft
 }
 
+/**
+ * 跟随手势滚动表格。
+ *
+ * @param {TouchEvent} e
+ */
 const onTouchMove = e => {
   if (!tableContainerRef.value) return
   e.preventDefault()
@@ -668,14 +624,25 @@ const onTouchMove = e => {
   tableContainerRef.value.scrollLeft = scrollStart.value + diff
 }
 
-const onTouchEnd = () => {
-  // 触摸结束后的处理
-}
+/**
+ * 保留触摸结束钩子，便于后续扩展。
+ */
+const onTouchEnd = () => {}
 
+/**
+ * 初始化报名管理页。
+ */
 onMounted(() => {
   loadMajorOptions()
   loadApplications()
   window.addEventListener('resize', handleResize)
+})
+
+/**
+ * 清理窗口监听器。
+ */
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -698,6 +665,10 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.full-width-control {
+  width: 100%;
+}
+
 .search-btn {
   margin-right: 10px;
 }
@@ -708,24 +679,29 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-/* 表格容器包装器 */
+.mobile-full-button {
+  width: 100%;
+}
+
+.mobile-button-gap {
+  margin-bottom: 10px;
+}
+
 .table-container-wrapper {
   position: relative;
 }
 
-/* 表格容器 */
 .table-container {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   margin-bottom: 5px;
   width: 100%;
   position: relative;
 }
 
-/* 隐藏Element Plus表格的内置滚动条 */
 :deep(.el-table__body-wrapper::-webkit-scrollbar) {
   display: none;
 }
@@ -735,23 +711,20 @@ onMounted(() => {
   -ms-overflow-style: none;
 }
 
-/* 确保表格占满容器 */
 :deep(.el-table) {
   width: 100% ;
   min-width: 100%;
 }
 
-/* 确保操作列固定时其他列可以滚动 */
 :deep(.el-table__fixed-right) {
   height: 100% ;
   z-index: 10;
 }
 
 .table-container::-webkit-scrollbar {
-  display: none; /* Chrome Safari */
+  display: none;
 }
 
-/* 水平滚动指示器 */
 .horizontal-scroll-indicator {
   height: 3px;
   background-color: #e4e7ed;
@@ -768,7 +741,6 @@ onMounted(() => {
   transition: transform 0.2s ease;
 }
 
-/* 按钮组样式 */
 .desktop-button-group {
   display: flex;
   gap: 8px;
@@ -787,7 +759,6 @@ onMounted(() => {
   margin: 0;
 }
 
-/* 移动端样式优化 */
 @media (max-width: 768px) {
   .application-container {
     padding: 10px;
@@ -915,7 +886,6 @@ onMounted(() => {
   }
 }
 
-/* 文本内容样式 */
 .text-content {
   white-space: pre-wrap;
   word-break: break-all;
