@@ -26,3 +26,4 @@ dist-ssr
 *.sw?
 deploy.ps1
 .trae**
+__pycache__/
