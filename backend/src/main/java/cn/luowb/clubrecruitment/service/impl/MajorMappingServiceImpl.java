@@ -1,6 +1,6 @@
 package cn.luowb.clubrecruitment.service.impl;
 
-import cn.luowb.clubrecruitment.common.util.RedisKeyUtil;
+import cn.luowb.clubrecruitment.common.constant.RedisCacheKeyEnum;
 import cn.luowb.clubrecruitment.dao.entity.ApplicationDO;
 import cn.luowb.clubrecruitment.dao.entity.MajorMappingDO;
 import cn.luowb.clubrecruitment.dao.mapper.ApplicationMapper;
@@ -29,12 +29,11 @@ public class MajorMappingServiceImpl extends ServiceImpl<MajorMappingMapper, Maj
         implements MajorMappingService {
     private final MajorMappingMapper majorMappingMapper;
     private final StringRedisTemplate redisTemplate;
-    private final RedisKeyUtil redisKeyUtil;
     private final ApplicationMapper applicationMapper;
 
     @Override
     public Map<String, MajorMappingDO> majors() {
-        String key = redisKeyUtil.buildMajorMappingKey();
+        String key = RedisCacheKeyEnum.MAJOR_MAPPING_KEY.getKey();
         // 从redis中获取
         String map = redisTemplate.opsForValue().get(key);
         if (map != null) {

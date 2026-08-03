@@ -3,11 +3,11 @@ package cn.luowb.clubrecruitment.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.luowb.clubrecruitment.common.context.IPContext;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.luowb.clubrecruitment.common.constant.RedisCacheKeyEnum;
 import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
 import cn.luowb.clubrecruitment.common.result.PageData;
-import cn.luowb.clubrecruitment.common.util.RedisKeyUtil;
 import cn.luowb.clubrecruitment.dao.entity.MessageDO;
 import cn.luowb.clubrecruitment.dao.mapper.MessageMapper;
 import cn.luowb.clubrecruitment.dto.req.MessageReqDTO;
@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         implements MessageService {
     private final MessageMapper messageMapper;
     private final StringRedisTemplate redisTemplate;
-    private final RedisKeyUtil redisKeyUtil;
+    @Value("${app.like-interval-seconds:3600}")
+    private long likeIntervalSeconds;
 
     @Override
     public void createMessage(MessageReqDTO requestParam) {
@@ -79,7 +81,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
             throw new ClientException("留言不存在");
         }
         String ip = IPContext.getIp();
-        String redisKey = redisKeyUtil.buildMessageLikeKey(id, ip);
+        String redisKey = RedisCacheKeyEnum.MESSAGE_LIKE_KEY.getKey(id, ip);
         if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
             // 已点赞 -> 取消
             messageMapper.unlikeMessage(id);
@@ -88,7 +90,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         } else {
             // 未点赞 -> 点赞
             messageMapper.likeMessage(id);
-            redisTemplate.opsForValue().set(redisKey, "1", redisKeyUtil.likeIntervalSeconds, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(redisKey, "1", likeIntervalSeconds, TimeUnit.SECONDS);
             return LikeAction.LIKED;
         }
     }
@@ -119,7 +121,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
 
     public boolean hasLiked(Long id) {
         String ip = IPContext.getIp();
-        String redisKey = redisKeyUtil.buildMessageLikeKey(id, ip);
+        String redisKey = RedisCacheKeyEnum.MESSAGE_LIKE_KEY.getKey(id, ip);
         return Boolean.TRUE.equals(redisTemplate.hasKey(redisKey));
     }
 }
