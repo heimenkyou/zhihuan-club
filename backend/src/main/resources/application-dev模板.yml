@@ -5,7 +5,7 @@ app:
     driver-class-name: com.mysql.cj.jdbc.Driver
     host: ${DATABASE_HOST:localhost}
     port: ${DATABASE_PORT:3306}
-    database: ${DATABASE_NAME:club-recruitment}
+    database: ${DATABASE_NAME:club}
     username: ${DATABASE_USERNAME:}
     password: ${DATABASE_PASSWORD:}
   redis:
