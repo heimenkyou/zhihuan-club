@@ -49,5 +49,5 @@
 
 2. **前端开发**:
    - 进入 `frontend` 目录。
-   - 执行依赖安装：`npm install` (或使用 `pnpm`)。
-   - 启动本地开发服务器：`npm run dev`。
+   - 执行依赖安装：`pnpm install` (或使用 `pnpm`)。
+   - 启动本地开发服务器：`pnpm run dev`。
