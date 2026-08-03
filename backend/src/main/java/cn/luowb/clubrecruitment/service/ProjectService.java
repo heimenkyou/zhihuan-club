@@ -10,11 +10,7 @@ import cn.luowb.clubrecruitment.dto.resp.ProjectRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.validation.Valid;
 
-/**
- * @author heimenkyou
- * @description 针对表【project(项目基本信息表)】的数据库操作Service
- * @createDate 2025-08-27 17:39:11
- */
+/** 项目服务。 */
 public interface ProjectService extends IService<ProjectDO> {
 
     /**

@@ -21,11 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * @author heimenkyou
- * @description 针对表【major_mapping(专业代号与名称映射表)】的数据库操作Service实现
- * @createDate 2025-09-14 23:34:31
- */
+/** 专业映射服务实现。 */
 @Service
 @RequiredArgsConstructor
 @Slf4j

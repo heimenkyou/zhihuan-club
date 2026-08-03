@@ -29,11 +29,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-/**
- * @author heimenkyou
- * @description 针对表【project(项目基本信息表)】的数据库操作Service实现
- * @createDate 2025-08-27 17:39:11
- */
+/** 项目服务实现。 */
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>

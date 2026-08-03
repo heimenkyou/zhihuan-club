@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * 针对表【message(用户留言表)】的数据库操作Service实现
- */
+/** 留言服务实现。 */
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>

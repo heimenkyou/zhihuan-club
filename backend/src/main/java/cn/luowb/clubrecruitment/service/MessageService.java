@@ -8,9 +8,7 @@ import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-/**
- * 针对表【message(用户留言表)】的数据库操作Service
- */
+/** 留言服务。 */
 public interface MessageService extends IService<MessageDO> {
 
     /**

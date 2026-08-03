@@ -21,11 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * @author heimenkyou
- * @description 针对表【admin(管理员账户信息表，存储系统管理员身份凭证)】的数据库操作Service实现
- * @createDate 2025-08-26 16:56:13
- */
+/** 管理员服务实现。 */
 @Service
 @RequiredArgsConstructor
 @Slf4j

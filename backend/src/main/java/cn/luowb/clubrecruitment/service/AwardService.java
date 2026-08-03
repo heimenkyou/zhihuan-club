@@ -4,11 +4,7 @@ import cn.luowb.clubrecruitment.dao.entity.AwardDO;
 import cn.luowb.clubrecruitment.dto.req.AwardReqDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-/**
- * @author heimenkyou
- * @description 针对表【award(奖项信息表)】的数据库操作Service
- * @createDate 2025-08-25 22:03:34
- */
+/** 奖项服务。 */
 public interface AwardService extends IService<AwardDO> {
 
     /**

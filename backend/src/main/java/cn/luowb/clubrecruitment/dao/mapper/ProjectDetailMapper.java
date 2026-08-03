@@ -5,12 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 
-/**
- * @author heimenkyou
- * @description 针对表【project_detail(项目详情表)】的数据库操作Mapper
- * @createDate 2025-08-27 17:40:22
- * @Entity cn.luowb.clubrecruitment.dao.entity.ProjectDetailDO
- */
+/** 项目详情数据访问。 */
 public interface ProjectDetailMapper extends BaseMapper<ProjectDetailDO> {
 
     /**

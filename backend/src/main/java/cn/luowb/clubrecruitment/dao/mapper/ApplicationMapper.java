@@ -6,12 +6,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-/**
- * @author heimenkyou
- * @description 针对表【application(用户报名表)】的数据库操作Mapper
- * @createDate 2025-08-18 23:29:05
- * @Entity cn.luowb.clubrecruitment.dao.entity.ApplicationDO
- */
+/** 报名数据访问。 */
 public interface ApplicationMapper extends BaseMapper<ApplicationDO> {
 
     /**

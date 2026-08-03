@@ -9,11 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
-/**
- * @author heimenkyou
- * @description 针对表【application(用户报名表)】的数据库操作Service
- * @createDate 2025-08-18 23:29:05
- */
+/** 报名服务。 */
 public interface ApplicationService extends IService<ApplicationDO> {
 
     /**

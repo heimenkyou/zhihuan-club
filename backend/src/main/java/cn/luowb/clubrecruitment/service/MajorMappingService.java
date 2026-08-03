@@ -5,11 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
 
-/**
- * @author heimenkyou
- * @description 针对表【major_mapping(专业代号与名称映射表)】的数据库操作Service
- * @createDate 2025-09-14 23:34:31
- */
+/** 专业映射服务。 */
 public interface MajorMappingService extends IService<MajorMappingDO> {
 
     /**

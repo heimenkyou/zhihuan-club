@@ -22,11 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * @author heimenkyou
- * @description 针对表【application(用户报名表)】的数据库操作Service实现
- * @createDate 2025-08-18 23:29:05
- */
+/** 报名服务实现。 */
 @Service
 public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, ApplicationDO>
         implements ApplicationService {

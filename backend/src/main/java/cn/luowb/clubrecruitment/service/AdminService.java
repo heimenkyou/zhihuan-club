@@ -9,11 +9,7 @@ import cn.luowb.clubrecruitment.dto.resp.AdminLoginRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.AdminPageRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-/**
- * @author heimenkyou
- * @description 针对表【admin(管理员账户信息表，存储系统管理员身份凭证)】的数据库操作Service
- * @createDate 2025-08-26 16:56:13
- */
+/** 管理员服务。 */
 public interface AdminService extends IService<AdminDO> {
 
     /**

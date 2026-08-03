@@ -15,11 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-/**
- * @author heimenkyou
- * @description 针对表【award(奖项信息表)】的数据库操作Service实现
- * @createDate 2025-08-25 22:03:34
- */
+/** 奖项服务实现。 */
 @Service
 @RequiredArgsConstructor
 public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>

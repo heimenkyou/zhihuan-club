@@ -4,9 +4,7 @@ import cn.luowb.clubrecruitment.dao.entity.MessageDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Update;
 
-/**
- * 针对表【message(用户留言表)】的数据库操作Mapper
- */
+/** 留言数据访问。 */
 public interface MessageMapper extends BaseMapper<MessageDO> {
 
     /**
