@@ -2,6 +2,7 @@ package cn.luowb.clubrecruitment.common.util;
 
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
 import cn.luowb.clubrecruitment.common.properties.QiniuProperties;
+import com.qiniu.cdn.CdnManager;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
@@ -12,6 +13,7 @@ import com.qiniu.storage.model.FileInfo;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QiniuStorageService {
     private static final long UPLOAD_TOKEN_EXPIRES_SECONDS = 600;
 
@@ -130,6 +133,20 @@ public class QiniuStorageService {
                 return;
             }
             throw new ServiceException("七牛云对象删除失败");
+        }
+    }
+
+    /**
+     * 刷新已删除对象的 CDN 缓存，避免边缘节点继续返回旧图片。
+     *
+     * @param objectKey 对象键
+     */
+    public void refreshPublicUrl(String objectKey) {
+        try {
+            new CdnManager(auth()).refreshUrls(new String[] {buildPublicUrl(objectKey)});
+        } catch (QiniuException e) {
+            // 对象已删除，缓存刷新失败不应阻塞附件记录清理。
+            log.warn("刷新七牛 CDN 缓存失败, objectKey={}", objectKey, e);
         }
     }
 

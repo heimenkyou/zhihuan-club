@@ -99,6 +99,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         }
         if (!StringUtils.hasText(attachment.getLegacyUrl()) && StringUtils.hasText(attachment.getObjectKey())) {
             qiniuStorageService.delete(attachment.getObjectKey());
+            qiniuStorageService.refreshPublicUrl(attachment.getObjectKey());
         }
         removeById(id);
     }
