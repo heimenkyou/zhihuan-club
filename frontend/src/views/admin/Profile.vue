@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>个人资料</span>
           <el-button type="primary" @click="handleEdit" v-if="!isEditing">
-            <el-icon><Edit /></el-icon>
+            <el-icon><i-ep-edit /></el-icon>
             编辑资料
           </el-button>
           <div v-else class="edit-actions">
@@ -87,7 +87,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Edit } from '@element-plus/icons-vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { updateCurrentAdmin } from '@/services/adminService'
 
@@ -280,7 +279,7 @@ onMounted(() => {
 <style scoped>
 .admin-profile {
   padding: 20px;
-  max-width: 800px;
+  max-width: 760px;
   margin: 0 auto;
 }
 
@@ -306,6 +305,7 @@ onMounted(() => {
 @media (max-width: 768px) {
   .admin-profile {
     padding: 10px;
+    max-width: none;
   }
   
   .card-header {

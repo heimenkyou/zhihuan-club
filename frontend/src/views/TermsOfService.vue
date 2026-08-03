@@ -11,7 +11,7 @@
             class="text-dark py-2"
             aria-label="返回首页"
           >
-            <font-awesome-icon :icon="['fas', 'arrow-left']" class="fa-arrow-left" />
+            <i-fa6-solid-arrow-left class="fa-arrow-left" />
           </button>
           <h1 class="text-xl font-bold">平台服务条款</h1>
           <div class="w-8"></div>

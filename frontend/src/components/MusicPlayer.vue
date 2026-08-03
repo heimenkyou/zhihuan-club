@@ -34,8 +34,8 @@
         @click.stop="togglePlay"
         aria-label="播放/暂停"
       >
-        <font-awesome-icon v-if="!isPlaying" :icon="['fas', 'play']" class="text-white text-lg" />
-        <font-awesome-icon v-else :icon="['fas', 'pause']" class="text-white text-lg" />
+        <i-fa6-solid-play v-if="!isPlaying" class="text-white text-lg" />
+        <i-fa6-solid-pause v-else class="text-white text-lg" />
       </button>
 
       <!-- 音量按钮 -->
@@ -45,7 +45,7 @@
         @click.stop="showVolumeControl = true"
         aria-label="音量控制"
       >
-        <font-awesome-icon :icon="['fas', 'volume-up']" class="text-white text-lg" />
+        <i-fa6-solid-volume-high class="text-white text-lg" />
       </button>
 
       <!-- 拖拽按钮 -->
@@ -56,7 +56,7 @@
         @touchstart="startDrag"
         aria-label="移动播放器"
       >
-        <font-awesome-icon :icon="['fas', 'arrows']" class="text-white text-lg" />
+        <i-fa6-solid-arrows-up-down-left-right class="text-white text-lg" />
       </button>
     </div>
 
@@ -75,7 +75,7 @@
           @click.stop="() => {}"
           aria-label="音量控制"
         >
-          <font-awesome-icon :icon="['fas', 'volume-up']" class="text-white text-lg" />
+          <i-fa6-solid-volume-high class="text-white text-lg" />
         </button>
       </template>
       <div class="volume-control-content">

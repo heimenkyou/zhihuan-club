@@ -133,29 +133,29 @@ const error = ref('')
 
 // 技术标签颜色映射
 const tagStyles = {
-  物联网: { bg: 'bg-blue-100', text: 'text-blue-800' },
-  传感器: { bg: 'bg-green-100', text: 'text-green-800' },
-  嵌入式: { bg: 'bg-purple-100', text: 'text-purple-800' },
-  机器人: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  计算机视觉: { bg: 'bg-red-100', text: 'text-red-800' },
-  语音识别: { bg: 'bg-indigo-100', text: 'text-indigo-800' },
-  移动端: { bg: 'bg-pink-100', text: 'text-pink-800' },
-  'React Native': { bg: 'bg-cyan-100', text: 'text-cyan-800' },
-  'Node.js': { bg: 'bg-orange-100', text: 'text-orange-800' },
-  机器学习: { bg: 'bg-purple-100', text: 'text-purple-800' },
-  Python: { bg: 'bg-green-100', text: 'text-green-800' },
-  TensorFlow: { bg: 'bg-blue-100', text: 'text-blue-800' },
-  后端: { bg: 'bg-blue-100', text: 'text-blue-800' },
-  Java: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  开源: { bg: 'bg-gray-100', text: 'text-gray-800' },
-  硬件: { bg: 'bg-green-100', text: 'text-green-800' },
-  Arduino: { bg: 'bg-red-100', text: 'text-red-800' },
-  教育: { bg: 'bg-orange-100', text: 'text-orange-800' },
-  VR: { bg: 'bg-pink-100', text: 'text-pink-800' },
-  Unity: { bg: 'bg-purple-100', text: 'text-purple-800' },
-  Web前端: { bg: 'bg-blue-100', text: 'text-blue-800' },
-  大数据: { bg: 'bg-green-100', text: 'text-green-800' },
-  可视化: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+  物联网: { bg: '#dbeafe', text: '#1e40af' },
+  传感器: { bg: '#dcfce7', text: '#166534' },
+  嵌入式: { bg: '#f3e8ff', text: '#6b21a8' },
+  机器人: { bg: '#fef9c3', text: '#854d0e' },
+  计算机视觉: { bg: '#fee2e2', text: '#991b1b' },
+  语音识别: { bg: '#e0e7ff', text: '#3730a3' },
+  移动端: { bg: '#fce7f3', text: '#9d174d' },
+  'React Native': { bg: '#cffafe', text: '#155e75' },
+  'Node.js': { bg: '#ffedd5', text: '#9a3412' },
+  机器学习: { bg: '#f3e8ff', text: '#6b21a8' },
+  Python: { bg: '#dcfce7', text: '#166534' },
+  TensorFlow: { bg: '#dbeafe', text: '#1e40af' },
+  后端: { bg: '#dbeafe', text: '#1e40af' },
+  Java: { bg: '#fef9c3', text: '#854d0e' },
+  开源: { bg: '#f3f4f6', text: '#1f2937' },
+  硬件: { bg: '#dcfce7', text: '#166534' },
+  Arduino: { bg: '#fee2e2', text: '#991b1b' },
+  教育: { bg: '#ffedd5', text: '#9a3412' },
+  VR: { bg: '#fce7f3', text: '#9d174d' },
+  Unity: { bg: '#f3e8ff', text: '#6b21a8' },
+  Web前端: { bg: '#dbeafe', text: '#1e40af' },
+  大数据: { bg: '#dcfce7', text: '#166534' },
+  可视化: { bg: '#fef9c3', text: '#854d0e' },
 }
 
 /**
@@ -211,7 +211,7 @@ const handleCurrentChange = page => {
  * @returns {string}
  */
 const getTagBg = tag => {
-  return tagStyles[tag]?.bg || 'bg-gray-100'
+  return tagStyles[tag]?.bg || '#f3f4f6'
 }
 
 /**
@@ -221,7 +221,7 @@ const getTagBg = tag => {
  * @returns {string}
  */
 const getTagText = tag => {
-  return tagStyles[tag]?.text || 'text-gray-800'
+  return tagStyles[tag]?.text || '#1f2937'
 }
 
 /**

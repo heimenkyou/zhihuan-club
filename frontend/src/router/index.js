@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import adminRoutes from '@/router/adminRoutes'
 import { useAdminStore } from '@/stores/adminStore'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 
 const routes = [
   { path: '/', name: 'home', component: () => import('@/views/Home.vue') },
@@ -70,6 +70,8 @@ const router = createRouter({
   },
 })
 
+let routeLoading
+
 /**
  * 在进入受限页面前统一处理访问确认、登录态与权限校验。
  */
@@ -112,6 +114,24 @@ router.beforeEach(async (to, from, next) => {
   }
 
   next()
+})
+
+router.beforeResolve(() => {
+  routeLoading = ElLoading.service({
+    lock: true,
+    text: '页面加载中...',
+    background: 'rgb(255 255 255 / 45%)',
+  })
+})
+
+router.afterEach(() => {
+  routeLoading?.close()
+  routeLoading = undefined
+})
+
+router.onError(() => {
+  routeLoading?.close()
+  routeLoading = undefined
 })
 
 export default router

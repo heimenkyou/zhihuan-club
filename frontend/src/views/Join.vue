@@ -2,8 +2,8 @@
   <div class="join-page min-h-screen bg-gray-50 font-sans">
     <!-- 引入通用导航栏（前置显示） -->
     <CommonNavbar />
-    <!-- 主内容区：适配CommonNavbar高度，避免遮挡 -->
-    <main class="container mx-auto pt-20 md:pt-28 px-4 pb-16 mt-[60px] md:mt-0">
+    <!-- 主内容区为移动端导航预留固定高度 -->
+    <main class="container mx-auto pt-[50px] md:pt-28 px-4 pb-16">
       <!-- Hero 区域 -->
       <section
         id="home"
@@ -40,7 +40,7 @@
             <div
               class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
             >
-              <font-awesome-icon :icon="['fas', 'code']" class="fa-code" />
+              <i-fa6-solid-code class="fa-code" />
             </div>
             <h3 class="text-xl font-semibold text-center text-dark mb-4">
               专业技术指导
@@ -58,7 +58,7 @@
             <div
               class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
             >
-              <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
+              <i-fa6-solid-users class="fa-users" />
             </div>
             <h3 class="text-xl font-semibold text-center text-dark mb-4">
               团队协作
@@ -75,7 +75,7 @@
             <div
               class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto"
             >
-              <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
+              <i-fa6-solid-trophy class="fa-trophy" />
             </div>
             <h3 class="text-xl font-semibold text-center text-dark mb-4">
               竞赛机会
@@ -119,11 +119,9 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
-              <font-awesome-icon :icon="['far', 'file-text']" />
+              <i-fa6-regular-file-lines />
             </div>
             <div class="md:w-1/2 md:pl-12 hidden md:block"></div>
-            <!-- 移动端连接线 -->
-            <div class="md:hidden absolute left-6 top-12 w-0.5 h-24 bg-gray-200 mt-2"></div>
           </div>
 
           <!-- 步骤 2 -->
@@ -134,7 +132,7 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
-              <font-awesome-icon :icon="['far', 'comments']" />
+              <i-fa6-regular-comments />
             </div>
             <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0 ml-16 md:ml-0">
               <h3 class="text-xl font-semibold text-dark mb-2">简单面试</h3>
@@ -142,8 +140,6 @@
                 主要了解学习意愿和自主学习能力，无需担心技术水平。
               </p>
             </div>
-            <!-- 移动端连接线 -->
-            <div class="md:hidden absolute left-6 top-12 w-0.5 h-24 bg-gray-200 mt-2"></div>
           </div>
 
           <!-- 步骤 3 -->
@@ -159,11 +155,9 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
-              <font-awesome-icon :icon="['far', 'check-circle']" />
+              <i-fa6-regular-circle-check />
             </div>
             <div class="md:w-1/2 md:pl-12 hidden md:block"></div>
-            <!-- 移动端连接线 -->
-            <div class="md:hidden absolute left-6 top-12 w-0.5 h-24 bg-gray-200 mt-2"></div>
           </div>
 
           <!-- 步骤 4 -->
@@ -172,7 +166,7 @@
             <div
               class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center z-10 font-bold text-lg absolute left-6 md:relative md:left-auto"
             >
-              <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
+              <i-fa6-solid-users class="fa-users" />
             </div>
             <div class="md:w-1/2 md:pl-12 mt-6 md:mt-0 ml-16 md:ml-0">
               <h3 class="text-xl font-semibold text-dark mb-2">正式加入</h3>
@@ -206,10 +200,7 @@
                 <span
                   class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3"
                 >
-                  <font-awesome-icon
-                    :icon="['fas', 'brain']"
-                    class="fa-brain"
-                  />
+                  <i-fa6-solid-brain class="fa-brain" />
                 </span>
                 算法部
               </h3>
@@ -247,10 +238,7 @@
                 <span
                   class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
                 >
-                  <font-awesome-icon
-                    :icon="['fas', 'laptop-code']"
-                    class="fa-laptop-code"
-                  />
+                  <i-fa6-solid-laptop-code class="fa-laptop-code" />
                 </span>
                 项目竞赛部
               </h3>
@@ -290,10 +278,7 @@
                 <span
                   class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3"
                 >
-                  <font-awesome-icon
-                    :icon="['fas', 'users-cog']"
-                    class="fa-users-cog"
-                  />
+                  <i-fa6-solid-users-gear class="fa-users-cog" />
                 </span>
                 综合管理部
               </h3>
@@ -526,17 +511,11 @@
                 :disabled="isSubmitting"
               >
                 <template v-if="isSubmitting">
-                  <font-awesome-icon
-                    :icon="['fas', 'spinner']"
-                    class="fa-spinner fa-spin mr-2"
-                  />
+                  <i-fa6-solid-spinner class="fa-spinner fa-spin mr-2" />
                   提交中...
                 </template>
                 <template v-else>
-                  <font-awesome-icon
-                    :icon="['fas', 'paper-plane']"
-                    class="fa-paper-plane"
-                  />
+                  <i-fa6-solid-paper-plane class="fa-paper-plane" />
                   提交报名
                 </template>
               </button>
@@ -545,7 +524,7 @@
                 class="flex-1 bg-white border-2 border-primary text-primary hover:bg-primary/5 font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center"
                 @click="showSuccessModal = true"
               >
-                <font-awesome-icon :icon="['fas', 'users']" class="fa-users" />
+                <i-fa6-solid-users class="fa-users" />
                 先进群看看
               </button>
             </div>
@@ -579,8 +558,7 @@
                 <h3 class="text-lg font-semibold text-dark">
                   {{ faq.question }}
                 </h3>
-                <font-awesome-icon
-                  :icon="['fas', 'chevron-down']"
+                <i-fa6-solid-chevron-down
                   class="text-gray-500 transition-transform"
                   :class="{ 'rotate-180': faq.isOpen }"
                 />
@@ -611,7 +589,7 @@
             class="close-button text-gray-500 hover:text-gray-700"
             @click="closeModal"
           >
-            <font-awesome-icon :icon="['fas', 'times']" class="fa-times" />
+            <i-fa6-solid-xmark class="fa-times" />
           </button>
         </div>
 
@@ -651,7 +629,7 @@
                 @click="copyGroupNumber"
                 title="复制群号"
               >
-                <font-awesome-icon :icon="['fas', 'copy']" class="fa-copy" />
+                <i-fa6-solid-copy class="fa-copy" />
                 {{ copyButtonText }}
               </button>
             </div>
@@ -663,10 +641,7 @@
               rel="noopener noreferrer"
               class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
             >
-              <font-awesome-icon
-                :icon="['fas', 'external-link']"
-                class="fa-external-link"
-              />
+              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" />
               直接加群
             </a>
           </div>

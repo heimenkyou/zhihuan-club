@@ -37,7 +37,7 @@
                 cursor: pointer;
               " @click="router.back()" aria-label="返回项目列表">
               <el-icon style="font-size: 16px">
-                <ArrowLeft />
+                <i-ep-arrow-left />
               </el-icon>
             </button>
 
@@ -77,7 +77,7 @@
         <div class="project-section carousel-section">
           <h2 class="section-title">
             <el-icon>
-              <Picture />
+              <i-ep-picture />
             </el-icon>
             项目展示
           </h2>
@@ -122,7 +122,7 @@
         <div class="project-section">
           <h2 class="section-title">
             <el-icon>
-              <Cpu />
+              <i-ep-cpu />
             </el-icon>
             技术栈
           </h2>
@@ -147,7 +147,7 @@
         <div class="project-section">
           <h2 class="section-title">
             <el-icon>
-              <Document />
+              <i-ep-document />
             </el-icon>
             项目介绍
           </h2>
@@ -165,7 +165,7 @@
         <div class="project-section">
           <h2 class="section-title">
             <el-icon>
-              <User />
+              <i-ep-user />
             </el-icon>
             团队分工
           </h2>
@@ -191,7 +191,7 @@
         <div class="project-section" v-if="projectDetail.awards && projectDetail.awards.length > 0">
           <h2 class="section-title">
             <el-icon>
-              <Trophy />
+              <i-ep-trophy />
             </el-icon>
             获得奖项
           </h2>
@@ -220,7 +220,7 @@
       <div class="bottom-end-notice">
         <div class="end-text">
           <el-icon>
-            <Finished />
+            <i-ep-finished />
           </el-icon>
           已经到底了，感谢您的浏览
         </div>
@@ -232,17 +232,8 @@
 
 <script setup>
 import CommonFooter from '@/components/CommonFooter.vue'
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  User,
-  Cpu,
-  Trophy,
-  Document,
-  Picture,
-  Finished,
-  ArrowLeft,
-} from '@element-plus/icons-vue'
 import {
   ElCarousel,
   ElCarouselItem,
@@ -253,6 +244,11 @@ import {
   ElImage,
 } from 'element-plus'
 import { getProjectDetail } from '@/services/projectService'
+
+const MdPreview = defineAsyncComponent(async () => {
+  await import('md-editor-v3/lib/style.css')
+  return (await import('md-editor-v3')).MdPreview
+})
 
 const route = useRoute()
 const router = useRouter()

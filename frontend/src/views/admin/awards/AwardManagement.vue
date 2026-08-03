@@ -234,7 +234,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="year" label="年份" :width="isMobile ? 70 : 120" />
-          <el-table-column label="操作" :width="isMobile ? 120 : 180" fixed="right">
+          <el-table-column label="操作" :width="isMobile ? undefined : 170" :fixed="isMobile ? false : 'right'">
             <template #default="scope">
               <div class="action-buttons">
                 <el-button
@@ -277,8 +277,8 @@
       <el-dialog 
         v-model="dialogVisible" 
         :title="dialogTitle" 
-        :width="isMobile ? '95%' : '600px'"
-        :fullscreen="isMobile"
+        :width="isMobile ? '100%' : '720px'"
+        class="admin-dialog"
       >
         <el-form
           ref="awardFormRef"
@@ -999,20 +999,25 @@
     box-shadow: none;
   }
   
-  .action-buttons {
-    display: flex;
-    flex-direction: column;
+   .action-buttons {
+     display: flex;
+     gap: 8px;
   }
 
   .mobile-action-button {
     width: 100%;
   }
   
-  .dialog-footer {
+   .dialog-footer {
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
+   }
+
+   :deep(.admin-dialog .el-dialog__body) {
+     max-height: 80vh;
+     overflow-y: auto;
+   }
 
   .mobile-full-button {
     width: 100%;
@@ -1036,9 +1041,19 @@
       justify-content: center;
     }
     
-    .table-container {
-      overflow-x: auto;
-    }
+     .table-container {
+       overflow-x: auto;
+     }
+
+     .action-buttons {
+       flex-direction: column;
+     }
+
+     :deep(.admin-dialog) {
+       width: 100% !important;
+       max-height: 80vh;
+       margin: 0;
+     }
     
     :deep(.el-table) {
       font-size: 12px;

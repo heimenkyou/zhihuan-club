@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>{{ isEditMode ? '编辑项目' : '添加项目' }}</span>
           <el-button @click="handleBack" class="back-btn">
-            <el-icon><ArrowLeft /></el-icon>
+            <el-icon><i-ep-arrow-left /></el-icon>
             返回项目列表
           </el-button>
         </div>
@@ -67,7 +67,7 @@
           <div class="upload-container">
             <div class="upload-main">
               <img v-if="projectForm.coverImage" :src="projectForm.coverImage" class="avatar" />
-              <div v-else class="upload-placeholder"><el-icon><Plus /></el-icon><div>请选择封面图片</div></div>
+              <div v-else class="upload-placeholder"><el-icon><i-ep-plus /></el-icon><div>请选择封面图片</div></div>
 
               <div class="upload-actions">
                 <el-button
@@ -281,16 +281,24 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted, computed } from 'vue'
+   import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import { ArrowLeft, Plus } from '@element-plus/icons-vue'
   import AttachmentPicker from '@/components/admin/AttachmentPicker.vue'
   import {
     getProjectForEdit,
     createProject,
     updateProject,
    } from '@/services/projectService'
+
+   const MdEditor = defineAsyncComponent(async () => {
+     await import('md-editor-v3/lib/style.css')
+     return (await import('md-editor-v3')).MdEditor
+   })
+   const MdPreview = defineAsyncComponent(async () => {
+     await import('md-editor-v3/lib/style.css')
+     return (await import('md-editor-v3')).MdPreview
+   })
 
   const defaultCategory = 'Web开发'
   const editorHeight = '500px'
@@ -595,9 +603,9 @@
     max-width: 100%;
   }
 
-  .full-width-card {
-    width: 100%;
-    max-width: 1600px;
+   .full-width-card {
+     width: 100%;
+     max-width: 760px;
     margin: 0 auto;
   }
 
@@ -914,10 +922,45 @@
     margin-top: 5px;
   }
 
-  @media (max-width: 768px) {
-    .project-edit-container {
-      padding: 10px;
-    }
+   @media (max-width: 768px) {
+     .project-edit-container {
+       padding: 0;
+     }
+
+     .full-width-card {
+       width: 100%;
+       border-radius: 0;
+     }
+
+     .card-header {
+       align-items: flex-start;
+       flex-wrap: wrap;
+       gap: 10px;
+       margin-bottom: 0;
+     }
+
+     .back-btn {
+       max-width: 100%;
+     }
+
+     :deep(.el-form-item) {
+       display: block;
+     }
+
+     :deep(.el-form-item__content) {
+       min-width: 0;
+       margin-left: 0 !important;
+     }
+
+     :deep(.el-form-item__content > .el-input),
+     :deep(.el-form-item__content > .el-select),
+     :deep(.el-form-item__content > .el-date-editor) {
+       width: 100%;
+     }
+
+     :deep(.el-date-editor) {
+       max-width: 100%;
+     }
 
     .upload-main {
       flex-direction: column;
@@ -931,10 +974,24 @@
       margin: 0 auto;
     }
 
-    .editor-full,
-    .editor-split {
-      height: 400px;
-    }
+     .editor-full,
+     .editor-split {
+       height: 360px;
+     }
+
+     .editor-split {
+       flex-direction: column;
+     }
+
+     .editor-left,
+     .editor-right {
+       min-height: 0;
+       border: 0;
+     }
+
+     .editor-right {
+       border-top: 1px solid #e4e7ed;
+     }
 
     .team-member-item,
     .selected-media-item {
@@ -942,16 +999,48 @@
       align-items: stretch;
     }
 
-    .team-member-item .el-input,
+     .team-member-item .el-input,
     .team-member-item .el-select {
       margin-right: 0 !important;
       margin-bottom: 10px;
-    }
+     }
 
-    .selected-media-thumbnail {
+     .team-members-list,
+     .media-resources-container,
+     .award-management {
+       width: 100%;
+       box-sizing: border-box;
+       padding: 12px;
+     }
+
+     .tech-stack-input {
+       width: 100%;
+       margin-bottom: 8px;
+     }
+
+     .selected-media-item {
+       gap: 10px;
+     }
+
+     .selected-media-item .el-button,
+     .media-actions .el-button {
+       width: 100%;
+     }
+
+     .selected-media-thumbnail {
       margin-right: 0;
       margin-bottom: 10px;
       max-width: 100%;
-    }
-  }
+     }
+
+     .form-actions {
+       justify-content: stretch;
+       margin-top: 20px;
+     }
+
+     .form-actions .el-button {
+       flex: 1;
+       min-width: 0;
+     }
+   }
 </style>

@@ -10,7 +10,7 @@
             class="text-dark py-2"
             aria-label="返回首页"
           >
-            <font-awesome-icon :icon="['fas', 'arrow-left']" class="fa-arrow-left" />
+            <i-fa6-solid-arrow-left class="fa-arrow-left" />
           </button>
           <h1 class="text-xl font-bold">隐私政策</h1>
           <div class="w-8"></div>
@@ -83,7 +83,7 @@
               rel="noopener noreferrer"
               class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
             >
-              <font-awesome-icon :icon="['fas', 'external-link']" class="fa-external-link" /> 直接加群
+              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> 直接加群
             </a> -->
           <p>
             <a
@@ -91,7 +91,7 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              <font-awesome-icon :icon="['fas', 'external-link']" class="fa-external-link" /> QQ群：967370226
+              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> QQ群：967370226
             </a>
           </p>
         </section>

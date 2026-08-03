@@ -9,10 +9,7 @@
           @click="navigateToHome"
           aria-label="返回首页"
         >
-          <font-awesome-icon
-            :icon="['fas', 'code']"
-            class="fa-code nav-brand-icon"
-          />智环学创融合协会
+          <i-fa6-solid-code class="fa-code nav-brand-icon" />智环学创融合协会
         </div>
         <div class="web-nav-links">
           <button
@@ -28,7 +25,7 @@
           </button>
         </div>
         <div class="menu-toggle">
-          <font-awesome-icon :icon="['fas', 'bars']" class="fa-bars" />
+          <i-fa6-solid-bars class="fa-bars" />
         </div>
       </div>
     </nav>
@@ -40,12 +37,9 @@
     <div v-if="isIosDevice" class="ios-status-bar sticky top-0 z-20 bg-white">
       <span>{{ currentTime }}</span>
       <div class="flex items-center gap-1">
-        <font-awesome-icon :icon="['fas', 'signal']" class="fa-signal" />
-        <font-awesome-icon :icon="['fas', 'wifi']" class="fa-wifi" />
-        <font-awesome-icon
-          :icon="['fas', 'battery-three-quarters']"
-          class="fa-battery-three-quarters"
-        />
+        <i-fa6-solid-signal class="fa-signal" />
+        <i-fa6-solid-wifi class="fa-wifi" />
+        <i-fa6-solid-battery-three-quarters class="fa-battery-three-quarters" />
       </div>
     </div>
 
@@ -60,10 +54,7 @@
         class="flex items-center space-x-4 w-full"
       >
         <button @click="router.back()" class="text-dark" aria-label="返回">
-          <font-awesome-icon
-            :icon="['fas', 'arrow-left']"
-            class="fa-arrow-left"
-          />
+          <i-fa6-solid-arrow-left class="fa-arrow-left" />
         </button>
         <div class="font-medium text-lg text-center flex-1">
           {{ currentPageTitle }}
@@ -72,7 +63,7 @@
       <!-- 首页保持原有样式 -->
       <div v-else class="font-medium text-lg">智环学创融合协会</div>
       <button @click="openSidebar" class="text-dark" aria-label="打开菜单">
-        <font-awesome-icon :icon="['fas', 'bars']" class="fa-bars" />
+        <i-fa6-solid-bars class="fa-bars" />
       </button>
     </div>
 
@@ -86,7 +77,7 @@
       <div class="p-4 border-b flex justify-between items-center">
         <h2 class="text-lg font-bold text-dark">导航菜单</h2>
         <button @click="closeSidebar" class="p-2" aria-label="关闭菜单">
-          <font-awesome-icon :icon="['fas', 'times']" class="fa-times" />
+          <i-fa6-solid-xmark class="fa-times" />
         </button>
       </div>
       <nav class="py-2">
@@ -146,22 +137,26 @@
   const currentTime = ref('') // iOS状态栏时间
   const isIosDevice = ref(false) // 是否iOS设备
   let timeInterval = null
+  let previousBodyOverflow = null
 
   // 4. 核心交互
   /** 导航项点击：路由跳转+关闭侧边栏 */
   const handleNavClick = item => {
     router.push(item.path)
-    isSidebarOpen.value = false // 移动端点击后关闭侧边栏
+    closeSidebar()
   }
 
   /** "立即报名"按钮点击 */
   const handleJoinClick = () => {
     router.push('/join')
-    isSidebarOpen.value = false
+    closeSidebar()
   }
 
   /** 打开侧边栏 */
   const openSidebar = () => {
+    if (isSidebarOpen.value) return
+
+    previousBodyOverflow = document.body.style.overflow
     isSidebarOpen.value = true
     document.body.style.overflow = 'hidden' // 禁止页面滚动
   }
@@ -169,7 +164,10 @@
   /** 关闭侧边栏 */
   const closeSidebar = () => {
     isSidebarOpen.value = false
-    document.body.style.overflow = 'auto' // 恢复页面滚动
+    if (previousBodyOverflow !== null) {
+      document.body.style.overflow = previousBodyOverflow
+      previousBodyOverflow = null
+    }
   }
 
   /** 更新iOS状态栏时间 */
@@ -189,9 +187,8 @@
   /** 检测屏幕尺寸：切换移动端/桌面端 */
   const checkScreenSize = () => {
     isMobile.value = window.innerWidth < 768
-    // 尺寸变化后恢复页面滚动（避免侧边栏状态异常）
-    if (!isSidebarOpen.value) {
-      document.body.style.overflow = 'auto'
+    if (!isMobile.value && isSidebarOpen.value) {
+      closeSidebar()
     }
   }
 
@@ -209,7 +206,7 @@
     if (timeInterval) clearInterval(timeInterval)
     window.removeEventListener('resize', checkScreenSize)
     window.removeEventListener('orientationchange', checkScreenSize)
-    document.body.style.overflow = 'auto' // 确保卸载后页面可滚动
+    closeSidebar()
   })
   // 添加返回首页的方法
   const navigateToHome = () => {
@@ -375,7 +372,7 @@
   }
 
   /* 3. 响应式切换：严格区分移动端/桌面端 */
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     /* 移动端隐藏桌面端导航链接 */
     .web-nav-links {
       display: none;
@@ -392,7 +389,7 @@
     }
   }
 
-  @media (min-width: 769px) {
+  @media (min-width: 768px) {
     /* 桌面端隐藏移动端布局 */
     .mobile-layout,
     .menu-toggle {

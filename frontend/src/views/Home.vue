@@ -83,7 +83,7 @@
                 class="scroll-icon"
                 style="margin: 0 auto; color: white; font-size: 24px"
               >
-                <ArrowDown />
+                <i-ep-arrow-down />
               </el-icon>
             </div>
           </el-link>
@@ -164,7 +164,7 @@
             <div class="image-decoration top-left"></div>
             <div class="image-decoration bottom-right"></div>
             <img
-              src="https://minio.luowb.cn/club-recruitment/static/you.jpg"
+              src="/you.webp"
               style="width: 100%; height: 100%"
             />
 
@@ -209,8 +209,8 @@
           <el-carousel
             ref="carouselRef"
             :interval="4000"
-            type="card"
-            height="400px"
+            :type="isSmallScreen ? undefined : 'card'"
+            :height="isSmallScreen ? '260px' : '400px'"
             autoplay
             indicator-position="none"
           >
@@ -250,13 +250,13 @@
             class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
             @click="prev"
           >
-            <el-icon><ArrowLeft /></el-icon>
+            <el-icon><i-ep-arrow-left /></el-icon>
           </button>
           <button
             class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
             @click="next"
           >
-            <el-icon><ArrowRight /></el-icon>
+            <el-icon><i-ep-arrow-right /></el-icon>
           </button>
         </div>
 
@@ -303,14 +303,8 @@
           ></div>
         </div>
 
-        <!-- 竞赛列表（行内Grid，简化响应式） -->
-        <div
-          style="
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-          "
-        >
+        <!-- 竞赛列表 -->
+        <div class="competitions-grid">
           <!-- 竞赛1：蓝桥杯 -->
           <div
             style="
@@ -332,10 +326,7 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <font-awesome-icon
-                :icon="['fas', 'code']"
-                style="font-size: 2.5rem; color: #3b82f6"
-              />
+              <i-fa6-solid-code style="font-size: 2.5rem; color: #3b82f6" />
             </div>
             <h3
               style="
@@ -356,7 +347,7 @@
               style="color: #3b82f6; font-weight: 500"
               >了解更多
               <el-icon size="14" style="margin-left: 0.25rem"
-                ><ArrowRight
+                ><i-ep-arrow-right
               /></el-icon>
             </a>
           </div>
@@ -382,10 +373,7 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <font-awesome-icon
-                :icon="['fas', 'trophy']"
-                style="font-size: 2.5rem; color: #6366f1"
-              />
+              <i-fa6-solid-trophy style="font-size: 2.5rem; color: #6366f1" />
             </div>
             <h3
               style="
@@ -406,7 +394,7 @@
               style="color: #3b82f6; font-weight: 500"
               >了解更多
               <el-icon size="14" style="margin-left: 0.25rem"
-                ><ArrowRight /></el-icon
+                ><i-ep-arrow-right /></el-icon
             ></a>
           </div>
 
@@ -431,10 +419,7 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <font-awesome-icon
-                :icon="['fas', 'lightbulb']"
-                style="font-size: 2.5rem; color: #ef4444"
-              />
+              <i-fa6-solid-lightbulb style="font-size: 2.5rem; color: #ef4444" />
             </div>
             <h3
               style="
@@ -455,7 +440,7 @@
               style="color: #3b82f6; font-weight: 500"
               >了解更多
               <el-icon size="14" style="margin-left: 0.25rem"
-                ><ArrowRight
+                ><i-ep-arrow-right
               /></el-icon>
             </a>
           </div>
@@ -481,10 +466,7 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <font-awesome-icon
-                :icon="['fas', 'desktop']"
-                style="font-size: 2.5rem; color: #22c55e"
-              />
+              <i-fa6-solid-desktop style="font-size: 2.5rem; color: #22c55e" />
             </div>
             <h3
               style="
@@ -505,7 +487,7 @@
               style="color: #3b82f6; font-weight: 500"
               >了解更多
               <el-icon size="14" style="margin-left: 0.25rem"
-                ><ArrowRight
+                ><i-ep-arrow-right
               /></el-icon>
             </a>
           </div>
@@ -625,15 +607,19 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted, onUnmounted } from 'vue'
   import { useRouter } from 'vue-router'
   import CommonNavbar from '@/components/CommonNavbar.vue'
   import CommonFooter from '@/components/CommonFooter.vue'
-  import { ArrowDown } from '@element-plus/icons-vue'
-  import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 
   // 添加 carouselRef 引用
   const carouselRef = ref()
+  const isSmallScreen = ref(false)
+
+  /** 根据屏幕宽度切换轮播展示模式。 */
+  const updateCarouselLayout = () => {
+    isSmallScreen.value = window.innerWidth < 640
+  }
 
   // 添加导航方法
   const prev = () => {
@@ -744,6 +730,15 @@
   const toMessageBoard = () => {
     router.push('/messages')
   }
+
+  onMounted(() => {
+    updateCarouselLayout()
+    window.addEventListener('resize', updateCarouselLayout)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', updateCarouselLayout)
+  })
 </script>
 
 <style scoped lang="scss">
@@ -2209,6 +2204,18 @@
   .scroll-text {
     color: #333;
     font-size: 14px;
+  }
+
+  .competitions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 640px) {
+    .competitions-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* 响应式调整 */

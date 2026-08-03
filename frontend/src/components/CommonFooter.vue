@@ -24,51 +24,35 @@
       </div>
 
       <!-- 社交图标 -->
-      <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem">
+      <div class="social-links">
         <!-- 微信 -->
         <a
           href="#"
           @click.prevent="showWarning('还没有微信')"
-          style="color: #9ca3af"
+          class="social-link"
         >
-          <font-awesome-icon
-            :icon="['fab', 'weixin']"
-            class="fa-weixin"
-            style="font-size: 1.5rem"
-          />
+          <i-fa6-brands-weixin class="fa-weixin social-icon" />
         </a>
         <!-- QQ群 -->
         <a
           href="https://qm.qq.com/q/KiJWZAQ1C6"
-          style="color: #9ca3af"
+          class="social-link"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <font-awesome-icon
-            :icon="['fab', 'qq']"
-            class="fa-qq"
-            style="font-size: 1.5rem"
-          />
+          <i-fa6-brands-qq class="fa-qq social-icon" />
         </a>
         <!-- github目前也没有 -->
         <a
           href="#"
           @click.prevent="showWarning('GitHub地址暂不公开')"
-          style="color: #9ca3af"
+          class="social-link"
         >
-          <font-awesome-icon
-            :icon="['fab', 'github']"
-            class="fa-github"
-            style="font-size: 1.5rem"
-          />
+          <i-fa6-brands-github class="fa-github social-icon" />
         </a>
         <!-- 这里应该展示邮箱 -->
-        <a href="mailto:Wenbin.Lo@outlook.com" style="color: #9ca3af">
-          <font-awesome-icon
-            :icon="['fas', 'envelope']"
-            class="fa-envelope"
-            style="font-size: 1.5rem"
-          />
+        <a href="mailto:Wenbin.Lo@outlook.com" class="social-link">
+          <i-fa6-solid-envelope class="fa-envelope social-icon" />
         </a>
       </div>
       <div class="footer-copyright">
@@ -140,22 +124,18 @@ import { showWarning } from '@/utils/notification'
     position: relative;
   }
 
-  /* 隐蔽的管理后台入口样式 */
-  .admin-entry {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    color: #475569;
-    font-size: 0.75rem;
-    opacity: 0.3;
-    transition: opacity 0.3s;
-    text-decoration: none;
-    padding: 0.25rem;
+  .social-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
   }
 
-  .admin-entry:hover {
-    opacity: 0.7;
-    color: #64748b;
+  .social-link {
+    color: #9ca3af;
+  }
+
+  .social-icon {
+    font-size: 1.5rem;
   }
 
   /* 移动端适配 */

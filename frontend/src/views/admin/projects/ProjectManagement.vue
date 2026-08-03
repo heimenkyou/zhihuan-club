@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>项目管理</span>
           <el-button type="primary" @click="openAddDialog" class="add-btn">
-            <el-icon><Plus /></el-icon>
+            <el-icon><i-ep-plus /></el-icon>
             添加项目
           </el-button>
         </div>
@@ -29,11 +29,12 @@
       </div>
 
       <!-- 项目数据表格 -->
-      <el-table
-        :data="projectsData"
-        class="project-table"
-        v-loading="loading"
-      >
+      <div class="table-container">
+        <el-table
+          :data="projectsData"
+          class="project-table"
+          v-loading="loading"
+        >
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column
           prop="title"
@@ -62,27 +63,30 @@
             <span v-else>暂无</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" :width="isMobile ? undefined : 170" :fixed="isMobile ? false : 'right'">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="handleEdit(scope.row)"
-              :disabled="!scope.row.id"
-            >
-              编辑
-            </el-button>
-            <el-button
-              type="danger"
-              size="small"
-              @click="deleteProject(scope.row.id)"
-              :disabled="!scope.row.id"
-            >
-              删除
-            </el-button>
+            <div class="action-buttons">
+              <el-button
+                type="primary"
+                size="small"
+                @click="handleEdit(scope.row)"
+                :disabled="!scope.row.id"
+              >
+                编辑
+              </el-button>
+              <el-button
+                type="danger"
+                size="small"
+                @click="deleteProject(scope.row.id)"
+                :disabled="!scope.row.id"
+              >
+                删除
+              </el-button>
+            </div>
           </template>
         </el-table-column>
-      </el-table>
+        </el-table>
+      </div>
 
       <!-- 分页 -->
       <div class="pagination-container" v-if="totalCount > 0">
@@ -101,9 +105,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
-import { Plus } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
 import {
   getAdminProjects,
@@ -118,6 +121,13 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const totalCount = ref(0)
+const viewportWidth = ref(window.innerWidth)
+const isMobile = computed(() => viewportWidth.value <= 768)
+
+/** 同步视口宽度，使操作列在手机端解除固定。 */
+const handleResize = () => {
+  viewportWidth.value = window.innerWidth
+}
 
 /**
  * 加载项目分页数据。
@@ -243,6 +253,11 @@ const deleteProject = async id => {
  */
 onMounted(() => {
   loadProjects()
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -266,6 +281,13 @@ onMounted(() => {
 }
 .project-table {
   width: 100%;
+}
+.table-container {
+  overflow-x: auto;
+}
+.action-buttons {
+  display: flex;
+  gap: 8px;
 }
 .search-input {
   width: 300px;
@@ -297,5 +319,23 @@ onMounted(() => {
 .more-tags {
   color: #909399;
   font-size: 12px;
+}
+@media (max-width: 768px) {
+  .project-container {
+    padding: 10px;
+  }
+  .card-header,
+  .search-filter-container {
+    flex-wrap: wrap;
+  }
+  .search-input {
+    width: 100%;
+  }
+  .action-buttons {
+    flex-direction: column;
+  }
+  .pagination-container {
+    justify-content: center;
+  }
 }
 </style>

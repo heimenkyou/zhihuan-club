@@ -17,7 +17,7 @@
           <el-input
             v-model="loginForm.username"
             placeholder="请输入用户名"
-            prefix-icon="User"
+            :prefix-icon="User"
             :disabled="loading"
           />
         </el-form-item>
@@ -26,15 +26,15 @@
             v-model="loginForm.password"
             type="password"
             placeholder="请输入密码"
-            prefix-icon="Lock"
+            :prefix-icon="Lock"
             show-password
             :disabled="loading"
             @keyup.enter="handleLogin"
           />
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="rememberUsername" :disabled="loading">
-            记住用户名
+          <el-checkbox v-model="rememberPassword" :disabled="loading">
+            记住密码
           </el-checkbox>
         </el-form-item>
         <el-form-item>
@@ -55,6 +55,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Lock, User } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/adminStore'
 import { login } from '@/services/adminService'
@@ -66,7 +67,7 @@ const loginForm = reactive({
   username: '',
   password: '',
 })
-const rememberUsername = ref(false)
+const rememberPassword = ref(false)
 const loading = ref(false)
 const rules = {
   username: [
@@ -91,15 +92,18 @@ const rules = {
 const handleLogin = async () => {
   loginFormRef.value?.validate(async valid => {
     if (valid) {
+      if (loading.value) return
       loading.value = true
       try {
         const adminInfo = await login(loginForm)
         adminStore.login(adminInfo, adminInfo.token)
 
-        if (rememberUsername.value) {
+        if (rememberPassword.value) {
           localStorage.setItem('rememberedUsername', loginForm.username)
+          localStorage.setItem('rememberedPassword', loginForm.password)
         } else {
           localStorage.removeItem('rememberedUsername')
+          localStorage.removeItem('rememberedPassword')
         }
 
         ElMessage.success('登录成功，正在跳转...')
@@ -113,17 +117,17 @@ const handleLogin = async () => {
 }
 
 /**
- * 恢复上次登录用户名，不在浏览器保存密码。
+ * 恢复用户选择保存的登录凭据。
  */
 onMounted(() => {
   const rememberedUsername = localStorage.getItem('rememberedUsername')
+  const rememberedPassword = localStorage.getItem('rememberedPassword')
 
-  if (rememberedUsername) {
+  if (rememberedUsername && rememberedPassword) {
     loginForm.username = rememberedUsername
-    rememberUsername.value = true
+    loginForm.password = rememberedPassword
+    rememberPassword.value = true
   }
-  localStorage.removeItem('rememberedPassword')
-  localStorage.removeItem('rememberPassword')
 })
 </script>
 
@@ -158,5 +162,15 @@ onMounted(() => {
     height: 40px;
     font-size: 16px;
     margin-top: 10px;
+  }
+  @media (max-width: 768px) {
+    .login-container {
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+    }
   }
 </style>

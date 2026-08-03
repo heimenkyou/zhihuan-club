@@ -163,7 +163,7 @@
             <div
               class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center"
             >
-              <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
+              <i-fa6-solid-trophy class="fa-trophy" />
             </div>
           </div>
           <p class="text-4xl font-bold text-primary text-red-500">
@@ -187,10 +187,7 @@
         v-else-if="error"
         class="text-center py-12 bg-white rounded-xl shadow-sm"
       >
-        <font-awesome-icon
-          :icon="['fas', 'exclamation-circle']"
-          class="fa-exclamation-circle"
-        />
+        <i-fa6-solid-circle-exclamation class="fa-exclamation-circle" />
         <p class="text-red-500 mb-2">{{ error }}</p>
         <button
           @click="fetchAwards()"
@@ -232,7 +229,7 @@
             >
               <div class="bg-blue-900 text-white p-4">
                 <h3 class="text-lg font-semibold flex items-center gap-2">
-                  <font-awesome-icon :icon="['fas', 'star']" class="fa-star" />
+                  <i-fa6-solid-star class="fa-star" />
                   国家级奖项
                 </h3>
               </div>
@@ -262,10 +259,7 @@
 
                   <!-- 修改赛道信息部分 - 无论是否有赛道都显示，但样式不同 -->
                   <div class="flex items-center mb-3">
-                    <font-awesome-icon
-                      :icon="['fas', 'flag']"
-                      class="fa-flag text-gray-500"
-                    />
+                    <i-fa6-solid-flag class="fa-flag text-gray-500" />
                     <span
                       v-if="award.competitionTrack"
                       class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm"
@@ -282,10 +276,7 @@
 
                   <!-- 获奖人员信息 -->
                   <div class="flex items-start mb-3">
-                    <font-awesome-icon
-                      :icon="['fas', 'users']"
-                      class="fa-users px-2"
-                    />
+                    <i-fa6-solid-users class="fa-users px-2" />
                     <p class="text-gray-600 text-sm flex-1 line-clamp-2">
                       {{ award.winners.join('、') }}
                     </p>
@@ -296,10 +287,7 @@
                     class="flex items-center justify-between pt-3 border-t border-gray-100"
                   >
                     <div class="flex items-center text-xs text-gray-500">
-                      <font-awesome-icon
-                        :icon="['far', 'calendar']"
-                        class="fa-calendar"
-                      />
+                      <i-fa6-regular-calendar class="fa-calendar" />
                       {{ award.awardDate }}
                     </div>
                     <div class="text-xs text-gray-400">
@@ -317,10 +305,7 @@
             >
               <div class="bg-blue-800 text-white p-4">
                 <h3 class="text-lg font-semibold flex items-center gap-2">
-                  <font-awesome-icon
-                    :icon="['fas', 'map-marker']"
-                    class="fa-map-marker"
-                  />
+                  <i-fa6-solid-location-dot class="fa-map-marker" />
                   省级奖项
                 </h3>
               </div>
@@ -350,10 +335,7 @@
 
                   <!-- 修改后的赛道信息显示 - 无论是否有赛道都显示 -->
                   <div class="flex items-center mb-3">
-                    <font-awesome-icon
-                      :icon="['fas', 'flag']"
-                      class="fa-flag text-gray-500"
-                    />
+                    <i-fa6-solid-flag class="fa-flag text-gray-500" />
                     <span
                       v-if="award.competitionTrack"
                       class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm"
@@ -370,10 +352,7 @@
 
                   <!-- 获奖人员信息 -->
                   <div class="flex items-start mb-3">
-                    <font-awesome-icon
-                      :icon="['fas', 'users']"
-                      class="fa-users px-2"
-                    />
+                    <i-fa6-solid-users class="fa-users px-2" />
                     <p class="text-gray-600 text-sm flex-1 line-clamp-2">
                       {{ award.winners.join('、') }}
                     </p>
@@ -384,7 +363,7 @@
                     class="flex items-center justify-between pt-3 border-t border-gray-100"
                   >
                     <div class="flex items-center text-xs text-gray-500">
-                      <font-awesome-icon :icon="['far', 'calendar']" />
+                      <i-fa6-regular-calendar />
                       {{ award.awardDate }}
                     </div>
                     <div class="text-xs text-gray-400">
@@ -402,10 +381,7 @@
             >
               <div class="bg-blue-700 text-white p-4">
                 <h3 class="text-lg font-semibold flex items-center gap-2">
-                  <font-awesome-icon
-                    :icon="['fas', 'university']"
-                    class="fa-university"
-                  />
+                  <i-fa6-solid-building-columns class="fa-university" />
                   校级奖项
                 </h3>
               </div>
@@ -437,10 +413,7 @@
 
                   <!-- 修改后的赛道信息显示 - 无论是否有赛道都显示 -->
                   <div class="flex items-center mb-3">
-                    <font-awesome-icon
-                      :icon="['fas', 'flag']"
-                      class="fa-flag text-gray-500"
-                    />
+                    <i-fa6-solid-flag class="fa-flag text-gray-500" />
                     <span
                       v-if="award.competitionTrack"
                       class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-sm"
@@ -457,10 +430,7 @@
 
                   <!-- 获奖人员信息 -->
                   <div class="flex items-start mb-3">
-                    <font-awesome-icon
-                      :icon="['fas', 'users']"
-                      class="fa-users px-2"
-                    />
+                    <i-fa6-solid-users class="fa-users px-2" />
                     <p class="text-gray-600 text-sm flex-1 line-clamp-2">
                       {{ award.winners.join('、') }}
                     </p>
@@ -471,7 +441,7 @@
                     class="flex items-center justify-between pt-3 border-t border-gray-100"
                   >
                     <div class="flex items-center text-xs text-gray-500">
-                      <font-awesome-icon :icon="['far', 'calendar']" />
+                      <i-fa6-regular-calendar />
                       {{ award.awardDate }}
                     </div>
                     <div class="text-xs text-gray-400">
@@ -489,7 +459,7 @@
           v-if="sortedYears.length === 0"
           class="text-center py-12 bg-white rounded-xl shadow-sm"
         >
-          <font-awesome-icon :icon="['fas', 'trophy']" class="fa-trophy" />
+          <i-fa6-solid-trophy class="fa-trophy" />
           <p class="text-gray-500">暂无该分类下的奖项数据</p>
         </div>
 
@@ -498,10 +468,7 @@
           <div
             class="inline-flex items-center justify-center p-4 bg-primary/5 rounded-full mb-3"
           >
-            <font-awesome-icon
-              :icon="['fas', 'check-circle']"
-              class="fa-check-circle"
-            />
+            <i-fa6-solid-circle-check class="fa-check-circle" />
           </div>
           <p class="text-gray-500 text-sm">已经浏览完所有奖项啦</p>
         </div>
@@ -592,7 +559,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, nextTick, watch } from 'vue'
+  import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
   import CommonNavbar from '@/components/CommonNavbar.vue'
   import { getAwards } from '@/services/adminService'
   import CommonFooter from '@/components/CommonFooter.vue'
@@ -678,10 +645,16 @@
     { label: '2019年', value: '2019', colorClass: 'bg-indigo-500' }
   ])
 
+  const viewportWidth = ref(window.innerWidth)
+
+  /** 更新视口宽度，使弹窗尺寸随窗口调整。 */
+  const updateViewportWidth = () => {
+    viewportWidth.value = window.innerWidth
+  }
+
   // 响应式弹窗宽度：移动端90%，PC端40%
   const dialogWidth = computed(() => {
-    // 使用matchMedia进行响应式判断，小于640px为移动端
-    return window.matchMedia('(max-width: 640px)').matches ? '90%' : '40%'
+    return viewportWidth.value <= 640 ? '90%' : '40%'
   })
 
   // 修改 currentCompetitionTracks 计算属性，将没有赛道的项目归为"尚未区分赛道"
@@ -937,6 +910,7 @@
   // 页面加载时获取数据
   onMounted(() => {
     fetchAwards()
+    window.addEventListener('resize', updateViewportWidth)
 
     nextTick(() => {
       const observer = new IntersectionObserver(
@@ -957,6 +931,10 @@
           observer.observe(section)
         })
     })
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', updateViewportWidth)
   })
 
   // 新增：监听竞赛项目变化，清空赛道筛选

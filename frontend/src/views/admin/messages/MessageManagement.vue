@@ -83,7 +83,7 @@
           </el-table-column>
           <el-table-column prop="likeCount" label="点赞数" :width="isMobile ? 70 : 80" />
           <el-table-column prop="createTime" label="创建时间" :width="isMobile ? 120 : 180" />
-          <el-table-column label="操作" :width="isMobile ? 100 : 150" fixed="right">
+          <el-table-column label="操作" :width="isMobile ? undefined : 150" :fixed="isMobile ? false : 'right'">
             <template #default="scope">
               <el-button
                 type="danger"
@@ -148,9 +148,8 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import { getAdminMessages, deleteAdminMessage } from '@/services/adminService'
 
 // 检测是否为移动端
-const isMobile = computed(() => {
-  return window.innerWidth <= 768
-})
+const viewportWidth = ref(window.innerWidth)
+const isMobile = computed(() => viewportWidth.value <= 768)
 
 const searchForm = reactive({
   keyword: "",
@@ -355,6 +354,7 @@ const handleBatchDelete = async () => {
 
 // 监听窗口大小变化
 const handleResize = () => {
+  viewportWidth.value = window.innerWidth
   // 根据屏幕大小调整分页大小
   if (isMobile.value && messagesData.value.size > 10) {
     messagesData.value.size = 5

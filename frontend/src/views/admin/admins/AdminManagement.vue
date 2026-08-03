@@ -15,8 +15,7 @@
         </div>
       </template>
 
-      <!-- 移动端适配：使用响应式表格 -->
-      <div class="table-container">
+          <div class="table-container">
         <el-table 
           :data="adminsList" 
           style="width: 100%"
@@ -32,7 +31,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="创建时间" :width="isMobile ? 150 : 180" />
-          <el-table-column label="操作" :width="isMobile ? 150 : 200" fixed="right">
+          <el-table-column label="操作" :width="isMobile ? undefined : 170" :fixed="isMobile ? false : 'right'">
             <template #default="scope">
               <div class="action-buttons">
                 <el-button
@@ -61,8 +60,8 @@
     <el-dialog 
       v-model="dialogVisible" 
       :title="dialogTitle" 
-      :width="isMobile ? '90%' : '500px'"
-      :fullscreen="isMobile"
+      :width="isMobile ? '100%' : '720px'"
+      class="admin-dialog"
     >
       <el-form
         ref="adminFormRef"
@@ -136,7 +135,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue"
+import { ref, reactive, onBeforeUnmount, onMounted, computed } from "vue"
 import { ElMessage } from "element-plus"
 import { useAdminStore } from "@/stores/adminStore"
 import {
@@ -154,9 +153,11 @@ const dialogTitle = ref("添加管理员")
 const editingAdminId = ref(null)
 const adminFormRef = ref(null)
 
+const viewportWidth = ref(window.innerWidth)
+
 // 检测是否为移动端
 const isMobile = computed(() => {
-  return window.innerWidth <= 768
+  return viewportWidth.value <= 768
 })
 
 const adminForm = reactive({
@@ -265,7 +266,7 @@ const handleSubmit = async () => {
 
 // 监听窗口大小变化
 const handleResize = () => {
-  // 响应式处理会在computed中自动更新
+  viewportWidth.value = window.innerWidth
 }
 
 onMounted(() => {
@@ -273,11 +274,9 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 })
 
-// 清理事件监听器
-// 在Vue 3.5+中，可以使用onUnmounted
-// onUnmounted(() => {
-//   window.removeEventListener('resize', handleResize)
-// })
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style scoped>
@@ -302,28 +301,8 @@ onMounted(() => {
   overflow-x: auto;
 }
 
-/* 移动端表格样式 */
-.mobile-table :deep(.el-table__row) {
-  display: flex;
-  flex-direction: column;
-}
-
-.mobile-table :deep(.el-table__cell) {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px !important;
-  border-bottom: 1px solid #eee;
-}
-
-.mobile-table :deep(.el-table__cell)::before {
-  content: attr(label);
-  font-weight: bold;
-  margin-right: 10px;
-}
-
 .action-buttons {
   display: flex;
-  flex-direction: column;
   gap: 5px;
 }
 
@@ -357,6 +336,11 @@ onMounted(() => {
   width: 100%;
 }
 
+:deep(.admin-dialog .el-dialog__body) {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .admin-management {
@@ -370,6 +354,16 @@ onMounted(() => {
   
   .card-header .el-button {
     width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  :deep(.admin-dialog) {
+    width: 100% !important;
+    max-height: 80vh;
+    margin: 0;
   }
   
   /* 表格在移动端的优化显示 */

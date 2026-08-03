@@ -2,7 +2,6 @@
   import { onMounted, ref, computed, onUnmounted, nextTick, watch } from 'vue'
   import { useMessageStore } from '@/stores/messageStore'
   import { showSuccess } from '@/utils/notification'
-  import { Refresh, Edit } from '@element-plus/icons-vue'
   import { useRouter } from 'vue-router'
   import { ElMessageBox } from 'element-plus'
   import CommonFooter from '@/components/CommonFooter.vue'
@@ -424,10 +423,7 @@
       <div class="container">
         <!-- 返回按钮 -->
         <button class="back-home-btn" @click="router.back()" title="返回">
-          <font-awesome-icon
-            :icon="['fas', 'arrow-left']"
-            class="fa-arrow-left"
-          />
+          <i-fa6-solid-arrow-left class="fa-arrow-left" />
         </button>
         <h1 class="board-title">
           <span class="icon">💬</span>
@@ -462,7 +458,7 @@
               </div>
               <div class="button-group">
                 <button class="submit-btn" @click="handleAddMessage">
-                  <el-icon :size="20"><Edit /></el-icon>
+                  <el-icon :size="20"><i-ep-edit /></el-icon>
                   <span class="submit-text">发布留言</span>
                 </button>
               </div>
@@ -477,7 +473,7 @@
             @click="handleRefresh"
             :disabled="isRefreshing"
           >
-            <el-icon :size="24"><Refresh /></el-icon>
+            <el-icon :size="24"><i-ep-refresh /></el-icon>
           </button>
         </div>
 

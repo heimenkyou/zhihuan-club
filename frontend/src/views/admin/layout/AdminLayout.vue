@@ -5,6 +5,7 @@
         <el-icon class="menu-toggle" @click="toggleMenu" v-if="isMobile">
           <component :is="isMenuCollapsed ? 'Expand' : 'Fold'" />
         </el-icon>
+        <img class="admin-logo" src="/you.webp" alt="社团标志" />
         <span class="admin-title">{{
           isMobile && isMenuCollapsed ? '管理后台' : '社团管理后台'
         }}</span>
@@ -12,24 +13,24 @@
       <div class="header-right">
         <el-dropdown trigger="hover" @command="handleCommand">
           <div class="user-info">
-            <el-icon class="user-icon"><User /></el-icon>
+            <el-icon class="user-icon"><i-ep-user /></el-icon>
             <span class="username" v-if="!isMobile || !isMenuCollapsed">{{
               userInfo?.username
             }}</span>
-            <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
+            <el-icon class="dropdown-icon"><i-ep-arrow-down /></el-icon>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="profile">
-                <el-icon><User /></el-icon>
+                <el-icon><i-ep-user /></el-icon>
                 个人资料
               </el-dropdown-item>
               <el-dropdown-item command="home">
-                <el-icon><House /></el-icon>
+                <el-icon><i-ep-house /></el-icon>
                 返回前台
               </el-dropdown-item>
               <el-dropdown-item command="logout" divided>
-                <el-icon><SwitchButton /></el-icon>
+                <el-icon><i-ep-switch-button /></el-icon>
                 退出登录
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -50,37 +51,37 @@
         >
           <el-menu-item index="/admin/dashboard">
             <template #title>
-              <el-icon><House /></el-icon>
+              <el-icon><i-ep-house /></el-icon>
               <span>后台首页</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/admin/applications">
             <template #title>
-              <el-icon><User /></el-icon>
+              <el-icon><i-ep-user /></el-icon>
               <span>报名信息管理</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/admin/messages">
             <template #title>
-              <el-icon><Message /></el-icon>
+              <el-icon><i-ep-message /></el-icon>
               <span>留言板管理</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/admin/awards">
             <template #title>
-              <el-icon><Trophy /></el-icon>
+              <el-icon><i-ep-trophy /></el-icon>
               <span>奖项管理</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/admin/projects">
             <template #title>
-              <el-icon><Box /></el-icon>
+              <el-icon><i-ep-box /></el-icon>
               <span>项目管理</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/admin/attachments">
             <template #title>
-              <el-icon><Picture /></el-icon>
+              <el-icon><i-ep-picture /></el-icon>
               <span>附件库</span>
             </template>
           </el-menu-item>
@@ -94,17 +95,6 @@
 </template>
 
 <script setup>
-import {
-  House,
-  User,
-  Message,
-  Trophy,
-   Box,
-   Picture,
-  ArrowDown,
-  SwitchButton,
-} from '@element-plus/icons-vue'
-
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/adminStore'
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
@@ -215,9 +205,17 @@ const currentRoutePath = computed(() => router.currentRoute.value.path)
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     height: 60px;
   }
-  .header-left {
-    display: flex;
-    align-items: center;
+   .header-left {
+     display: flex;
+     align-items: center;
+     min-width: 0;
+   }
+   .admin-logo {
+     width: 32px;
+     height: 32px;
+     margin-right: 10px;
+     object-fit: cover;
+     border-radius: 6px;
   }
   .menu-toggle {
     font-size: 24px;
@@ -327,10 +325,16 @@ const currentRoutePath = computed(() => router.currentRoute.value.path)
       height: 50px;
     }
 
-    .admin-title {
-      font-size: 18px;
-      max-width: 150px;
-    }
+     .admin-title {
+       font-size: 18px;
+       max-width: 130px;
+     }
+
+     .admin-logo {
+       width: 28px;
+       height: 28px;
+       margin-right: 8px;
+     }
 
     .user-icon {
       font-size: 16px;

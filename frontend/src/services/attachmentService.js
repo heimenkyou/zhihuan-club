@@ -29,7 +29,8 @@ export const uploadImage = async (file, onProgress) => {
   await new Promise((resolve, reject) => {
     qiniu
       .upload(file, credential.key, credential.token, { fname: file.name }, {
-        uphost: credential.uploadUrl,
+        uphost: new URL(credential.uploadUrl).host,
+        upprotocol: 'https',
         retryCount: 2,
       })
       .subscribe({

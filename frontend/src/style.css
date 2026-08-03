@@ -98,23 +98,9 @@ p {
   opacity: 0;
 }
 
-/* 添加响应式字体大小设置 */
-@media (max-width: 768px) {
-  html {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  html {
-    font-size: 12px;
-  }
-}
-
 /* 移动端卡片调整 */
 @media (max-width: 768px) {
-  .card,
-  .bg-white.rounded-xl {
+  .card {
     padding: 1.5rem;
     margin-bottom: 1.5rem;
   }

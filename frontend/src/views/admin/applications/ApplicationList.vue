@@ -175,7 +175,7 @@
               label="第二志愿"
               :width="isMobile ? 70 : 120"
             />
-            <el-table-column label="操作" :width="isMobile ? 70 : 200" fixed="right">
+            <el-table-column label="操作" :width="isMobile ? undefined : 170" :fixed="isMobile ? false : 'right'">
               <template #default="scope">
                 <div :class="isMobile ? 'mobile-button-group' : 'desktop-button-group'">
                   <el-button
@@ -221,8 +221,8 @@
     <el-dialog 
       v-model="dialogVisible" 
       title="报名详情" 
-      :width="isMobile ? '90%' : '600px'"
-      :fullscreen="false"
+      :width="isMobile ? '100%' : '720px'"
+      class="admin-dialog"
     >
       <el-form 
         :model="currentApplication || {}" 
@@ -759,6 +759,11 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
+:deep(.admin-dialog .el-dialog__body) {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 @media (max-width: 768px) {
   .application-container {
     padding: 10px;
@@ -804,6 +809,12 @@ onBeforeUnmount(() => {
   
   :deep(.el-dialog) {
     --el-dialog-content-font-size: 13px;
+  }
+
+  :deep(.admin-dialog) {
+    width: 100% !important;
+    max-height: 80vh;
+    margin: 0;
   }
   
   :deep(.el-form-item__label) {

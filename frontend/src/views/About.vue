@@ -103,7 +103,7 @@
             <!-- 移动端内容 -->
             <div class="md:hidden flex-1">
               <div class="flex items-center mb-3">
-                <el-icon class="text-primary mr-2"><CircleCheck /></el-icon>
+                <el-icon class="text-primary mr-2"><i-ep-circle-check /></el-icon>
                 <h3 class="text-lg font-bold text-dark">社团成立</h3>
               </div>
               <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
@@ -119,7 +119,7 @@
             <!-- 移动端时间线图标 -->
             <div class="md:hidden flex flex-col items-center mr-4 mt-2">
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                <el-icon class="text-sm"><CircleCheck /></el-icon>
+                <el-icon class="text-sm"><i-ep-circle-check /></el-icon>
               </div>
               <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
@@ -131,7 +131,7 @@
               </div>
               <div class="flex flex-col items-center">
                 <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                  <el-icon><CircleCheck /></el-icon>
+                  <el-icon><i-ep-circle-check /></el-icon>
                 </div>
                 <div class="w-0.5 h-28 bg-gray-200 mt-2"></div>
               </div>
@@ -145,7 +145,7 @@
             <!-- 移动端内容 -->
             <div class="md:hidden flex-1">
               <div class="flex items-center mb-3">
-                <el-icon class="text-primary mr-2"><CircleCheck /></el-icon>
+                <el-icon class="text-primary mr-2"><i-ep-circle-check /></el-icon>
                 <h3 class="text-lg font-bold text-dark">首次招新</h3>
               </div>
               <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
@@ -161,7 +161,7 @@
             <!-- 移动端时间线图标 -->
             <div class="md:hidden flex flex-col items-center mr-4 mt-2">
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                <font-awesome-icon :icon="['fas', 'cogs']" class="text-sm" />
+                <i-fa6-solid-gears class="text-sm" />
               </div>
               <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
@@ -173,7 +173,7 @@
               </div>
               <div class="flex flex-col items-center">
                 <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                  <font-awesome-icon :icon="['fas', 'cogs']" />
+                  <i-fa6-solid-gears />
                 </div>
                 <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
               </div>
@@ -187,7 +187,7 @@
             <!-- 移动端内容 -->
             <div class="md:hidden flex-1">
               <div class="flex items-center mb-3">
-                <font-awesome-icon :icon="['fas', 'cogs']" class="text-primary mr-2" />
+                <i-fa6-solid-gears class="text-primary mr-2" />
                 <h3 class="text-lg font-bold text-dark">变革与成长</h3>
               </div>
               <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
@@ -203,7 +203,7 @@
             <!-- 移动端时间线图标 -->
             <div class="md:hidden flex flex-col items-center mr-4 mt-2">
               <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                <font-awesome-icon :icon="['fas', 'globe']" class="text-sm" />
+                <i-fa6-solid-globe class="text-sm" />
               </div>
               <div class="w-0.5 h-48 bg-gray-200 mt-2"></div>
             </div>
@@ -215,7 +215,7 @@
               </div>
               <div class="flex flex-col items-center">
                 <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                  <font-awesome-icon :icon="['fas', 'globe']" />
+                  <i-fa6-solid-globe />
                 </div>
                 <div class="w-0.5 h-24 bg-gray-200 mt-2"></div>
               </div>
@@ -229,7 +229,7 @@
             <!-- 移动端内容 -->
             <div class="md:hidden flex-1">
               <div class="flex items-center mb-3">
-                <font-awesome-icon :icon="['fas', 'globe']" class="text-primary mr-2" />
+                <i-fa6-solid-globe class="text-primary mr-2" />
                 <h3 class="text-lg font-bold text-dark">数字化转型</h3>
               </div>
               <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
@@ -245,7 +245,7 @@
             <!-- 移动端时间线图标 -->
             <div class="md:hidden flex flex-col items-center mr-4 mt-2">
               <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg">
-                <font-awesome-icon :icon="['fas', 'star']" class="text-sm" />
+                <i-fa6-solid-star class="text-sm" />
               </div>
               <!-- 最后一个节点不需要连接线 -->
             </div>
@@ -257,7 +257,7 @@
               </div>
               <div class="flex flex-col items-center">
                 <div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg">
-                  <font-awesome-icon :icon="['fas', 'star']" />
+                  <i-fa6-solid-star />
                 </div>
                 <!-- 最后一个节点不需要连接线 -->
               </div>
@@ -271,7 +271,7 @@
             <!-- 移动端内容 -->
             <div class="md:hidden flex-1">
               <div class="flex items-center mb-3">
-                <font-awesome-icon :icon="['fas', 'star']" class="text-secondary mr-2" />
+                <i-fa6-solid-star class="text-secondary mr-2" />
                 <h3 class="text-lg font-bold text-dark">未来可期</h3>
               </div>
               <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 mb-3">
@@ -302,10 +302,7 @@
             <div
               class="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
             >
-              <font-awesome-icon
-                :icon="['fas', 'id-card']"
-                class="fa-id-card"
-              />
+              <i-fa6-solid-id-card class="fa-id-card" />
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">社长</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -323,7 +320,7 @@
             <div
               class="w-24 h-24 mx-auto mb-4 rounded-full bg-secondary/10 flex items-center justify-center"
             >
-              <font-awesome-icon :icon="['fas', 'user']" class="fa-user" />
+              <i-fa6-solid-user class="fa-user" />
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">副社长</h3>
             <p class="text-gray-600 text-sm mb-4">
@@ -355,10 +352,7 @@
               <div
                 class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
               >
-                <font-awesome-icon
-                  :icon="['fas', 'magnifying-glass-plus']"
-                  class="text-white text-2xl"
-                />
+                <i-fa6-solid-magnifying-glass-plus class="text-white text-2xl" />
               </div>
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">算法部</h3>
@@ -388,10 +382,7 @@
               <div
                 class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
               >
-                <font-awesome-icon
-                  :icon="['fas', 'magnifying-glass-plus']"
-                  class="text-white text-2xl"
-                />
+                <i-fa6-solid-magnifying-glass-plus class="text-white text-2xl" />
               </div>
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">项目竞赛部</h3>
@@ -421,10 +412,7 @@
               <div
                 class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
               >
-                <font-awesome-icon
-                  :icon="['fas', 'magnifying-glass-plus']"
-                  class="text-white text-2xl"
-                />
+                <i-fa6-solid-magnifying-glass-plus class="text-white text-2xl" />
               </div>
             </div>
             <h3 class="text-xl font-bold text-dark mb-3">综合管理部</h3>
@@ -458,7 +446,6 @@
 
 <script setup>
   import { onMounted } from 'vue'
-  import { CircleCheck } from '@element-plus/icons-vue'
   import CommonNavbar from '@/components/CommonNavbar.vue'
   import CommonFooter from '@/components/CommonFooter.vue'
 
