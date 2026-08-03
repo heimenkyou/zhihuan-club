@@ -147,16 +147,6 @@ public class QiniuStorageService {
         return properties.getDomain().replaceAll("/+$", "") + "/" + objectKey;
     }
 
-    /**
-     * 获取浏览器直传使用的上传域名。
-     *
-     * @return 上传域名
-     */
-    public String getUploadUrl() {
-        validateConfiguration();
-        return properties.getDomain().replaceAll("/+$", "");
-    }
-
     private Auth auth() {
         return Auth.create(properties.getAccessKey(), properties.getSecretKey());
     }
@@ -185,4 +175,5 @@ public class QiniuStorageService {
         String extension = originalName.substring(separator + 1).toLowerCase(Locale.ROOT);
         return extension.matches("[a-z0-9]{1,10}") ? "." + extension : "";
     }
+
 }

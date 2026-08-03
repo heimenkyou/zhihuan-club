@@ -14,5 +14,4 @@ public class AttachmentUploadTokenRespDTO {
     private Long id;
     private String key;
     private String token;
-    private String uploadUrl;
 }

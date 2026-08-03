@@ -61,7 +61,6 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
                 .id(attachment.getId())
                 .key(objectKey)
                 .token(token)
-                .uploadUrl(qiniuStorageService.getUploadUrl())
                 .build();
     }
 
