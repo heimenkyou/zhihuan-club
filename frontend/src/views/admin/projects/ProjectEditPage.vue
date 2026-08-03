@@ -130,15 +130,16 @@
 
         <!-- 技术栈管理 -->
         <el-form-item label="技术栈">
-          <el-input
-            v-model="techStackInput"
-            placeholder="请输入技术名称"
-            class="tech-stack-input"
-            @keyup.enter="addTechStack"
-          />
-          <el-button type="primary" size="small" @click="addTechStack"
-            >添加</el-button
-          >
+          <div class="tech-stack-management">
+            <div class="tech-stack-controls">
+              <el-input
+                v-model="techStackInput"
+                placeholder="请输入技术名称"
+                class="tech-stack-input"
+                @keyup.enter="addTechStack"
+              />
+              <el-button type="primary" @click="addTechStack">添加</el-button>
+            </div>
           <div
             class="tech-stack-list mt-3"
             v-if="
@@ -157,6 +158,7 @@
           </div>
           <div v-else class="no-tech-stack-tip text-gray-500 text-sm mt-3">
             暂无技术栈，请添加
+          </div>
           </div>
         </el-form-item>
 
@@ -669,12 +671,17 @@ onMounted(() => {
     color: white;
   }
 
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 30px;
-    gap: 10px;
-  }
+   .form-actions {
+     display: flex;
+     justify-content: flex-end;
+     margin-top: 30px;
+     gap: 10px;
+   }
+
+   :deep(.el-form-item__content) {
+     flex: 1;
+     min-width: 0;
+   }
 
   .upload-container {
     display: flex;
@@ -746,11 +753,24 @@ onMounted(() => {
     padding-left: 0;
   }
 
-  .cover-image-input,
-  .tech-stack-input,
-  .award-input {
-    width: 100%;
-  }
+   .cover-image-input,
+   .award-input {
+     width: 100%;
+   }
+
+   .tech-stack-management {
+     width: 100%;
+   }
+
+   .tech-stack-controls {
+     display: flex;
+     gap: 8px;
+   }
+
+   .tech-stack-input {
+     flex: 1;
+     min-width: 0;
+   }
 
   .team-member-input {
     margin-right: 12px;
@@ -899,11 +919,13 @@ onMounted(() => {
     border: 1px solid #ebeef5;
   }
 
-  .media-resources-container {
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #fafafa;
+   .media-resources-container {
+     border: 1px solid #e4e7ed;
+     border-radius: 8px;
+     padding: 20px;
+     background-color: #fafafa;
+     width: 100%;
+     box-sizing: border-box;
   }
 
    .selected-media-list {
@@ -957,11 +979,13 @@ onMounted(() => {
     padding: 40px 0;
   }
 
-  .award-management {
-    border: 1px solid #e4e7ed;
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #fafafa;
+   .award-management {
+     border: 1px solid #e4e7ed;
+     border-radius: 8px;
+     padding: 20px;
+     background-color: #fafafa;
+     width: 100%;
+     box-sizing: border-box;
   }
 
   .form-tip {
@@ -1065,10 +1089,9 @@ onMounted(() => {
        padding: 12px;
      }
 
-     .tech-stack-input {
-       width: 100%;
-       margin-bottom: 8px;
-     }
+      .tech-stack-input {
+        width: 100%;
+      }
 
       .selected-media-item {
         gap: 8px;
