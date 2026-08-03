@@ -123,6 +123,28 @@ export const getAwards = async (params = {}) => {
 }
 
 /**
+ * 获取后台奖项列表。
+ *
+ * @param {{ keyword?: string }} [params]
+ * @returns {Promise<any[]>}
+ */
+export const getAdminAwards = async (params = {}) => {
+  const response = await api.get('/admin/awards')
+  const awards = getArrayData(getBody(response))
+  if (!params.keyword) return awards
+
+  const keyword = params.keyword.toLowerCase()
+  return awards.filter(
+    award =>
+      award.competitionName?.toLowerCase().includes(keyword) ||
+      award.competitionLevel?.toLowerCase().includes(keyword) ||
+      award.awardLevel?.toLowerCase().includes(keyword) ||
+      award.winners?.some?.(winner => winner?.toLowerCase().includes(keyword)) ||
+      award.year?.toString().includes(keyword)
+  )
+}
+
+/**
  * 创建奖项。
  *
  * @param {Object} params
@@ -187,9 +209,9 @@ export const deleteAward = async id => {
  *
  * @returns {Promise<any>}
  */
-export const getAdmins = async () => {
+export const getAdmins = async (params = {}) => {
   try {
-    const response = await api.get('/admin/admins/page')
+    const response = await api.get('/admin/admins', { params })
     return getResultData(getBody(response))
   } catch (error) {
     console.error('获取管理员列表失败:', error)
@@ -205,7 +227,7 @@ export const getAdmins = async () => {
  */
 export const createAdmin = async params => {
   try {
-    const response = await api.post('/admin/admins/add', params)
+    const response = await api.post('/admin/admins', params)
     return getResultData(getBody(response))
   } catch (error) {
     console.error('添加管理员失败:', error)
@@ -247,7 +269,7 @@ export const updateAdmin = async (id, params) => {
  */
 export const getCurrentAdmin = async () => {
   try {
-    const response = await api.get('/admin/admins/me')
+    const response = await api.get('/admin/auth/me')
     return getResultData(getBody(response))
   } catch (error) {
     console.error('获取当前管理员信息失败:', error)
@@ -263,13 +285,9 @@ export const getCurrentAdmin = async () => {
  */
 export const login = async params => {
   try {
-    const response = await api.post('/admins/login', params)
+    const response = await api.post('/admin/auth/login', params)
     const data = getResultData(getBody(response))
     const token = data?.token
-
-    if (token) {
-      localStorage.setItem('adminToken', token)
-    }
 
     return data
   } catch (error) {
@@ -285,7 +303,7 @@ export const login = async params => {
  * @returns {Promise<void>}
  */
 export const logout = async () => {
-  await api.post('/admins/logout')
+  await api.post('/admin/auth/logout')
 }
 
 /**
@@ -295,7 +313,7 @@ export const logout = async () => {
  */
 export const getApplicationMajors = async () => {
   try {
-    const response = await api.get('/applications/majors')
+    const response = await api.get('/admin/applications/majors')
     const data = getResultData(getBody(response))
 
     if (!data) {
@@ -317,7 +335,7 @@ export const getApplicationMajors = async () => {
  */
 export const getApplications = async (params = {}) => {
   try {
-    const response = await api.get('/applications', { params })
+    const response = await api.get('/admin/applications', { params })
     const data = getResultData(getBody(response))
 
     if (!data) {
@@ -339,7 +357,7 @@ export const getApplications = async (params = {}) => {
  */
 export const deleteApplication = async id => {
   try {
-    await api.delete(`/applications/${id}`)
+    await api.delete(`/admin/applications/${id}`)
   } catch (error) {
     console.error('删除报名信息失败:', error)
     throw error
@@ -415,4 +433,35 @@ export const uploadMedia = async params => {
     console.error('上传媒体资源失败:', error)
     throw error
   }
+}
+
+/**
+ * 更新当前管理员资料或密码。
+ *
+ * @param {Object} params
+ * @returns {Promise<void>}
+ */
+export const updateCurrentAdmin = async params => {
+  await api.put('/admin/auth/me', params)
+}
+
+/**
+ * 获取后台留言分页数据。
+ *
+ * @param {Object} params
+ * @returns {Promise<any>}
+ */
+export const getAdminMessages = async params => {
+  const response = await api.get('/admin/messages', { params })
+  return getResultData(getBody(response))
+}
+
+/**
+ * 删除后台留言。
+ *
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
+export const deleteAdminMessage = async id => {
+  await api.delete(`/admin/messages/${id}`)
 }

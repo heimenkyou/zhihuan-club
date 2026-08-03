@@ -1,11 +1,9 @@
-import router from '@/router'
 import axios from 'axios'
 import qs from 'qs'
-import { useAdminStore } from '@/stores/adminStore'
 
 const api = axios.create({
   baseURL: '/api',
-  timeout: 600000,
+  timeout: 30000,
   paramsSerializer: {
     serialize: params => qs.stringify(params, { arrayFormat: 'repeat' }),
   },
@@ -38,15 +36,8 @@ api.interceptors.response.use(
     const tokenErrorCodes = ['A000130', 'A000131']
 
     if (tokenErrorCodes.includes(code)) {
-      const adminStore = useAdminStore()
-      const currentPath = router.currentRoute.value.path
-
-      adminStore.clearAuthState()
-
-      if (currentPath.startsWith('/admin')) {
-        router.replace('/admin/login')
-      }
-
+      localStorage.removeItem('adminToken')
+      window.dispatchEvent(new CustomEvent('admin-auth-expired'))
       return Promise.reject(new Error(message || '登录已失效，请重新登录'))
     }
 
@@ -60,14 +51,8 @@ api.interceptors.response.use(
     const message = getErrorMessage(error)
 
     if (error.response?.status === 401) {
-      const adminStore = useAdminStore()
-      const currentPath = router.currentRoute.value.path
-
-      adminStore.clearAuthState()
-
-      if (currentPath.startsWith('/admin')) {
-        router.replace('/admin/login')
-      }
+      localStorage.removeItem('adminToken')
+      window.dispatchEvent(new CustomEvent('admin-auth-expired'))
     }
 
     return Promise.reject(new Error(message))

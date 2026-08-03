@@ -25,6 +25,16 @@ public class AwardController {
     @Operation(summary = "查询所有奖项")
     @GetMapping("/awards")
     public Result<List<AwardRespDTO>> list() {
+        return Results.success(listAwards());
+    }
+
+    @Operation(summary = "后台查询所有奖项")
+    @GetMapping("/admin/awards")
+    public Result<List<AwardRespDTO>> adminList() {
+        return Results.success(listAwards());
+    }
+
+    private List<AwardRespDTO> listAwards() {
         List<AwardRespDTO> awardRespDTOS = awardService.list().stream()
                 .map(each -> {
                     AwardRespDTO respDTO = BeanUtil.toBean(each, AwardRespDTO.class);
@@ -34,7 +44,7 @@ public class AwardController {
                 })
                 .toList();
         log.debug("查询所有奖项, 数量={}", awardRespDTOS.size());
-        return Results.success(awardRespDTOS);
+        return awardRespDTOS;
     }
 
     @Operation(summary = "添加奖项")

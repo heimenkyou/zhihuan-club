@@ -61,7 +61,7 @@ export const getProjectDetail = async id => {
  */
 export const getProjectForEdit = async id => {
   try {
-    const response = await api.get(`/projects/${id}/edit`)
+    const response = await api.get(`/admin/projects/${id}`)
     const body = getBody(response)
     const data = getResultData(body)
 
@@ -167,4 +167,15 @@ export const getProjects = async params => {
       fail: true,
     }
   }
+}
+
+/**
+ * 获取后台项目分页数据。
+ *
+ * @param {{ current?: number, size?: number, keyword?: string }} [params]
+ * @returns {Promise<any>}
+ */
+export const getAdminProjects = async params => {
+  const response = await api.get('/admin/projects', { params })
+  return response.data
 }

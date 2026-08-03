@@ -50,6 +50,13 @@ knife4j:
   setting:
     language: zh_cn
 
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 1800
+  is-concurrent: false
+  is-share: false
+
 app:
   mysql:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -71,6 +78,4 @@ app:
     bucket-name: ${MINIO_BUCKET_NAME:}
   # 点赞防刷时间间隔(秒)
   like-interval-seconds: 86400
-  # 管理员登录token有效期
-  admin-token-expire-minutes: 30
 

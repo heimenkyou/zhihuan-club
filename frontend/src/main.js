@@ -52,10 +52,12 @@ app.use(ElementPlus, {
 
 const adminStore = useAdminStore()
 
-// 如果本地有 token 但用户信息为空，则在启动时恢复登录态。
-if (localStorage.getItem('adminToken') && !adminStore.userInfo) {
-  adminStore.fetchUserInfo()
-}
+window.addEventListener('admin-auth-expired', () => {
+  adminStore.clearAuthState()
+  if (router.currentRoute.value.path.startsWith('/admin')) {
+    router.replace('/admin/login')
+  }
+})
 
 // Vue 全局异常处理器
 app.config.errorHandler = (err, _instance, info) => {

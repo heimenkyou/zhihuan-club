@@ -182,7 +182,7 @@ const rules = {
 const loadAdminsList = async () => {
   try {
     const data = await getAdmins()
-    adminsList.value = data
+    adminsList.value = data?.records ?? []
   } catch (error) {
     ElMessage.error("加载管理员列表失败")
     console.error("加载管理员列表失败:", error)

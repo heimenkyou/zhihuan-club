@@ -103,6 +103,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.meta.requiresAuth && to.path.startsWith('/admin')) {
+    await adminStore.initialize()
     if (!adminStore.isLoggedIn) {
       ElMessage.error('请先登录')
       next('/admin/login')

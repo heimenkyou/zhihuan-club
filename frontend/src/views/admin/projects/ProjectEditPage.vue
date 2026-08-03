@@ -604,26 +604,24 @@
   }
 
   /**
-   * 模拟封面上传结果，保持现有交互不变。
+   * 上传项目封面并回写真实资源地址。
    *
-   * @param {{ onSuccess: Function }} options
-   * @returns {Promise<{ url: string }>}
+   * @param {{ file: File, onSuccess: Function, onError: Function }} options
+   * @returns {Promise<Object>}
    */
-  const handleUpload = options => {
-    const { onSuccess } = options
-    const mockImageUrl = `https://picsum.photos/id/${Math.floor(
-      Math.random() * 100
-    )}/400/300`
-
-    setTimeout(() => {
-      onSuccess({ url: mockImageUrl })
-    }, 1000)
-
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ url: mockImageUrl })
-      }, 1000)
-    })
+  const handleUpload = async ({ file, onSuccess, onError }) => {
+    try {
+      const media = await uploadMedia({
+        file,
+        title: file.name,
+        description: '项目封面',
+      })
+      onSuccess(media)
+      return media
+    } catch (error) {
+      onError(error)
+      throw error
+    }
   }
 
   /**

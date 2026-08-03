@@ -398,7 +398,7 @@
   import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import {
-    getAwards,
+    getAdminAwards,
     createAward,
     updateAward,
     deleteAward as deleteAwardApi,
@@ -684,7 +684,7 @@
   const loadAwards = async () => {
     loading.value = true
     try {
-      const data = await getAwards({ keyword: searchKeyword.value })
+      const data = await getAdminAwards({ keyword: searchKeyword.value })
       awardsData.value = Array.isArray(data) ? data : []
       currentPage.value = 1
     } catch (error) {

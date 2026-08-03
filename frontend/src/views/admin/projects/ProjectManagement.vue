@@ -124,7 +124,7 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import { Plus } from "@element-plus/icons-vue"
 import { useRouter } from "vue-router"
 import {
-  getProjects,
+  getAdminProjects,
   deleteProject as deleteProjectApi,
 } from "@/services/projectService"
 
@@ -145,7 +145,7 @@ const totalCount = ref(0)
 const loadProjects = async () => {
   loading.value = true
   try {
-    const response = await getProjects({
+    const response = await getAdminProjects({
       current: currentPage.value,
       size: pageSize.value,
       keyword: searchKeyword.value,

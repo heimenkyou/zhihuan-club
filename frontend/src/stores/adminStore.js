@@ -4,19 +4,24 @@ import api from '@/services/api'
 
 export const useAdminStore = defineStore('admin', () => {
   const userInfo = ref(null)
+  const token = ref(localStorage.getItem('adminToken'))
   const isLoading = ref(false)
+  const initialized = ref(false)
+  let initializePromise = null
 
-  // 本地有 token 就认为存在登录态，再由接口校验真伪。
-  const isLoggedIn = computed(() => !!localStorage.getItem('adminToken'))
+  // 本地凭证必须经过后端校验后才视为已登录。
+  const isLoggedIn = computed(() => Boolean(token.value && userInfo.value))
 
   /**
    * 写入当前登录用户与 token，保证刷新后仍可恢复登录态。
    */
-  const login = (userData, token) => {
+  const login = (userData, credential) => {
     userInfo.value = userData
-    if (token) {
-      localStorage.setItem('adminToken', token)
+    if (credential) {
+      localStorage.setItem('adminToken', credential)
+      token.value = credential
     }
+    initialized.value = true
   }
 
   /**
@@ -24,6 +29,8 @@ export const useAdminStore = defineStore('admin', () => {
    */
   const clearAuthState = () => {
     userInfo.value = null
+    token.value = null
+    initialized.value = true
     localStorage.removeItem('adminToken')
   }
 
@@ -39,31 +46,36 @@ export const useAdminStore = defineStore('admin', () => {
    */
   const fetchUserInfo = async () => {
     try {
-      const response = await api.get('/admin/admins/me')
+      const response = await api.get('/admin/auth/me')
       userInfo.value = response.data.data
       return true
     } catch (error) {
-      userInfo.value = null
-      throw new Error('获取用户信息失败:' + error)
+      clearAuthState()
+      throw error
     }
   }
 
   /**
    * 主动校验当前登录状态，避免重复并发请求。
    */
-  const checkLoginStatus = async () => {
-    if (isLoading.value) return
+  const initialize = () => {
+    if (initialized.value) return Promise.resolve(isLoggedIn.value)
+    if (initializePromise) return initializePromise
+    if (!token.value) {
+      initialized.value = true
+      return Promise.resolve(false)
+    }
 
     isLoading.value = true
-    try {
-      await fetchUserInfo()
-      return true
-    } catch (error) {
-      console.error('验证登录状态失败:', error)
-      return false
-    } finally {
-      isLoading.value = false
-    }
+    initializePromise = fetchUserInfo()
+      .then(() => true)
+      .catch(() => false)
+      .finally(() => {
+        isLoading.value = false
+        initialized.value = true
+        initializePromise = null
+      })
+    return initializePromise
   }
 
   /**
@@ -75,13 +87,15 @@ export const useAdminStore = defineStore('admin', () => {
 
   return {
     isLoggedIn,
+    token,
     userInfo,
     isLoading,
+    initialized,
     fetchUserInfo,
     login,
     logout,
     clearAuthState,
-    checkLoginStatus,
+    initialize,
     isSuperAdmin,
   }
 })

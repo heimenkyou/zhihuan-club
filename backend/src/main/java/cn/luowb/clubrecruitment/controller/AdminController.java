@@ -1,6 +1,6 @@
 package cn.luowb.clubrecruitment.controller;
 
-import cn.luowb.clubrecruitment.common.context.UserContext;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -12,49 +12,46 @@ import cn.luowb.clubrecruitment.dto.resp.AdminPageRespDTO;
 import cn.luowb.clubrecruitment.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "管理员")
+@RequestMapping("/admin")
 public class AdminController {
-    private final StringRedisTemplate redisTemplate;
     private final AdminService adminService;
 
     @Operation(summary = "登录")
-    @PostMapping("/admins/login")
-    public Result<AdminLoginRespDTO> login(@RequestBody AdminLoginReqDTO requestParam) {
-        log.info("管理员登录，请求参数：{}", requestParam);
+    @PostMapping("/auth/login")
+    public Result<AdminLoginRespDTO> login(@RequestBody @Valid AdminLoginReqDTO requestParam) {
         AdminLoginRespDTO adminLoginRespDTO = adminService.login(requestParam);
+        log.info("管理员登录成功: {}", requestParam.getUsername());
         return Results.success(adminLoginRespDTO);
     }
 
     @Operation(summary = "登出")
-    @PostMapping("/admins/logout")
-    public Result<Void> logout(HttpServletRequest request) {
-        log.info("管理员登出, {}", UserContext.getUsername());
-        String header = request.getHeader("Authorization");
-        String token = header.replace("Bearer ", "");
-        adminService.logout(token);
+    @PostMapping("/auth/logout")
+    public Result<Void> logout() {
+        adminService.logout();
         return Results.success();
     }
 
     @Operation(summary = "添加管理员")
-    @PostMapping("/admin/admins/add")
+    @SaCheckRole("super")
+    @PostMapping("/admins")
     public Result<Void> add(@RequestBody AdminReqDTO requestParam) {
-        log.info("添加管理员: {}", requestParam);
         adminService.add(requestParam);
         return Results.success();
     }
 
     @Operation(summary = "分页查询管理员")
-    @GetMapping("/admin/admins/page")
+    @SaCheckRole("super")
+    @GetMapping("/admins")
     public Result<PageData<AdminPageRespDTO>> getAdminPage(@ParameterObject PageReqDTO requestParam) {
         log.debug("分页查询管理员: 第{}页{}条", requestParam.getCurrent(), requestParam.getSize());
         PageData<AdminPageRespDTO> adminPage = adminService.getAdminPage(requestParam);
@@ -62,7 +59,8 @@ public class AdminController {
     }
 
     @Operation(summary = "删除管理员")
-    @DeleteMapping("/admin/admins/{id}")
+    @SaCheckRole("super")
+    @DeleteMapping("/admins/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         log.info("删除管理员: id={}", id);
         adminService.delete(id);
@@ -70,24 +68,32 @@ public class AdminController {
     }
 
     @Operation(summary = "更新管理员")
-    @PutMapping("/admin/admins/{id}")
+    @SaCheckRole("super")
+    @PutMapping("/admins/{id}")
     public Result<Void> update(@RequestBody AdminReqDTO requestParam, @PathVariable Long id) {
-        log.info("更新管理员: id={}, {}", id, requestParam);
         adminService.update(requestParam, id);
         return Results.success();
     }
 
     @Operation(summary = "获取当前管理员信息")
-    @GetMapping("/admin/admins/me")
+    @GetMapping("/auth/me")
     public Result<AdminPageRespDTO> getAdminInfo() {
         AdminPageRespDTO adminInfo = adminService.getAdminInfo();
         return Results.success(adminInfo);
     }
 
     @Operation(summary = "查询指定管理员信息")
-    @GetMapping("/admin/admins/{id}")
+    @SaCheckRole("super")
+    @GetMapping("/admins/{id}")
     public Result<AdminPageRespDTO> getAdminInfo(@PathVariable Long id) {
         AdminPageRespDTO adminInfo = adminService.getAdminInfo(id);
         return Results.success(adminInfo);
+    }
+
+    @Operation(summary = "更新当前管理员资料")
+    @PutMapping("/auth/me")
+    public Result<Void> updateCurrent(@RequestBody AdminReqDTO requestParam) {
+        adminService.updateCurrent(requestParam);
+        return Results.success();
     }
 }

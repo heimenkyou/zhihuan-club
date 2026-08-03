@@ -1,14 +1,11 @@
 package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.BCrypt;
-import cn.luowb.clubrecruitment.common.context.UserContext;
-import cn.luowb.clubrecruitment.common.context.UserInfoDTO;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.result.PageData;
-import cn.luowb.clubrecruitment.common.util.RedisKeyUtil;
 import cn.luowb.clubrecruitment.dao.entity.AdminDO;
 import cn.luowb.clubrecruitment.dao.mapper.AdminMapper;
 import cn.luowb.clubrecruitment.dto.req.AdminLoginReqDTO;
@@ -17,15 +14,11 @@ import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.AdminLoginRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.AdminPageRespDTO;
 import cn.luowb.clubrecruitment.service.AdminService;
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
 
 /**
  * @author heimenkyou
@@ -38,8 +31,6 @@ import java.time.Duration;
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
         implements AdminService {
     private final AdminMapper adminMapper;
-    private final RedisKeyUtil redisKeyUtil;
-    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     public AdminLoginRespDTO login(AdminLoginReqDTO requestParam) {
@@ -52,28 +43,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
         if (!BCrypt.checkpw(password, adminDO.getPasswordHash())) {
             throw new ClientException("密码错误");
         }
-        String token = IdUtil.simpleUUID();
-        // 存储token到redis
-        String key = redisKeyUtil.buildAdminTokenKey(token);
-        UserInfoDTO userInfoDTO = UserInfoDTO.builder()
-                .userId(adminDO.getId())
-                .username(adminDO.getUsername())
-                .role(adminDO.getRole())
-                .build();
-        stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(userInfoDTO),
-                Duration.ofMinutes(redisKeyUtil.adminTokenExpireMinutes));
-        // 返回数据
+        StpUtil.login(adminDO.getId());
         AdminLoginRespDTO loginRespDTO = BeanUtil.toBean(adminDO, AdminLoginRespDTO.class);
-        loginRespDTO.setToken(token);
+        loginRespDTO.setToken(StpUtil.getTokenValue());
         return loginRespDTO;
     }
 
     @Override
     public void add(AdminReqDTO requestParam) {
-        String role = UserContext.getRole();
-        if (!"super".equals(role)) {
-            throw new ClientException("权限不足");
-        }
         AdminDO adminDO = adminMapper.selectByUsername(requestParam.getUsername());
         if (adminDO != null) {
             throw new ClientException("用户名已存在");
@@ -92,10 +69,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
 
     @Override
     public void delete(Long id) {
-        String role = UserContext.getRole();
-        if (!"super".equals(role)) {
-            throw new ClientException("权限不足");
-        }
         AdminDO adminDO = adminMapper.selectById(id);
         if (adminDO == null) {
             throw new ClientException("用户不存在");
@@ -105,10 +78,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
 
     @Override
     public void update(AdminReqDTO requestParam, Long id) {
-        String role = UserContext.getRole();
-        if (!"super".equals(role)) {
-            throw new ClientException("权限不足");
-        }
         AdminDO adminDO = adminMapper.selectById(id);
         if (adminDO == null) {
             throw new ClientException("用户不存在");
@@ -122,15 +91,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
     }
 
     @Override
-    public void logout(String token) {
-        String key = redisKeyUtil.buildAdminTokenKey(token);
-        stringRedisTemplate.delete(key);
+    public void logout() {
+        StpUtil.logout();
     }
 
     @Override
     public AdminPageRespDTO getAdminInfo() {
-        Long userId = UserContext.getUserId();
-        return this.getAdminInfo(userId);
+        return this.getAdminInfo(StpUtil.getLoginIdAsLong());
     }
 
     @Override
@@ -140,6 +107,26 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
             throw new ClientException("用户不存在");
         }
         return BeanUtil.toBean(adminDO, AdminPageRespDTO.class);
+    }
+
+    @Override
+    public void updateCurrent(AdminReqDTO requestParam) {
+        Long id = StpUtil.getLoginIdAsLong();
+        AdminDO adminDO = adminMapper.selectById(id);
+        if (adminDO == null) {
+            throw new ClientException("用户不存在");
+        }
+        if (StrUtil.isNotBlank(requestParam.getUsername())) {
+            AdminDO sameUsernameAdmin = adminMapper.selectByUsername(requestParam.getUsername());
+            if (sameUsernameAdmin != null && !sameUsernameAdmin.getId().equals(id)) {
+                throw new ClientException("用户名已存在");
+            }
+            adminDO.setUsername(requestParam.getUsername());
+        }
+        if (StrUtil.isNotBlank(requestParam.getPassword())) {
+            adminDO.setPasswordHash(BCrypt.hashpw(requestParam.getPassword()));
+        }
+        adminMapper.updateById(adminDO);
     }
 
 }

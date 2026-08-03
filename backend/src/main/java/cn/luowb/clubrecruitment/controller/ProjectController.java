@@ -15,7 +15,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,6 +32,12 @@ public class ProjectController {
         return Results.success(pageData);
     }
 
+    @Operation(summary = "后台分页查询项目")
+    @GetMapping("/admin/projects")
+    public Result<PageData<ProjectRespDTO>> adminPage(@ParameterObject PageReqDTO requestParam) {
+        return Results.success(projectService.getPage(requestParam));
+    }
+
     @Operation(summary = "查询指定项目详情")
     @GetMapping("/projects/{projectId}")
     public Result<ProjectDetailRespDTO> getById(@PathVariable Long projectId) {
@@ -43,7 +48,6 @@ public class ProjectController {
 
     @PostMapping("/admin/projects")
     @Operation(summary = "创建新项目")
-    @Transactional
     public Result<Long> createProject(@RequestBody @Valid ProjectSaveReqDTO reqDTO) {
         log.info("创建新项目, reqDTO={}", reqDTO);
         return Results.success(projectService.saveOrUpdateProject(null, reqDTO));
@@ -51,7 +55,6 @@ public class ProjectController {
 
     @PutMapping("/admin/projects/{id}")
     @Operation(summary = "更新项目")
-    @Transactional
     public Result<Void> updateProject(@PathVariable Long id,
                                       @RequestBody @Valid ProjectSaveReqDTO reqDTO) {
         log.info("更新项目, id={}, reqDTO={}", id, reqDTO);
@@ -59,7 +62,7 @@ public class ProjectController {
         return Results.success();
     }
 
-    @GetMapping("/projects/{projectId}/edit")
+    @GetMapping("/admin/projects/{projectId}")
     @Operation(summary = "项目信息编辑回显")
     public Result<ProjectEditRespDTO> edit(@PathVariable Long projectId) {
         return Results.success(projectService.getProjectEdit(projectId));
@@ -67,7 +70,6 @@ public class ProjectController {
 
     @Operation(summary = "删除项目")
     @DeleteMapping("/admin/projects/{projectId}")
-    @Transactional
     public Result<Void> delete(@PathVariable Long projectId) {
         log.info("删除项目, projectId={}", projectId);
         projectService.delete(projectId);

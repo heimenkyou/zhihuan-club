@@ -89,7 +89,7 @@ import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Edit } from '@element-plus/icons-vue'
 import { useAdminStore } from '@/stores/adminStore'
-import { updateAdmin } from '@/services/adminService'
+import { updateCurrentAdmin } from '@/services/adminService'
 
 const adminStore = useAdminStore()
 const loading = ref(false)
@@ -227,9 +227,8 @@ const saveProfile = async () => {
   saving.value = true
 
   try {
-    await updateAdmin(profileForm.value.id, {
+    await updateCurrentAdmin({
       username: profileForm.value.username,
-      role: profileForm.value.role,
     })
 
     ElMessage.success('个人资料更新成功')
@@ -261,10 +260,9 @@ const changePassword = async () => {
   changingPassword.value = true
 
   try {
-    await updateAdmin(profileForm.value.id, {
+    await updateCurrentAdmin({
       username: profileForm.value.username,
       password: passwordForm.value.newPassword,
-      role: profileForm.value.role,
     })
 
     ElMessage.success('密码修改成功')

@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.luowb.clubrecruitment.common.errorcode.BaseErrorCode;
 import cn.luowb.clubrecruitment.common.exception.AbstractException;
 import cn.luowb.clubrecruitment.common.result.Result;
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotRoleException;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
@@ -24,6 +26,22 @@ import java.util.Optional;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * 将 Sa-Token 未登录异常转换为前端现有认证错误码。
+     */
+    @ExceptionHandler(NotLoginException.class)
+    public Result<Void> notLoginException(NotLoginException ex) {
+        return Results.failure(BaseErrorCode.TOKEN_VERIFY_ERROR.code(), "登录已失效，请重新登录");
+    }
+
+    /**
+     * 将角色校验失败转换为明确的权限错误。
+     */
+    @ExceptionHandler(NotRoleException.class)
+    public Result<Void> notRoleException(NotRoleException ex) {
+        return Results.failure(BaseErrorCode.CLIENT_ERROR.code(), "权限不足");
+    }
 
     /**
      * 拦截参数验证异常

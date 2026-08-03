@@ -33,8 +33,8 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="rememberPassword" :disabled="loading">
-            记住密码
+          <el-checkbox v-model="rememberUsername" :disabled="loading">
+            记住用户名
           </el-checkbox>
         </el-form-item>
         <el-form-item>
@@ -66,7 +66,7 @@ const loginForm = reactive({
   username: '',
   password: '',
 })
-const rememberPassword = ref(false)
+const rememberUsername = ref(false)
 const loading = ref(false)
 const rules = {
   username: [
@@ -94,26 +94,17 @@ const handleLogin = async () => {
       loading.value = true
       try {
         const adminInfo = await login(loginForm)
-        const token = localStorage.getItem('adminToken')
+        adminStore.login(adminInfo, adminInfo.token)
 
-        adminStore.login(adminInfo, token || undefined)
-
-        if (rememberPassword.value) {
+        if (rememberUsername.value) {
           localStorage.setItem('rememberedUsername', loginForm.username)
-          localStorage.setItem('rememberedPassword', loginForm.password)
-          localStorage.setItem('rememberPassword', 'true')
         } else {
           localStorage.removeItem('rememberedUsername')
-          localStorage.removeItem('rememberedPassword')
-          localStorage.removeItem('rememberPassword')
         }
 
         ElMessage.success('登录成功，正在跳转...')
 
-        // 延迟跳转，避免页面切换早于登录态写入。
-        setTimeout(() => {
-          router.push('/admin/dashboard')
-        }, 1000)
+        await router.push('/admin/dashboard')
       } finally {
         loading.value = false
       }
@@ -122,22 +113,17 @@ const handleLogin = async () => {
 }
 
 /**
- * 恢复“记住密码”缓存，避免管理员每次都重新输入账号密码。
+ * 恢复上次登录用户名，不在浏览器保存密码。
  */
 onMounted(() => {
   const rememberedUsername = localStorage.getItem('rememberedUsername')
-  const rememberedPassword = localStorage.getItem('rememberedPassword')
-  const rememberPasswordFlag = localStorage.getItem('rememberPassword')
 
   if (rememberedUsername) {
     loginForm.username = rememberedUsername
+    rememberUsername.value = true
   }
-  if (rememberedPassword) {
-    loginForm.password = rememberedPassword
-  }
-  if (rememberPasswordFlag === 'true') {
-    rememberPassword.value = true
-  }
+  localStorage.removeItem('rememberedPassword')
+  localStorage.removeItem('rememberPassword')
 })
 </script>
 

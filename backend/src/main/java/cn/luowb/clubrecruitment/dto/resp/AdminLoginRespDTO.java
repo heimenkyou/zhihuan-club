@@ -14,7 +14,7 @@ public class AdminLoginRespDTO {
      * 管理员唯一标识，自增主键
      */
     @Schema(description = "管理员唯一标识，自增主键")
-    private Integer id;
+    private Long id;
 
     /**
      * 管理员登录用户名，唯一约束

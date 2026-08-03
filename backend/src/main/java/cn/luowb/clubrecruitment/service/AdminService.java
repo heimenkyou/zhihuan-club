@@ -57,7 +57,7 @@ public interface AdminService extends IService<AdminDO> {
     /**
      * 管理员登出
      */
-    void logout(String token);
+    void logout();
 
     /**
      * 获取当前管理员信息
@@ -73,4 +73,11 @@ public interface AdminService extends IService<AdminDO> {
      * @return 管理员信息
      */
     AdminPageRespDTO getAdminInfo(Long id);
+
+    /**
+     * 更新当前管理员资料。
+     *
+     * @param requestParam 更新请求参数
+     */
+    void updateCurrent(AdminReqDTO requestParam);
 }

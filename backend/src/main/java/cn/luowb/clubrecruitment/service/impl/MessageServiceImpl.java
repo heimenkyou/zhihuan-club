@@ -2,7 +2,7 @@ package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.luowb.clubrecruitment.common.context.IPContext;
-import cn.luowb.clubrecruitment.common.context.UserContext;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.luowb.clubrecruitment.common.enums.LikeAction;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
@@ -58,8 +58,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
     public PageData<MessagePageRespDTO> getMessageList(PageReqDTO requestParam) {
         String ip = IPContext.getIp();
         // 检查是否是管理员（普通管理员或超级管理员），管理员可以删除所有留言
-        boolean isAdmin = UserContext.getUser() != null &&
-                ("normal".equals(UserContext.getUser().getRole()) || "super".equals(UserContext.getUser().getRole()));
+        boolean isAdmin = StpUtil.isLogin();
 
         Page<MessageDO> page = new Page<>(requestParam.getCurrent(), requestParam.getSize());
         // 时间倒序排序
@@ -104,8 +103,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
         }
 
         // 检查是否是管理员（普通管理员或超级管理员），管理员可以直接删除
-        boolean isAdmin = UserContext.getUser() != null &&
-                ("normal".equals(UserContext.getUser().getRole()) || "super".equals(UserContext.getUser().getRole()));
+        boolean isAdmin = StpUtil.isLogin();
 
         if (!isAdmin) {
             // 非管理员需要检查IP是否匹配

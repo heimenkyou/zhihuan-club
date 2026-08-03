@@ -8,3 +8,5 @@
 !/frontend/
 !/frontend/**
 !README.md
+!/doc/
+!/doc/**

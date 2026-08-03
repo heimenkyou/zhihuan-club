@@ -136,11 +136,9 @@ const handleResize = () => {
   checkIsMobile()
 }
 
-onMounted(async () => {
+onMounted(() => {
   checkIsMobile()
   window.addEventListener('resize', handleResize)
-
-  await adminStore.checkLoginStatus()
 })
 
 onBeforeUnmount(() => {

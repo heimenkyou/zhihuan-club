@@ -143,12 +143,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, nextTick } from "vue"
+import { ref, reactive, onMounted, onBeforeUnmount, computed, nextTick } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
-import {
-  getMessages,
-  deleteMessage as deleteMessageApi,
-} from "@/services/messageService"
+import { getAdminMessages, deleteAdminMessage } from '@/services/adminService'
 
 // 检测是否为移动端
 const isMobile = computed(() => {
@@ -191,7 +188,7 @@ const loadMessages = async () => {
       size: messagesData.value.size,
       keyword: searchForm.keyword,
     }
-    const data = await getMessages(params)
+    const data = await getAdminMessages(params)
     messagesData.value = data
   } catch (error) {
     ElMessage.error("获取留言信息失败")
@@ -315,7 +312,7 @@ const deleteMessage = async id => {
     })
 
     loading.value = true
-    await deleteMessageApi(id)
+    await deleteAdminMessage(id)
     ElMessage.success("删除留言成功")
     loadMessages()
   } catch (error) {
@@ -343,8 +340,9 @@ const handleBatchDelete = async () => {
     })
 
     loading.value = true
+    await Promise.all(selectedRows.value.map(row => deleteAdminMessage(row.id)))
     ElMessage.success("批量删除成功")
-    loadMessages()
+    await loadMessages()
   } catch (error) {
     if (error !== "cancel") {
       ElMessage.error("批量删除失败")
@@ -374,6 +372,10 @@ onMounted(() => {
   setTimeout(() => {
     updateScrollIndicator()
   }, 100)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 

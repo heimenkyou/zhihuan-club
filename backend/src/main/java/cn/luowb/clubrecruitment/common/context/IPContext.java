@@ -1,17 +1,20 @@
 package cn.luowb.clubrecruitment.common.context;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
-
 /**
- * 用户登录信息存储上下文
+ * 当前请求的客户端 IP 上下文。
  */
-public class IPContext {
+public final class IPContext {
+
+    private static final ThreadLocal<String> IP_THREAD_LOCAL = new ThreadLocal<>();
+
+    private IPContext() {
+    }
 
     /**
-     * <a href="https://github.com/alibaba/transmittable-thread-local" />
+     * 获取当前请求的客户端 IP。
+     *
+     * @return 客户端 IP
      */
-    private static final ThreadLocal<String> IP_THREAD_LOCAL = new TransmittableThreadLocal<>();
-
     public static String getIp() {
         return IP_THREAD_LOCAL.get();
     }
