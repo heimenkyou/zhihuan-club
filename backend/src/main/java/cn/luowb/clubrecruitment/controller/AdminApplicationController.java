@@ -22,7 +22,7 @@ import java.util.List;
  * 报名信息后台管理接口。
  */
 @RestController
-@RequestMapping("/admin/applications")
+@RequestMapping("/api/admin/applications")
 @RequiredArgsConstructor
 @Tag(name = "报名管理")
 public class AdminApplicationController {

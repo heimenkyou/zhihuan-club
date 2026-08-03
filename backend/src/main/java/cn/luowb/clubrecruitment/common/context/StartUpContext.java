@@ -18,7 +18,7 @@ public class StartUpContext implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 //        hostAddress = SystemUtil.getHostInfo().getAddress();
-        log.info("测试页面:: http://{}:{}{}/test", hostAddress, serverPort, contextPath);
+        log.info("测试页面:: http://{}:{}{}/api/test", hostAddress, serverPort, contextPath);
     }
 
 }

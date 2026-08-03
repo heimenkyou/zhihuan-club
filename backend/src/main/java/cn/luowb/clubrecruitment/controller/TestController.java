@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/api")
 @Slf4j
 @Tag(name = "测试")
 @Profile({"dev", "test"})

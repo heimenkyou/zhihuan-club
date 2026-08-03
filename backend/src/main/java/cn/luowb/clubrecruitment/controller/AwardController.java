@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "奖项")
+@RequestMapping("/api")
 public class AwardController {
     private final AwardService awardService;
 

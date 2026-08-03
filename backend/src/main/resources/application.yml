@@ -4,7 +4,7 @@ spring:
   application:
     name: club-recruitment
   datasource:
-    url: jdbc:mysql://${app.mysql.host}:${app.mysql.port:3306}/${app.mysql.database:club-recruitment}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://${app.mysql.host}:${app.mysql.port:3306}/${app.mysql.database:club}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     username: ${app.mysql.username}
     password: ${app.mysql.password}
     driver-class-name: ${app.mysql.driver-class-name}

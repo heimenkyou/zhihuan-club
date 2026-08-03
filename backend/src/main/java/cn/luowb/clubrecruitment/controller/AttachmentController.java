@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/attachments")
+@RequestMapping("/api/admin/attachments")
 @Tag(name = "附件管理")
 public class AttachmentController {
     private final AttachmentService attachmentService;

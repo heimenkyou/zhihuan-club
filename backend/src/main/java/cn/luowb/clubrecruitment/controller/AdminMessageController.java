@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 留言后台管理接口。
  */
 @RestController
-@RequestMapping("/admin/messages")
+@RequestMapping("/api/admin/messages")
 @RequiredArgsConstructor
 @Tag(name = "留言管理")
 public class AdminMessageController {

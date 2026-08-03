@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "管理员")
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
     private final AdminService adminService;
 

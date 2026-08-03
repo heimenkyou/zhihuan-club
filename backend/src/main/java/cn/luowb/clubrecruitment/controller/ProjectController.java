@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @Tag(name = "项目")
+@RequestMapping("/api")
 public class ProjectController {
     private final ProjectService projectService;
 
