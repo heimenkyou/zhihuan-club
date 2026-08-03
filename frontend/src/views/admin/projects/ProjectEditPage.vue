@@ -1,6 +1,6 @@
 <template>
-  <div class="project-edit-container full-width-container">
-    <el-card class="full-width-card">
+  <div class="project-edit-container">
+    <el-card class="project-edit-card">
       <template #header>
         <div class="card-header">
           <span>{{ isEditMode ? '编辑项目' : '添加项目' }}</span>
@@ -16,6 +16,7 @@
         :model="projectForm"
         :rules="rules"
         label-width="100px"
+        class="project-form"
       >
         <!-- 基本信息 -->
         <el-form-item prop="title">
@@ -281,317 +282,331 @@
 </template>
 
 <script setup>
-   import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
-  import { ElMessage } from 'element-plus'
-  import AttachmentPicker from '@/components/admin/AttachmentPicker.vue'
-  import {
-    getProjectForEdit,
-    createProject,
-    updateProject,
-   } from '@/services/projectService'
+import {
+	computed,
+	defineAsyncComponent,
+	h,
+	onMounted,
+	reactive,
+	ref,
+} from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { ElMessage } from "element-plus";
+import AttachmentPicker from "@/components/admin/AttachmentPicker.vue";
+import {
+	getProjectForEdit,
+	createProject,
+	updateProject,
+} from "@/services/projectService";
 
-   const MdEditor = defineAsyncComponent(async () => {
-     await import('md-editor-v3/lib/style.css')
-     return (await import('md-editor-v3')).MdEditor
-   })
-   const MdPreview = defineAsyncComponent(async () => {
-     await import('md-editor-v3/lib/style.css')
-     return (await import('md-editor-v3')).MdPreview
-   })
+const EditorLoading = {
+	render: () => h("div", { class: "editor-loading" }, "编辑器加载中…"),
+};
+const MdEditor = defineAsyncComponent({
+	loader: async () => {
+		await import("md-editor-v3/lib/style.css");
+		return (await import("md-editor-v3")).MdEditor;
+	},
+	loadingComponent: EditorLoading,
+	suspensible: false,
+});
+const MdPreview = defineAsyncComponent({
+	loader: async () => {
+		await import("md-editor-v3/lib/style.css");
+		return (await import("md-editor-v3")).MdPreview;
+	},
+	loadingComponent: EditorLoading,
+	suspensible: false,
+});
 
-  const defaultCategory = 'Web开发'
-  const editorHeight = '500px'
-  const projectCategories = [
-    'Web开发',
-    '人工智能',
-    '移动应用',
-    '数据科学',
-    '其他',
-  ]
+const defaultCategory = "Web开发";
+const editorHeight = "500px";
+const projectCategories = [
+	"Web开发",
+	"人工智能",
+	"移动应用",
+	"数据科学",
+	"其他",
+];
 
-  const router = useRouter()
-  const route = useRoute()
-  const projectId = computed(() => {
-    const id = route.params.id
-    return id ? Number(id) : null
-  })
+const router = useRouter();
+const route = useRoute();
+const projectId = computed(() => {
+	const id = route.params.id;
+	return id ? Number(id) : null;
+});
 
-  const isEditMode = computed(() => projectId.value !== null)
+const isEditMode = computed(() => projectId.value !== null);
 
-  const projectFormRef = ref(null)
-  const coverPickerVisible = ref(false)
-  const galleryPickerVisible = ref(false)
-  const awardIdsInput = ref('')
-  const dateRange = ref([])
-  const activeTab = ref('edit')
-  const techStackInput = ref('')
+const projectFormRef = ref(null);
+const coverPickerVisible = ref(false);
+const galleryPickerVisible = ref(false);
+const awardIdsInput = ref("");
+const dateRange = ref([]);
+const activeTab = ref("edit");
+const techStackInput = ref("");
 
-  /**
-   * 创建默认团队成员。
-   *
-   * @returns {{ name: string, role: string }}
-   */
-  const createEmptyTeamMember = () => ({
-    name: '',
-    role: '',
-  })
+/**
+ * 创建默认团队成员。
+ *
+ * @returns {{ name: string, role: string }}
+ */
+const createEmptyTeamMember = () => ({
+	name: "",
+	role: "",
+});
 
-  /**
-   * 清理封面图片地址中的空白字符。
-   *
-   * @param {unknown} coverImage
-   * @returns {string}
-   */
-  const sanitizeCoverImage = coverImage => {
-    return typeof coverImage === 'string' ? coverImage.replace(/[`\s]/g, '') : ''
-  }
+/**
+ * 清理封面图片地址中的空白字符。
+ *
+ * @param {unknown} coverImage
+ * @returns {string}
+ */
+const sanitizeCoverImage = (coverImage) => {
+	return typeof coverImage === "string" ? coverImage.replace(/[`\s]/g, "") : "";
+};
 
-  /**
-   * 保证输入值始终为数组。
-   *
-   * @param {unknown} value
-   * @returns {any[]}
-   */
-  const ensureArray = value => {
-    return Array.isArray(value) ? value : []
-  }
+/**
+ * 保证输入值始终为数组。
+ *
+ * @param {unknown} value
+ * @returns {any[]}
+ */
+const ensureArray = (value) => {
+	return Array.isArray(value) ? value : [];
+};
 
-  /**
-   * 生成提交接口需要的项目数据。
-   *
-   * @returns {Object}
-   */
-  const buildSubmitData = () => {
-    return {
-      ...projectForm,
-      coverImage: sanitizeCoverImage(projectForm.coverImage),
-      techStackTags: ensureArray(projectForm.techStackTags),
-      teamDivision: ensureArray(projectForm.teamDivision),
-      imageUrls: ensureArray(projectForm.imageUrls),
-      awardIds: ensureArray(projectForm.awardIds),
-    }
-  }
+/**
+ * 生成提交接口需要的项目数据。
+ *
+ * @returns {Object}
+ */
+const buildSubmitData = () => {
+	return {
+		...projectForm,
+		coverImage: sanitizeCoverImage(projectForm.coverImage),
+		techStackTags: ensureArray(projectForm.techStackTags),
+		teamDivision: ensureArray(projectForm.teamDivision),
+		imageUrls: ensureArray(projectForm.imageUrls),
+		awardIds: ensureArray(projectForm.awardIds),
+	};
+};
 
-  const projectForm = reactive({
-    title: '',
-    category: defaultCategory,
-    timeRange: '',
-    briefIntro: '',
-    descriptionMd: '',
-    coverImage: '',
-    techStackTags: [],
-    teamDivision: [createEmptyTeamMember()],
-    imageUrls: [],
-    awardIds: [],
-  })
+const projectForm = reactive({
+	title: "",
+	category: defaultCategory,
+	timeRange: "",
+	briefIntro: "",
+	descriptionMd: "",
+	coverImage: "",
+	techStackTags: [],
+	teamDivision: [createEmptyTeamMember()],
+	imageUrls: [],
+	awardIds: [],
+});
 
-  const rules = {
-    title: [{ required: true, message: '请输入项目标题', trigger: 'blur' }],
-    category: [{ required: true, message: '请选择项目分类', trigger: 'blur' }],
-    timeRange: [
-      { required: true, message: '请输入开发时间范围', trigger: 'blur' },
-    ],
-    briefIntro: [
-      { required: true, message: '请输入项目简介', trigger: 'blur' },
-    ],
-    descriptionMd: [
-      { required: true, message: '请输入项目详细描述', trigger: 'blur' },
-    ],
-    coverImage: [
-      { required: true, message: '请上传项目展示图片', trigger: 'blur' },
-    ],
-    imageUrls: [
-      {
-        validator: (_, value, callback) => {
-          if (!value || value.length === 0) {
-            callback(new Error('请至少添加一张轮播图'))
-          } else {
-            callback()
-          }
-        },
-        trigger: 'submit',
-      },
-    ],
-  }
+const rules = {
+	title: [{ required: true, message: "请输入项目标题", trigger: "blur" }],
+	category: [{ required: true, message: "请选择项目分类", trigger: "blur" }],
+	timeRange: [
+		{ required: true, message: "请输入开发时间范围", trigger: "blur" },
+	],
+	briefIntro: [{ required: true, message: "请输入项目简介", trigger: "blur" }],
+	descriptionMd: [
+		{ required: true, message: "请输入项目详细描述", trigger: "blur" },
+	],
+	coverImage: [
+		{ required: true, message: "请上传项目展示图片", trigger: "blur" },
+	],
+	imageUrls: [
+		{
+			validator: (_, value, callback) => {
+				if (!value || value.length === 0) {
+					callback(new Error("请至少添加一张轮播图"));
+				} else {
+					callback();
+				}
+			},
+			trigger: "submit",
+		},
+	],
+};
 
-  /**
-   * 提交项目表单。
-   */
-  const submitForm = async () => {
-    if (!projectFormRef.value) return
+/**
+ * 提交项目表单。
+ */
+const submitForm = async () => {
+	if (!projectFormRef.value) return;
 
-    try {
-      await projectFormRef.value.validate()
+	try {
+		await projectFormRef.value.validate();
 
-      if (
-        !projectForm.imageUrls ||
-        projectForm.imageUrls.length === 0
-      ) {
-        ElMessage.error('请至少添加一张轮播图')
-        return
-      }
+		if (!projectForm.imageUrls || projectForm.imageUrls.length === 0) {
+			ElMessage.error("请至少添加一张轮播图");
+			return;
+		}
 
-      const submitData = buildSubmitData()
+		const submitData = buildSubmitData();
 
-      if (isEditMode.value && projectId.value !== null) {
-        await updateProject(projectId.value, submitData)
-        ElMessage.success('更新项目成功')
-      } else {
-        await createProject(submitData)
-        ElMessage.success('添加项目成功')
-      }
+		if (isEditMode.value && projectId.value !== null) {
+			await updateProject(projectId.value, submitData);
+			ElMessage.success("更新项目成功");
+		} else {
+			await createProject(submitData);
+			ElMessage.success("添加项目成功");
+		}
 
-      handleBack()
-    } catch (error) {
-      if (
-        error &&
-        !(error instanceof Error && error.message.includes('Validation failed'))
-      ) {
-        ElMessage.error(isEditMode.value ? '更新项目失败' : '添加项目失败')
-      }
-      console.error('提交表单失败:', error)
-    }
-  }
+		handleBack();
+	} catch (error) {
+		if (
+			error &&
+			!(error instanceof Error && error.message.includes("Validation failed"))
+		) {
+			ElMessage.error(isEditMode.value ? "更新项目失败" : "添加项目失败");
+		}
+		console.error("提交表单失败:", error);
+	}
+};
 
-  /**
-   * 同步日期范围到表单字段。
-   *
-   * @param {string[]} dates
-   */
-  const handleDateRangeChange = dates => {
-    if (dates && dates.length === 2) {
-      projectForm.timeRange = `${dates[0]}-${dates[1]}`
-    }
-  }
+/**
+ * 同步日期范围到表单字段。
+ *
+ * @param {string[]} dates
+ */
+const handleDateRangeChange = (dates) => {
+	if (dates && dates.length === 2) {
+		projectForm.timeRange = `${dates[0]}-${dates[1]}`;
+	}
+};
 
-  /**
-   * 添加技术栈标签。
-   */
-  const addTechStack = () => {
-    const techValue = techStackInput.value.trim()
-    if (techValue && projectForm.techStackTags) {
-      const exists = projectForm.techStackTags.some(tech => tech === techValue)
-      if (!exists) {
-        projectForm.techStackTags.push(techValue)
-        techStackInput.value = ''
-      } else {
-        ElMessage.warning('该技术已存在')
-      }
-    }
-  }
+/**
+ * 添加技术栈标签。
+ */
+const addTechStack = () => {
+	const techValue = techStackInput.value.trim();
+	if (techValue && projectForm.techStackTags) {
+		const exists = projectForm.techStackTags.some((tech) => tech === techValue);
+		if (!exists) {
+			projectForm.techStackTags.push(techValue);
+			techStackInput.value = "";
+		} else {
+			ElMessage.warning("该技术已存在");
+		}
+	}
+};
 
-  /**
-   * 移除技术栈标签。
-   *
-   * @param {number} index
-   */
-  const removeTechStack = index => {
-    if (projectForm.techStackTags) {
-      projectForm.techStackTags.splice(index, 1)
-    }
-  }
+/**
+ * 移除技术栈标签。
+ *
+ * @param {number} index
+ */
+const removeTechStack = (index) => {
+	if (projectForm.techStackTags) {
+		projectForm.techStackTags.splice(index, 1);
+	}
+};
 
-  /**
-   * 添加团队成员输入项。
-   */
-  const addTeamMember = () => {
-    if (projectForm.teamDivision) {
-      projectForm.teamDivision.push(createEmptyTeamMember())
-    }
-  }
+/**
+ * 添加团队成员输入项。
+ */
+const addTeamMember = () => {
+	if (projectForm.teamDivision) {
+		projectForm.teamDivision.push(createEmptyTeamMember());
+	}
+};
 
-  /**
-   * 移除团队成员输入项。
-   *
-   * @param {number} index
-   */
-  const removeTeamMember = index => {
-    if (projectForm.teamDivision && projectForm.teamDivision.length > 1) {
-      projectForm.teamDivision.splice(index, 1)
-    }
-  }
+/**
+ * 移除团队成员输入项。
+ *
+ * @param {number} index
+ */
+const removeTeamMember = (index) => {
+	if (projectForm.teamDivision && projectForm.teamDivision.length > 1) {
+		projectForm.teamDivision.splice(index, 1);
+	}
+};
 
-  /**
-   * 解析奖项 ID 输入框。
-   */
-  const parseAwardIds = () => {
-    if (awardIdsInput.value) {
-      const ids = awardIdsInput.value
-        .split(',')
-        .map(id => parseInt(id.trim(), 10))
-        .filter(id => !Number.isNaN(id))
+/**
+ * 解析奖项 ID 输入框。
+ */
+const parseAwardIds = () => {
+	if (awardIdsInput.value) {
+		const ids = awardIdsInput.value
+			.split(",")
+			.map((id) => parseInt(id.trim(), 10))
+			.filter((id) => !Number.isNaN(id));
 
-      projectForm.awardIds = ids
-    }
-  }
+		projectForm.awardIds = ids;
+	}
+};
 
-  /** 移除轮播图片 URL。 */
-  const removeImageUrl = url => {
-    projectForm.imageUrls = projectForm.imageUrls.filter(item => item !== url)
-  }
+/** 移除轮播图片 URL。 */
+const removeImageUrl = (url) => {
+	projectForm.imageUrls = projectForm.imageUrls.filter((item) => item !== url);
+};
 
-  /**
-   * 加载编辑态项目数据。
-   */
-  const loadProjectDetail = async () => {
-    if (!isEditMode.value || projectId.value === null) return
+/**
+ * 加载编辑态项目数据。
+ */
+const loadProjectDetail = async () => {
+	if (!isEditMode.value || projectId.value === null) return;
 
-    try {
-      const projectDetail = await getProjectForEdit(projectId.value)
-      const awards = Array.isArray(projectDetail.awards) ? projectDetail.awards : []
+	try {
+		const projectDetail = await getProjectForEdit(projectId.value);
+		const awards = Array.isArray(projectDetail.awards)
+			? projectDetail.awards
+			: [];
 
-      Object.assign(projectForm, {
-        title: projectDetail.title || '',
-        category: projectDetail.category || defaultCategory,
-        timeRange: projectDetail.timeRange || '',
-        briefIntro: projectDetail.briefIntro || '',
-        descriptionMd: projectDetail.descriptionMd || '',
-        coverImage: sanitizeCoverImage(projectDetail.coverImage),
-        techStackTags: ensureArray(projectDetail.techStackTags),
-        teamDivision:
-          Array.isArray(projectDetail.teamDivisions) &&
-          projectDetail.teamDivisions.length > 0
-            ? projectDetail.teamDivisions
-            : [createEmptyTeamMember()],
-        imageUrls: ensureArray(projectDetail.imageUrls),
-        awardIds: awards.map(item => item.id),
-      })
+		Object.assign(projectForm, {
+			title: projectDetail.title || "",
+			category: projectDetail.category || defaultCategory,
+			timeRange: projectDetail.timeRange || "",
+			briefIntro: projectDetail.briefIntro || "",
+			descriptionMd: projectDetail.descriptionMd || "",
+			coverImage: sanitizeCoverImage(projectDetail.coverImage),
+			techStackTags: ensureArray(projectDetail.techStackTags),
+			teamDivision:
+				Array.isArray(projectDetail.teamDivisions) &&
+				projectDetail.teamDivisions.length > 0
+					? projectDetail.teamDivisions
+					: [createEmptyTeamMember()],
+			imageUrls: ensureArray(projectDetail.imageUrls),
+			awardIds: awards.map((item) => item.id),
+		});
 
-      if (projectDetail.timeRange) {
-        const rangeParts = projectDetail.timeRange.split('-')
-        if (rangeParts.length === 2) {
-          dateRange.value = [rangeParts[0], rangeParts[1]]
-        }
-      }
+		if (projectDetail.timeRange) {
+			const rangeParts = projectDetail.timeRange.split("-");
+			if (rangeParts.length === 2) {
+				dateRange.value = [rangeParts[0], rangeParts[1]];
+			}
+		}
 
-      if (projectForm.awardIds.length > 0) {
-        awardIdsInput.value = projectForm.awardIds.join(',')
-      }
+		if (projectForm.awardIds.length > 0) {
+			awardIdsInput.value = projectForm.awardIds.join(",");
+		}
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : "未知错误";
+		ElMessage.error(`获取项目详情失败: ${errorMessage}`);
+		console.error("获取项目详情失败:", error);
+	}
+};
 
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '未知错误'
-      ElMessage.error(`获取项目详情失败: ${errorMessage}`)
-      console.error('获取项目详情失败:', error)
-    }
-  }
+/**
+ * 返回项目列表页。
+ */
+const handleBack = () => {
+	router.push("/admin/projects");
+};
 
-  /**
-   * 返回项目列表页。
-   */
-  const handleBack = () => {
-    router.push('/admin/projects')
-  }
-
-  /**
-   * 初始化页面数据。
-   */
-  onMounted(() => {
-    if (isEditMode.value) {
-      loadProjectDetail()
-      return
-    }
-  })
+/**
+ * 初始化页面数据。
+ */
+onMounted(() => {
+	if (isEditMode.value) {
+		loadProjectDetail();
+		return;
+	}
+});
 </script>
 
 <style scoped>
@@ -599,14 +614,10 @@
     padding: 20px;
   }
 
-  .full-width-container {
-    max-width: 100%;
-  }
-
-   .full-width-card {
-     width: 100%;
-     max-width: 760px;
-    margin: 0 auto;
+    .project-edit-card {
+      width: 100%;
+      max-width: 760px;
+     margin: 0 auto;
   }
 
   .card-header {
@@ -783,13 +794,22 @@
     font-size: 14px;
   }
 
-  .markdown-editor-container {
+   .markdown-editor-container {
     border: 1px solid #e4e7ed;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    width: 100%;
-  }
+     width: 100%;
+     min-height: 500px;
+   }
+
+   :deep(.editor-loading) {
+     display: grid;
+     min-height: 500px;
+     place-items: center;
+     color: #98a2b3;
+     background: #f9fafb;
+   }
 
   .editor-full {
     height: 600px;
@@ -927,9 +947,9 @@
        padding: 0;
      }
 
-     .full-width-card {
-       width: 100%;
-       border-radius: 0;
+      .project-edit-card {
+        width: 100%;
+        border-radius: 8px;
      }
 
      .card-header {
@@ -967,17 +987,22 @@
       align-items: stretch;
     }
 
-    .avatar-uploader .avatar,
-    .upload-placeholder {
-      width: 100%;
-      max-width: 300px;
+     .avatar,
+     .upload-placeholder {
+       width: 100%;
+       max-width: 300px;
       margin: 0 auto;
     }
 
-     .editor-full,
-     .editor-split {
-       height: 360px;
-     }
+      .editor-full,
+      .editor-split {
+        height: 360px;
+      }
+
+      .markdown-editor-container,
+      :deep(.editor-loading) {
+        min-height: 360px;
+      }
 
      .editor-split {
        flex-direction: column;

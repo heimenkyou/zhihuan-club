@@ -3,9 +3,9 @@
     <el-header class="admin-header">
       <div class="header-left">
         <el-icon class="menu-toggle" @click="toggleMenu" v-if="isMobile">
-          <component :is="isMenuCollapsed ? 'Expand' : 'Fold'" />
+          <i-ep-expand v-if="isMenuCollapsed" />
+          <i-ep-fold v-else />
         </el-icon>
-        <img class="admin-logo" src="/you.webp" alt="社团标志" />
         <span class="admin-title">{{
           isMobile && isMenuCollapsed ? '管理后台' : '社团管理后台'
         }}</span>
@@ -95,103 +95,103 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import { useAdminStore } from '@/stores/adminStore'
-import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
-import { ElMessage } from 'element-plus'
-import { logout as logoutApi } from '@/services/adminService'
+import { useRouter } from "vue-router";
+import { useAdminStore } from "@/stores/adminStore";
+import { ref, onMounted, computed, onBeforeUnmount } from "vue";
+import { ElMessage } from "element-plus";
+import { logout as logoutApi } from "@/services/adminService";
 
-const router = useRouter()
-const adminStore = useAdminStore()
-const isMenuCollapsed = ref(false)
-const isMobile = ref(false)
-const userInfo = computed(() => adminStore.userInfo)
+const router = useRouter();
+const adminStore = useAdminStore();
+const isMenuCollapsed = ref(false);
+const isMobile = ref(false);
+const userInfo = computed(() => adminStore.userInfo);
 
 /**
  * 根据屏幕宽度切换菜单折叠策略，避免移动端侧栏遮挡主体内容。
  */
 const checkIsMobile = () => {
-  isMobile.value = window.innerWidth <= 768
-  if (isMobile.value) {
-    isMenuCollapsed.value = true
-  } else {
-    isMenuCollapsed.value = false
-  }
-}
+	isMobile.value = window.innerWidth <= 768;
+	if (isMobile.value) {
+		isMenuCollapsed.value = true;
+	} else {
+		isMenuCollapsed.value = false;
+	}
+};
 
 /**
  * 切换移动端菜单展开状态。
  */
 const toggleMenu = () => {
-  isMenuCollapsed.value = !isMenuCollapsed.value
-}
+	isMenuCollapsed.value = !isMenuCollapsed.value;
+};
 
 /**
  * 响应窗口尺寸变化，保持菜单状态与当前设备形态一致。
  */
 const handleResize = () => {
-  checkIsMobile()
-}
+	checkIsMobile();
+};
 
 onMounted(() => {
-  checkIsMobile()
-  window.addEventListener('resize', handleResize)
-})
+	checkIsMobile();
+	window.addEventListener("resize", handleResize);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
-})
+	window.removeEventListener("resize", handleResize);
+});
 
 /**
  * 处理侧边栏导航，并在移动端点击后自动收起菜单。
  *
  * @param {string} key
  */
-const handleMenuSelect = key => {
-  router.push(key)
-  if (isMobile.value) {
-    isMenuCollapsed.value = true
-  }
-}
+const handleMenuSelect = (key) => {
+	router.push(key);
+	if (isMobile.value) {
+		isMenuCollapsed.value = true;
+	}
+};
 
 /**
  * 处理右上角下拉菜单命令。
  *
  * @param {string} command
  */
-const handleCommand = command => {
-  switch (command) {
-    case 'profile':
-      router.push('/admin/profile')
-      break
-    case 'home':
-      router.push('/')
-      break
-    case 'logout':
-      handleLogout()
-      break
-  }
-}
+const handleCommand = (command) => {
+	switch (command) {
+		case "profile":
+			router.push("/admin/profile");
+			break;
+		case "home":
+			router.push("/");
+			break;
+		case "logout":
+			handleLogout();
+			break;
+	}
+};
 
 /**
  * 退出登录时先清理本地状态，再异步通知后端，避免页面停留在无效登录态。
  */
 const handleLogout = () => {
-  logoutApi().catch(error => {
-    console.warn('后端登出接口调用失败:', error)
-  })
+	logoutApi().catch((error) => {
+		console.warn("后端登出接口调用失败:", error);
+	});
 
-  adminStore.logout()
-  ElMessage.success('退出登录成功')
-  router.push('/admin/login')
-}
+	adminStore.logout();
+	ElMessage.success("退出登录成功");
+	router.push("/admin/login");
+};
 
-const currentRoutePath = computed(() => router.currentRoute.value.path)
+const currentRoutePath = computed(() => router.currentRoute.value.path);
 </script>
 
 <style scoped>
-  .admin-container {
-    height: 100vh;
+   .admin-container {
+     height: 100vh;
     display: flex;
     flex-direction: column;
   }
@@ -203,20 +203,17 @@ const currentRoutePath = computed(() => router.currentRoute.value.path)
     align-items: center;
     padding: 0 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    height: 60px;
+     height: 60px;
+     flex: none;
+     position: sticky;
+     top: 0;
+     z-index: 20;
   }
    .header-left {
      display: flex;
      align-items: center;
      min-width: 0;
    }
-   .admin-logo {
-     width: 32px;
-     height: 32px;
-     margin-right: 10px;
-     object-fit: cover;
-     border-radius: 6px;
-  }
   .menu-toggle {
     font-size: 24px;
     margin-right: 15px;
@@ -330,11 +327,6 @@ const currentRoutePath = computed(() => router.currentRoute.value.path)
        max-width: 130px;
      }
 
-     .admin-logo {
-       width: 28px;
-       height: 28px;
-       margin-right: 8px;
-     }
 
     .user-icon {
       font-size: 16px;

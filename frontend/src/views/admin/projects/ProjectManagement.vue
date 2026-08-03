@@ -1,341 +1,81 @@
 <template>
-  <div class="project-container">
-    <el-card>
-      <template #header>
-        <div class="card-header">
-          <span>项目管理</span>
-          <el-button type="primary" @click="openAddDialog" class="add-btn">
-            <el-icon><i-ep-plus /></el-icon>
-            添加项目
-          </el-button>
-        </div>
-      </template>
-
-      <!-- 搜索与筛选 -->
-      <div class="search-filter-container">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索项目标题"
-          prefix-icon="Search"
-          class="search-input"
-          @keyup.enter="handleSearch"
-        />
-        <el-button type="primary" @click="handleSearch" class="action-button">
-          搜索
-        </el-button>
-        <el-button @click="resetFilter" class="reset-btn action-button">
-          重置
-        </el-button>
-      </div>
-
-      <!-- 项目数据表格 -->
-      <div class="table-container">
-        <el-table
-          :data="projectsData"
-          class="project-table"
-          v-loading="loading"
-        >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column
-          prop="title"
-          label="项目标题"
-          width="300"
-          show-overflow-tooltip
-        />
-        <el-table-column prop="category" label="项目类型" width="120" />
-        <el-table-column label="技术栈" width="200">
-          <template #default="scope">
-            <div
-              v-if="
-                scope.row.techStackTags && scope.row.techStackTags.length > 0
-              "
-              class="tech-stack-tags"
-            >
-              <el-tag
-                size="small"
-                v-for="(tech, index) in scope.row.techStackTags.slice(0, 3)"
-                :key="index"
-                type="primary"
-                class="tech-tag"
-                >{{ tech }}</el-tag
-              >
-            </div>
-            <span v-else>暂无</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" :width="isMobile ? undefined : 170" :fixed="isMobile ? false : 'right'">
-          <template #default="scope">
-            <div class="action-buttons">
-              <el-button
-                type="primary"
-                size="small"
-                @click="handleEdit(scope.row)"
-                :disabled="!scope.row.id"
-              >
-                编辑
-              </el-button>
-              <el-button
-                type="danger"
-                size="small"
-                @click="deleteProject(scope.row.id)"
-                :disabled="!scope.row.id"
-              >
-                删除
-              </el-button>
-            </div>
-          </template>
-        </el-table-column>
-        </el-table>
-      </div>
-
-      <!-- 分页 -->
-      <div class="pagination-container" v-if="totalCount > 0">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalCount"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
-    </el-card>
-  </div>
+  <AdminPage title="项目管理"><template #action><el-button type="primary" @click="router.push('/admin/projects/edit')">添加项目</el-button></template>
+    <AdminToolbar><el-input v-model="keyword" placeholder="搜索项目标题" clearable @keyup.enter="search" /><el-button type="primary" @click="search">搜索</el-button><el-button @click="reset">重置</el-button></AdminToolbar>
+    <AdminTable v-if="!isMobile" :scroll="false"><el-table v-loading="loading" :data="projects"><el-table-column prop="id" label="ID" width="80" /><el-table-column prop="title" label="项目标题" min-width="280" show-overflow-tooltip /><el-table-column prop="category" label="分类" width="130" /><el-table-column label="技术栈" min-width="220"><template #default="{ row }"><el-tag v-for="tag in row.techStackTags?.slice(0, 3)" :key="tag" size="small" class="tag">{{ tag }}</el-tag></template></el-table-column><el-table-column label="操作" width="64"><template #default="{ row }"><AdminActionMenu><el-dropdown-item :disabled="!row.id" @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item :disabled="!row.id" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></template></el-table-column></el-table></AdminTable>
+    <AdminResultCards v-else v-loading="loading"><article v-for="row in projects" :key="row.id" class="admin-result-card"><div><strong>{{ row.title }}</strong><span>{{ row.category }}</span><span>{{ row.techStackTags?.join('、') || '未填写技术栈' }}</span></div><AdminActionMenu><el-dropdown-item :disabled="!row.id" @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item :disabled="!row.id" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
+    <AdminPagination v-model:current-page="current" :page-size="size" :total="total" @change="load" />
+  </AdminPage>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue"
-import { ElMessage, ElMessageBox } from "element-plus"
-import { useRouter } from "vue-router"
-import {
-  getAdminProjects,
-  deleteProject as deleteProjectApi,
-} from "@/services/projectService"
+import { onMounted, ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useRouter } from "vue-router";
+import AdminActionMenu from "@/components/admin/AdminActionMenu.vue";
+import AdminPage from "@/components/admin/AdminPage.vue";
+import AdminPagination from "@/components/admin/AdminPagination.vue";
+import AdminResultCards from "@/components/admin/AdminResultCards.vue";
+import AdminTable from "@/components/admin/AdminTable.vue";
+import AdminToolbar from "@/components/admin/AdminToolbar.vue";
+import { useAdminMobile } from "@/composables/useAdminMobile";
+import { deleteProject, getAdminProjects } from "@/services/projectService";
 
-const router = useRouter()
-
-const searchKeyword = ref("")
-const projectsData = ref([])
-const loading = ref(false)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const totalCount = ref(0)
-const viewportWidth = ref(window.innerWidth)
-const isMobile = computed(() => viewportWidth.value <= 768)
-
-/** 同步视口宽度，使操作列在手机端解除固定。 */
-const handleResize = () => {
-  viewportWidth.value = window.innerWidth
-}
-
-/**
- * 加载项目分页数据。
- *
- * @returns {Promise<void>}
- */
-const loadProjects = async () => {
-  loading.value = true
-  try {
-    const response = await getAdminProjects({
-      current: currentPage.value,
-      size: pageSize.value,
-      keyword: searchKeyword.value,
-    })
-
-    const pageData = response?.data
-
-    if (pageData?.records) {
-      projectsData.value = pageData.records
-      currentPage.value = Number(pageData.current ?? currentPage.value)
-      pageSize.value = Number(pageData.size ?? pageSize.value)
-      totalCount.value = Number(pageData.total ?? 0)
-    } else {
-      projectsData.value = []
-      totalCount.value = 0
-    }
-  } catch (error) {
-    ElMessage.error("获取项目信息失败")
-    console.error("获取项目信息失败:", error)
-    projectsData.value = []
-  } finally {
-    loading.value = false
-  }
-}
-
-/**
- * 按关键字重新查询项目。
- */
-const handleSearch = () => {
-  currentPage.value = 1
-  loadProjects()
-}
-
-/**
- * 重置搜索条件并刷新列表。
- */
-const resetFilter = () => {
-  searchKeyword.value = ""
-  currentPage.value = 1
-  loadProjects()
-}
-
-/**
- * 处理分页大小变化。
- *
- * @param {number} size
- */
-const handleSizeChange = size => {
-  pageSize.value = size
-  currentPage.value = 1
-  loadProjects()
-}
-
-/**
- * 处理页码变化。
- *
- * @param {number} current
- */
-const handleCurrentChange = current => {
-  currentPage.value = current
-  loadProjects()
-}
-
-/**
- * 跳转到新增项目页。
- */
-const openAddDialog = () => {
-  router.push("/admin/projects/edit")
-}
-
-/**
- * 跳转到编辑项目页。
- *
- * @param {{ id: number }} row
- */
-const handleEdit = row => {
-  router.push(`/admin/projects/edit/${row.id}`)
-}
-
-/**
- * 删除指定项目。
- *
- * @param {number} id
- * @returns {Promise<void>}
- */
-const deleteProject = async id => {
-  if (!id) {
-    ElMessage.warning("项目ID不存在")
-    return
-  }
-
-  try {
-    await ElMessageBox.confirm("确定要删除这个项目吗？", "确认删除", {
-      type: "warning",
-    })
-
-    loading.value = true
-    await deleteProjectApi(id)
-    ElMessage.success("删除项目成功")
-    loadProjects()
-  } catch (error) {
-    if (error instanceof Error && error.message !== "cancel") {
-      ElMessage.error("删除项目失败")
-      console.error("删除项目失败:", error)
-    }
-  } finally {
-    loading.value = false
-  }
-}
-
-/**
- * 初始化项目管理页。
- */
-onMounted(() => {
-  loadProjects()
-  window.addEventListener('resize', handleResize)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
-})
+const router = useRouter();
+const { isMobile } = useAdminMobile();
+const keyword = ref("");
+const loading = ref(false);
+const projects = ref([]);
+const current = ref(1);
+const size = ref(10);
+const total = ref(0);
+const load = async () => {
+	loading.value = true;
+	try {
+		const data = (
+			await getAdminProjects({
+				current: current.value,
+				size: size.value,
+				keyword: keyword.value,
+			})
+		)?.data;
+		projects.value = data?.records ?? [];
+		current.value = Number(data?.current ?? current.value);
+		total.value = Number(data?.total ?? 0);
+	} catch (error) {
+		ElMessage.error("获取项目信息失败");
+		console.error(error);
+	} finally {
+		loading.value = false;
+	}
+};
+const search = () => {
+	current.value = 1;
+	load();
+};
+const reset = () => {
+	keyword.value = "";
+	search();
+};
+const edit = (row) => router.push(`/admin/projects/edit/${row.id}`);
+const remove = async (id) => {
+	if (!id) return;
+	try {
+		await ElMessageBox.confirm("确定要删除这个项目吗？", "确认删除", {
+			type: "warning",
+		});
+		await deleteProject(id);
+		ElMessage.success("删除项目成功");
+		load();
+	} catch (error) {
+		if (error !== "cancel") {
+			ElMessage.error("删除项目失败");
+			console.error(error);
+		}
+	}
+};
+onMounted(load);
 </script>
 
 <style scoped>
-.project-container {
-  padding: 20px;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.add-btn {
-  margin-top: 0;
-}
-.search-filter-container {
-  display: flex;
-  margin-bottom: 20px;
-  align-items: center;
-  gap: 10px;
-}
-.project-table {
-  width: 100%;
-}
-.table-container {
-  overflow-x: auto;
-}
-.action-buttons {
-  display: flex;
-  gap: 8px;
-}
-.search-input {
-  width: 300px;
-}
-.action-button {
-  margin-left: 0;
-}
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-.reset-btn {
-  background-color: #6c757d;
-  color: white;
-}
-.reset-btn:hover {
-  background-color: #5a6268;
-  color: white;
-}
-.tech-stack-tags {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.tech-tag {
-  margin-right: 4px;
-}
-.more-tags {
-  color: #909399;
-  font-size: 12px;
-}
-@media (max-width: 768px) {
-  .project-container {
-    padding: 10px;
-  }
-  .card-header,
-  .search-filter-container {
-    flex-wrap: wrap;
-  }
-  .search-input {
-    width: 100%;
-  }
-  .action-buttons {
-    flex-direction: column;
-  }
-  .pagination-container {
-    justify-content: center;
-  }
-}
+.tag { margin-right: 4px; }:deep(.danger-item) { color: var(--el-color-danger); }
 </style>

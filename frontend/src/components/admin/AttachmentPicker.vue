@@ -5,10 +5,10 @@
         <el-button type="primary" :loading="uploading">上传图片</el-button>
       </el-upload>
     </div>
-    <el-empty v-if="attachments.length === 0 && !loading" description="暂无图片" />
+    <el-empty v-if="imageAttachments.length === 0 && !loading" description="暂无图片" />
     <div v-else v-loading="loading" class="attachment-grid">
       <button
-        v-for="attachment in attachments"
+        v-for="attachment in imageAttachments"
         :key="attachment.id"
         type="button"
         class="attachment-card"
@@ -31,69 +31,80 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getAttachments, uploadImage } from '@/services/attachmentService'
+import { computed, ref, watch } from "vue";
+import { ElMessage } from "element-plus";
+import { getAttachments, uploadImage } from "@/services/attachmentService";
 
 const props = defineProps({
-  modelValue: { type: [String, Array], default: '' },
-  multiple: Boolean,
-})
-const emit = defineEmits(['update:modelValue'])
-const visible = defineModel('visible', { default: false })
-const attachments = ref([])
-const loading = ref(false)
-const uploading = ref(false)
-const page = ref({ current: 1, size: 24, total: 0 })
-const selectedUrls = computed(() => props.multiple ? props.modelValue || [] : [props.modelValue])
+	modelValue: { type: [String, Array], default: "" },
+	multiple: Boolean,
+});
+const emit = defineEmits(["update:modelValue"]);
+const visible = defineModel("visible", { default: false });
+const attachments = ref([]);
+const loading = ref(false);
+const uploading = ref(false);
+const page = ref({ current: 1, size: 24, total: 0 });
+const selectedUrls = computed(() =>
+	props.multiple ? props.modelValue || [] : [props.modelValue],
+);
+// 附件库可存放任意文件，封面与轮播只能引用图片。
+const imageAttachments = computed(() =>
+	attachments.value.filter((attachment) =>
+		attachment.mimeType?.startsWith("image/"),
+	),
+);
 
 /** 加载可选择的图片。 */
 const loadAttachments = async () => {
-  loading.value = true
-  try {
-    const data = await getAttachments(page.value)
-    attachments.value = data.records || []
-    page.value = { ...page.value, ...data }
-  } catch (error) {
-    ElMessage.error(error.message || '加载图片失败')
-  } finally {
-    loading.value = false
-  }
-}
+	loading.value = true;
+	try {
+		const data = await getAttachments({
+			current: page.value.current,
+			size: page.value.size,
+		});
+		attachments.value = data.records || [];
+		page.value = { ...page.value, ...data };
+	} catch (error) {
+		ElMessage.error(error.message || "加载图片失败");
+	} finally {
+		loading.value = false;
+	}
+};
 
 /** 将图片 URL 写入调用方字段。 */
-const selectAttachment = attachment => {
-  if (!props.multiple) {
-    emit('update:modelValue', attachment.url)
-    visible.value = false
-    return
-  }
-  const urls = [...selectedUrls.value]
-  const index = urls.indexOf(attachment.url)
-  if (index === -1) urls.push(attachment.url)
-  else urls.splice(index, 1)
-  emit('update:modelValue', urls)
-}
+const selectAttachment = (attachment) => {
+	if (!props.multiple) {
+		emit("update:modelValue", attachment.url);
+		visible.value = false;
+		return;
+	}
+	const urls = [...selectedUrls.value];
+	const index = urls.indexOf(attachment.url);
+	if (index === -1) urls.push(attachment.url);
+	else urls.splice(index, 1);
+	emit("update:modelValue", urls);
+};
 
 /** 上传完成后自动选中图片。 */
 const handleUpload = async ({ file }) => {
-  uploading.value = true
-  try {
-    const attachment = await uploadImage(file)
-    attachments.value.unshift(attachment)
-    page.value.total += 1
-    selectAttachment(attachment)
-    ElMessage.success('图片上传成功')
-  } catch (error) {
-    ElMessage.error(error.message || '图片上传失败')
-  } finally {
-    uploading.value = false
-  }
-}
+	uploading.value = true;
+	try {
+		const attachment = await uploadImage(file);
+		attachments.value.unshift(attachment);
+		page.value.total += 1;
+		selectAttachment(attachment);
+		ElMessage.success("图片上传成功");
+	} catch (error) {
+		ElMessage.error(error.message || "图片上传失败");
+	} finally {
+		uploading.value = false;
+	}
+};
 
-watch(visible, value => {
-  if (value) loadAttachments()
-})
+watch(visible, (value) => {
+	if (value) loadAttachments();
+});
 </script>
 
 <style scoped>
