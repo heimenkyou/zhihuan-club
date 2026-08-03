@@ -85,6 +85,12 @@
               <span>附件库</span>
             </template>
           </el-menu-item>
+          <el-menu-item v-if="adminStore.isSuperAdmin()" index="/admin/admins">
+            <template #title>
+              <el-icon><i-ep-user-filled /></el-icon>
+              <span>管理员管理</span>
+            </template>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main class="admin-main">

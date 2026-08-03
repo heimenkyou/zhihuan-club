@@ -78,6 +78,7 @@ declare module 'vue' {
     IEpSwitchButton: typeof import('~icons/ep/switch-button')['default']
     IEpTrophy: typeof import('~icons/ep/trophy')['default']
     IEpUser: typeof import('~icons/ep/user')['default']
+    IEpUserFilled: typeof import('~icons/ep/user-filled')['default']
     IFa6BrandsGithub: typeof import('~icons/fa6-brands/github')['default']
     IFa6BrandsQq: typeof import('~icons/fa6-brands/qq')['default']
     IFa6BrandsWeixin: typeof import('~icons/fa6-brands/weixin')['default']

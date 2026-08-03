@@ -54,6 +54,8 @@ const remove = async (id) => {
 		});
 		await deleteAdminMessage(id);
 		ElMessage.success("删除留言成功");
+		if (page.value.records.length === 1 && page.value.current > 1)
+			page.value.current--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {
@@ -69,6 +71,11 @@ const batchRemove = async () => {
 		});
 		await Promise.all(selected.value.map((row) => deleteAdminMessage(row.id)));
 		ElMessage.success("批量删除成功");
+		if (
+			page.value.records.length <= selected.value.length &&
+			page.value.current > 1
+		)
+			page.value.current--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {

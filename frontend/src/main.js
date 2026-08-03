@@ -4,7 +4,10 @@ import router from "@/router";
 import { createPinia } from "pinia";
 import { useAdminStore } from "@/stores/adminStore";
 import { showError } from "@/utils/notification";
-import "element-plus/dist/index.css";
+import "element-plus/es/components/loading/style/css";
+import "element-plus/es/components/message/style/css";
+import "element-plus/es/components/message-box/style/css";
+import "element-plus/es/components/notification/style/css";
 import "@/style.css";
 
 export const app = createApp(App);

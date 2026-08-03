@@ -65,6 +65,7 @@ const remove = async (id) => {
 		});
 		await deleteProject(id);
 		ElMessage.success("删除项目成功");
+		if (projects.value.length === 1 && current.value > 1) current.value--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {

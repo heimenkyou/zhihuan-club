@@ -225,6 +225,7 @@ const remove = async (id) => {
 		});
 		await deleteAward(id);
 		ElMessage.success("删除奖项成功");
+		if (paged.value.length === 1 && current.value > 1) current.value--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {

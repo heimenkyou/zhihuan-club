@@ -12,7 +12,6 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import * as XLSX from "xlsx";
 import AdminActionMenu from "@/components/admin/AdminActionMenu.vue";
 import AdminPage from "@/components/admin/AdminPage.vue";
 import AdminPagination from "@/components/admin/AdminPagination.vue";
@@ -92,6 +91,7 @@ const remove = async (id) => {
 		});
 		await deleteApplication(id);
 		ElMessage.success("删除报名信息成功");
+		if (page.records.length === 1 && page.current > 1) page.current--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {
@@ -107,6 +107,8 @@ const batchRemove = async () => {
 		});
 		await Promise.all(selected.value.map((row) => deleteApplication(row.id)));
 		ElMessage.success("批量删除成功");
+		if (page.records.length <= selected.value.length && page.current > 1)
+			page.current--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {
@@ -118,6 +120,7 @@ const batchRemove = async () => {
 const exportApplications = async () => {
 	try {
 		loading.value = true;
+		const XLSX = await import("xlsx");
 		const data = await getApplications({
 			current: 1,
 			size: 1000,

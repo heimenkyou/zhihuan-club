@@ -5,17 +5,19 @@
         <el-button type="primary" :loading="uploading">上传图片</el-button>
       </el-upload>
     </div>
-    <el-empty v-if="imageAttachments.length === 0 && !loading" description="暂无图片" />
+    <el-empty v-if="attachments.length === 0 && !loading" description="暂无附件" />
     <div v-else v-loading="loading" class="attachment-grid">
       <button
-        v-for="attachment in imageAttachments"
+        v-for="attachment in attachments"
         :key="attachment.id"
         type="button"
         class="attachment-card"
         :class="{ selected: selectedUrls.includes(attachment.url) }"
         @click="selectAttachment(attachment)"
       >
-        <el-image :src="attachment.url" fit="cover" />
+        <el-image :src="attachment.url" fit="cover">
+          <template #error><div class="file-placeholder"><i-ep-document /></div></template>
+        </el-image>
         <span :title="attachment.originalName">{{ attachment.originalName }}</span>
       </button>
     </div>
@@ -48,14 +50,7 @@ const page = ref({ current: 1, size: 24, total: 0 });
 const selectedUrls = computed(() =>
 	props.multiple ? props.modelValue || [] : [props.modelValue],
 );
-// 附件库可存放任意文件，封面与轮播只能引用图片。
-const imageAttachments = computed(() =>
-	attachments.value.filter((attachment) =>
-		attachment.mimeType?.startsWith("image/"),
-	),
-);
-
-/** 加载可选择的图片。 */
+/** 加载可选择的附件。 */
 const loadAttachments = async () => {
 	loading.value = true;
 	try {
@@ -113,5 +108,6 @@ watch(visible, (value) => {
 .attachment-card { overflow: hidden; padding: 0; color: inherit; text-align: left; background: var(--el-bg-color); border: 1px solid var(--el-border-color); border-radius: 6px; cursor: pointer; }
 .attachment-card.selected { border: 2px solid var(--el-color-primary); }
 .attachment-card :deep(.el-image) { display: block; width: 100%; height: 110px; }
+.file-placeholder { display: grid; width: 100%; height: 100%; place-items: center; color: #98a2b3; background: #f8fafc; font-size: 24px; }
 .attachment-card span { display: block; overflow: hidden; padding: 8px; text-overflow: ellipsis; white-space: nowrap; }
 </style>

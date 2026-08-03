@@ -14,7 +14,7 @@ export default defineConfig({
     Icons(),
     Components({
       resolvers: [
-        ElementPlusResolver(),
+        ElementPlusResolver({ importStyle: 'css' }),
         IconsResolver({
           prefix: 'i',
           enabledCollections: ['ep', 'fa6-solid', 'fa6-regular', 'fa6-brands'],

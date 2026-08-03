@@ -1,49 +1,40 @@
-import AdminLayout from '@/views/admin/layout/AdminLayout.vue'
-import Dashboard from '@/views/admin/Dashboard.vue'
-import ApplicationList from '@/views/admin/applications/ApplicationList.vue'
-import AwardManagement from '@/views/admin/awards/AwardManagement.vue'
-import MessageManagement from '@/views/admin/messages/MessageManagement.vue'
-import AdminManagement from '@/views/admin/admins/AdminManagement.vue'
-import ProjectManagement from '@/views/admin/projects/ProjectManagement.vue'
-import Profile from '@/views/admin/Profile.vue'
-
 const adminRoutes = [
   {
     path: '/admin',
-    component: AdminLayout,
+    component: () => import('@/views/admin/layout/AdminLayout.vue'),
     meta: { requiresAuth: true },
     redirect: '/admin/dashboard',
     children: [
       {
         path: 'dashboard',
-        component: Dashboard,
+        component: () => import('@/views/admin/Dashboard.vue'),
         meta: { title: '仪表盘' },
       },
       {
         path: 'applications',
-        component: ApplicationList,
+        component: () => import('@/views/admin/applications/ApplicationList.vue'),
         meta: { title: '报名管理' },
       },
       {
         path: 'awards',
-        component: AwardManagement,
+        component: () => import('@/views/admin/awards/AwardManagement.vue'),
         meta: { title: '奖项管理' },
       },
       {
         path: 'messages',
-        component: MessageManagement,
+        component: () => import('@/views/admin/messages/MessageManagement.vue'),
         meta: { title: '消息管理' },
       },
       {
         path: 'admins',
-        component: AdminManagement,
+        component: () => import('@/views/admin/admins/AdminManagement.vue'),
         meta: { title: '管理员管理', requiresSuperAdmin: true },
       },
       // 项目管理路由
       {
         path: 'projects',
         name: 'ProjectManagement',
-        component: ProjectManagement,
+        component: () => import('@/views/admin/projects/ProjectManagement.vue'),
         meta: { title: '项目管理' },
       },
       // 项目编辑页面路由
@@ -57,7 +48,7 @@ const adminRoutes = [
       {
         path: 'profile',
         name: 'AdminProfile',
-        component: Profile,
+        component: () => import('@/views/admin/Profile.vue'),
         meta: { title: '个人资料' },
       },
       {

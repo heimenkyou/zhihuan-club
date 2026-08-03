@@ -95,6 +95,7 @@
     <audio
       ref="audioRef"
       :src="songs[currentSongIndex].src"
+      preload="none"
       loop
       :volume="volume"
       @playing="isPlaying = true"

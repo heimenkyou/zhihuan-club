@@ -1,7 +1,7 @@
 <template>
   <AdminPage title="附件库"><template #action><el-upload :show-file-list="false" :http-request="upload" accept="image/*"><el-button type="primary" :loading="uploading">上传图片</el-button></el-upload></template>
     <el-empty v-if="!attachments.length && !loading" description="暂无附件" />
-    <div v-else v-loading="loading" class="attachment-grid"><article v-for="attachment in attachments" :key="attachment.id" class="attachment-card"><el-image v-if="isImage(attachment)" :src="attachment.url" fit="cover" :preview-src-list="[attachment.url]" preview-teleported /><div v-else class="file-placeholder"><el-icon><i-ep-document /></el-icon><span>{{ fileExtension(attachment.originalName) || '文件' }}</span></div><div class="attachment-info"><span :title="attachment.originalName">{{ attachment.originalName }}</span><small>{{ formatSize(attachment.size) }}</small></div><AdminActionMenu class="attachment-action"><el-dropdown-item class="danger-item" @click="remove(attachment)">删除</el-dropdown-item></AdminActionMenu></article></div>
+    <div v-else v-loading="loading" class="attachment-grid"><article v-for="attachment in attachments" :key="attachment.id" class="attachment-card"><el-image :src="attachment.url" fit="cover" :preview-src-list="[attachment.url]" preview-teleported><template #error><div class="file-placeholder"><el-icon><i-ep-document /></el-icon><span>{{ fileExtension(attachment.originalName) || '文件' }}</span></div></template></el-image><div class="attachment-info"><span :title="attachment.originalName">{{ attachment.originalName }}</span><small>{{ formatSize(attachment.size) }}</small></div><AdminActionMenu class="attachment-action"><el-dropdown-item class="danger-item" @click="remove(attachment)">删除</el-dropdown-item></AdminActionMenu></article></div>
     <AdminPagination v-model:current-page="page.current" :page-size="page.size" :total="page.total" @change="load" />
   </AdminPage>
 </template>
@@ -58,13 +58,14 @@ const remove = async (attachment) => {
 		);
 		await deleteAttachment(attachment.id);
 		ElMessage.success("图片已删除");
+		if (attachments.value.length === 1 && page.value.current > 1)
+			page.value.current--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") ElMessage.error(error.message || "删除图片失败");
 	}
 };
 const formatSize = (size) => `${(size / 1024 / 1024).toFixed(2)} MB`;
-const isImage = (attachment) => attachment.mimeType?.startsWith("image/");
 const fileExtension = (name) => name?.split(".").pop()?.toUpperCase();
 onMounted(load);
 </script>
