@@ -126,6 +126,9 @@ public class QiniuStorageService {
         try {
             bucketManager().delete(properties.getBucket(), objectKey);
         } catch (QiniuException e) {
+            if (e.code() == 612) {
+                return;
+            }
             throw new ServiceException("七牛云对象删除失败");
         }
     }

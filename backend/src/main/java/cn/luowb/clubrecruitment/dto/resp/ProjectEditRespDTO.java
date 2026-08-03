@@ -53,8 +53,8 @@ public class ProjectEditRespDTO {
     @Schema(description = "项目时间范围")
     private String timeRange;
 
-    @Schema(description = "项目附件")
-    private List<AttachmentRespDTO> attachments;
+    @Schema(description = "轮播图片URL列表")
+    private List<String> imageUrls;
 
     /**
      * Markdown格式的项目介绍

@@ -14,13 +14,9 @@ public class AttachmentRespDTO {
     private Long id;
     private String objectKey;
     private String originalName;
-    private String type;
     private String mimeType;
     private Long size;
     private String status;
-    private String refType;
-    private Long refId;
-    private String usage;
     private String url;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

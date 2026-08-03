@@ -2,20 +2,20 @@ package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.collection.CollectionUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.AwardDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDO;
+import cn.luowb.clubrecruitment.dao.entity.ProjectAwardDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDetailDO;
 import cn.luowb.clubrecruitment.dao.mapper.ProjectDetailMapper;
 import cn.luowb.clubrecruitment.dao.mapper.ProjectMapper;
+import cn.luowb.clubrecruitment.dao.mapper.ProjectAwardMapper;
 import cn.luowb.clubrecruitment.dto.TeamDivisionDTO;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.ProjectSaveReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.*;
 import cn.luowb.clubrecruitment.service.AwardService;
-import cn.luowb.clubrecruitment.service.AttachmentService;
 import cn.luowb.clubrecruitment.service.ProjectService;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -25,7 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ import java.util.List;
 public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         implements ProjectService {
     private final ProjectDetailMapper projectDetailMapper;
-    private final AttachmentService attachmentService;
+    private final ProjectAwardMapper projectAwardMapper;
     private final AwardService awardService;
 
     @Override
@@ -71,21 +72,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         }
         // 查询项目详情信息
         ProjectDetailDO detailDO = projectDetailMapper.selectByProjectId(projectId);
-        List<AwardRespDTO> awardList = Collections.emptyList();
-
-        List<AttachmentRespDTO> attachments = attachmentService.listByReference("project", projectId);
-        // 批量查询获奖信息
-        List<Long> awardIds = JSON.parseArray(detailDO.getAwardIds(), Long.class);
-        if (CollectionUtil.isNotEmpty(awardIds)) {
-            awardList = awardService.listByIds(awardIds).stream()
-                    .map(each -> {
-                        AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
-                        // 反序列化 获奖人
-                        List<String> winners = JSON.parseArray(each.getWinners(), String.class);
-                        awardRespDTO.setWinners(winners);
-                        return awardRespDTO;
-                    })
-                    .toList();
+        if (detailDO == null) {
+            throw new ClientException("项目详情不存在");
         }
 
         // 组装成最终 DTO
@@ -95,7 +83,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         respDTO.setCategory(projectDO.getCategory());
         respDTO.setTimeRange(detailDO.getTimeRange());
         respDTO.setDescriptionMd(detailDO.getDescriptionMd());
-        respDTO.setAttachments(attachments);
+        respDTO.setImageUrls(JSON.parseArray(detailDO.getImageUrls(), String.class));
         // 反序列化 技术栈标签
         List<String> techStackDetail = JSON.parseArray(detailDO.getTechStackTags(), String.class);
         respDTO.setTechStackTags(techStackDetail);
@@ -105,7 +93,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         respDTO.setTeamDivisions(teamDivisions);
 
         // 设置关联对象
-        respDTO.setAwards(awardList);
+        respDTO.setAwards(toAwardResponses(projectAwardMapper.selectAwardsByProjectId(projectId)));
         return respDTO;
     }
 
@@ -145,8 +133,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         // 2. 保存项目详情信息
         saveProjectDetail(projectId, reqDTO);
 
-        // 附件必须在事务中与项目绑定，校验失败时项目修改一并回滚。
-        attachmentService.replaceProjectAttachments(projectId, reqDTO.getAttachmentIds());
+        replaceProjectAwards(projectId, reqDTO.getAwardIds());
 
         return projectId;
     }
@@ -160,6 +147,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         }
         // 查询项目详情信息
         ProjectDetailDO detailDO = projectDetailMapper.selectByProjectId(projectId);
+        if (detailDO == null) {
+            throw new ClientException("项目详情不存在");
+        }
         // 拷贝项目基础信息到 DTO
         ProjectEditRespDTO respDTO = new ProjectEditRespDTO();
         respDTO.setProjectId(projectId);
@@ -175,28 +165,16 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         // 反序列化 开发团队成员
         List<TeamDivisionDTO> teamDivisions = JSON.parseArray(detailDO.getTeamDivision(), TeamDivisionDTO.class);
         respDTO.setTeamDivisions(teamDivisions);
-        respDTO.setAttachments(attachmentService.listByReference("project", projectId));
-        // 查询获奖信息
-        List<Long> awardIds = JSON.parseArray(detailDO.getAwardIds(), Long.class);
-        List<AwardRespDTO> awardList = CollectionUtil.isEmpty(awardIds)
-                ? Collections.emptyList()
-                : awardService.listByIds(awardIds).stream()
-                  .map(each -> {
-                      AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
-                      // 反序列化 获奖人
-                      List<String> winners = JSON.parseArray(each.getWinners(), String.class);
-                      awardRespDTO.setWinners(winners);
-                      return awardRespDTO;
-                  })
-                  .toList();
-        respDTO.setAwards(awardList);
+        respDTO.setImageUrls(JSON.parseArray(detailDO.getImageUrls(), String.class));
+        respDTO.setAwards(toAwardResponses(projectAwardMapper.selectAwardsByProjectId(projectId)));
         return respDTO;
     }
 
     @Override
     @Transactional
     public void delete(Long projectId) {
-        attachmentService.clearReference("project", projectId);
+        projectAwardMapper.delete(new LambdaQueryWrapper<ProjectAwardDO>()
+                .eq(ProjectAwardDO::getProjectId, projectId));
         // 删除项目详情
         projectDetailMapper.deleteByProjectId(projectId);
         // 删除项目
@@ -213,15 +191,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         detailDO.setTimeRange(reqDTO.getTimeRange());
         detailDO.setTechStackTags(JSON.toJSONString(reqDTO.getTechStackTags()));
         detailDO.setTeamDivision(JSON.toJSONString(reqDTO.getTeamDivision()));
-        if (CollectionUtil.isNotEmpty(reqDTO.getAwardIds())) {
-            // 检查奖项是否存在
-            long count = awardService.count(new LambdaQueryWrapper<AwardDO>().in(AwardDO::getId, reqDTO.getAwardIds()));
-            if (count != reqDTO.getAwardIds().size()) {
-                throw new ClientException("使用了不存在的奖项");
-            }
-        }
-        // 序列化
-        detailDO.setAwardIds(JSON.toJSONString(reqDTO.getAwardIds()));
+        detailDO.setImageUrls(JSON.toJSONString(reqDTO.getImageUrls()));
         detailDO.setDescriptionMd(reqDTO.getDescriptionMd());
 
         if (detailDO.getId() == null) {
@@ -229,6 +199,35 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         } else {
             projectDetailMapper.updateById(detailDO);
         }
+    }
+
+    /**
+     * 以请求顺序替换项目奖项关联。
+     */
+    private void replaceProjectAwards(Long projectId, List<Long> awardIds) {
+        List<Long> ids = awardIds == null ? List.of() : new ArrayList<>(new LinkedHashSet<>(awardIds));
+        if (!ids.isEmpty()) {
+            long count = awardService.count(new LambdaQueryWrapper<AwardDO>().in(AwardDO::getId, ids));
+            if (count != ids.size()) {
+                throw new ClientException("使用了不存在的奖项");
+            }
+        }
+        projectAwardMapper.delete(new LambdaQueryWrapper<ProjectAwardDO>()
+                .eq(ProjectAwardDO::getProjectId, projectId));
+        for (int index = 0; index < ids.size(); index++) {
+            projectAwardMapper.insert(new ProjectAwardDO()
+                    .setProjectId(projectId)
+                    .setAwardId(ids.get(index))
+                    .setSortOrder(index));
+        }
+    }
+
+    private List<AwardRespDTO> toAwardResponses(List<AwardDO> awards) {
+        return awards.stream().map(each -> {
+            AwardRespDTO awardRespDTO = BeanUtil.toBean(each, AwardRespDTO.class);
+            awardRespDTO.setWinners(JSON.parseArray(each.getWinners(), String.class));
+            return awardRespDTO;
+        }).toList();
     }
 
 }

@@ -53,7 +53,7 @@ export const getAttachments = async params => {
 }
 
 /**
- * 删除未被引用附件。
+ * 删除图片附件。
  *
  * @param {number} id 附件 ID
  * @returns {Promise<void>}

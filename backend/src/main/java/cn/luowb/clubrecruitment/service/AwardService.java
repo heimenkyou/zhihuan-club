@@ -25,4 +25,11 @@ public interface AwardService extends IService<AwardDO> {
      * @param awardReqDTO 奖项信息请求参数
      */
     void update(Long id, AwardReqDTO awardReqDTO);
+
+    /**
+     * 删除未被项目引用的奖项。
+     *
+     * @param id 奖项ID
+     */
+    void delete(Long id);
 }

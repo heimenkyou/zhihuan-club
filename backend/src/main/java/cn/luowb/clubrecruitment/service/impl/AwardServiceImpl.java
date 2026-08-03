@@ -5,11 +5,14 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.dao.entity.AwardDO;
+import cn.luowb.clubrecruitment.dao.entity.ProjectAwardDO;
 import cn.luowb.clubrecruitment.dao.mapper.AwardMapper;
+import cn.luowb.clubrecruitment.dao.mapper.ProjectAwardMapper;
 import cn.luowb.clubrecruitment.dto.req.AwardReqDTO;
 import cn.luowb.clubrecruitment.service.AwardService;
 import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,8 +21,10 @@ import org.springframework.stereotype.Service;
  * @createDate 2025-08-25 22:03:34
  */
 @Service
+@RequiredArgsConstructor
 public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         implements AwardService {
+    private final ProjectAwardMapper projectAwardMapper;
 
     @Override
     public void add(AwardReqDTO awardReqDTO) {
@@ -63,6 +68,17 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         }
         newAwardDO.setId(id);
         this.updateById(newAwardDO);
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (projectAwardMapper.selectCount(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<ProjectAwardDO>()
+                .eq(ProjectAwardDO::getAwardId, id)) > 0) {
+            throw new ClientException("奖项已被项目引用，不能删除");
+        }
+        if (!removeById(id)) {
+            throw new ClientException("奖项不存在");
+        }
     }
 }
 

@@ -57,25 +57,25 @@ public class AttachmentController {
     }
 
     /**
-     * 分页查询可用附件。
+     * 分页查询可用图片。
      *
      * @param requestParam 分页参数
      * @return 附件分页
      */
     @GetMapping
-    @Operation(summary = "分页查询可用附件")
+    @Operation(summary = "分页查询可用图片")
     public Result<PageData<AttachmentRespDTO>> page(@ParameterObject PageReqDTO requestParam) {
         return Results.success(attachmentService.getPage(requestParam));
     }
 
     /**
-     * 删除未被引用的附件。
+     * 删除图片。
      *
      * @param id 附件ID
      * @return 空结果
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除未被引用的附件")
+    @Operation(summary = "删除图片")
     public Result<Void> delete(@PathVariable Long id) {
         attachmentService.delete(id);
         return Results.success();

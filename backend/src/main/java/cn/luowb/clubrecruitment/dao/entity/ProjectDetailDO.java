@@ -53,10 +53,10 @@ public class ProjectDetailDO {
     private String teamDivision;
 
     /**
-     * 奖项ID列表[1, 2, 3]
+     * 轮播图片URL列表
      */
-    @TableField(value = "award_ids")
-    private String awardIds;
+    @TableField(value = "image_urls")
+    private String imageUrls;
 
     /**
      * 创建时间

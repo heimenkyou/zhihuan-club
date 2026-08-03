@@ -6,12 +6,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 const routes = [
   { path: '/', name: 'home', component: () => import('@/views/Home.vue') },
   {
-    path: '/code-submit',
-    name: 'codeSubmit',
-    component: () => import('@/views/CodeSubmit.vue'),
-    meta: { title: '代码提交' },
-  },
-  {
     path: '/projects',
     name: 'projects',
     component: () => import('@/views/Projects.vue'),

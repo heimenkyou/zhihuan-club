@@ -11,22 +11,17 @@ import lombok.experimental.Accessors;
 import java.time.LocalDateTime;
 
 /**
- * 附件记录。
+ * 项目与奖项的关联记录。
  */
 @Data
 @Accessors(chain = true)
-@TableName("attachment")
-public class AttachmentDO {
+@TableName("project_award")
+public class ProjectAwardDO {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private String objectKey;
-    private String legacyUrl;
-    private String originalName;
-    private String mimeType;
-    private Long size;
-    private String status;
+    private Long projectId;
+    private Long awardId;
+    private Integer sortOrder;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
 }

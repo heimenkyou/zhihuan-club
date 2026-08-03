@@ -2,6 +2,7 @@ package cn.luowb.clubrecruitment.dto.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
@@ -57,6 +58,7 @@ public class ApplicationReqDTO {
      * 兴趣方向
      */
     @Schema(description = "兴趣方向")
+    @NotEmpty(message = "兴趣方向不能为空")
     private List<String> interests;
 
     /**

@@ -44,17 +44,6 @@ CREATE TABLE `award` (
   KEY `idx_award_competition_name` (`competition_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='奖项信息';
 
-CREATE TABLE `code_submission` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '提交ID',
-  `student_id` VARCHAR(32) NOT NULL COMMENT '学号',
-  `name` VARCHAR(32) NOT NULL COMMENT '姓名',
-  `description` TEXT NULL COMMENT '项目描述',
-  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_code_submission_student_id` (`student_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='代码提交记录';
-
 CREATE TABLE `major_mapping` (
   `code` CHAR(4) NOT NULL COMMENT '专业代号',
   `short_name` VARCHAR(20) NOT NULL COMMENT '专业简称',
@@ -67,22 +56,17 @@ CREATE TABLE `major_mapping` (
 CREATE TABLE `attachment` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '附件ID',
   `object_key` VARCHAR(512) NOT NULL COMMENT '七牛云对象键',
-  `legacy_url` VARCHAR(512) NULL COMMENT '历史MinIO访问地址',
+  `legacy_url` VARCHAR(512) NULL COMMENT '历史迁移兼容的MinIO访问地址',
   `original_name` VARCHAR(255) NOT NULL COMMENT '原文件名',
-  `type` VARCHAR(16) NOT NULL COMMENT 'image/video/file/audio',
   `mime_type` VARCHAR(128) NOT NULL COMMENT 'MIME类型',
   `size` BIGINT UNSIGNED NOT NULL COMMENT '文件字节数',
   `status` VARCHAR(16) NOT NULL DEFAULT 'pending' COMMENT 'pending/ready',
-  `ref_type` VARCHAR(32) NULL COMMENT '引用对象类型',
-  `ref_id` BIGINT NULL COMMENT '引用对象ID',
-  `usage` VARCHAR(32) NULL COMMENT '业务用途',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_attachment_object_key` (`object_key`),
-  KEY `idx_attachment_status_create_time` (`status`, `create_time`),
-  KEY `idx_attachment_reference` (`ref_type`, `ref_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='附件';
+  KEY `idx_attachment_status_create_time` (`status`, `create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='图片库';
 
 CREATE TABLE `message` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '留言ID',
@@ -115,9 +99,21 @@ CREATE TABLE `project_detail` (
   `tech_stack_tags` JSON NULL COMMENT '详细技术栈标签',
   `description_md` TEXT NULL COMMENT 'Markdown项目介绍',
   `team_division` JSON NULL COMMENT '团队成员分工',
-  `award_ids` JSON NULL COMMENT '奖项ID列表',
+  `image_urls` JSON NULL COMMENT '轮播图片URL列表',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_project_detail_project_id` (`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='项目详情';
+
+CREATE TABLE `project_award` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '关联ID',
+  `project_id` BIGINT NOT NULL COMMENT '项目ID',
+  `award_id` BIGINT UNSIGNED NOT NULL COMMENT '奖项ID',
+  `sort_order` INT NOT NULL DEFAULT 0 COMMENT '展示顺序',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_project_award_project_id_award_id` (`project_id`, `award_id`),
+  KEY `idx_project_award_project_id_sort_order` (`project_id`, `sort_order`),
+  KEY `idx_project_award_award_id` (`award_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='项目奖项关联';

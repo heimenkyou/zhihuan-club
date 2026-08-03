@@ -6,6 +6,7 @@ import cn.luowb.clubrecruitment.dto.req.ApplicationReqDTO;
 import cn.luowb.clubrecruitment.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class ApplicationController {
 
     @Operation(summary = "提交报名")
     @PostMapping
-    public Result<Void> createApplication(@RequestBody ApplicationReqDTO requestParam) {
+    public Result<Void> createApplication(@RequestBody @Valid ApplicationReqDTO requestParam) {
         applicationService.createApplication(requestParam);
         return Results.success();
     }

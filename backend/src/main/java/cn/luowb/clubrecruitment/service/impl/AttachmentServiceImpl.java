@@ -15,12 +15,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +29,7 @@ import java.util.Locale;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, AttachmentDO>
         implements AttachmentService {
     private static final long MAX_IMAGE_SIZE = 10 * 1024 * 1024;
@@ -51,7 +52,6 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         AttachmentDO attachment = new AttachmentDO()
                 .setObjectKey(objectKey)
                 .setOriginalName(requestParam.getOriginalName())
-                .setType("image")
                 .setMimeType(requestParam.getMimeType())
                 .setSize(requestParam.getSize())
                 .setStatus(STATUS_PENDING);
@@ -88,72 +88,20 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
                 new Page<>(requestParam.getCurrent(), requestParam.getSize()),
                 Wrappers.<AttachmentDO>lambdaQuery()
                         .eq(AttachmentDO::getStatus, STATUS_READY)
-                        .eq(AttachmentDO::getType, "image")
                         .orderByDesc(AttachmentDO::getCreateTime));
         return PageData.of(page, this::toResponse);
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         AttachmentDO attachment = getById(id);
         if (attachment == null) {
             throw new ClientException("附件不存在");
         }
-        if (attachment.getRefId() != null) {
-            throw new ClientException("附件已被引用，不能删除");
-        }
         if (StringUtils.hasText(attachment.getObjectKey())) {
             qiniuStorageService.delete(attachment.getObjectKey());
         }
         removeById(id);
-    }
-
-    @Override
-    public List<AttachmentRespDTO> listByReference(String refType, Long refId) {
-        return list(Wrappers.<AttachmentDO>lambdaQuery()
-                .eq(AttachmentDO::getRefType, refType)
-                .eq(AttachmentDO::getRefId, refId)
-                .eq(AttachmentDO::getStatus, STATUS_READY)
-                .orderByAsc(AttachmentDO::getId)).stream().map(this::toResponse).toList();
-    }
-
-    @Override
-    public void replaceProjectAttachments(Long projectId, List<Long> attachmentIds) {
-        List<Long> ids = attachmentIds == null
-                ? Collections.emptyList()
-                : new LinkedHashSet<>(attachmentIds).stream().toList();
-        if (!ids.isEmpty()) {
-            List<AttachmentDO> attachments = listByIds(ids);
-            if (attachments.size() != ids.size()) {
-                throw new ClientException("使用了不存在的附件");
-            }
-            boolean unavailable = attachments.stream().anyMatch(attachment ->
-                    !STATUS_READY.equals(attachment.getStatus())
-                            || attachment.getRefId() != null
-                            && !("project".equals(attachment.getRefType())
-                            && projectId.equals(attachment.getRefId())));
-            if (unavailable) {
-                throw new ClientException("附件未就绪或已被其他对象引用");
-            }
-        }
-
-        clearReference("project", projectId);
-        if (!ids.isEmpty()) {
-            update(Wrappers.<AttachmentDO>lambdaUpdate()
-                    .in(AttachmentDO::getId, ids)
-                    .set(AttachmentDO::getRefType, "project")
-                    .set(AttachmentDO::getRefId, projectId));
-        }
-    }
-
-    @Override
-    public void clearReference(String refType, Long refId) {
-        update(Wrappers.<AttachmentDO>lambdaUpdate()
-                .eq(AttachmentDO::getRefType, refType)
-                .eq(AttachmentDO::getRefId, refId)
-                .set(AttachmentDO::getRefType, null)
-                .set(AttachmentDO::getRefId, null));
     }
 
     @Override
@@ -163,5 +111,25 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
                 ? attachment.getLegacyUrl()
                 : qiniuStorageService.buildPublicUrl(attachment.getObjectKey()));
         return response;
+    }
+
+    /**
+     * 清理未完成上传的过期图片记录，避免直传中断留下无主对象。
+     */
+    @Scheduled(cron = "0 0 0 1 * *")
+    public void cleanExpiredPendingAttachments() {
+        List<AttachmentDO> attachments = list(Wrappers.<AttachmentDO>lambdaQuery()
+                .eq(AttachmentDO::getStatus, STATUS_PENDING)
+                .lt(AttachmentDO::getCreateTime, LocalDateTime.now().minusMinutes(10)));
+        for (AttachmentDO attachment : attachments) {
+            try {
+                if (StringUtils.hasText(attachment.getObjectKey())) {
+                    qiniuStorageService.delete(attachment.getObjectKey());
+                }
+                removeById(attachment.getId());
+            } catch (Exception e) {
+                log.warn("清理过期待上传图片失败, attachmentId={}", attachment.getId(), e);
+            }
+        }
     }
 }

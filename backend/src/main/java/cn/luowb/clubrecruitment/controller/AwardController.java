@@ -59,7 +59,7 @@ public class AwardController {
     @DeleteMapping("/admin/awards/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         log.debug("删除奖项, id={}", id);
-        awardService.removeById(id);
+        awardService.delete(id);
         return Results.success();
     }
 

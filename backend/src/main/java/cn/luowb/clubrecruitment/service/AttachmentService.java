@@ -8,8 +8,6 @@ import cn.luowb.clubrecruitment.dto.resp.AttachmentRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.AttachmentUploadTokenRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.List;
-
 /**
  * 附件业务服务。
  */
@@ -39,36 +37,11 @@ public interface AttachmentService extends IService<AttachmentDO> {
     PageData<AttachmentRespDTO> getPage(PageReqDTO requestParam);
 
     /**
-     * 删除未被引用的附件。
+     * 删除图片及其存储对象。
      *
      * @param id 附件ID
      */
     void delete(Long id);
-
-    /**
-     * 查询指定业务对象的可用附件。
-     *
-     * @param refType 引用类型
-     * @param refId   引用ID
-     * @return 附件列表
-     */
-    List<AttachmentRespDTO> listByReference(String refType, Long refId);
-
-    /**
-     * 替换项目的附件关联，空列表表示清空。
-     *
-     * @param projectId     项目ID
-     * @param attachmentIds 附件ID列表
-     */
-    void replaceProjectAttachments(Long projectId, List<Long> attachmentIds);
-
-    /**
-     * 清除指定业务对象的附件关联。
-     *
-     * @param refType 引用类型
-     * @param refId   引用ID
-     */
-    void clearReference(String refType, Long refId);
 
     /**
      * 将附件记录转换为包含访问地址的响应。

@@ -18,10 +18,7 @@
             <span :title="attachment.originalName">{{ attachment.originalName }}</span>
             <small>{{ formatSize(attachment.size) }}</small>
           </div>
-          <div class="attachment-actions">
-            <el-tag v-if="attachment.refId" size="small" type="info">已引用</el-tag>
-            <el-button v-else link type="danger" @click="removeAttachment(attachment)">删除</el-button>
-          </div>
+          <div class="attachment-actions"><el-button link type="danger" @click="removeAttachment(attachment)">删除</el-button></div>
         </article>
       </div>
 
@@ -75,7 +72,7 @@ const handleUpload = async ({ file }) => {
   }
 }
 
-/** 删除未引用附件。 */
+/** 删除图片附件。 */
 const removeAttachment = async attachment => {
   await ElMessageBox.confirm(`确定删除“${attachment.originalName}”吗？`, '删除附件', { type: 'warning' })
   try {
