@@ -2,14 +2,8 @@
   <div class="policy-container">
     <el-main class="policy-content">
       <div class="policy-header">
-        <div
-          class="flex justify-between items-center w-full h-12 border-b px-4"
-        >
-          <button
-            @click="navigateToHome"
-            class="text-dark py-2"
-            aria-label="返回首页"
-          >
+        <div class="flex justify-between items-center w-full h-12 border-b px-4">
+          <button @click="navigateToHome" class="text-dark py-2" aria-label="返回首页">
             <i-fa6-solid-arrow-left class="fa-arrow-left" />
           </button>
           <h1 class="text-xl font-bold">隐私政策</h1>
@@ -86,12 +80,8 @@
               <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> 直接加群
             </a> -->
           <p>
-            <a
-              href="https://qm.qq.com/q/KiJWZAQ1C6"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> QQ群：967370226
+            <a href="https://qm.qq.com/q/KiJWZAQ1C6" target="_blank" rel="noopener noreferrer">
+              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> QQ群：1095890953
             </a>
           </p>
         </section>
@@ -114,91 +104,91 @@ const navigateToHome = () => {
 </script>
 
 <style scoped>
-  .policy-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+.policy-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
+.policy-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.policy-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-top: 0;
+}
+
+.policy-header h1 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin: 0;
+}
+
+.update-date {
+  color: #64748b;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.policy-body {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+section {
+  margin-bottom: 2.5rem;
+}
+
+section h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+section p {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+  color: #475569;
+}
+
+section ul {
+  list-style-type: disc;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+section li {
+  margin-bottom: 0.5rem;
+  line-height: 1.8;
+  color: #475569;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
   .policy-content {
-    flex: 1;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .policy-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    padding-top: 0;
+    padding: 1rem;
   }
 
   .policy-header h1 {
-    font-size: 1.5rem;
-    color: #1e293b;
-    margin: 0;
-  }
-
-  .update-date {
-    color: #64748b;
-    font-size: 1rem;
-    margin-top: 1rem;
+    font-size: 2rem;
   }
 
   .policy-body {
-    background: white;
-    border-radius: 0.75rem;
-    padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  }
-
-  section {
-    margin-bottom: 2.5rem;
+    padding: 1.5rem;
   }
 
   section h2 {
-    font-size: 1.5rem;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e2e8f0;
+    font-size: 1.35rem;
   }
-
-  section p {
-    margin-bottom: 1rem;
-    line-height: 1.8;
-    color: #475569;
-  }
-
-  section ul {
-    list-style-type: disc;
-    padding-left: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  section li {
-    margin-bottom: 0.5rem;
-    line-height: 1.8;
-    color: #475569;
-  }
-
-  /* 移动端适配 */
-  @media (max-width: 768px) {
-    .policy-content {
-      padding: 1rem;
-    }
-
-    .policy-header h1 {
-      font-size: 2rem;
-    }
-
-    .policy-body {
-      padding: 1.5rem;
-    }
-
-    section h2 {
-      font-size: 1.35rem;
-    }
-  }
+}
 </style>
