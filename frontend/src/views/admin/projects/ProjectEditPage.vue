@@ -19,7 +19,7 @@
         class="project-form"
       >
         <!-- 基本信息 -->
-        <el-form-item prop="title">
+        <el-form-item label="项目标题" prop="title">
           <el-input
             v-model="projectForm.title"
             placeholder="请输入项目标题"
@@ -28,7 +28,7 @@
             maxlength="100"
           />
         </el-form-item>
-          <el-form-item prop="category">
+          <el-form-item label="项目分类" prop="category">
             <el-select
               v-model="projectForm.category"
               placeholder="请选择项目分类"
@@ -42,7 +42,7 @@
               />
             </el-select>
           </el-form-item>
-        <el-form-item prop="timeRange">
+        <el-form-item label="开发时间" prop="timeRange">
           <el-date-picker
             v-model="dateRange"
             type="daterange"
@@ -54,17 +54,17 @@
             @change="handleDateRangeChange"
           />
         </el-form-item>
-        <el-form-item prop="briefIntro">
+        <el-form-item label="简要介绍" prop="briefIntro">
           <el-input
             v-model="projectForm.briefIntro"
-            placeholder="请输入项目简介"
+            placeholder="用一两句话说明项目解决的问题、主要功能和目标用户"
             type="textarea"
             :rows="3"
             show-word-limit
             maxlength="200"
           />
         </el-form-item>
-        <el-form-item prop="coverImage">
+        <el-form-item label="项目封面" prop="coverImage">
           <div class="upload-container">
             <div class="upload-main">
               <img v-if="projectForm.coverImage" :src="projectForm.coverImage" class="avatar" />
@@ -82,7 +82,7 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item prop="descriptionMd">
+        <el-form-item label="详细介绍" prop="descriptionMd">
           <div class="markdown-editor-container">
             <div class="editor-tabs">
               <el-tabs v-model="activeTab" type="card">
@@ -92,8 +92,8 @@
               </el-tabs>
             </div>
             <div v-if="activeTab === 'edit'" class="editor-full">
-              <MdEditor
-                v-model="projectForm.descriptionMd"
+                  <MdEditor
+                    v-model="projectForm.descriptionMd"
                 :toolbars-exclude="['image']"
                 :style="{ height: editorHeight }"
                 class="markdown-editor"
@@ -216,17 +216,18 @@
                   alt="预览"
                   class="selected-media-thumbnail"
                 />
-                <div class="selected-media-info">
-                  <div class="selected-media-title">
-                    {{ url }}
-                  </div>
-                </div>
+                <span class="selected-media-name" :title="getImageName(url)">
+                  {{ getImageName(url) }}
+                </span>
                 <el-button
                   type="danger"
+                  text
+                  circle
                   size="small"
+                  :aria-label="`移除 ${getImageName(url)}`"
                   @click="removeImageUrl(url)"
                 >
-                  移除
+                  <i-ep-delete />
                 </el-button>
               </div>
             </div>
@@ -250,21 +251,23 @@
         <!-- 奖项管理 -->
         <el-form-item label="获奖情况">
           <div class="award-management">
-              <el-input
-                v-model="awardIdsInput"
-                placeholder="请输入奖项ID，用逗号分隔"
-                class="award-input"
-              />
-            <el-button
-              type="primary"
-              size="small"
-              class="mt-3"
-              @click="parseAwardIds"
+            <el-select
+              v-model="projectForm.awardIds"
+              multiple
+              filterable
+              clearable
+              placeholder="输入竞赛名称、级别、奖项、获奖人或年份搜索"
+              class="award-input"
             >
-              确认奖项ID
-            </el-button>
+              <el-option
+                v-for="award in awardOptions"
+                :key="award.id"
+                :label="formatAward(award)"
+                :value="award.id"
+              />
+            </el-select>
             <div class="form-tip text-gray-500 text-sm mt-1">
-              请输入与奖项系统中对应的ID
+              可选择多个奖项，输入关键字会立即筛选
             </div>
           </div>
         </el-form-item>
@@ -277,7 +280,13 @@
     </el-card>
 
     <AttachmentPicker v-model:visible="coverPickerVisible" v-model="projectForm.coverImage" />
-    <AttachmentPicker v-model:visible="galleryPickerVisible" v-model="projectForm.imageUrls" multiple />
+    <AttachmentPicker
+      v-model:visible="galleryPickerVisible"
+      v-model="projectForm.imageUrls"
+      multiple
+      confirm
+      @selected="rememberImageName"
+    />
   </div>
 </template>
 
@@ -298,6 +307,7 @@ import {
 	createProject,
 	updateProject,
 } from "@/services/projectService";
+import { getAdminAwards } from "@/services/adminService";
 
 const EditorLoading = {
 	render: () => h("div", { class: "editor-loading" }, "编辑器加载中…"),
@@ -341,7 +351,8 @@ const isEditMode = computed(() => projectId.value !== null);
 const projectFormRef = ref(null);
 const coverPickerVisible = ref(false);
 const galleryPickerVisible = ref(false);
-const awardIdsInput = ref("");
+const awardOptions = ref([]);
+const imageNames = ref({});
 const dateRange = ref([]);
 const activeTab = ref("edit");
 const techStackInput = ref("");
@@ -527,22 +538,45 @@ const removeTeamMember = (index) => {
 };
 
 /**
- * 解析奖项 ID 输入框。
+ * 读取可选奖项，供表单内即时筛选。
  */
-const parseAwardIds = () => {
-	if (awardIdsInput.value) {
-		const ids = awardIdsInput.value
-			.split(",")
-			.map((id) => parseInt(id.trim(), 10))
-			.filter((id) => !Number.isNaN(id));
-
-		projectForm.awardIds = ids;
+const loadAwardOptions = async () => {
+	try {
+		awardOptions.value = await getAdminAwards();
+	} catch (error) {
+		ElMessage.error("获取奖项列表失败");
 	}
 };
 
-/** 移除轮播图片 URL。 */
+/** 将附件库中的原始文件名保留在轮播图列表中。 */
+const rememberImageName = (attachment) => {
+	imageNames.value[attachment.url] = attachment.originalName;
+};
+
+/** 从附件元数据或对象地址生成轮播图片名称。 */
+const getImageName = (url) => {
+	if (imageNames.value[url]) return imageNames.value[url];
+	const objectName = decodeURIComponent(url.split("/").pop() || "图片");
+	return objectName.replace(/^[a-f\d-]{36}_/i, "");
+};
+
+/** 生成覆盖奖项全部可检索字段的选项文本。 */
+const formatAward = (award) =>
+	[
+		award.competitionName,
+		award.competitionTrack,
+		award.competitionLevel,
+		award.awardLevel,
+		...(award.winners || []),
+		award.year,
+	]
+		.filter(Boolean)
+		.join(" · ");
+
+/** 移除轮播图片。 */
 const removeImageUrl = (url) => {
 	projectForm.imageUrls = projectForm.imageUrls.filter((item) => item !== url);
+	delete imageNames.value[url];
 };
 
 /**
@@ -581,9 +615,6 @@ const loadProjectDetail = async () => {
 			}
 		}
 
-		if (projectForm.awardIds.length > 0) {
-			awardIdsInput.value = projectForm.awardIds.join(",");
-		}
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : "未知错误";
 		ElMessage.error(`获取项目详情失败: ${errorMessage}`);
@@ -602,6 +633,7 @@ const handleBack = () => {
  * 初始化页面数据。
  */
 onMounted(() => {
+	loadAwardOptions();
 	if (isEditMode.value) {
 		loadProjectDetail();
 		return;
@@ -616,9 +648,9 @@ onMounted(() => {
 
     .project-edit-card {
       width: 100%;
-      max-width: 760px;
-     margin: 0 auto;
-  }
+      max-width: none;
+      margin: 0;
+    }
 
   .card-header {
     display: flex;
@@ -874,50 +906,46 @@ onMounted(() => {
     background-color: #fafafa;
   }
 
-  .selected-media-list {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-  }
+   .selected-media-list {
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+     gap: 12px;
+     margin-bottom: 20px;
+   }
 
-  .selected-media-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: white;
-    border-radius: 6px;
-    border: 1px solid #ebeef5;
-  }
+   .selected-media-item {
+     position: relative;
+     display: grid;
+     gap: 8px;
+     min-width: 0;
+     padding: 8px;
+     background-color: white;
+     border-radius: 6px;
+     border: 1px solid #ebeef5;
+   }
 
-  .selected-media-thumbnail {
-    width: 100px;
-    height: 75px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-right: 15px;
-  }
+   .selected-media-thumbnail {
+     width: 100%;
+     height: 96px;
+     object-fit: cover;
+     border-radius: 4px;
+   }
 
-  .selected-media-info {
-    flex: 1;
-    min-width: 0;
-  }
+   .selected-media-name {
+     display: block;
+     font-weight: 500;
+     font-size: 12px;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+   }
 
-  .selected-media-title {
-    font-weight: 500;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .selected-media-desc {
-    color: #909399;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+   .selected-media-item > .el-button {
+     position: absolute;
+     top: 4px;
+     right: 4px;
+     background: rgb(255 255 255 / 88%);
+   }
 
   .media-actions {
     display: flex;
@@ -1019,9 +1047,8 @@ onMounted(() => {
      }
 
     .team-member-item,
-    .selected-media-item {
-      flex-direction: column;
-      align-items: stretch;
+      .selected-media-item {
+       min-width: 0;
     }
 
      .team-member-item .el-input,
@@ -1043,20 +1070,18 @@ onMounted(() => {
        margin-bottom: 8px;
      }
 
-     .selected-media-item {
-       gap: 10px;
+      .selected-media-item {
+        gap: 8px;
      }
 
-     .selected-media-item .el-button,
-     .media-actions .el-button {
-       width: 100%;
-     }
+      .selected-media-item .el-button,
+      .media-actions .el-button {
+        width: auto;
+      }
 
-     .selected-media-thumbnail {
-      margin-right: 0;
-      margin-bottom: 10px;
-      max-width: 100%;
-     }
+      .selected-media-thumbnail {
+       max-width: 100%;
+      }
 
      .form-actions {
        justify-content: stretch;

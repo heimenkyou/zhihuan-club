@@ -80,6 +80,10 @@
         />
       </section>
     </div>
+    <template v-if="confirm" #footer>
+      <el-button @click="visible = false">取消</el-button>
+      <el-button type="primary" @click="confirmSelection">确认选择</el-button>
+    </template>
   </el-dialog>
 </template>
 
@@ -89,19 +93,21 @@ import { ElMessage } from "element-plus";
 import { getAttachments, uploadImage } from "@/services/attachmentService";
 
 const props = defineProps({
-	modelValue: { type: [String, Array], default: "" },
-	multiple: Boolean,
-	selectable: { type: Boolean, default: true },
+  modelValue: { type: [String, Array], default: "" },
+  multiple: Boolean,
+  confirm: Boolean,
+  selectable: { type: Boolean, default: true },
 });
-const emit = defineEmits(["update:modelValue", "uploaded"]);
+const emit = defineEmits(["update:modelValue", "uploaded", "selected"]);
 const visible = defineModel("visible", { default: false });
 const attachments = ref([]);
 const loading = ref(false);
 const uploading = ref(false);
 const uploadQueue = ref([]);
 const page = ref({ current: 1, size: 24, total: 0 });
+const pendingUrls = ref([]);
 const selectedUrls = computed(() =>
-	props.multiple ? props.modelValue || [] : [props.modelValue],
+	props.confirm ? pendingUrls.value : props.multiple ? props.modelValue || [] : [props.modelValue],
 );
 
 /** 加载附件库当前页。 */
@@ -172,6 +178,7 @@ const uploadQueueFiles = async () => {
 /** 将附件 URL 写入调用方字段。 */
 const selectAttachment = (attachment, closeAfterSelect = true) => {
 	if (!props.selectable) return;
+	emit("selected", attachment);
 	if (!props.multiple) {
 		emit("update:modelValue", attachment.url);
 		if (closeAfterSelect) visible.value = false;
@@ -181,7 +188,14 @@ const selectAttachment = (attachment, closeAfterSelect = true) => {
 	const index = urls.indexOf(attachment.url);
 	if (index === -1) urls.push(attachment.url);
 	else urls.splice(index, 1);
-	emit("update:modelValue", urls);
+	if (props.confirm) pendingUrls.value = urls;
+	else emit("update:modelValue", urls);
+};
+
+/** 将多选结果一次性写回调用方，避免未确认的选择影响表单。 */
+const confirmSelection = () => {
+	emit("update:modelValue", [...pendingUrls.value]);
+	visible.value = false;
 };
 
 const formatSize = (size) => `${(size / 1024 / 1024).toFixed(2)} MB`;
@@ -189,7 +203,10 @@ const uploadStatusText = (item) =>
 	item.status === "error" ? "上传失败，可重试" : "等待上传";
 
 watch(visible, (value) => {
-	if (value) loadAttachments();
+	if (value) {
+		pendingUrls.value = props.multiple ? [...(props.modelValue || [])] : [props.modelValue];
+		loadAttachments();
+	}
 });
 
 onBeforeUnmount(() => {
