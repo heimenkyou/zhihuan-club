@@ -18,6 +18,8 @@ app:
     secret-key: ${QINIU_SECRET_KEY:}
     bucket: club-images-luowb
     domain: https://club-img.luowb.cn
+  attachment:
+    max-image-size: ${ATTACHMENT_MAX_IMAGE_SIZE:1MB}
   # 点赞防刷时间间隔(秒)
   like-interval-seconds: 86400
 logging:

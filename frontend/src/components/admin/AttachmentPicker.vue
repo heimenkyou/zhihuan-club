@@ -11,7 +11,7 @@
       >
         <i-ep-upload-filled class="upload-icon" />
         <div class="el-upload__text">拖拽图片到这里，或<em>点击选择多个文件</em></div>
-        <template #tip><div class="el-upload__tip">仅支持图片，单个文件不超过 10MB</div></template>
+        <template #tip><div class="el-upload__tip">图片会自动转换和压缩，处理后单个文件不超过 1MB</div></template>
       </el-upload>
 
       <section v-if="uploadQueue.length" class="upload-queue">
@@ -90,7 +90,11 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { getAttachments, uploadImage } from "@/services/attachmentService";
+import {
+	getAttachments,
+	prepareImage,
+	uploadImage,
+} from "@/services/attachmentService";
 
 const props = defineProps({
   modelValue: { type: [String, Array], default: "" },
@@ -128,16 +132,21 @@ const loadAttachments = async () => {
 };
 
 /** 将本地选择的文件加入上传队列。 */
-const addToQueue = (uploadFile) => {
-	const file = uploadFile.raw;
-	if (!file || uploadQueue.value.some((item) => item.file === file)) return;
-	uploadQueue.value.push({
-		id: uploadFile.uid,
-		file,
-		previewUrl: URL.createObjectURL(file),
-		status: "waiting",
-		progress: 0,
-	});
+const addToQueue = async (uploadFile) => {
+	const originalFile = uploadFile.raw;
+	if (!originalFile || uploadQueue.value.some((item) => item.id === uploadFile.uid)) return;
+	try {
+		const file = await prepareImage(originalFile);
+		uploadQueue.value.push({
+			id: uploadFile.uid,
+			file,
+			previewUrl: URL.createObjectURL(file),
+			status: "waiting",
+			progress: 0,
+		});
+	} catch (error) {
+		ElMessage.error(`${originalFile.name}：${error.message || "图片处理失败"}`);
+	}
 };
 
 /** 释放本地预览地址并从队列中移除文件。 */

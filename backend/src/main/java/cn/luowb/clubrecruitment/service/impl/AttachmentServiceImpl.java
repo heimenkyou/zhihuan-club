@@ -2,6 +2,7 @@ package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
+import cn.luowb.clubrecruitment.common.properties.AttachmentProperties;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.util.QiniuStorageService;
 import cn.luowb.clubrecruitment.dao.entity.AttachmentDO;
@@ -32,19 +33,19 @@ import java.util.Locale;
 @Slf4j
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, AttachmentDO>
         implements AttachmentService {
-    private static final long MAX_IMAGE_SIZE = 10 * 1024 * 1024;
     private static final String STATUS_PENDING = "pending";
     private static final String STATUS_READY = "ready";
 
     private final QiniuStorageService qiniuStorageService;
+    private final AttachmentProperties attachmentProperties;
 
     @Override
     public AttachmentUploadTokenRespDTO createUploadToken(AttachmentUploadTokenReqDTO requestParam) {
         if (!requestParam.getMimeType().toLowerCase(Locale.ROOT).startsWith("image/")) {
             throw new ClientException("只允许上传图片");
         }
-        if (requestParam.getSize() > MAX_IMAGE_SIZE) {
-            throw new ClientException("图片大小不能超过10MB");
+        if (requestParam.getSize() > attachmentProperties.getMaxImageSize().toBytes()) {
+            throw new ClientException("图片大小超过允许上限");
         }
 
         String objectKey = qiniuStorageService.createObjectKey("attachments", requestParam.getOriginalName());

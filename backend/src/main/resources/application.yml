@@ -75,6 +75,8 @@ app:
     secret-key: ${QINIU_SECRET_KEY:}
     bucket: ${QINIU_BUCKET:}
     domain: ${QINIU_DOMAIN:}
+  attachment:
+    max-image-size: ${ATTACHMENT_MAX_IMAGE_SIZE:1MB}
   # 点赞防刷时间间隔(秒)
   like-interval-seconds: 86400
 
