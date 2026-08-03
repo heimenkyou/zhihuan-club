@@ -730,7 +730,7 @@
         // 直接使用返回的奖项数组
         awards.value = data.map(item => ({
           ...item,
-          year: parseInt(item.year), // 将 year 从字符串转换为数字
+          year: parseInt(item.year, 10), // 将 year 从字符串转换为数字
           winners: Array.isArray(item.winners) ? item.winners : [],
         }))
       } else {
@@ -839,7 +839,7 @@
       }
 
       // 年份筛选
-      if (filter.value.year && award.year !== parseInt(filter.value.year)) {
+      if (filter.value.year && award.year !== parseInt(filter.value.year, 10)) {
         return false
       }
 
@@ -912,7 +912,7 @@
   // 年份排序：按降序排列
   const sortedYears = computed(() => {
     return Object.keys(groupedAwards.value).sort(
-      (a, b) => parseInt(b) - parseInt(a)
+      (a, b) => parseInt(b, 10) - parseInt(a, 10)
     )
   })
 
@@ -953,7 +953,9 @@
 
       document
         .querySelectorAll('section')
-        .forEach(section => observer.observe(section))
+        .forEach(section => {
+          observer.observe(section)
+        })
     })
   })
 

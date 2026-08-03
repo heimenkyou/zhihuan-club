@@ -1,7 +1,7 @@
 package cn.luowb.clubrecruitment.config;
 
 import cn.luowb.clubrecruitment.common.context.IPContext;
-import cn.luowb.clubrecruitment.common.util.IPUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         @Override
         public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                  @NonNull Object handler) {
-            String clientIP = IPUtil.getClientIP(request);
+            String clientIP = JakartaServletUtil.getClientIP(request);
             IPContext.setIp(clientIP);
             return true;
         }

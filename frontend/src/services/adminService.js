@@ -22,16 +22,6 @@ const getResultData = body => {
 }
 
 /**
- * 判断响应体是否表示成功。
- *
- * @param {any} body
- * @returns {boolean}
- */
-const isSuccessBody = body => {
-  return Boolean(body && (body.success || body.code === '0' || body.code === '3'))
-}
-
-/**
  * 从响应体中提取数组数据。
  *
  * @param {any} body
@@ -50,41 +40,6 @@ const getArrayData = body => {
 
   if (Array.isArray(body)) {
     return body
-  }
-
-  return []
-}
-
-/**
- * 从媒体相关响应体中提取媒体数组。
- *
- * @param {any} body
- * @returns {any[]}
- */
-const getMediaList = body => {
-  const data = getResultData(body)
-
-  if (Array.isArray(data)) {
-    return data
-  }
-
-  if (Array.isArray(body)) {
-    return body
-  }
-
-  if (data && Array.isArray(data.mediaResources)) {
-    return data.mediaResources
-  }
-
-  if (data && typeof data === 'object' && data.id && data.url) {
-    return [data]
-  }
-
-  const possibleMediaFields = ['media', 'medias', 'resources', 'files', 'items']
-  for (const field of possibleMediaFields) {
-    if (Array.isArray(body?.[field])) {
-      return body[field]
-    }
   }
 
   return []
@@ -287,8 +242,6 @@ export const login = async params => {
   try {
     const response = await api.post('/admin/auth/login', params)
     const data = getResultData(getBody(response))
-    const token = data?.token
-
     return data
   } catch (error) {
     const message = error instanceof Error ? error.message : '登录失败'
@@ -360,77 +313,6 @@ export const deleteApplication = async id => {
     await api.delete(`/admin/applications/${id}`)
   } catch (error) {
     console.error('删除报名信息失败:', error)
-    throw error
-  }
-}
-
-/**
- * 获取未被业务引用的媒体资源。
- *
- * @returns {Promise<any[]>}
- */
-export const getUnreferencedMedia = async () => {
-  try {
-    const response = await api.get('/admin/media/unreferenced')
-    return getMediaList(getBody(response))
-  } catch (error) {
-    console.error('获取未引用媒体资源失败:', error)
-    return []
-  }
-}
-
-/**
- * 删除媒体资源。
- *
- * @param {number} id
- * @returns {Promise<void>}
- */
-export const deleteMedia = async id => {
-  try {
-    const response = await api.delete(`/admin/media/${id}`)
-    if (isSuccessBody(getBody(response))) {
-      return
-    }
-    throw new Error('删除媒体资源失败')
-  } catch (error) {
-    console.error('删除媒体资源失败:', error)
-    throw error
-  }
-}
-
-/**
- * 上传媒体资源。
- *
- * @param {{ file: File, title: string, description: string }} params
- * @returns {Promise<any>}
- */
-export const uploadMedia = async params => {
-  try {
-    const formData = new FormData()
-    formData.append('file', params.file)
-    formData.append('title', params.title)
-    formData.append('description', params.description)
-
-    const response = await api.post('/admin/media/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-
-    const body = getBody(response)
-    const data = getResultData(body)
-
-    if (isSuccessBody(body) && data) {
-      return data
-    }
-
-    if (body) {
-      return body
-    }
-
-    throw new Error('上传媒体资源失败')
-  } catch (error) {
-    console.error('上传媒体资源失败:', error)
     throw error
   }
 }

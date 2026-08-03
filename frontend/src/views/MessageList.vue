@@ -137,7 +137,7 @@
   }
 
   const handleJumpPage = async () => {
-    const page = parseInt(jumpPage.value)
+    const page = parseInt(jumpPage.value, 10)
     if (page >= 1 && page <= totalPages.value) {
       currentPage.value = page
       jumpPage.value = ''
@@ -153,7 +153,7 @@
         current: currentPage.value,
         size: pageSize.value,
       })
-      if (response && response.current && response.total) {
+      if (response?.current && response.total) {
         totalCount.value = response.total
         totalPages.value = response.pages
         currentPage.value = response.current

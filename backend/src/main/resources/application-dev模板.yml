@@ -1,4 +1,4 @@
-# 自行将该文件复制一份名为application-dev.yml的文件, 并修改里面的数据库信息, minio信息
+# 自行将该文件复制一份名为 application-dev.yml，并修改数据库与七牛云信息
 # 启动项需要添加有效配置文件为dev, 或直接添加JVM参数: -Dspring.profiles.active=dev
 app:
   mysql:
@@ -13,16 +13,13 @@ app:
     port: ${REDIS_PORT:6379}
     password: ${REDIS_PASSWORD:}
     database: ${REDIS_DATABASE:2}
-  minio:
-    endpoint: ${MINIO_ENDPOINT:}
-    public-endpoint: ${MINIO_PUBLIC_ENDPOINT:}
-    access-key: ${MINIO_ACCESS_KEY:}
-    secret-key: ${MINIO_SECRET_KEY:}
-    bucket-name: ${MINIO_BUCKET_NAME:club-recruitment}
+  qiniu:
+    access-key: ${QINIU_ACCESS_KEY:}
+    secret-key: ${QINIU_SECRET_KEY:}
+    bucket: club-images-luowb
+    domain: https://club-img.luowb.cn
   # 点赞防刷时间间隔(秒)
   like-interval-seconds: 86400
-  # 管理员登录token有效期
-  admin-token-expire-minutes: 30
 logging:
   level:
     cn.luowb.clubrecruitment.controller: debug

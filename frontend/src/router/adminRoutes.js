@@ -60,6 +60,11 @@ const adminRoutes = [
         component: Profile,
         meta: { title: '个人资料' },
       },
+      {
+        path: 'attachments',
+        component: () => import('@/views/admin/attachments/AttachmentManagement.vue'),
+        meta: { title: '附件库' },
+      },
     ],
   },
   {

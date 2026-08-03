@@ -89,17 +89,11 @@
               <div class="upload-actions">
                 <el-button
                   link
-                  @click="showImageLibrary"
+                  @click="showImageLibrary('cover')"
                   class="library-button"
                 >
                   从图库选择</el-button
                 >
-                <el-input
-                  v-model="projectForm.coverImage"
-                  placeholder="或输入图片URL"
-                  class="cover-image-input"
-                  clearable
-                />
               </div>
             </div>
           </div>
@@ -225,11 +219,11 @@
           <div class="media-resources-container">
             <!-- 已选择的媒体资源列表 -->
             <div
-              v-if="selectedMediaResources.length > 0"
+               v-if="selectedAttachments.length > 0"
               class="selected-media-list"
             >
               <div
-                v-for="media in selectedMediaResources"
+               v-for="media in selectedAttachments"
                 :key="media.id"
                 class="selected-media-item"
               >
@@ -240,16 +234,13 @@
                 />
                 <div class="selected-media-info">
                   <div class="selected-media-title">
-                    {{ media.title || '无标题' }}
-                  </div>
-                  <div class="selected-media-desc">
-                    {{ media.description || '无描述' }}
+                     {{ media.originalName }}
                   </div>
                 </div>
                 <el-button
                   type="danger"
                   size="small"
-                  @click="removeSelectedMedia(media.id)"
+                 @click="removeSelectedAttachment(media.id)"
                 >
                   移除
                 </el-button>
@@ -261,7 +252,7 @@
 
             <!-- 操作按钮 -->
             <div class="media-actions">
-              <el-button type="primary" size="small" @click="showImageLibrary">
+              <el-button type="primary" size="small" @click="showImageLibrary('gallery')">
                 从图库选择
               </el-button>
               <el-button
@@ -314,21 +305,21 @@
       <div class="image-library">
         <div
           class="image-item"
-          v-for="image in availableMediaResources"
+           v-for="image in availableAttachments"
           :key="image.id"
           :class="{
-            selected: projectForm.mediaResourceIds?.includes(image.id),
+             selected: projectForm.attachmentIds?.includes(image.id),
           }"
         >
-          <img :src="image.url" @click="selectMediaResource(image)" />
+           <img :src="image.url" @click="selectAttachment(image)" />
           <div class="image-info">
-            <div class="image-title">{{ image.title || '无标题' }}</div>
+             <div class="image-title">{{ image.originalName }}</div>
             <div class="image-actions">
               <el-button
-                v-if="!projectForm.mediaResourceIds?.includes(image.id)"
+                 v-if="!projectForm.attachmentIds?.includes(image.id)"
                 type="text"
                 size="small"
-                @click.stop="selectMediaResource(image)"
+                 @click.stop="selectAttachment(image)"
               >
                 选择
               </el-button>
@@ -343,7 +334,7 @@
             </div>
           </div>
         </div>
-        <div class="no-images" v-if="availableMediaResources.length === 0">
+         <div class="no-images" v-if="availableAttachments.length === 0">
           暂无图片，请先上传
         </div>
       </div>
@@ -354,17 +345,7 @@
 
     <!-- 媒体资源上传对话框 -->
     <el-dialog v-model="showMediaUploadDialog" title="上传图片" width="600px">
-      <el-form>
-        <el-form-item label="图片标题">
-          <el-input v-model="uploadTitle" placeholder="请输入图片标题" />
-        </el-form-item>
-        <el-form-item label="图片描述">
-          <el-input
-            v-model="uploadDescription"
-            type="textarea"
-            placeholder="请输入图片描述"
-          />
-        </el-form-item>
+       <el-form>
         <el-form-item label="选择图片">
           <el-upload
             ref="uploadRef"
@@ -392,15 +373,12 @@
   import { useRouter, useRoute } from 'vue-router'
   import { ElMessage } from 'element-plus'
   import { ArrowLeft, Plus } from '@element-plus/icons-vue'
-  import {
-    getUnreferencedMedia,
-    uploadMedia,
-  } from '../../../services/adminService'
+   import { getAttachments, uploadImage } from '@/services/attachmentService'
   import {
     getProjectForEdit,
     createProject,
     updateProject,
-  } from '../../../services/projectService'
+   } from '@/services/projectService'
 
   const defaultCategory = 'Web开发'
   const editorHeight = '500px'
@@ -422,17 +400,16 @@
   const isEditMode = computed(() => projectId.value !== null)
 
   const projectFormRef = ref(null)
-  const availableMediaResources = ref([])
-  const selectedMediaResources = ref([])
-  const imageLibraryVisible = ref(false)
+   const availableAttachments = ref([])
+   const selectedAttachments = ref([])
+   const imageLibraryVisible = ref(false)
+   const imageLibraryTarget = ref('gallery')
   const showMediaUploadDialog = ref(false)
   const awardIdsInput = ref('')
   const dateRange = ref([])
   const activeTab = ref('edit')
   const techStackInput = ref('')
-  const uploadTitle = ref('')
-  const uploadDescription = ref('')
-  const uploadRef = ref(null)
+   const uploadRef = ref(null)
 
   /**
    * 创建默认团队成员。
@@ -492,7 +469,7 @@
       coverImage: sanitizeCoverImage(projectForm.coverImage),
       techStackTags: ensureArray(projectForm.techStackTags),
       teamDivision: ensureArray(projectForm.teamDivision),
-      mediaResourceIds: ensureArray(projectForm.mediaResourceIds),
+       attachmentIds: ensureArray(projectForm.attachmentIds),
       awardIds: ensureArray(projectForm.awardIds),
     }
   }
@@ -506,7 +483,7 @@
     coverImage: '',
     techStackTags: [],
     teamDivision: [createEmptyTeamMember()],
-    mediaResourceIds: [],
+     attachmentIds: [],
     awardIds: [],
   })
 
@@ -525,7 +502,7 @@
     coverImage: [
       { required: true, message: '请上传项目展示图片', trigger: 'blur' },
     ],
-    mediaResourceIds: [
+     attachmentIds: [
       {
         validator: (_, value, callback) => {
           if (!value || value.length === 0) {
@@ -549,8 +526,8 @@
       await projectFormRef.value.validate()
 
       if (
-        !projectForm.mediaResourceIds ||
-        projectForm.mediaResourceIds.length === 0
+         !projectForm.attachmentIds ||
+         projectForm.attachmentIds.length === 0
       ) {
         ElMessage.error('请至少添加一张轮播图')
         return
@@ -611,13 +588,9 @@
    */
   const handleUpload = async ({ file, onSuccess, onError }) => {
     try {
-      const media = await uploadMedia({
-        file,
-        title: file.name,
-        description: '项目封面',
-      })
-      onSuccess(media)
-      return media
+       const attachment = await uploadImage(file)
+       onSuccess(attachment)
+       return attachment
     } catch (error) {
       onError(error)
       throw error
@@ -629,9 +602,10 @@
    *
    * @param {{ url: string }} response
    */
-  const handleUploadSuccess = response => {
-    projectForm.coverImage = response.url
-    ElMessage.success('图片上传成功')
+   const handleUploadSuccess = response => {
+     projectForm.coverImage = response.url
+     selectAttachment(response)
+     ElMessage.success('图片上传成功')
   }
 
   /**
@@ -642,10 +616,11 @@
   }
 
   /**
-   * 打开图片库并刷新媒体列表。
+    * 打开图片库并刷新附件列表。
    */
-  const showImageLibrary = () => {
-    loadUnreferencedMedia()
+   const showImageLibrary = target => {
+     imageLibraryTarget.value = target
+     loadAttachments()
     imageLibraryVisible.value = true
   }
 
@@ -703,26 +678,26 @@
     if (awardIdsInput.value) {
       const ids = awardIdsInput.value
         .split(',')
-        .map(id => parseInt(id.trim()))
-        .filter(id => !isNaN(id))
+        .map(id => parseInt(id.trim(), 10))
+        .filter(id => !Number.isNaN(id))
 
       projectForm.awardIds = ids
     }
   }
 
   /**
-   * 加载可选媒体资源，并补上当前项目已选图片。
+    * 加载可选附件，并补上当前项目已选图片。
    */
-  const loadUnreferencedMedia = async () => {
-    try {
-      const media = await getUnreferencedMedia()
-      availableMediaResources.value = dedupeMediaList([
-        ...media,
-        ...selectedMediaResources.value,
-      ])
-    } catch (error) {
-      ElMessage.error('加载媒体资源失败')
-      console.error('加载媒体资源失败:', error)
+   const loadAttachments = async () => {
+     try {
+       const page = await getAttachments({ current: 1, size: 100 })
+       availableAttachments.value = dedupeMediaList([
+         ...(page.records || []),
+         ...selectedAttachments.value,
+       ])
+     } catch (error) {
+       ElMessage.error('加载附件失败')
+       console.error('加载附件失败:', error)
     }
   }
 
@@ -731,18 +706,22 @@
    *
    * @param {{ id: number, url: string, title?: string, description?: string }} media
    */
-  const selectMediaResource = media => {
-    if (!projectForm.mediaResourceIds) {
-      projectForm.mediaResourceIds = []
-    }
+   const selectAttachment = attachment => {
+     if (!projectForm.attachmentIds) {
+       projectForm.attachmentIds = []
+     }
 
-    if (!projectForm.mediaResourceIds.includes(media.id)) {
-      projectForm.mediaResourceIds.push(media.id)
-      selectedMediaResources.value.push(media)
+     if (!projectForm.attachmentIds.includes(attachment.id)) {
+       projectForm.attachmentIds.push(attachment.id)
+       selectedAttachments.value.push(attachment)
       ElMessage.success('已添加到轮播图')
     } else {
       ElMessage.warning('该图片已在轮播图中')
-    }
+     }
+     if (imageLibraryTarget.value === 'cover') {
+       projectForm.coverImage = attachment.url
+       imageLibraryVisible.value = false
+     }
   }
 
   /**
@@ -750,13 +729,13 @@
    *
    * @param {number} mediaId
    */
-  const removeSelectedMedia = mediaId => {
-    if (projectForm.mediaResourceIds) {
-      projectForm.mediaResourceIds = projectForm.mediaResourceIds.filter(
-        id => id !== mediaId
-      )
-      selectedMediaResources.value = selectedMediaResources.value.filter(
-        media => media.id !== mediaId
+   const removeSelectedAttachment = attachmentId => {
+     if (projectForm.attachmentIds) {
+       projectForm.attachmentIds = projectForm.attachmentIds.filter(
+         id => id !== attachmentId
+       )
+       selectedAttachments.value = selectedAttachments.value.filter(
+         attachment => attachment.id !== attachmentId
       )
       ElMessage.success('已从轮播图移除')
     }
@@ -769,21 +748,17 @@
    * @param {string} title
    * @param {string} description
    */
-  const handleMediaUpload = async (
-    file,
-    title,
-    description
-  ) => {
-    try {
-      const newMedia = await uploadMedia({ file, title, description })
-      availableMediaResources.value.push(newMedia)
-      selectedMediaResources.value.push(newMedia)
-      projectForm.mediaResourceIds?.push(newMedia.id)
-      showMediaUploadDialog.value = false
-      ElMessage.success('媒体资源上传成功')
-    } catch (error) {
-      ElMessage.error('媒体资源上传失败')
-      console.error('上传媒体资源失败:', error)
+   const handleMediaUpload = async file => {
+     try {
+       const newAttachment = await uploadImage(file)
+       availableAttachments.value.push(newAttachment)
+       selectedAttachments.value.push(newAttachment)
+       projectForm.attachmentIds?.push(newAttachment.id)
+       showMediaUploadDialog.value = false
+       ElMessage.success('图片上传成功')
+     } catch (error) {
+       ElMessage.error('图片上传失败')
+       console.error('上传图片失败:', error)
     }
   }
 
@@ -795,13 +770,7 @@
     if (uploader && uploader.length > 0) {
       const file = uploader[0].raw
       if (file) {
-        await handleMediaUpload(
-          file,
-          uploadTitle.value,
-          uploadDescription.value
-        )
-        uploadTitle.value = ''
-        uploadDescription.value = ''
+         await handleMediaUpload(file)
         uploadRef.value.clearFiles()
       }
     } else {
@@ -817,8 +786,8 @@
 
     try {
       const projectDetail = await getProjectForEdit(projectId.value)
-      const mediaResources = Array.isArray(projectDetail.mediaResources)
-        ? projectDetail.mediaResources
+       const attachments = Array.isArray(projectDetail.attachments)
+         ? projectDetail.attachments
         : []
       const awards = Array.isArray(projectDetail.awards) ? projectDetail.awards : []
 
@@ -835,11 +804,11 @@
           projectDetail.teamDivisions.length > 0
             ? projectDetail.teamDivisions
             : [createEmptyTeamMember()],
-        mediaResourceIds: mediaResources.map(item => item.id),
+         attachmentIds: attachments.map(item => item.id),
         awardIds: awards.map(item => item.id),
       })
 
-      selectedMediaResources.value = mediaResources
+       selectedAttachments.value = attachments
 
       if (projectDetail.timeRange) {
         const rangeParts = projectDetail.timeRange.split('-')
@@ -852,7 +821,7 @@
         awardIdsInput.value = projectForm.awardIds.join(',')
       }
 
-      await loadUnreferencedMedia()
+       await loadAttachments()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '未知错误'
       ElMessage.error(`获取项目详情失败: ${errorMessage}`)

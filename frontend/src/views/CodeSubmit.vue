@@ -237,7 +237,7 @@
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
   }
 
   // 表单验证规则
@@ -358,7 +358,7 @@
       // 计算上传速度（模拟）
       const simulatedUploadedBytes = (currentProgress / 100) * totalSize
       const speed = simulatedUploadedBytes / elapsedTime // B/s
-      uploadSpeed.value = formatFileSize(speed) + '/s'
+      uploadSpeed.value = `${formatFileSize(speed)}/s`
 
       // 更新进度消息
       if (currentProgress < 30) {

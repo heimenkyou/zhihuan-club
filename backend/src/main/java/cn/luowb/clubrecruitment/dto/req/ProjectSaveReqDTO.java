@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * 项目保存请求参数。
+ */
 @Data
 @Schema(description = "项目保存请求参数")
 public class ProjectSaveReqDTO {
@@ -32,8 +35,8 @@ public class ProjectSaveReqDTO {
     @Schema(description = "项目时间范围")
     private String timeRange;
 
-    @Schema(description = "媒体资源ID列表")
-    private List<Long> mediaResourceIds;
+    @Schema(description = "附件ID列表")
+    private List<Long> attachmentIds;
 
     @Schema(description = "Markdown格式的项目介绍")
     private String descriptionMd;

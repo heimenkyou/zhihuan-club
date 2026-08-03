@@ -4,7 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.system.RuntimeInfo;
 import cn.hutool.system.SystemUtil;
-import cn.luowb.clubrecruitment.common.util.IPUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -99,7 +99,7 @@ public class TestController {
     @GetMapping(value = {"/test", "/"})
     public String test(HttpServletRequest request) {
         // 变量
-        String clientIP = IPUtil.getClientIP(request);
+        String clientIP = JakartaServletUtil.getClientIP(request);
         String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String userAgent = request.getHeader("User-Agent");
         // 系统信息

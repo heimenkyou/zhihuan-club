@@ -62,24 +62,6 @@
             <span v-else>暂无</span>
           </template>
         </el-table-column>
-        <el-table-column label="轮播图数量" width="100">
-          <template #default="scope">
-            {{
-              scope.row.mediaResourceIds && scope.row.mediaResourceIds.length
-                ? scope.row.mediaResourceIds.length
-                : "0"
-            }}
-          </template>
-        </el-table-column>
-        <el-table-column label="奖项数量" width="100">
-          <template #default="scope">
-            {{
-              scope.row.awardIds && scope.row.awardIds.length
-                ? scope.row.awardIds.length
-                : "0"
-            }}
-          </template>
-        </el-table-column>
         <el-table-column label="操作" width="180" fixed="right">
           <template #default="scope">
             <el-button

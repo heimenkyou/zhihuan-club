@@ -252,8 +252,8 @@ const startDrag = e => {
   const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 
   // 获取当前位置（从响应式状态读取）
-  const currentLeft = parseInt(playerPosition.left) || 20
-  const currentBottom = parseInt(playerPosition.bottom) || 30
+  const currentLeft = parseInt(playerPosition.left, 10) || 20
+  const currentBottom = parseInt(playerPosition.bottom, 10) || 30
   const windowHeight = window.innerHeight
   const playerHeight = 80
   
@@ -332,7 +332,7 @@ const updateButtonPositions = () => {
   const arcRadius = mainBtnRadius + subBtnRadius + 35 // 弧形半径
 
   // 判断弹出方向（基于当前播放器位置）
-  const currentLeft = parseInt(playerPosition.left) || 10
+  const currentLeft = parseInt(playerPosition.left, 10) || 10
   const mainBtnScreenX = currentLeft + mainBtnCenterX
   const leftSpace = mainBtnScreenX - 10
   const rightSpace = windowWidth - mainBtnScreenX - 10
@@ -435,8 +435,8 @@ onMounted(() => {
     const playerWidth = 80
     const playerHeight = 80
     
-    const currentLeft = parseInt(playerPosition.left) || 20
-    const currentBottom = parseInt(playerPosition.bottom) || 30
+    const currentLeft = parseInt(playerPosition.left, 10) || 20
+    const currentBottom = parseInt(playerPosition.bottom, 10) || 30
     
     // 确保不会超出边界
     const newLeft = Math.max(10, Math.min(currentLeft, windowWidth - playerWidth - 10))

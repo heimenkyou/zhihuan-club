@@ -53,11 +53,8 @@ public class ProjectEditRespDTO {
     @Schema(description = "项目时间范围")
     private String timeRange;
 
-    /**
-     * 媒体资源[{"id": 1, "type": "image", "url": "xxx", "title":"应用主界面", "description":"xxx"}, ...',
-     */
-    @Schema(description = "媒体资源")
-    private List<MediaResourceRespDTO> mediaResources;
+    @Schema(description = "项目附件")
+    private List<AttachmentRespDTO> attachments;
 
     /**
      * Markdown格式的项目介绍

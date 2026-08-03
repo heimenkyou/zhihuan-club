@@ -6,15 +6,15 @@ import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
-import cn.luowb.clubrecruitment.common.util.MinioService;
+import cn.luowb.clubrecruitment.common.util.QiniuStorageService;
 import cn.luowb.clubrecruitment.dao.entity.ApplicationDO;
+import cn.luowb.clubrecruitment.dao.entity.AttachmentDO;
 import cn.luowb.clubrecruitment.dao.entity.CodeSubmissionDO;
-import cn.luowb.clubrecruitment.dao.entity.MediaResourceDO;
 import cn.luowb.clubrecruitment.dao.mapper.ApplicationMapper;
 import cn.luowb.clubrecruitment.dao.mapper.CodeSubmissionMapper;
-import cn.luowb.clubrecruitment.dao.mapper.MediaResourceMapper;
 import cn.luowb.clubrecruitment.dto.req.CodeSubmissionReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.CodeSubmissionRespDTO;
+import cn.luowb.clubrecruitment.service.AttachmentService;
 import cn.luowb.clubrecruitment.service.CodeSubmissionService;
 import cn.luowb.clubrecruitment.service.MajorMappingService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
+import org.springframework.util.StringUtils;
 
 /**
  * @author heimenkyou
@@ -42,8 +43,8 @@ public class CodeSubmissionServiceImpl extends ServiceImpl<CodeSubmissionMapper,
         implements CodeSubmissionService {
 
     private final CodeSubmissionMapper codeSubmissionMapper;
-    private final MinioService minioService;
-    private final MediaResourceMapper mediaResourceMapper;
+    private final QiniuStorageService qiniuStorageService;
+    private final AttachmentService attachmentService;
     private final ApplicationMapper applicationMapper;
     private final MajorMappingService majorMappingService;
 
@@ -73,24 +74,27 @@ public class CodeSubmissionServiceImpl extends ServiceImpl<CodeSubmissionMapper,
         }
 
         // 上传代码压缩包
-        String codeFileUrl = uploadFile(requestParam.getCodeFile(), requestParam.getStudentId(), "code", "代码压缩包");
+        AttachmentDO codeAttachment = uploadFile(
+                requestParam.getCodeFile(), requestParam.getStudentId(), "code", "file", "代码压缩包");
 
         // 上传演示视频
-        String videoFileUrl = uploadFile(requestParam.getVideoFile(), requestParam.getStudentId(), "video", "演示视频");
+        AttachmentDO videoAttachment = uploadFile(
+                requestParam.getVideoFile(), requestParam.getStudentId(), "video", "video", "演示视频");
 
         // 保存代码提交信息
         CodeSubmissionDO submission = saveSubmission(requestParam, application, existingSubmission);
 
-        // 在媒体资源表中创建记录，并建立引用关系
-        createMediaResources(codeFileUrl, videoFileUrl, submission.getId(), requestParam.getStudentId(), application);
+        codeAttachment.setRefType("code_submission").setRefId(submission.getId());
+        videoAttachment.setRefType("code_submission").setRefId(submission.getId());
+        attachmentService.saveBatch(List.of(codeAttachment, videoAttachment));
 
         return CodeSubmissionRespDTO.builder()
                 .id(submission.getId())
                 .studentId(requestParam.getStudentId())
                 .name(application.getName())
                 .description(requestParam.getDescription())
-                .codeUrl(codeFileUrl)
-                .videoUrl(videoFileUrl)
+                .codeUrl(qiniuStorageService.buildPublicUrl(codeAttachment.getObjectKey()))
+                .videoUrl(qiniuStorageService.buildPublicUrl(videoAttachment.getObjectKey()))
                 .createTime(submission.getCreateTime())
                 .build();
     }
@@ -114,22 +118,6 @@ public class CodeSubmissionServiceImpl extends ServiceImpl<CodeSubmissionMapper,
             log.info("创建新的代码提交记录，ID: {}", submission.getId());
             return submission;
         }
-    }
-
-    /**
-     * 创建媒体资源记录并建立引用关系
-     */
-    private void createMediaResources(String codeFileUrl, String videoFileUrl, Long submissionId, String studentId,
-                                      ApplicationDO application) {
-        // 拼接班级姓名, 如物工B231张三
-        String name = majorMappingService.buildClassName(studentId, application.getName());
-
-        Long codeMediaId = createMediaResource(codeFileUrl, String.format("%s - 代码", name), "file");
-        Long videoMediaId = createMediaResource(videoFileUrl, String.format("%s - 视频", name), "video");
-
-        // 更新媒体资源的引用关系
-        updateMediaResourceRef(codeMediaId, submissionId, "code_submission");
-        updateMediaResourceRef(videoMediaId, submissionId, "code_submission");
     }
 
     /**
@@ -223,67 +211,48 @@ public class CodeSubmissionServiceImpl extends ServiceImpl<CodeSubmissionMapper,
      */
     private void deleteOldFiles(CodeSubmissionDO existingSubmission) {
         try {
-            // 通过引用ID和引用类型查找对应的媒体资源记录
-            List<MediaResourceDO> mediaResources = mediaResourceMapper
-                    .selectListByRefIdAndRefType(existingSubmission.getId(), "code_submission");
+            List<AttachmentDO> attachments = attachmentService.list(
+                    Wrappers.<AttachmentDO>lambdaQuery()
+                            .eq(AttachmentDO::getRefId, existingSubmission.getId())
+                            .eq(AttachmentDO::getRefType, "code_submission"));
 
-            for (MediaResourceDO mediaResource : mediaResources) {
-                // 删除Minio文件
-                minioService.delete(mediaResource.getUrl());
-                log.info("删除旧文件: {}", mediaResource.getUrl());
-
-//                // 删除媒体资源记录
-//                mediaResourceMapper.deleteById(mediaResource.getId());
-//                log.info("删除媒体资源记录，ID: {}", mediaResource.getId());
+            for (AttachmentDO attachment : attachments) {
+                // 历史 MinIO 记录没有可靠对象键，只清理数据库记录。
+                if (StringUtils.hasText(attachment.getObjectKey())) {
+                    qiniuStorageService.delete(attachment.getObjectKey());
+                }
+                log.info("删除旧附件: {}", attachment.getObjectKey());
             }
-            // 批量删除媒体资源记录
-            mediaResourceMapper.deleteByIds(mediaResources.stream().map(MediaResourceDO::getId).toList());
+            attachmentService.removeByIds(attachments.stream().map(AttachmentDO::getId).toList());
         } catch (Exception e) {
             throw new ServiceException("删除旧文件失败: " + e.getMessage());
         }
     }
 
     /**
-     * 上传文件到Minio
+     * 上传文件到七牛云并构造附件记录
      */
-    private String uploadFile(MultipartFile file, String studentId, String folder, String fileType) {
+    private AttachmentDO uploadFile(MultipartFile file, String studentId, String folder, String type, String fileType) {
         try {
-            // 拼接班级姓名, 如物工B231张三
             String name = majorMappingService.buildClassName(studentId);
             String fileExtension = FileUtil.extName(file.getOriginalFilename());
             String fileName = String.format("%s.%s", name, fileExtension);
-            String fileUrl = minioService.upload(file, fileName, folder);
-            log.info("{}上传成功: {}", fileType, fileUrl);
-            return fileUrl;
+            String objectKey = qiniuStorageService.createObjectKey(folder, fileName);
+            qiniuStorageService.upload(file, objectKey);
+            log.info("{}上传成功: {}", fileType, objectKey);
+            return new AttachmentDO()
+                    .setObjectKey(objectKey)
+                    .setOriginalName(fileName)
+                    .setType(type)
+                    .setMimeType(StringUtils.hasText(file.getContentType())
+                            ? file.getContentType() : "application/octet-stream")
+                    .setSize(file.getSize())
+                    .setStatus("ready")
+                    .setUsage(folder);
         } catch (Exception e) {
             log.error("{}上传失败: {}", fileType, e.getMessage());
             throw e;
         }
     }
 
-    /**
-     * 创建媒体资源记录
-     */
-    private Long createMediaResource(String fileUrl, String title, String type) {
-        MediaResourceDO mediaResource = new MediaResourceDO()
-                .setType(type)
-                .setUrl(fileUrl)
-                .setTitle(title)
-                .setDescription("新生入门任务提交文件");
-        mediaResourceMapper.insert(mediaResource);
-        log.info("创建媒体资源记录，ID: {}, 类型: {}", mediaResource.getId(), type);
-        return mediaResource.getId();
-    }
-
-    /**
-     * 更新媒体资源引用关系
-     */
-    private void updateMediaResourceRef(Long mediaId, Long refId, String refType) {
-        MediaResourceDO mediaResource = new MediaResourceDO();
-        mediaResource.setId(mediaId);
-        mediaResource.setRefId(refId);
-        mediaResource.setRefType(refType);
-        mediaResourceMapper.updateById(mediaResource);
-        log.info("更新媒体资源引用关系，媒体ID: {}, 引用ID: {}, 引用类型: {}", mediaId, refId, refType);
-    }
 }

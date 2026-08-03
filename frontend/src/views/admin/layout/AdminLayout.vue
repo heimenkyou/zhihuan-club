@@ -78,6 +78,12 @@
               <span>项目管理</span>
             </template>
           </el-menu-item>
+          <el-menu-item index="/admin/attachments">
+            <template #title>
+              <el-icon><Picture /></el-icon>
+              <span>附件库</span>
+            </template>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main class="admin-main">
@@ -93,7 +99,8 @@ import {
   User,
   Message,
   Trophy,
-  Box,
+   Box,
+   Picture,
   ArrowDown,
   SwitchButton,
 } from '@element-plus/icons-vue'

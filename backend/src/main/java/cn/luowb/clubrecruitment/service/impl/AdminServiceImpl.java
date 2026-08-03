@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.luowb.clubrecruitment.common.context.UserContext;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.AdminDO;
@@ -44,6 +45,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
             throw new ClientException("密码错误");
         }
         StpUtil.login(adminDO.getId());
+        UserContext.setUsername(adminDO.getUsername());
         AdminLoginRespDTO loginRespDTO = BeanUtil.toBean(adminDO, AdminLoginRespDTO.class);
         loginRespDTO.setToken(StpUtil.getTokenValue());
         return loginRespDTO;
@@ -97,7 +99,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
 
     @Override
     public AdminPageRespDTO getAdminInfo() {
-        return this.getAdminInfo(StpUtil.getLoginIdAsLong());
+        return this.getAdminInfo(UserContext.getUserId());
     }
 
     @Override
@@ -122,6 +124,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
                 throw new ClientException("用户名已存在");
             }
             adminDO.setUsername(requestParam.getUsername());
+            UserContext.setUsername(requestParam.getUsername());
         }
         if (StrUtil.isNotBlank(requestParam.getPassword())) {
             adminDO.setPasswordHash(BCrypt.hashpw(requestParam.getPassword()));

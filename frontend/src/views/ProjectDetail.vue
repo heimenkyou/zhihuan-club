@@ -86,14 +86,14 @@
               :height="isMobile ? '240px' : '450px'" indicator-position="none" indicator-class="custom-indicator"
               arrow="always" class="project-carousel" @resize="handleCarouselResize">
               <template v-if="
-                projectDetail.mediaResources &&
-                projectDetail.mediaResources.length > 0
+                projectDetail.attachments &&
+                projectDetail.attachments.length > 0
               ">
-                <el-carousel-item v-for="item in projectDetail.mediaResources" :key="item.id" class="carousel-item">
+                <el-carousel-item v-for="item in projectDetail.attachments" :key="item.id" class="carousel-item">
                   <div class="carousel-image-wrap bg-gray-100">
                     <el-image :src="item.url" :alt="item.title || '项目图片'" class="carousel-image cursor-zoom-in"
                       :preview-src-list="previewImageList"
-                      :initial-index="projectDetail.mediaResources.findIndex(resource => resource.id === item.id)"
+                      :initial-index="projectDetail.attachments.findIndex(resource => resource.id === item.id)"
                       :preview-teleported="true" fit="cover" />
                     <div class="carousel-caption">
                       <h3 class="caption-title">
@@ -272,7 +272,7 @@ const tagTypes = ['primary', 'info', 'success', 'warning', 'danger', 'primary']
  * 汇总预览图片，保证点击任意图片都能进入同一组预览。
  */
 const previewImageList = computed(() => {
-  return projectDetail.value?.mediaResources?.map(resource => resource.url) || []
+  return projectDetail.value?.attachments?.map(attachment => attachment.url) || []
 })
 
 /**

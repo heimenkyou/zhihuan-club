@@ -828,7 +828,9 @@
       faqRef.value,
     ].filter(Boolean)
 
-    sections.forEach(section => observer.observe(section))
+    sections.forEach(section => {
+      observer.observe(section)
+    })
   }
 
   // FAQ展开/折叠（通过索引控制，替代原DOM查找）

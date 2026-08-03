@@ -25,8 +25,7 @@
         <springdoc.version>2.8.17</springdoc.version>
         <knife4j.version>4.5.0</knife4j.version>
         <sa-token.version>1.44.0</sa-token.version>
-        <minio.version>9.0.1</minio.version>
-        <okhttp.version>5.3.2</okhttp.version>
+        <qiniu.version>7.19.0</qiniu.version>
         <spotless.version>2.46.1</spotless.version>
     </properties>
 
@@ -100,17 +99,11 @@
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
         </dependency>
-        <!--minio-->
+        <!--七牛云对象存储-->
         <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>${minio.version}</version>
-        </dependency>
-        <!--minio 9.x 在 Maven 下需要 JVM 版 OkHttp，不引入会编译报错-->
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp-jvm</artifactId>
-            <version>${okhttp.version}</version>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>${qiniu.version}</version>
         </dependency>
         <!--接口文档相关-->
         <!--springdoc-openapi，为了让knife4j适配springboot3.4以上-->
