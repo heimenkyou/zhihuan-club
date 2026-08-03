@@ -15,10 +15,26 @@ import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router'
 import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  Box,
+  CircleCheck,
+  Cpu,
+  Document,
+  Edit,
+  Finished,
+  House,
+  Link,
+  Message,
+  Picture,
+  Plus,
+  Refresh,
+  SwitchButton,
+  Trophy,
+  User,
+} from '@element-plus/icons-vue'
 
 // 导入md-editor-v3 Markdown编辑器
 import { MdEditor, MdPreview, MdCatalog } from 'md-editor-v3'
@@ -36,9 +52,29 @@ app.component('MdEditor', MdEditor)
 app.component('MdPreview', MdPreview)
 app.component('MdCatalog', MdCatalog)
 
-// 注册所有Element Plus图标
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
+// 仅注册模板中未显式导入的 Element Plus 图标，避免打包整套图标库。
+const elementIcons = {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  Box,
+  CircleCheck,
+  Cpu,
+  Document,
+  Edit,
+  Finished,
+  House,
+  Link,
+  Message,
+  Picture,
+  Plus,
+  Refresh,
+  SwitchButton,
+  Trophy,
+  User,
+}
+for (const [name, component] of Object.entries(elementIcons)) {
+  app.component(name, component)
 }
 
 app.component('font-awesome-icon', FontAwesomeIcon)
@@ -46,9 +82,6 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 // 使用插件
 app.use(createPinia())
 app.use(router)
-app.use(ElementPlus, {
-  locale: zhCn,
-})
 
 const adminStore = useAdminStore()
 

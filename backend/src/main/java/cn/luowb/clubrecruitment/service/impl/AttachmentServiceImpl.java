@@ -98,7 +98,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         if (attachment == null) {
             throw new ClientException("附件不存在");
         }
-        if (StringUtils.hasText(attachment.getObjectKey())) {
+        if (!StringUtils.hasText(attachment.getLegacyUrl()) && StringUtils.hasText(attachment.getObjectKey())) {
             qiniuStorageService.delete(attachment.getObjectKey());
         }
         removeById(id);
