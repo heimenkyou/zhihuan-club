@@ -3,7 +3,7 @@
     <div class="footer-content">
       <div class="footer-info">
         <h3>智环学创融合协会</h3>
-        <p>和一群愿意动手的人，把兴趣做成作品💥</p>
+        <p>兴趣驱动，主动学习，用作品记录成长。</p>
       </div>
       <div class="footer-links">
         <router-link to="/privacy-policy" class="footer-link"

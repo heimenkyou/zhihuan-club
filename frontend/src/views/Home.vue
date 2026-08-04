@@ -13,12 +13,12 @@
       <div class="banner-content">
         <div class="title-container">
           <h1 class="main-title">
-            <span class="code-text">智环学创融合协会</span>
+            <span class="code-text">把你的脑洞，变成真实的代码。</span>
           </h1>
         </div>
 
         <p class="description">
-          告别单机学习！告别单机学习，组队升级打怪！你的技术合伙人都在这里💥
+          这是一个由兴趣驱动的小型开发者社团。不用担心自己技术菜，哪怕你连 HTML 都没听过，只要愿意带上电脑，用 AI 试着跑通第一行代码，这里都有人陪你一起折腾。
         </p>
 
         <div class="action-buttons">
@@ -94,99 +94,43 @@
     <!-- 社团简介 -->
     <el-main class="about-section" id="about">
       <div class="about-container">
-        <div class="text-center mb-12">
-          <h1 class="section-title">我们是谁？</h1>
+        <div class="text-center mb-4">
+          <h1 class="section-title">加入前，你需要知道这些</h1>
           <div class="section-divider"></div>
-        </div>
-        <!-- 切换介绍风格的按钮 -->
-        <div class="style-switcher mb-6 flex justify-center">
-          <el-button
-            :type="showChatStyle ? 'primary' : ''"
-            @click="showChatStyle = true"
-            style="margin-right: 10px"
-          >
-            聊天风格
-          </el-button>
-          <el-button
-            :type="!showChatStyle ? 'primary' : ''"
-            @click="showChatStyle = false"
-          >
-            正式介绍
-          </el-button>
+          <p class="about-lead">
+            这里提供同伴交流、方向建议和实践机会，长期成长仍然需要自己主动完成。
+          </p>
         </div>
         <div class="about-content">
-          <!-- 通过v-if/v-else控制应该展示聊天形式还是正式形式的介绍 -->
-          <div v-if="showChatStyle" class="about-text">
-            <h3 class="about-subtitle">聊天记录:</h3>
-            <div class="chat-history">
-              <p class="about-paragraph">
-                😭：我的专业二本毕业找不到好工作怎么呀？
-              </p>
-              <hr />
-              <p class="about-paragraph">
-                🥺：早就听说计算机寒冬了，我还有机会嘛？
-              </p>
-              <hr />
-              <p class="about-paragraph">
-                🤓👆：有的兄弟们，有的！为何一块组队做实战项目呢？既能丰富个人简历就业，考研还有优势。
-              </p>
-              <hr />
-              <p class="about-paragraph">🤩：我什么都不会你们会要我嘛？！</p>
-              <hr />
-              <p class="about-paragraph">
-                😏: 当然啦，计算机专业：前端，后端，测试，运维，嵌入式开发<br />
-                非计算机专业同学：PPT，写项目书，UI设计，视频剪辑，宣讲演讲。
-              </p>
+          <div class="about-info">
+            <div class="about-faq-grid">
+              <article class="about-faq-card">
+                <h3>我纯零基础，什么都不会能加吗？</h3>
+                <p>能。社团里没几个真大佬，大家都是边查边学。现在有了 AI，做个好看的网站或者小程序门槛很低。只要你想学，大把的入门项目可以练手。</p>
+              </article>
+              <article class="about-faq-card">
+                <h3>加入后会有学长开课教我们吗？</h3>
+                <p>坦白说，没有那种按部就班的讲座培训，听着也无聊。我们的方式是发任务和自学，但遇到 Bug 或者卡壳了，在群里问一声，老手们随时帮你排雷。</p>
+              </article>
+              <article class="about-faq-card">
+                <h3>必须写代码吗？能干点别的吗？</h3>
+                <p>当然可以。如果你对写代码没兴趣，但能用 AI 搞定好看的 UI 设计、排版，或者能搞定大创比赛的 PPT 和策划案，团队同样非常需要你。</p>
+              </article>
+              <article class="about-faq-card">
+                <h3>社团平时都有什么活动？</h3>
+                <p>没什么走形式的开会。更多时候是大家找个空教室，带着电脑坐一起各干各的（也就是自习）。偶尔办个展示会，看看大家最近又搞出了什么好玩的东西。</p>
+              </article>
             </div>
-            <p class="about-paragraph border-t-2 border-black pt-5">
-              我们的宗旨是：<span class="highlight-text"
-                >“以赛促学，以创促研”，热爱和兴趣可以超过一切❤️快来加入吧</span
-              >。
+            <p class="about-highlight">
+              执行力比你的基础与天赋更重要
             </p>
           </div>
-          <div v-else class="about-text">
-            <h3 class="about-subtitle">关于 智环学创融合协会</h3>
-            <p class="about-paragraph">
-              智环学创融合协会
-              成立于2024年，是信息工程系下属的学术科技类社团。我们专注于计算机相关学科竞赛与创新创业竞赛，致力于为热爱技术、渴望实践的同学提供一个交流、学习和成长的平台。
-            </p>
-            <p class="about-paragraph">
-              协会成立的初衷是打破课堂与实验的界限，让同学们在真实的项目与竞赛中提升技能、拓展视野。作为一个刚刚起步的社团，我们正在积极探索和成长，期待与每一位成员共同构建积极向上的技术社区。
-            </p>
-            <p class="about-paragraph">
-              我们的目标是：<span class="highlight-text"
-                >"以赛促学，以创促研，连接不同领域的同学，共同探索技术的更多可能。无论你是希望深耕专业技术，还是对跨学科创新感兴趣，这里都欢迎你的加入！"</span
-              >。
-            </p>
-          </div>
-          <!-- 关于我们 图片 -->
           <div class="about-image">
             <div class="image-decoration top-left"></div>
             <div class="image-decoration bottom-right"></div>
-            <img
-              src="/you.webp"
-              style="width: 100%; height: 100%"
-            />
-
-            <div
-              class="image-badge"
-              style="
-                background: rgb(245 158 11 / var(--tw-bg-opacity, 1));
-                transform: skew(-20deg);
-              "
-            >
-              <div>
-                <h4
-                  class="badge-title"
-                  style="
-                    color: white;
-                    font-size: 1.25rem;
-                    transform: skew(20deg);
-                  "
-                >
-                  期待你的加入
-                </h4>
-              </div>
+            <img class="about-img" src="/you.webp" alt="一起动手完成作品" />
+            <div class="image-badge about-image-badge">
+              <h4 class="badge-title">期待你的加入</h4>
             </div>
           </div>
         </div>
@@ -197,11 +141,11 @@
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">
-            我们的高光时刻
+            我们最近搞出的一些动静
           </h2>
           <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
           <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
-            2024年首次创办社团，都是小团队鼓捣出来的小东西，期望以后有更多的人加入，一起打造更加强大的项目。
+            没那么多高大上的理论，就是遇到问题解决问题。这里记录了我们拿过的省级奖项，和平时敲出来的真实项目。
           </p>
         </div>
         <!-- 轮播图区域 -->
@@ -277,7 +221,7 @@
         </div>
       </div>
     </el-main>
-    <!-- 热门赛事 -->
+    <!-- 探索方向 -->
     <el-main class="competitions-section" id="competitions">
       <div style="max-width: 80rem; margin: 0 auto; padding: 5rem 1rem">
         <!-- 标题区 -->
@@ -290,7 +234,7 @@
               margin-bottom: 1rem;
             "
           >
-            我们征战的热门赛事
+            你可以从哪里开始
           </h2>
           <div
             style="
@@ -301,11 +245,14 @@
               border-radius: 9999px;
             "
           ></div>
+          <p class="direction-lead">
+            方向可以交叉，也可以随时调整。先选择一个小目标，做出第一个能够展示的成果。
+          </p>
         </div>
 
         <!-- 竞赛列表 -->
         <div class="competitions-grid">
-          <!-- 竞赛1：蓝桥杯 -->
+          <!-- 方向一：AI 编程与应用 -->
           <div
             style="
               background-color: #f9fafb;
@@ -336,23 +283,15 @@
                 margin-bottom: 0.75rem;
               "
             >
-              蓝桥杯
+              AI 编程与应用
             </h3>
             <p style="color: #6b7280; margin-bottom: 1rem">
-              国内规模最大的算法竞赛之一，面向全国高校学生
+              不用死记硬背枯燥的语法，学习怎么用提示词（Prompt）让 AI 帮你写代码。零基础也能快速搞出能跑的网页。
             </p>
-            <a
-              href="https://www.lanqiao.cn/"
-              target="_blank"
-              style="color: #3b82f6; font-weight: 500"
-              >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"
-                ><i-ep-arrow-right
-              /></el-icon>
-            </a>
+            <span class="direction-tag">从一个小工具开始</span>
           </div>
 
-          <!-- 竞赛2：ACM-ICPC -->
+          <!-- 方向二：算法与竞赛 -->
           <div
             style="
               background-color: #f9fafb;
@@ -383,22 +322,15 @@
                 margin-bottom: 0.75rem;
               "
             >
-              ACM-ICPC
+              算法与竞赛
             </h3>
             <p style="color: #6b7280; margin-bottom: 1rem">
-              国际大学生程序设计竞赛，计算机领域的奥林匹克
+              针对蓝桥杯等算法竞赛的路线。大家一起刷题交流，适合想要拿奖、攒简历和赚学分的同学。
             </p>
-            <a
-              href="https://icpc.global"
-              target="_blank"
-              style="color: #3b82f6; font-weight: 500"
-              >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"
-                ><i-ep-arrow-right /></el-icon
-            ></a>
+            <span class="direction-tag">从一次练习开始</span>
           </div>
 
-          <!-- 竞赛3：挑战杯 -->
+          <!-- 方向三：软件与硬件创作 -->
           <div
             style="
               background-color: #f9fafb;
@@ -419,7 +351,7 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <i-fa6-solid-lightbulb style="font-size: 2.5rem; color: #ef4444" />
+              <i-fa6-solid-desktop style="font-size: 2.5rem; color: #22c55e" />
             </div>
             <h3
               style="
@@ -429,23 +361,15 @@
                 margin-bottom: 0.75rem;
               "
             >
-              挑战杯
+              软件与硬件创作
             </h3>
             <p style="color: #6b7280; margin-bottom: 1rem">
-              全国大学生课外学术科技作品竞赛，科技创新的舞台
+              如果你有一定的基础，想做完整的项目（比如微信小程序或单片机硬件），可以来这里一起对接，把东西落地。
             </p>
-            <a
-              href="https://www.tiaozhanbei.net/"
-              target="_blank"
-              style="color: #3b82f6; font-weight: 500"
-              >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"
-                ><i-ep-arrow-right
-              /></el-icon>
-            </a>
+            <span class="direction-tag">从一个真实需求开始</span>
           </div>
 
-          <!-- 竞赛4：计算机设计大赛 -->
+          <!-- 方向四：项目表达与设计 -->
           <div
             style="
               background-color: #f9fafb;
@@ -466,7 +390,7 @@
                 margin: 0 auto 1.5rem;
               "
             >
-              <i-fa6-solid-desktop style="font-size: 2.5rem; color: #22c55e" />
+              <i-fa6-solid-lightbulb style="font-size: 2.5rem; color: #ef4444" />
             </div>
             <h3
               style="
@@ -476,27 +400,19 @@
                 margin-bottom: 0.75rem;
               "
             >
-              计算机设计大赛
+              项目表达与设计
             </h3>
             <p style="color: #6b7280; margin-bottom: 1rem">
-              培养创新能力，展示计算机应用成果的重要平台
+              负责团队的“面子工程”。用 AI 绘画和排版工具，搞定项目 UI、比赛演示文稿和视频剪辑。
             </p>
-            <a
-              href="http://jsjds.blcu.edu.cn"
-              target="_blank"
-              style="color: #3b82f6; font-weight: 500"
-              >了解更多
-              <el-icon size="14" style="margin-left: 0.25rem"
-                ><i-ep-arrow-right
-              /></el-icon>
-            </a>
+            <span class="direction-tag">从表达一个想法开始</span>
           </div>
         </div>
 
-        <!-- 探索按钮（静态样式） -->
+        <!-- 加入流程入口 -->
         <div style="text-align: center; margin-top: 3rem">
           <button
-            @click="tocompetitions"
+            @click="tojoin"
             style="
               background-color: #3b82f6;
               color: white;
@@ -507,7 +423,7 @@
               cursor: pointer;
             "
           >
-            探索全部竞赛
+            查看加入方式
           </button>
         </div>
       </div>
@@ -526,6 +442,7 @@
           style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3"
         />
         <div
+          class="cta-actions"
           style="
             position: absolute;
             inset: 0;
@@ -553,10 +470,10 @@
             margin-bottom: 1.5rem;
           "
         >
-          期待你的代码，在这里闪耀
+          从一个小目标开始
         </h2>
         <p style="color: white; font-size: 1.125rem; margin-bottom: 2.5rem">
-          加入我们，与优秀的伙伴一起成长，挑战自我，创造精彩
+          不需要提前准备完整技能。选择一个感兴趣的方向，完成一次真实尝试，再决定是否长期参与。
         </p>
         <div
           style="
@@ -580,7 +497,7 @@
               width: 280px;
             "
           >
-            加入我们
+            了解加入流程
           </button>
           <button
             @click="toMessageBoard"
@@ -596,7 +513,7 @@
               width: 280px;
             "
           >
-            我要留言
+            给我们留言
           </button>
         </div>
       </div>
@@ -631,9 +548,6 @@
   }
 
   const router = useRouter()
-
-  // 控制介绍风格显示的变量
-  const showChatStyle = ref(true)
 
   // 高光时刻数据
   const highlightMoments = ref([
@@ -719,11 +633,6 @@
 
   const toawards = () => {
     router.push('/awards')
-  }
-
-  // 搜索全部竞赛点击
-  const tocompetitions = () => {
-    router.push('/competitions')
   }
 
   // 跳转到留言板的方法
@@ -1075,8 +984,64 @@
       margin-bottom: 60px;
 
       @media (min-width: 992px) {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1.15fr 0.85fr;
+        align-items: center;
       }
+    }
+
+    .about-lead {
+      max-width: 720px;
+      margin: 0 auto 40px;
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .about-faq-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .about-faq-card {
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #f8fafc;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      }
+
+      h3 {
+        margin-bottom: 12px;
+        color: #1e293b;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.8;
+      }
+    }
+
+    .about-highlight {
+      margin: 32px 0 0;
+      padding: 18px 20px;
+      border-left: 4px solid #3b82f6;
+      border-radius: 0 12px 12px 0;
+      background: #eff6ff;
+      color: #2563eb;
+      font-weight: 600;
+      line-height: 1.7;
     }
 
     .about-text {
@@ -1214,6 +1179,21 @@
         .badge-subtitle {
           font-size: 0.875rem;
           color: #666;
+        }
+      }
+
+      .about-image-badge {
+        bottom: -24px;
+        left: -24px;
+        padding: 16px 20px;
+        background: #f59e0b;
+        transform: skew(-20deg);
+
+        .badge-title {
+          margin: 0;
+          color: white;
+          font-size: 1.25rem;
+          transform: skew(20deg);
         }
       }
     }
@@ -2210,6 +2190,45 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .direction-lead {
+    max-width: 680px;
+    margin: 24px auto 0;
+    color: #64748b;
+    line-height: 1.8;
+  }
+
+  .competitions-grid > div {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  }
+
+  .competitions-grid > div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+  }
+
+  .direction-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .cta-actions {
+    flex-direction: row !important;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta-actions button {
+    width: min(280px, 100%) !important;
   }
 
   @media (min-width: 640px) {
