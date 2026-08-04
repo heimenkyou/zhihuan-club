@@ -72,12 +72,12 @@
                 {{ project.category || '未分类' }}
               </span>
             </div>
-            <p class="text-gray-600 mb-6 line-clamp-3">
+            <p class="text-gray-600 mb-6 flex-1 line-clamp-4">
               {{ project.briefIntro || '暂无项目简介' }}
             </p>
             <div class="flex flex-wrap gap-2 mb-6">
               <span
-                v-for="tag in project.techStackTags || []"
+                v-for="tag in (project.techStackTags || []).slice(0, 3)"
                 :key="tag"
                 class="bg-[var(--tag-bg)] text-[var(--tag-text)] text-xs px-2 py-1 rounded-full"
                 :style="{
@@ -86,6 +86,12 @@
                 }"
               >
                 {{ tag }}
+              </span>
+              <span
+                v-if="(project.techStackTags || []).length > 3"
+                class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full"
+              >
+                +{{ project.techStackTags.length - 3 }}
               </span>
             </div>
             <div class="text-center text-gray-500 text-sm mt-auto pt-4">
