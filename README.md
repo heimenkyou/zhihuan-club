@@ -1,11 +1,11 @@
 # 智环社团招新门户网站
 
-这是一个基于 Vue 3 + Spring Boot 的智环社团招新与展示系统，主要提供项目展示、留言交互、招新报名登记以及完善的后台管理功能。
+这是一个基于 Vue 3 + Spring Boot 的智环社团招新与展示系统，主要提供项目、荣誉展示、Markdown 新手导航、招新报名登记和后台管理功能。
 
 ## 技术栈
 
 ### 前端 (frontend)
-- **核心框架**: Vue 3 (Composition API) + TypeScript + Vite 7
+- **核心框架**: Vue 3 (Composition API) + JavaScript + Vite 7
 - **状态与路由**: Pinia + Vue Router
 - **UI 组件库**: Element-Plus
 - **样式与排版**: Tailwind CSS 4 + Sass
@@ -25,9 +25,10 @@
 
 ### 前台功能与页面 (User Views)
 面向普通访客与社团意向成员，提供完整的展示与交互体验：
-- **首页 & 关于 (Home / About)**: 概览社团介绍、文化及相关学习资源 (Resources)。
+- **首页 & 关于 (Home / About)**: 概览社团介绍与发展历程。
 - **项目展示 (Projects / ProjectDetail)**: 列表及详情展示社团成员研发的各类项目作品。
-- **荣誉与竞赛 (Awards / Competitions)**: 汇总展示社团在各大竞赛中斩获的奖项。
+- **荣誉榜 (Awards)**: 按年份展示社团成员在竞赛中获得的奖项。
+- **新手导航 (Resources)**: 通过本地 Markdown 文件维护工具福利、竞赛节点和自学线索，由 `md-editor-v3` 预览渲染。
 - **加入我们 (Join)**: 核心招新入口，在线填写个人信息并提交报名表。支持通过专业映射表快速选择专业。
 - **留言板 (MessageList)**: 访客留言互动，支持点赞及基于 IP 校验的本人留言删除。
 
