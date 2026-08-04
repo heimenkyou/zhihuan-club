@@ -106,118 +106,117 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
-  // 1. 路由相关
-  const router = useRouter()
-  const route = useRoute()
-  const currentRoutePath = ref(route.path) // 当前路由路径
+// 1. 路由相关
+const router = useRouter();
+const route = useRoute();
+const currentRoutePath = ref(route.path); // 当前路由路径
 
-  // 监听路由变化，更新当前路由
-  watch(route, newRoute => {
-    currentRoutePath.value = newRoute.path
-  })
+// 监听路由变化，更新当前路由
+watch(route, (newRoute) => {
+	currentRoutePath.value = newRoute.path;
+});
 
-  // 2. 导航数据（带路由路径）
-  const navItems = [
-    { id: 1, text: '首页', path: '/' },
-    { id: 2, text: '项目库', path: '/projects' },
-    { id: 3, text: '竞赛天地', path: '/competitions' },
-    { id: 4, text: '奖项库', path: '/awards' },
-    { id: 5, text: '关于我们', path: '/about' },
-    { id: 6, text: '资源墙', path: '/resources' },
-    { id: 7, text: '加入我们', path: '/join' },
-    { id: 8, text: '留言板', path: '/messages' },
-  ]
+// 2. 导航数据（带路由路径）
+const navItems = [
+	{ id: 1, text: "首页", path: "/" },
+	{ id: 2, text: "项目库", path: "/projects" },
+	{ id: 3, text: "奖项库", path: "/awards" },
+	{ id: 4, text: "关于我们", path: "/about" },
+	{ id: 5, text: "新手导航", path: "/resources" },
+	{ id: 6, text: "加入我们", path: "/join" },
+	{ id: 7, text: "留言板", path: "/messages" },
+];
 
-  // 3. 响应式状态
-  const isMobile = ref(false) // 是否移动端
-  const isSidebarOpen = ref(false) // 侧边栏是否打开
-  const currentTime = ref('') // iOS状态栏时间
-  const isIosDevice = ref(false) // 是否iOS设备
-  let timeInterval = null
-  let previousBodyOverflow = null
+// 3. 响应式状态
+const isMobile = ref(false); // 是否移动端
+const isSidebarOpen = ref(false); // 侧边栏是否打开
+const currentTime = ref(""); // iOS状态栏时间
+const isIosDevice = ref(false); // 是否iOS设备
+let timeInterval = null;
+let previousBodyOverflow = null;
 
-  // 4. 核心交互
-  /** 导航项点击：路由跳转+关闭侧边栏 */
-  const handleNavClick = item => {
-    router.push(item.path)
-    closeSidebar()
-  }
+// 4. 核心交互
+/** 导航项点击：路由跳转+关闭侧边栏 */
+const handleNavClick = (item) => {
+	router.push(item.path);
+	closeSidebar();
+};
 
-  /** "立即报名"按钮点击 */
-  const handleJoinClick = () => {
-    router.push('/join')
-    closeSidebar()
-  }
+/** "立即报名"按钮点击 */
+const handleJoinClick = () => {
+	router.push("/join");
+	closeSidebar();
+};
 
-  /** 打开侧边栏 */
-  const openSidebar = () => {
-    if (isSidebarOpen.value) return
+/** 打开侧边栏 */
+const openSidebar = () => {
+	if (isSidebarOpen.value) return;
 
-    previousBodyOverflow = document.body.style.overflow
-    isSidebarOpen.value = true
-    document.body.style.overflow = 'hidden' // 禁止页面滚动
-  }
+	previousBodyOverflow = document.body.style.overflow;
+	isSidebarOpen.value = true;
+	document.body.style.overflow = "hidden"; // 禁止页面滚动
+};
 
-  /** 关闭侧边栏 */
-  const closeSidebar = () => {
-    isSidebarOpen.value = false
-    if (previousBodyOverflow !== null) {
-      document.body.style.overflow = previousBodyOverflow
-      previousBodyOverflow = null
-    }
-  }
+/** 关闭侧边栏 */
+const closeSidebar = () => {
+	isSidebarOpen.value = false;
+	if (previousBodyOverflow !== null) {
+		document.body.style.overflow = previousBodyOverflow;
+		previousBodyOverflow = null;
+	}
+};
 
-  /** 更新iOS状态栏时间 */
-  const updateTime = () => {
-    const now = new Date()
-    const hours = now.getHours().toString().padStart(2, '0')
-    const minutes = now.getMinutes().toString().padStart(2, '0')
-    currentTime.value = `${hours}:${minutes}`
-  }
+/** 更新iOS状态栏时间 */
+const updateTime = () => {
+	const now = new Date();
+	const hours = now.getHours().toString().padStart(2, "0");
+	const minutes = now.getMinutes().toString().padStart(2, "0");
+	currentTime.value = `${hours}:${minutes}`;
+};
 
-  /** 检测是否为iOS设备（适配状态栏） */
-  const checkIosDevice = () => {
-    const userAgent = window.navigator.userAgent
-    isIosDevice.value = /iPhone|iPad|iPod/.test(userAgent)
-  }
+/** 检测是否为iOS设备（适配状态栏） */
+const checkIosDevice = () => {
+	const userAgent = window.navigator.userAgent;
+	isIosDevice.value = /iPhone|iPad|iPod/.test(userAgent);
+};
 
-  /** 检测屏幕尺寸：切换移动端/桌面端 */
-  const checkScreenSize = () => {
-    isMobile.value = window.innerWidth < 768
-    if (!isMobile.value && isSidebarOpen.value) {
-      closeSidebar()
-    }
-  }
+/** 检测屏幕尺寸：切换移动端/桌面端 */
+const checkScreenSize = () => {
+	isMobile.value = window.innerWidth < 768;
+	if (!isMobile.value && isSidebarOpen.value) {
+		closeSidebar();
+	}
+};
 
-  // 生命周期钩子
-  onMounted(() => {
-    checkIosDevice()
-    checkScreenSize()
-    updateTime()
-    timeInterval = setInterval(updateTime, 60000)
-    window.addEventListener('resize', checkScreenSize)
-    window.addEventListener('orientationchange', checkScreenSize)
-  })
+// 生命周期钩子
+onMounted(() => {
+	checkIosDevice();
+	checkScreenSize();
+	updateTime();
+	timeInterval = setInterval(updateTime, 60000);
+	window.addEventListener("resize", checkScreenSize);
+	window.addEventListener("orientationchange", checkScreenSize);
+});
 
-  onUnmounted(() => {
-    if (timeInterval) clearInterval(timeInterval)
-    window.removeEventListener('resize', checkScreenSize)
-    window.removeEventListener('orientationchange', checkScreenSize)
-    closeSidebar()
-  })
-  // 添加返回首页的方法
-  const navigateToHome = () => {
-    router.push('/')
-  }
+onUnmounted(() => {
+	if (timeInterval) clearInterval(timeInterval);
+	window.removeEventListener("resize", checkScreenSize);
+	window.removeEventListener("orientationchange", checkScreenSize);
+	closeSidebar();
+});
+// 添加返回首页的方法
+const navigateToHome = () => {
+	router.push("/");
+};
 
-  // 计算当前页面标题
-  const currentPageTitle = computed(() => {
-    const item = navItems.find(item => item.path === currentRoutePath.value)
-    return item ? item.text : '智环学创融合协会'
-  })
+// 计算当前页面标题
+const currentPageTitle = computed(() => {
+	const item = navItems.find((item) => item.path === currentRoutePath.value);
+	return item ? item.text : "智环学创融合协会";
+});
 </script>
 
 <style scoped>
