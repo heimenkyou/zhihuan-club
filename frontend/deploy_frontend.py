@@ -55,6 +55,9 @@ SEVEN_ZIP = "7z"
 REMOTE_SCRIPT = r"""
 set -Eeuo pipefail
 
+# 非交互 SSH 会话默认使用 POSIX locale，7z 会将中文文件名替换为问号。
+export LC_ALL=C.utf8
+
 target="$1"
 archive="$2"
 keep="$3"
