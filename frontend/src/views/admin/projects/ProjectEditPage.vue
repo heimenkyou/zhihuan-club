@@ -68,17 +68,8 @@
           <div class="upload-container">
             <div class="upload-main">
               <img v-if="projectForm.coverImage" :src="projectForm.coverImage" class="avatar" />
-              <div v-else class="upload-placeholder"><el-icon><i-ep-plus /></el-icon><div>请选择封面图片</div></div>
+               <div v-else class="upload-placeholder" @click="coverPickerVisible = true"><el-icon><i-ep-plus /></el-icon><div>请选择封面图片</div></div>
 
-              <div class="upload-actions">
-                <el-button
-                  link
-                  @click="coverPickerVisible = true"
-                  class="library-button"
-                >
-                  从图库选择</el-button
-                >
-              </div>
             </div>
           </div>
         </el-form-item>
@@ -738,19 +729,6 @@ onMounted(() => {
 
   .upload-placeholder div {
     font-size: 14px;
-  }
-
-  .upload-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex: 1;
-    min-width: 300px;
-  }
-
-  .library-button {
-    justify-content: flex-start;
-    padding-left: 0;
   }
 
    .cover-image-input,
