@@ -5,7 +5,7 @@
     <AdminResultCards v-else v-loading="loading"><article v-for="row in paged" :key="row.id" class="admin-result-card"><div><strong>{{ row.competitionName }}</strong><span>{{ row.winners?.join('、') || '未填写获奖人' }}</span><span>{{ row.competitionLevel }} · {{ row.awardLevel }} · {{ row.year }}年</span></div><AdminActionMenu v-if="!isSubmitter"><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
     <AdminPagination v-model:current-page="current" :page-size="size" :total="total" />
   </AdminPage>
-  <el-dialog v-model="visible" :title="dialogTitle" width="560px" class="admin-dialog"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项名称" prop="competitionName"><el-input v-model="form.competitionName" /></el-form-item><el-form-item label="赛道"><el-input v-model="form.competitionTrack" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-input v-model="form.awardLevel" /></el-form-item><el-form-item label="获奖人员" prop="winners"><el-input v-model="winnerInput" placeholder="用逗号分隔" /></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
+  <el-dialog v-model="visible" :title="dialogTitle" width="560px" class="admin-dialog"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项名称" prop="competitionName"><el-input v-model="form.competitionName" /></el-form-item><el-form-item label="赛道"><el-input v-model="form.competitionTrack" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-input v-model="form.awardLevel" /></el-form-item><el-form-item label="获奖人员" prop="winners"><div class="winner-input"><el-tag v-for="winner in form.winners" :key="winner" closable @close="removeWinner(winner)">{{ winner }}</el-tag><el-input v-model="winnerInput" placeholder="输入姓名后按回车添加" @keydown.enter.prevent="addWinner" /></div></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
 </template>
 
 <script setup>
@@ -58,6 +58,7 @@ const editingId = ref(null);
 const dialogTitle = ref("添加奖项");
 const formRef = ref();
 const winnerInput = ref("");
+const namePattern = /^[\u4E00-\u9FFF]+$/;
 const form = reactive({
 	competitionName: "",
 	competitionLevel: "国家级",
@@ -78,7 +79,7 @@ const rules = {
 	winners: [
 		{
 			validator: (_, value, callback) =>
-				value.length ? callback() : callback(new Error("请输入获奖人员")),
+				value?.length ? callback() : callback(new Error("请输入获奖人员")),
 			trigger: "blur",
 		},
 	],
@@ -193,14 +194,33 @@ const edit = (row) => {
 	editingId.value = row.id;
 	dialogTitle.value = "编辑奖项";
 	Object.assign(form, row);
-	winnerInput.value = (row.winners || []).join("、");
+	winnerInput.value = "";
 	visible.value = true;
 };
+const addWinner = () => {
+	const winner = winnerInput.value.trim();
+	if (!winner) return true;
+	if (!namePattern.test(winner)) {
+		ElMessage.warning("姓名只能包含汉字");
+		return false;
+	}
+	if (form.winners.includes(winner)) {
+		ElMessage.warning("该姓名已添加");
+		return false;
+	}
+	form.winners.push(winner);
+	winnerInput.value = "";
+	return true;
+};
+const removeWinner = (winner) => {
+	form.winners = form.winners.filter((item) => item !== winner);
+};
 const submit = async () => {
-	form.winners = winnerInput.value
-		.split(/[、,，]/)
-		.map((item) => item.trim())
-		.filter(Boolean);
+	if (!addWinner()) return;
+	if (form.winners.some((winner) => !namePattern.test(winner))) {
+		ElMessage.warning("姓名只能包含汉字");
+		return;
+	}
 	form.year = Number(form.awardDate.slice(0, 4));
 	if (!(await formRef.value.validate().catch(() => false))) return;
 	try {
@@ -246,5 +266,5 @@ onMounted(load);
 </script>
 
 <style scoped>
-:deep(.danger-item) { color: var(--el-color-danger); } @media (max-width: 768px) { :deep(.admin-dialog) { width: calc(100% - 24px) !important; margin: 12px auto; } }
+:deep(.danger-item) { color: var(--el-color-danger); } .winner-input { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; } .winner-input .el-input { flex: 1; min-width: 160px; } @media (max-width: 768px) { :deep(.admin-dialog) { width: calc(100% - 24px) !important; margin: 12px auto; } }
 </style>

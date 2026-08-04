@@ -36,6 +36,7 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         if (awardReqDTO.getWinners() == null || awardReqDTO.getWinners().isEmpty()) {
             throw new IllegalArgumentException("获奖人不能为空");
         }
+        validateWinners(awardReqDTO.getWinners());
         if (awardReqDTO.getAwardDate() == null) {
             throw new IllegalArgumentException("获奖时间不能为空");
         }
@@ -60,6 +61,7 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         }
         // 存储获奖人
         if (!ArrayUtil.isEmpty(awardReqDTO.getWinners())) {
+            validateWinners(awardReqDTO.getWinners());
             newAwardDO.setWinners(JSONArray.toJSONString(awardReqDTO.getWinners()));
         }
         newAwardDO.setId(id);
@@ -74,6 +76,17 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         }
         if (!removeById(id)) {
             throw new ClientException("奖项不存在");
+        }
+    }
+
+    /**
+     * 姓名仅允许汉字，防止分隔符或其他符号被保存为获奖人。
+     *
+     * @param winners 获奖人名单
+     */
+    private void validateWinners(java.util.List<String> winners) {
+        if (winners.stream().anyMatch(winner -> StrUtil.isBlank(winner) || !winner.matches("^[\\p{IsHan}]+$"))) {
+            throw new ClientException("获奖人姓名只能包含汉字");
         }
     }
 }
