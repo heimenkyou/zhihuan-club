@@ -21,7 +21,7 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="profile">
+              <el-dropdown-item v-if="!isSubmitter" command="profile">
                 <el-icon><i-ep-user /></el-icon>
                 个人资料
               </el-dropdown-item>
@@ -55,13 +55,13 @@
               <span>后台首页</span>
             </template>
           </el-menu-item>
-          <el-menu-item index="/admin/applications">
+          <el-menu-item v-if="!isSubmitter" index="/admin/applications">
             <template #title>
               <el-icon><i-ep-user /></el-icon>
               <span>报名信息管理</span>
             </template>
           </el-menu-item>
-          <el-menu-item index="/admin/messages">
+          <el-menu-item v-if="!isSubmitter" index="/admin/messages">
             <template #title>
               <el-icon><i-ep-message /></el-icon>
               <span>留言板管理</span>
@@ -79,7 +79,7 @@
               <span>项目管理</span>
             </template>
           </el-menu-item>
-          <el-menu-item index="/admin/attachments">
+          <el-menu-item v-if="!isSubmitter" index="/admin/attachments">
             <template #title>
               <el-icon><i-ep-picture /></el-icon>
               <span>附件库</span>
@@ -112,6 +112,7 @@ const adminStore = useAdminStore();
 const isMenuCollapsed = ref(false);
 const isMobile = ref(false);
 const userInfo = computed(() => adminStore.userInfo);
+const isSubmitter = computed(() => adminStore.hasRole(["submitter"]));
 
 /**
  * 根据屏幕宽度切换菜单折叠策略，避免移动端侧栏遮挡主体内容。

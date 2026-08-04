@@ -37,7 +37,7 @@ public class AdminDO {
     private String passwordHash;
 
     /**
-     * normal(普通管理员)/super(超级管理员)
+     * normal(普通管理员)/super(超级管理员)/submitter(内容提交员)
      */
     @TableField(value = "role")
     private String role;

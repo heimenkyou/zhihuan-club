@@ -1,6 +1,7 @@
 package cn.luowb.clubrecruitment.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -50,7 +51,7 @@ public class AdminController {
     }
 
     @Operation(summary = "分页查询管理员")
-    @SaCheckRole("super")
+    @SaCheckRole(value = {"super", "submitter"}, mode = SaMode.OR)
     @GetMapping("/admins")
     public Result<PageData<AdminPageRespDTO>> getAdminPage(@ParameterObject PageReqDTO requestParam) {
         log.debug("分页查询管理员: 第{}页{}条", requestParam.getCurrent(), requestParam.getSize());
@@ -83,7 +84,7 @@ public class AdminController {
     }
 
     @Operation(summary = "查询指定管理员信息")
-    @SaCheckRole("super")
+    @SaCheckRole(value = {"super", "submitter"}, mode = SaMode.OR)
     @GetMapping("/admins/{id}")
     public Result<AdminPageRespDTO> getAdminInfo(@PathVariable Long id) {
         AdminPageRespDTO adminInfo = adminService.getAdminInfo(id);
@@ -91,6 +92,7 @@ public class AdminController {
     }
 
     @Operation(summary = "更新当前管理员资料")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @PutMapping("/auth/me")
     public Result<Void> updateCurrent(@RequestBody AdminReqDTO requestParam) {
         adminService.updateCurrent(requestParam);

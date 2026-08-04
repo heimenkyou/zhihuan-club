@@ -1,5 +1,7 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -25,6 +27,7 @@ import java.util.List;
 @RequestMapping("/api/admin/applications")
 @RequiredArgsConstructor
 @Tag(name = "报名管理")
+@SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
 public class AdminApplicationController {
     private final ApplicationService applicationService;
 

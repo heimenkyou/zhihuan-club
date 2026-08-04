@@ -1,5 +1,7 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -39,6 +41,7 @@ public class AttachmentController {
      */
     @PostMapping("/upload-token")
     @Operation(summary = "申请图片直传凭证")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     public Result<AttachmentUploadTokenRespDTO> createUploadToken(
             @RequestBody @Valid AttachmentUploadTokenReqDTO requestParam) {
         return Results.success(attachmentService.createUploadToken(requestParam));
@@ -52,6 +55,7 @@ public class AttachmentController {
      */
     @PostMapping("/{id}/complete")
     @Operation(summary = "确认附件已上传")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     public Result<AttachmentRespDTO> complete(@PathVariable Long id) {
         return Results.success(attachmentService.complete(id));
     }
@@ -64,6 +68,7 @@ public class AttachmentController {
      */
     @GetMapping
     @Operation(summary = "分页查询可用图片")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     public Result<PageData<AttachmentRespDTO>> page(@ParameterObject PageReqDTO requestParam) {
         return Results.success(attachmentService.getPage(requestParam));
     }
@@ -76,6 +81,7 @@ public class AttachmentController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除图片")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     public Result<Void> delete(@PathVariable Long id) {
         attachmentService.delete(id);
         return Results.success();

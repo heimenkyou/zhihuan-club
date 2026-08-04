@@ -1,5 +1,7 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/messages")
 @RequiredArgsConstructor
 @Tag(name = "留言管理")
+@SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
 public class AdminMessageController {
     private final MessageService messageService;
 

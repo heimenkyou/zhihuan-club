@@ -21,9 +21,9 @@ public class AdminReqDTO {
     private String password;
 
     /**
-     * normal(普通管理员)/super(超级管理员)
+     * normal(普通管理员)/super(超级管理员)/submitter(内容提交员)
      */
-    @Schema(description = "normal(普通管理员)/super(超级管理员)")
+    @Schema(description = "normal(普通管理员)/super(超级管理员)/submitter(内容提交员)")
     private String role;
 
 }

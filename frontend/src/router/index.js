@@ -106,6 +106,18 @@ router.beforeEach(async (to, from, next) => {
 		return;
 	}
 
+	if (to.meta.allowedRoles && !adminStore.hasRole(to.meta.allowedRoles)) {
+		ElMessage.error("无权限访问此页面");
+		next("/admin/awards");
+		return;
+	}
+
+	if (to.name === "ProjectEdit" && to.params.id && adminStore.hasRole(["submitter"])) {
+		ElMessage.error("内容提交员不能编辑已有项目");
+		next("/admin/projects");
+		return;
+	}
+
 	next();
 });
 

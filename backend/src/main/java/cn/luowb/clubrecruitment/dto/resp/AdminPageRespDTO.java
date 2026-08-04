@@ -25,7 +25,7 @@ public class AdminPageRespDTO {
     private String username;
 
     /**
-     * normal(普通管理员)/super(超级管理员)
+     * normal(普通管理员)/super(超级管理员)/submitter(内容提交员)
      */
     @Schema(description = "管理员角色")
     private String role;

@@ -85,6 +85,13 @@ export const useAdminStore = defineStore('admin', () => {
     return userInfo.value?.role === 'super'
   }
 
+  /**
+   * 判断当前用户是否具有指定角色之一。
+   */
+  const hasRole = roles => {
+    return roles.includes(userInfo.value?.role)
+  }
+
   return {
     isLoggedIn,
     token,
@@ -97,5 +104,6 @@ export const useAdminStore = defineStore('admin', () => {
     clearAuthState,
     initialize,
     isSuperAdmin,
+    hasRole,
   }
 })

@@ -1,5 +1,7 @@
 package cn.luowb.clubrecruitment.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
@@ -34,6 +36,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "后台分页查询项目")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     @GetMapping("/admin/projects")
     public Result<PageData<ProjectRespDTO>> adminPage(@ParameterObject PageReqDTO requestParam) {
         return Results.success(projectService.getPage(requestParam));
@@ -49,6 +52,7 @@ public class ProjectController {
 
     @PostMapping("/admin/projects")
     @Operation(summary = "创建新项目")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     public Result<Long> createProject(@RequestBody @Valid ProjectSaveReqDTO reqDTO) {
         log.info("创建新项目, reqDTO={}", reqDTO);
         return Results.success(projectService.saveOrUpdateProject(null, reqDTO));
@@ -56,6 +60,7 @@ public class ProjectController {
 
     @PutMapping("/admin/projects/{id}")
     @Operation(summary = "更新项目")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     public Result<Void> updateProject(@PathVariable Long id,
                                       @RequestBody @Valid ProjectSaveReqDTO reqDTO) {
         log.info("更新项目, id={}, reqDTO={}", id, reqDTO);
@@ -65,11 +70,13 @@ public class ProjectController {
 
     @GetMapping("/admin/projects/{projectId}")
     @Operation(summary = "项目信息编辑回显")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     public Result<ProjectEditRespDTO> edit(@PathVariable Long projectId) {
         return Results.success(projectService.getProjectEdit(projectId));
     }
 
     @Operation(summary = "删除项目")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @DeleteMapping("/admin/projects/{projectId}")
     public Result<Void> delete(@PathVariable Long projectId) {
         log.info("删除项目, projectId={}", projectId);

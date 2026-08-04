@@ -1,10 +1,10 @@
 <template>
   <AdminPage title="管理员管理">
     <template #action><el-button v-if="isSuperAdmin" type="primary" @click="openAdd">添加管理员</el-button></template>
-    <AdminTable v-if="!isMobile"><el-table :data="admins"><el-table-column prop="id" label="ID" width="80" /><el-table-column prop="username" label="用户名" min-width="180" /><el-table-column label="角色" width="120"><template #default="{ row }"><el-tag :type="row.role === 'super' ? 'danger' : 'primary'" size="small">{{ row.role === 'super' ? '超级管理员' : '普通管理员' }}</el-tag></template></el-table-column><el-table-column prop="createTime" label="创建时间" min-width="180" /><el-table-column label="操作" width="64" fixed="right"><template #default="{ row }"><AdminActionMenu><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item v-if="isSuperAdmin && row.role !== 'super'" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></template></el-table-column></el-table></AdminTable>
-    <AdminResultCards v-else><article v-for="row in admins" :key="row.id" class="admin-result-card"><div><strong>{{ row.username }}</strong><span>{{ row.role === 'super' ? '超级管理员' : '普通管理员' }}</span></div><AdminActionMenu><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item v-if="isSuperAdmin && row.role !== 'super'" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
+    <AdminTable v-if="!isMobile"><el-table :data="admins"><el-table-column prop="id" label="ID" width="80" /><el-table-column prop="username" label="用户名" min-width="180" /><el-table-column label="角色" width="120"><template #default="{ row }"><el-tag :type="row.role === 'super' ? 'danger' : row.role === 'submitter' ? 'warning' : 'primary'" size="small">{{ roleLabel(row.role) }}</el-tag></template></el-table-column><el-table-column prop="createTime" label="创建时间" min-width="180" /><el-table-column label="操作" width="64" fixed="right"><template #default="{ row }"><AdminActionMenu><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item v-if="isSuperAdmin && row.role !== 'super'" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></template></el-table-column></el-table></AdminTable>
+    <AdminResultCards v-else><article v-for="row in admins" :key="row.id" class="admin-result-card"><div><strong>{{ row.username }}</strong><span>{{ roleLabel(row.role) }}</span></div><AdminActionMenu><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item v-if="isSuperAdmin && row.role !== 'super'" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
   </AdminPage>
-  <el-dialog v-model="visible" :title="dialogTitle" width="520px" class="admin-dialog"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="用户名" prop="username"><el-input v-model="form.username" /></el-form-item><el-form-item v-if="editingId" label="新密码（选填）" prop="newPassword"><el-input v-model="form.newPassword" type="password" show-password /></el-form-item><el-form-item v-else label="密码" prop="password"><el-input v-model="form.password" type="password" show-password /></el-form-item><el-form-item v-if="isSuperAdmin && !editingId" label="角色" prop="role"><el-select v-model="form.role"><el-option label="超级管理员" value="super" /><el-option label="普通管理员" value="normal" /></el-select></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
+  <el-dialog v-model="visible" :title="dialogTitle" width="520px" class="admin-dialog"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="用户名" prop="username"><el-input v-model="form.username" /></el-form-item><el-form-item v-if="editingId" label="新密码（选填）" prop="newPassword"><el-input v-model="form.newPassword" type="password" show-password /></el-form-item><el-form-item v-else label="密码" prop="password"><el-input v-model="form.password" type="password" show-password /></el-form-item><el-form-item v-if="isSuperAdmin" label="角色" prop="role"><el-select v-model="form.role"><el-option label="超级管理员" value="super" /><el-option label="普通管理员" value="normal" /><el-option label="内容提交员" value="submitter" /></el-select></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
 </template>
 
 <script setup>
@@ -47,6 +47,7 @@ const rules = {
 	newPassword: [{ min: 6, message: "密码长度不能少于6位", trigger: "blur" }],
 };
 const dialogTitle = ref("添加管理员");
+const roleLabel = (role) => ({ super: "超级管理员", normal: "普通管理员", submitter: "内容提交员" })[role] || role;
 const load = async () => {
 	try {
 		admins.value = (await getAdmins())?.records ?? [];
@@ -91,7 +92,7 @@ const submit = async () => {
 	if (!(await formRef.value?.validate().catch(() => false))) return;
 	try {
 		if (editingId.value) {
-			const payload = { username: form.username };
+			const payload = { username: form.username, role: form.role };
 			if (form.newPassword) payload.password = form.newPassword;
 			await updateAdmin(editingId.value, payload);
 		} else

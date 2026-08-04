@@ -1,8 +1,8 @@
 <template>
   <AdminPage title="项目管理"><template #action><el-button type="primary" @click="router.push('/admin/projects/edit')">添加项目</el-button></template>
     <AdminToolbar><el-input v-model="keyword" placeholder="搜索项目标题" clearable @keyup.enter="search" /><el-button type="primary" @click="search">搜索</el-button><el-button @click="reset">重置</el-button></AdminToolbar>
-    <AdminTable v-if="!isMobile" :scroll="false"><el-table v-loading="loading" :data="projects"><el-table-column prop="id" label="ID" width="80" /><el-table-column prop="title" label="项目标题" min-width="280" show-overflow-tooltip /><el-table-column prop="category" label="分类" width="130" /><el-table-column label="技术栈" min-width="220"><template #default="{ row }"><el-tag v-for="tag in row.techStackTags?.slice(0, 3)" :key="tag" size="small" class="tag">{{ tag }}</el-tag></template></el-table-column><el-table-column label="操作" width="64"><template #default="{ row }"><AdminActionMenu><el-dropdown-item :disabled="!row.id" @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item :disabled="!row.id" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></template></el-table-column></el-table></AdminTable>
-    <AdminResultCards v-else v-loading="loading"><article v-for="row in projects" :key="row.id" class="admin-result-card"><div><strong>{{ row.title }}</strong><span>{{ row.category }}</span><span>{{ row.techStackTags?.join('、') || '未填写技术栈' }}</span></div><AdminActionMenu><el-dropdown-item :disabled="!row.id" @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item :disabled="!row.id" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
+    <AdminTable v-if="!isMobile" :scroll="false"><el-table v-loading="loading" :data="projects"><el-table-column prop="id" label="ID" width="80" /><el-table-column prop="title" label="项目标题" min-width="280" show-overflow-tooltip /><el-table-column prop="category" label="分类" width="130" /><el-table-column label="技术栈" min-width="220"><template #default="{ row }"><el-tag v-for="tag in row.techStackTags?.slice(0, 3)" :key="tag" size="small" class="tag">{{ tag }}</el-tag></template></el-table-column><el-table-column v-if="!isSubmitter" label="操作" width="64"><template #default="{ row }"><AdminActionMenu><el-dropdown-item :disabled="!row.id" @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item :disabled="!row.id" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></template></el-table-column></el-table></AdminTable>
+    <AdminResultCards v-else v-loading="loading"><article v-for="row in projects" :key="row.id" class="admin-result-card"><div><strong>{{ row.title }}</strong><span>{{ row.category }}</span><span>{{ row.techStackTags?.join('、') || '未填写技术栈' }}</span></div><AdminActionMenu v-if="!isSubmitter"><el-dropdown-item :disabled="!row.id" @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item :disabled="!row.id" class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
     <AdminPagination v-model:current-page="current" :page-size="size" :total="total" @change="load" />
   </AdminPage>
 </template>
@@ -18,10 +18,12 @@ import AdminResultCards from "@/components/admin/AdminResultCards.vue";
 import AdminTable from "@/components/admin/AdminTable.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
+import { useAdminStore } from "@/stores/adminStore";
 import { deleteProject, getAdminProjects } from "@/services/projectService";
 
 const router = useRouter();
 const { isMobile } = useAdminMobile();
+const isSubmitter = useAdminStore().hasRole(["submitter"]);
 const keyword = ref("");
 const loading = ref(false);
 const projects = ref([]);

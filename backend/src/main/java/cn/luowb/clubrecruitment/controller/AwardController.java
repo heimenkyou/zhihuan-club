@@ -1,6 +1,8 @@
 package cn.luowb.clubrecruitment.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
 import cn.luowb.clubrecruitment.dto.req.AwardReqDTO;
@@ -30,6 +32,7 @@ public class AwardController {
     }
 
     @Operation(summary = "后台查询所有奖项")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     @GetMapping("/admin/awards")
     public Result<List<AwardRespDTO>> adminList() {
         return Results.success(listAwards());
@@ -49,6 +52,7 @@ public class AwardController {
     }
 
     @Operation(summary = "添加奖项")
+    @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     @PostMapping("/admin/awards")
     public Result<Void> add(@RequestBody AwardReqDTO awardReqDTO) {
         log.debug("添加奖项, awardReqDTO={}", awardReqDTO);
@@ -57,6 +61,7 @@ public class AwardController {
     }
 
     @Operation(summary = "删除奖项")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @DeleteMapping("/admin/awards/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         log.debug("删除奖项, id={}", id);
@@ -65,6 +70,7 @@ public class AwardController {
     }
 
     @Operation(summary = "更新奖项")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @PutMapping("/admin/awards/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody AwardReqDTO awardReqDTO) {
         log.debug("更新奖项, id={}, awardReqDTO={}", id, awardReqDTO);
