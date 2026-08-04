@@ -13,7 +13,7 @@
       <div class="banner-content">
         <div class="title-container">
           <h1 class="main-title">
-            <span class="code-text">把你的脑洞，变成真实的代码。</span>
+            <span class="code-text">把你的脑洞，<br />变成真实的代码。</span>
           </h1>
         </div>
 
