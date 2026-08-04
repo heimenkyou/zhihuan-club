@@ -41,8 +41,14 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   group-configs:
-    - group: 'default'
-      paths-to-match: '/**'
+    - group: 'public'
+      display-name: '前台接口'
+      paths-to-match: '/api/**'
+      paths-to-exclude: '/api/admin/**'
+      packages-to-scan: cn.luowb.clubrecruitment
+    - group: 'admin'
+      display-name: '后台管理'
+      paths-to-match: '/api/admin/**'
       packages-to-scan: cn.luowb.clubrecruitment
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
