@@ -323,7 +323,7 @@
 
             <div class="mb-6">
               <label class="block text-gray-700 font-medium mb-2" for="interests">兴趣方向（可多选）</label>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <label class="inline-flex items-center p-2 border rounded-lg hover:bg-gray-50 transition-colors"
                   v-for="interest in interests" :key="interest.value">
                   <input type="checkbox" name="interests" :value="interest.value"
@@ -420,8 +420,8 @@
 
           <!-- 二维码：居中展示 -->
           <div class="qrcode-container flex justify-center mb-8">
-            <img src="@/assets/images/QQGroup.webp" alt="社团招新QQ群二维码（扫码加群）"
-              class="qrcode-image w-48 h-48 object-contain border border-gray-100 p-4 rounded-lg"
+            <img src="https://club-img.luowb.cn/static/QQGroup.webp" alt="社团招新QQ群二维码（扫码加群）"
+              class="qrcode-image"
               @error="handleQrError" />
           </div>
 
@@ -430,7 +430,7 @@
             <!-- 群号+复制按钮 -->
             <div class="group-number-wrapper flex items-center gap-2 bg-gray-50 px-4 py-2.5 rounded-lg">
               <span class="text-gray-800 font-medium">群号：</span>
-              <span id="groupNumber" class="group-number text-primary font-semibold">1095890953</span>
+              <span id="groupNumber" class="group-number text-primary font-semibold">724792873</span>
               <button class="copy-button text-primary hover:text-primary-dark transition-colors"
                 @click="copyGroupNumber" title="复制群号">
                 <i-fa6-solid-copy class="fa-copy" />
@@ -439,7 +439,7 @@
             </div>
 
             <!-- 直接跳转加群链接：突出显示 -->
-            <a href="https://qm.qq.com/q/KiJWZAQ1C6" target="_blank" rel="noopener noreferrer"
+            <a href="https://qm.qq.com/q/uEOXqCEEVO" target="_blank" rel="noopener noreferrer"
               class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2">
               <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" />
               直接加群
@@ -482,16 +482,10 @@ const majorMapping = ref({})
 
 // 兴趣方向选项（统一管理）
 const interests = ref([
-  { label: '编程', value: '编程' },
-  { label: '设计', value: '设计' },
-  { label: '算法', value: '算法' },
-  { label: '数据库', value: '数据库' },
-  { label: '前端开发', value: '前端开发' },
-  { label: '后端开发', value: '后端开发' },
-  { label: 'PPT', value: 'PPT' },
-  { label: '演讲', value: '演讲' },
-  { label: '视频剪辑', value: '视频剪辑' },
-  { label: '无', value: '无' },
+  { label: '零基础，但对做网站/小程序/APP非常感兴趣', value: '零基础，但对做网站/小程序/APP非常感兴趣' },
+  { label: '对人工智能（AI）好奇，想学怎么用 AI 搞开发', value: '对人工智能（AI）好奇，想学怎么用 AI 搞开发' },
+  { label: '想参加蓝桥杯等算法竞赛，拿奖积累优势', value: '想参加蓝桥杯等算法竞赛，拿奖积累优势' },
+  { label: '擅长或想学习 UI设计/PPT/视频剪辑，做团队的视觉核心', value: '擅长或想学习 UI设计/PPT/视频剪辑，做团队的视觉核心' },
 ])
 
 // QQ号校验状态
@@ -569,7 +563,7 @@ const handleQrError = e => {
   const img = e.target
   img.src =
     'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LXNpemU9IjE2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRR5YiG5Lq65Yqo5pyN5Lq6PC90ZXh0Pjwvc3ZnPg=='
-  img.alt = 'QQ群二维码加载失败，可通过群号1095890953或链接加群'
+  img.alt = 'QQ群二维码加载失败，可通过群号724792873或链接加群'
 }
 
 // 滚动动画：监听section进入视口
@@ -675,7 +669,7 @@ const handleSubmit = async () => {
 const copyGroupNumber = async () => {
   try {
     // 标准的Clipboard API
-    await navigator.clipboard.writeText('1095890953')
+    await navigator.clipboard.writeText('724792873')
     copyButtonText.value = '已复制'
 
     // 3秒后恢复按钮文本
@@ -805,6 +799,8 @@ button:disabled {
   padding: 24px;
   width: 90%;
   max-width: 480px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
   position: relative;
 }
@@ -832,9 +828,11 @@ button:disabled {
 }
 
 .qrcode-image {
-  width: 180px;
-  height: 180px;
-  object-fit: contain;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 52vh;
 }
 
 /* 操作按钮区：响应式布局，移动端垂直排列 */

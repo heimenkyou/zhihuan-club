@@ -3,7 +3,7 @@
     <div class="footer-content">
       <div class="footer-info">
         <h3>智环学创融合协会</h3>
-        <p>告别单机学习！组队升级打怪！你的技术合伙人都在这里💥</p>
+        <p>和一群愿意动手的人，把兴趣做成作品💥</p>
       </div>
       <div class="footer-links">
         <router-link to="/privacy-policy" class="footer-link"
@@ -14,7 +14,7 @@
         >
         <a
           href="#"
-          @click.prevent="showWarning('牢弟点一点下面一行')"
+          @click.prevent="showWarning('点下面一行图标就行了')"
           class="footer-link"
           >联系我们</a
         >
@@ -35,7 +35,7 @@
         </a>
         <!-- QQ群 -->
         <a
-          href="https://qm.qq.com/q/KiJWZAQ1C6"
+          href="https://qm.qq.com/q/uEOXqCEEVO"
           class="social-link"
           target="_blank"
           rel="noopener noreferrer"

@@ -72,7 +72,7 @@
           <p>如您对本隐私政策有任何疑问，请通过以下方式联系我们：</p>
           <p>邮箱：Wenbin.Lo@outlook.com</p>
           <!-- <a
-              href="https://qm.qq.com/q/KiJWZAQ1C6"
+              href="https://qm.qq.com/q/uEOXqCEEVO"
               target="_blank"
               rel="noopener noreferrer"
               class="join-link-btn bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2"
@@ -80,8 +80,8 @@
               <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> 直接加群
             </a> -->
           <p>
-            <a href="https://qm.qq.com/q/KiJWZAQ1C6" target="_blank" rel="noopener noreferrer">
-              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> QQ群：1095890953
+            <a href="https://qm.qq.com/q/uEOXqCEEVO" target="_blank" rel="noopener noreferrer">
+              <i-fa6-solid-arrow-up-right-from-square class="fa-external-link" /> QQ群：724792873
             </a>
           </p>
         </section>
