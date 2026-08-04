@@ -44,9 +44,10 @@
         </a>
         <!-- github目前也没有 -->
         <a
-          href="#"
-          @click.prevent="showWarning('GitHub地址暂不公开')"
+          href="https://github.com/heimenkyou/zhihuan-club"
           class="social-link"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <i-fa6-brands-github class="fa-github social-icon" />
         </a>
