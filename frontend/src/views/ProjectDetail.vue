@@ -234,15 +234,6 @@
 import CommonFooter from '@/components/CommonFooter.vue'
 import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  ElCarousel,
-  ElCarouselItem,
-  ElTag,
-  ElTimeline,
-  ElTimelineItem,
-  ElCard,
-  ElImage,
-} from 'element-plus'
 import { getProjectDetail } from '@/services/projectService'
 
 const MdPreview = defineAsyncComponent(async () => {
