@@ -45,10 +45,10 @@
         <el-form-item label="开发时间" prop="timeRange">
           <el-date-picker
             v-model="dateRange"
-            type="daterange"
+            type="monthrange"
             range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            start-placeholder="开始月份"
+            end-placeholder="结束月份"
             format="YYYY.MM"
             value-format="YYYY.MM"
             @change="handleDateRangeChange"
