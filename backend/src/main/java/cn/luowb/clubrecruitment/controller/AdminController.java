@@ -14,9 +14,11 @@ import cn.luowb.clubrecruitment.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -45,7 +47,7 @@ public class AdminController {
     @Operation(summary = "添加管理员")
     @SaCheckRole("super")
     @PostMapping("/admins")
-    public Result<Void> add(@RequestBody AdminReqDTO requestParam) {
+    public Result<Void> add(@RequestBody @Validated({AdminReqDTO.Create.class, Default.class}) AdminReqDTO requestParam) {
         adminService.add(requestParam);
         return Results.success();
     }
@@ -71,7 +73,7 @@ public class AdminController {
     @Operation(summary = "更新管理员")
     @SaCheckRole("super")
     @PutMapping("/admins/{id}")
-    public Result<Void> update(@RequestBody AdminReqDTO requestParam, @PathVariable Long id) {
+    public Result<Void> update(@RequestBody @Valid AdminReqDTO requestParam, @PathVariable Long id) {
         adminService.update(requestParam, id);
         return Results.success();
     }
@@ -94,7 +96,7 @@ public class AdminController {
     @Operation(summary = "更新当前管理员资料")
     @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @PutMapping("/auth/me")
-    public Result<Void> updateCurrent(@RequestBody AdminReqDTO requestParam) {
+    public Result<Void> updateCurrent(@RequestBody @Valid AdminReqDTO requestParam) {
         adminService.updateCurrent(requestParam);
         return Results.success();
     }

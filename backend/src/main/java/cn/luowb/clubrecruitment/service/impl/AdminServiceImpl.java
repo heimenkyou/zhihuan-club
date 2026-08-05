@@ -21,16 +21,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 /** 管理员服务实现。 */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
         implements AdminService {
-    private static final Set<String> ADMIN_ROLES = Set.of("normal", "super", "submitter");
-
     private final AdminMapper adminMapper;
 
     @Override
@@ -59,7 +55,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
         }
         adminDO = BeanUtil.toBean(requestParam, AdminDO.class);
         adminDO.setRole(StrUtil.blankToDefault(requestParam.getRole(), "normal"));
-        validateRole(adminDO.getRole());
         adminDO.setPasswordHash(BCrypt.hashpw(requestParam.getPassword()));
         adminMapper.insert(adminDO);
     }
@@ -97,7 +92,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
             adminDO.setPasswordHash(BCrypt.hashpw(requestParam.getPassword()));
         }
         if (StrUtil.isNotBlank(requestParam.getRole())) {
-            validateRole(requestParam.getRole());
             adminDO.setRole(requestParam.getRole());
         }
         adminMapper.updateById(adminDO);
@@ -141,17 +135,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, AdminDO>
             adminDO.setPasswordHash(BCrypt.hashpw(requestParam.getPassword()));
         }
         adminMapper.updateById(adminDO);
-    }
-
-    /**
-     * 校验管理员角色，避免无效角色导致账号无法通过权限校验。
-     *
-     * @param role 管理员角色
-     */
-    private void validateRole(String role) {
-        if (!ADMIN_ROLES.contains(role)) {
-            throw new ClientException("管理员角色不合法");
-        }
     }
 
 }

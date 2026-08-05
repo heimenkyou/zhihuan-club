@@ -7,7 +7,6 @@ import cn.luowb.clubrecruitment.common.exception.AbstractException;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotRoleException;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +87,7 @@ public class GlobalExceptionHandler {
     }
 
     private String getUrl(HttpServletRequest request) {
-        if (StringUtils.isBlank(request.getQueryString())) {
+        if (StrUtil.isBlank(request.getQueryString())) {
             return request.getRequestURL().toString();
         }
         return request.getRequestURL().toString() + "?" + request.getQueryString();

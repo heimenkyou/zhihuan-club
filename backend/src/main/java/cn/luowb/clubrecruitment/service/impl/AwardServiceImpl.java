@@ -2,7 +2,6 @@ package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.dao.entity.AwardDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectAwardDO;
@@ -24,22 +23,6 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
 
     @Override
     public void add(AwardReqDTO awardReqDTO) {
-        if (StrUtil.isBlank(awardReqDTO.getCompetitionName())) {
-            throw new IllegalArgumentException("竞赛名称不能为空");
-        }
-        if (StrUtil.isBlank(awardReqDTO.getCompetitionLevel())) {
-            throw new IllegalArgumentException("竞赛级别不能为空");
-        }
-        if (StrUtil.isBlank(awardReqDTO.getAwardLevel())) {
-            throw new IllegalArgumentException("奖项级别不能为空");
-        }
-        if (awardReqDTO.getWinners() == null || awardReqDTO.getWinners().isEmpty()) {
-            throw new IllegalArgumentException("获奖人不能为空");
-        }
-        validateWinners(awardReqDTO.getWinners());
-        if (awardReqDTO.getAwardDate() == null) {
-            throw new IllegalArgumentException("获奖时间不能为空");
-        }
         AwardDO awardDO = BeanUtil.toBean(awardReqDTO, AwardDO.class);
         // 存储获奖年份
         awardDO.setYear(awardReqDTO.getAwardDate().getYear());
@@ -61,7 +44,6 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         }
         // 存储获奖人
         if (!ArrayUtil.isEmpty(awardReqDTO.getWinners())) {
-            validateWinners(awardReqDTO.getWinners());
             newAwardDO.setWinners(JSONArray.toJSONString(awardReqDTO.getWinners()));
         }
         newAwardDO.setId(id);
@@ -79,16 +61,6 @@ public class AwardServiceImpl extends ServiceImpl<AwardMapper, AwardDO>
         }
     }
 
-    /**
-     * 姓名仅允许汉字，防止分隔符或其他符号被保存为获奖人。
-     *
-     * @param winners 获奖人名单
-     */
-    private void validateWinners(java.util.List<String> winners) {
-        if (winners.stream().anyMatch(winner -> StrUtil.isBlank(winner) || !winner.matches("^[\\p{IsHan}]+$"))) {
-            throw new ClientException("获奖人姓名只能包含汉字");
-        }
-    }
 }
 
 

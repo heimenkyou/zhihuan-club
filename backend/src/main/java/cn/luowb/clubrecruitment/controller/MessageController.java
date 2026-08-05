@@ -11,6 +11,7 @@ import cn.luowb.clubrecruitment.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -26,7 +27,7 @@ public class MessageController {
 
     @Operation(summary = "添加留言")
     @PostMapping
-    public Result<Void> createMessage(@RequestBody MessageReqDTO requestParam) {
+    public Result<Void> createMessage(@RequestBody @Valid MessageReqDTO requestParam) {
         log.debug("添加留言: {}", requestParam);
         messageService.createMessage(requestParam);
         return Results.success();

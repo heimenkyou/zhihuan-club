@@ -3,7 +3,6 @@ package cn.luowb.clubrecruitment.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.luowb.clubrecruitment.common.exception.ClientException;
 import cn.luowb.clubrecruitment.common.exception.ServiceException;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.ApplicationDO;
@@ -14,7 +13,6 @@ import cn.luowb.clubrecruitment.dto.resp.ApplicationPageDTO;
 import cn.luowb.clubrecruitment.service.ApplicationService;
 import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,29 +33,6 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
 
     @Override
     public void createApplication(ApplicationReqDTO requestParam) {
-        // 参数校验
-        if (StringUtils.isBlank(requestParam.getName())) {
-            throw new ClientException("姓名不能为空");
-        } else if (StringUtils.isBlank(requestParam.getStudentId())) {
-            throw new ClientException("学号不能为空");
-        } else if (StringUtils.isBlank(requestParam.getMajor())) {
-            throw new ClientException("专业名称不能为空");
-        } else if (StringUtils.isBlank(requestParam.getQQNumber())) {
-            throw new ClientException("QQ号不能为空");
-        } else if (StringUtils.isBlank(requestParam.getDepartment())) {
-            throw new ClientException("第一意向部门不能为空");
-        } else if (StringUtils.isBlank(requestParam.getIntroduction())) {
-            throw new ClientException("个人介绍不能为空");
-        } else if (StringUtils.isBlank(requestParam.getReason())) {
-            throw new ClientException("加入原因不能为空");
-        }
-        if (!StrUtil.isNumeric(requestParam.getStudentId()) || requestParam.getStudentId().length() != 11) {
-            throw new ClientException("学号格式错误");
-        } else if (!StrUtil.isNumeric(requestParam.getPhone()) || requestParam.getPhone().length() != 11) {
-            throw new ClientException("手机号格式错误");
-        } else if (!StrUtil.isNumeric(requestParam.getQQNumber())) {
-            throw new ClientException("QQ号格式错误");
-        }
         ApplicationDO applicationDO = this.getOne(
                 new LambdaQueryWrapper<ApplicationDO>().eq(ApplicationDO::getStudentId, requestParam.getStudentId())
         );

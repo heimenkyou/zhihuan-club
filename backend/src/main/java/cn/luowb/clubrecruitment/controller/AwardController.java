@@ -11,9 +11,12 @@ import cn.luowb.clubrecruitment.service.AwardService;
 import com.alibaba.fastjson2.JSONArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
@@ -54,7 +57,7 @@ public class AwardController {
     @Operation(summary = "添加奖项")
     @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     @PostMapping("/admin/awards")
-    public Result<Void> add(@RequestBody AwardReqDTO awardReqDTO) {
+    public Result<Void> add(@RequestBody @Validated({AwardReqDTO.Create.class, Default.class}) AwardReqDTO awardReqDTO) {
         log.debug("添加奖项, awardReqDTO={}", awardReqDTO);
         awardService.add(awardReqDTO);
         return Results.success();
@@ -72,7 +75,7 @@ public class AwardController {
     @Operation(summary = "更新奖项")
     @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @PutMapping("/admin/awards/{id}")
-    public Result<Void> update(@PathVariable Long id, @RequestBody AwardReqDTO awardReqDTO) {
+    public Result<Void> update(@PathVariable Long id, @RequestBody @Valid AwardReqDTO awardReqDTO) {
         log.debug("更新奖项, id={}, awardReqDTO={}", id, awardReqDTO);
         awardService.update(id, awardReqDTO);
         return Results.success();

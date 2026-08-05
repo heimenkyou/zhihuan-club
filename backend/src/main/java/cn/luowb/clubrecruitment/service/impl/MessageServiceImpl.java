@@ -15,7 +15,6 @@ import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.MessagePageRespDTO;
 import cn.luowb.clubrecruitment.service.MessageService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +36,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDO>
 
     @Override
     public void createMessage(MessageReqDTO requestParam) {
-        if (StringUtils.isBlank(requestParam.getNickname())) {
-            throw new ClientException("昵称不能为空");
-        }
-        if (StringUtils.isBlank(requestParam.getContent())) {
-            throw new ClientException("留言内容不能为空");
-        }
         String ip = IPContext.getIp();
         MessageDO messageDO = new MessageDO()
                 .setContent(requestParam.getContent())
