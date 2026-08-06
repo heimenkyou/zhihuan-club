@@ -6,12 +6,15 @@
           <i-ep-expand v-if="isMenuCollapsed" />
           <i-ep-fold v-else />
         </el-icon>
-        <span class="admin-title">{{
-          isMobile && isMenuCollapsed ? '管理后台' : '社团管理后台'
-        }}</span>
+        <div class="admin-brand" @click="router.push('/')" aria-label="返回前台首页">
+          <i-fa6-solid-code class="brand-icon" />智环学创融合协会
+        </div>
       </div>
       <div class="header-right">
-        <el-dropdown trigger="hover" @command="handleCommand">
+        <el-dropdown
+          :trigger="isMobile ? 'click' : 'hover'"
+          @command="handleCommand"
+        >
           <div class="user-info">
             <el-icon class="user-icon"><i-ep-user /></el-icon>
             <span class="username" v-if="!isMobile || !isMenuCollapsed">{{
@@ -209,13 +212,14 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
     flex-direction: column;
   }
   .admin-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1e293b;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
      height: 60px;
      flex: none;
      position: sticky;
@@ -233,13 +237,26 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
     cursor: pointer;
     display: none;
   }
-  .admin-title {
+  .admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    color: #3b82f6;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .admin-brand:hover {
+    transform: scale(1.05);
+  }
+  .brand-icon {
+    transition: all 0.3s ease;
+  }
+  .admin-brand:hover .brand-icon {
+    transform: rotate(10deg);
+    color: #2563eb;
   }
   .header-right {
     display: flex;
@@ -252,26 +269,24 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #fff;
+    border: 1px solid #e5e7eb;
   }
   .user-info:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: #f8fafc;
+    border-color: #d1d5db;
     transform: translateY(-1px);
   }
   .user-icon {
     font-size: 18px;
     margin-right: 8px;
-    color: #ffffff;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    color: #64748b;
   }
   .username {
     font-size: 14px;
     font-weight: 500;
     margin-right: 4px;
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    color: #1e293b;
     white-space: nowrap;
     max-width: 120px;
     overflow: hidden;
@@ -280,8 +295,7 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
   .dropdown-icon {
     font-size: 12px;
     transition: transform 0.3s ease;
-    color: #ffffff;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    color: #64748b;
   }
   .el-dropdown:hover .dropdown-icon {
     transform: rotate(180deg);
@@ -335,9 +349,12 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
       height: 50px;
     }
 
-     .admin-title {
-       font-size: 18px;
-       max-width: 130px;
+     .admin-brand {
+       font-size: 16px;
+       max-width: 150px;
+       overflow: hidden;
+       text-overflow: ellipsis;
+       gap: 6px;
      }
 
 
@@ -349,6 +366,10 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
     .username {
       font-size: 13px;
       max-width: 80px;
+    }
+
+    .user-info {
+      padding: 6px 10px;
     }
 
     .admin-main {
@@ -368,9 +389,9 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
       padding: 0 10px;
     }
 
-    .admin-title {
-      font-size: 16px;
-      max-width: 120px;
+    .admin-brand {
+      font-size: 15px;
+      max-width: 130px;
     }
 
     .username {
