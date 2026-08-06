@@ -153,7 +153,8 @@ const search = reactive({
 	studentId: "",
 	department: "",
 	joinYear: null,
-	status: "",
+	// 默认只展示活跃成员，管理员可清空状态筛选查看全部
+	status: "active",
 });
 const page = reactive({ current: 1, size: 10, total: 0, records: [] });
 const loading = ref(false);
@@ -255,7 +256,7 @@ const reset = () => {
 		studentId: "",
 		department: "",
 		joinYear: null,
-		status: "",
+		status: "active",
 	});
 	searchList();
 };
