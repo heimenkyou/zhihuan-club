@@ -1,21 +1,38 @@
 <template>
   <AdminPage title="奖项管理"><template #action><el-button type="primary" @click="openAdd">添加奖项</el-button></template>
-    <AdminToolbar><el-input v-model="keyword" placeholder="搜索奖项名称或获奖人" clearable @keyup.enter="applyFilters" /><el-select v-model="filter.competitionLevel" placeholder="竞赛级别" clearable><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select><el-select v-model="filter.awardLevel" placeholder="获奖等级" clearable><el-option v-for="item in awardLevels" :key="item" :label="item" :value="item" /></el-select><el-select v-model="filter.year" placeholder="年份" clearable><el-option v-for="item in years" :key="item" :label="`${item}年`" :value="String(item)" /></el-select><el-select v-model="filter.competitionName" placeholder="竞赛项目" clearable><el-option v-for="item in competitionNames" :key="item" :label="item" :value="item" /></el-select><el-select v-if="tracks.length" v-model="filter.competitionTrack" placeholder="赛道" clearable><el-option v-for="item in tracks" :key="item" :label="item" :value="item" /></el-select><el-select v-model="sortBy" placeholder="排序"><el-option label="竞赛级别" value="competitionLevel" /><el-option label="获奖日期" value="awardDate" /><el-option label="竞赛名称" value="competitionName" /></el-select><el-select v-model="sortOrder" placeholder="顺序"><el-option label="降序" value="desc" /><el-option label="升序" value="asc" /></el-select><el-button type="primary" @click="applyFilters">搜索</el-button><el-button @click="reset">重置</el-button></AdminToolbar>
-    <AdminTable v-if="!isMobile"><el-table v-loading="loading" :data="paged"><el-table-column prop="id" label="ID" width="80" /><el-table-column prop="competitionName" label="奖项名称" min-width="220" /><el-table-column prop="competitionLevel" label="级别" width="110" /><el-table-column prop="competitionTrack" label="赛道" width="130" /><el-table-column prop="awardLevel" label="等级" width="110" /><el-table-column label="获奖人员" min-width="140"><template #default="{ row }">{{ row.winners?.join('、') }}</template></el-table-column><el-table-column prop="year" label="年份" width="90" /><el-table-column v-if="!isSubmitter" label="操作" width="64" fixed="right"><template #default="{ row }"><AdminActionMenu><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></template></el-table-column></el-table></AdminTable>
-    <AdminResultCards v-else v-loading="loading"><article v-for="row in paged" :key="row.id" class="admin-result-card"><div><strong>{{ row.competitionName }}</strong><span>{{ row.winners?.join('、') || '未填写获奖人' }}</span><span>{{ row.competitionLevel }} · {{ row.awardLevel }} · {{ row.year }}年</span></div><AdminActionMenu v-if="!isSubmitter"><el-dropdown-item @click="edit(row)">编辑</el-dropdown-item><el-dropdown-item class="danger-item" @click="remove(row.id)">删除</el-dropdown-item></AdminActionMenu></article></AdminResultCards>
-    <AdminPagination v-model:current-page="current" :page-size="size" :total="total" />
+    <AdminToolbar><el-input v-model="keyword" placeholder="搜索奖项名称、获奖人员..." clearable @keyup.enter="applyFilters" /><el-select v-model="filter.competitionLevel" placeholder="竞赛级别" clearable><el-option v-for="item in competitionLevelOptions" :key="item" :label="item" :value="item" /></el-select><el-select v-model="filter.awardLevel" placeholder="奖项级别" clearable><el-option v-for="item in awardLevelOptions" :key="item" :label="item" :value="item" /></el-select><el-select v-model="filter.year" placeholder="竞赛年份" clearable><el-option v-for="item in yearOptions" :key="item" :label="`${item}年`" :value="String(item)" /></el-select><el-select v-model="filter.competitionName" placeholder="竞赛名称" clearable><el-option v-for="name in competitionNames" :key="name" :label="name" :value="name" /></el-select><el-button type="primary" @click="applyFilters">搜索</el-button><el-button @click="reset">重置</el-button></AdminToolbar>
+    <div v-loading="loading" class="award-list">
+      <template v-if="sortedYears.length">
+        <section v-for="year in sortedYears" :key="year" class="award-year-section">
+          <div class="award-year-header">
+            <h2>{{ year }} 年度</h2>
+            <span class="award-year-line"></span>
+            <span class="award-year-count">{{ groupedAwards[year].length }} 项</span>
+          </div>
+          <div class="award-list-card">
+            <div v-for="award in groupedAwards[year]" :key="award.id" :class="{ 'award-item-highlight': isMajorAward(award) }" class="award-item">
+              <span :class="getCompetitionClass(award.competitionLevel)" class="competition-badge">{{ award.competitionLevel || '未分类' }}</span>
+              <span :class="getAwardTextClass(award.awardLevel)" class="award-badge">{{ award.awardLevel }}</span>
+              <span class="award-name">{{ award.competitionName }}<template v-if="award.competitionTrack"> · {{ award.competitionTrack }}</template></span>
+              <span class="award-winners"><span class="award-winners-label">获奖人：</span>{{ award.winners.join('、') || '未填写' }}</span>
+              <div v-if="!isSubmitter" class="award-actions">
+                <el-button size="small" text type="primary" @click="edit(award)">编辑</el-button>
+                <el-button size="small" text type="danger" @click="remove(award.id)">删除</el-button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </template>
+      <div v-else class="award-empty">暂无符合条件的奖项数据</div>
+    </div>
   </AdminPage>
-  <el-dialog v-model="visible" :title="dialogTitle" width="560px" class="admin-dialog"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项名称" prop="competitionName"><el-input v-model="form.competitionName" /></el-form-item><el-form-item label="赛道"><el-input v-model="form.competitionTrack" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-input v-model="form.awardLevel" /></el-form-item><el-form-item label="获奖人员" prop="winners"><div class="winner-input"><el-tag v-for="winner in form.winners" :key="winner" closable @close="removeWinner(winner)">{{ winner }}</el-tag><el-input v-model="winnerInput" placeholder="输入姓名后按回车添加" @keydown.enter.prevent="addWinner" /></div></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
+  <el-dialog v-model="visible" :title="dialogTitle" :width="isMobile ? 'calc(100% - 24px)' : '560px'"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项名称" prop="competitionName"><el-input v-model="form.competitionName" /></el-form-item><el-form-item label="赛道"><el-input v-model="form.competitionTrack" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-input v-model="form.awardLevel" /></el-form-item><el-form-item label="获奖人员" prop="winners"><div class="winner-input"><el-tag v-for="winner in form.winners" :key="winner" closable @close="removeWinner(winner)">{{ winner }}</el-tag><el-input v-model="winnerInput" placeholder="输入姓名后按回车添加" @keydown.enter.prevent="addWinner" /></div></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import AdminActionMenu from "@/components/admin/AdminActionMenu.vue";
 import AdminPage from "@/components/admin/AdminPage.vue";
-import AdminPagination from "@/components/admin/AdminPagination.vue";
-import AdminResultCards from "@/components/admin/AdminResultCards.vue";
-import AdminTable from "@/components/admin/AdminTable.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
 import { useAdminStore } from "@/stores/adminStore";
@@ -26,33 +43,35 @@ import {
 	updateAward,
 } from "@/services/adminService";
 
+/** 奖项等级排序优先级，用于组内排序。 */
+const awardLevelPriority = {
+	特等奖: 0,
+	一等奖: 1,
+	金奖: 1,
+	金牌: 1,
+	二等奖: 2,
+	银奖: 2,
+	银牌: 2,
+	三等奖: 3,
+	铜奖: 3,
+	铜牌: 3,
+	优秀奖: 4,
+};
+/** 竞赛级别排序优先级，用于组内排序。 */
+const competitionLevelPriority = { 国家级: 0, 省级: 1, 校级: 2, 院级: 2 };
+
 const { isMobile } = useAdminMobile();
 const isSubmitter = useAdminStore().hasRole(["submitter"]);
 const levels = ["国家级", "省级", "校级"];
-const awardLevels = [
-	"一等奖",
-	"金牌",
-	"二等奖",
-	"银牌",
-	"三等奖",
-	"铜牌",
-	"优秀奖",
-];
-const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 const keyword = ref("");
 const filter = reactive({
 	competitionLevel: "",
 	awardLevel: "",
 	year: "",
 	competitionName: "",
-	competitionTrack: "",
 });
-const sortBy = ref("competitionLevel");
-const sortOrder = ref("desc");
 const awards = ref([]);
 const loading = ref(false);
-const current = ref(1);
-const size = ref(10);
 const visible = ref(false);
 const editingId = ref(null);
 const dialogTitle = ref("添加奖项");
@@ -85,6 +104,8 @@ const rules = {
 	],
 	awardDate: [{ required: true, message: "请选择获奖日期", trigger: "change" }],
 };
+
+/** 数据中出现的竞赛名称选项。 */
 const competitionNames = computed(() =>
 	[
 		...new Set(
@@ -92,66 +113,111 @@ const competitionNames = computed(() =>
 		),
 	].sort(),
 );
-const tracks = computed(() =>
-	filter.competitionName
-		? [
-				...new Set(
-					awards.value
-						.filter((item) => item.competitionName === filter.competitionName)
-						.map((item) => item.competitionTrack)
-						.filter(Boolean),
-				),
-			]
-		: [],
-);
-const filtered = computed(() =>
-	awards.value.filter(
-		(item) =>
-			(!keyword.value ||
-				item.competitionName?.includes(keyword.value) ||
-				item.winners?.some((name) => name.includes(keyword.value)) ||
-				item.awardLevel?.includes(keyword.value)) &&
-			(!filter.competitionLevel ||
-				item.competitionLevel === filter.competitionLevel) &&
-			(!filter.awardLevel ||
-				item.awardLevel === filter.awardLevel ||
-				(filter.awardLevel === "一等奖" && item.awardLevel === "金牌") ||
-				(filter.awardLevel === "二等奖" && item.awardLevel === "银牌") ||
-				(filter.awardLevel === "三等奖" && item.awardLevel === "铜牌")) &&
-			(!filter.year || String(item.year) === filter.year) &&
-			(!filter.competitionName ||
-				item.competitionName?.includes(filter.competitionName)) &&
-			(!filter.competitionTrack ||
-				item.competitionTrack === filter.competitionTrack),
+/** 数据中出现的竞赛级别选项。 */
+const competitionLevelOptions = computed(() => [
+	...new Set(awards.value.map((item) => item.competitionLevel).filter(Boolean)),
+]);
+/** 数据中出现的奖项等级选项，按荣誉优先级排序。 */
+const awardLevelOptions = computed(() =>
+	[
+		...new Set(awards.value.map((item) => item.awardLevel).filter(Boolean)),
+	].sort(
+		(a, b) => (awardLevelPriority[a] ?? 99) - (awardLevelPriority[b] ?? 99),
 	),
 );
-const total = computed(() => filtered.value.length);
-const paged = computed(() =>
-	[...filtered.value]
-		.sort((a, b) => {
-			const av =
-				sortBy.value === "awardDate"
-					? a.awardDate
-					: sortBy.value === "competitionName"
-						? a.competitionName
-						: levels.indexOf(a.competitionLevel);
-			const bv =
-				sortBy.value === "awardDate"
-					? b.awardDate
-					: sortBy.value === "competitionName"
-						? b.competitionName
-						: levels.indexOf(b.competitionLevel);
-			return sortOrder.value === "desc"
-				? String(bv).localeCompare(String(av))
-				: String(av).localeCompare(String(bv));
-		})
-		.slice((current.value - 1) * size.value, current.value * size.value),
+/** 数据中出现的年份选项，降序。 */
+const yearOptions = computed(() =>
+	[
+		...new Set(
+			awards.value.map((item) => Number(item.year)).filter(Number.isFinite),
+		),
+	].sort((a, b) => b - a),
 );
+
+/** 筛选后的奖项列表，筛选语义与前台奖项页保持一致。 */
+const filteredAwards = computed(() =>
+	awards.value.filter(
+		(award) =>
+			(!keyword.value ||
+				award.competitionName
+					?.toLowerCase()
+					.includes(keyword.value.toLowerCase()) ||
+				award.winners.some((winner) =>
+					winner.toLowerCase().includes(keyword.value.toLowerCase()),
+				) ||
+				award.awardLevel
+					?.toLowerCase()
+					.includes(keyword.value.toLowerCase())) &&
+			(!filter.competitionLevel ||
+				award.competitionLevel === filter.competitionLevel) &&
+			(!filter.awardLevel || award.awardLevel === filter.awardLevel) &&
+			(!filter.year || award.year === Number(filter.year)) &&
+			(!filter.competitionName ||
+				award.competitionName === filter.competitionName),
+	),
+);
+
+/** 按年份降序分组，组内按级别与奖项等级排序。 */
+const groupedAwards = computed(() =>
+	filteredAwards.value
+		.slice()
+		.sort(
+			(a, b) =>
+				b.year - a.year ||
+				(competitionLevelPriority[a.competitionLevel] ?? 99) -
+					(competitionLevelPriority[b.competitionLevel] ?? 99) ||
+				(awardLevelPriority[a.awardLevel] ?? 99) -
+					(awardLevelPriority[b.awardLevel] ?? 99) ||
+				a.competitionName.localeCompare(b.competitionName),
+		)
+		.reduce((groups, award) => {
+			const year = String(award.year);
+			(groups[year] ||= []).push(award);
+			return groups;
+		}, {}),
+);
+const sortedYears = computed(() =>
+	Object.keys(groupedAwards.value).sort((a, b) => Number(b) - Number(a)),
+);
+
+/** 根据竞赛级别返回列表主标签样式。 */
+const getCompetitionClass = (level) =>
+	({ 国家级: "competition-national", 省级: "competition-provincial" })[level] ||
+	"competition-campus";
+
+/** 根据奖项等级返回辅助文字颜色。 */
+const getAwardTextClass = (level) =>
+	({
+		特等奖: "award-gold",
+		一等奖: "award-gold",
+		金奖: "award-gold",
+		金牌: "award-gold",
+		二等奖: "award-silver",
+		银奖: "award-silver",
+		银牌: "award-silver",
+		三等奖: "award-bronze",
+		铜奖: "award-bronze",
+		铜牌: "award-bronze",
+	})[level] || "award-default";
+
+/** 判断需在列表中突出展示的重要奖项。 */
+const isMajorAward = (award) =>
+	award.competitionLevel === "国家级" ||
+	(award.competitionLevel === "省级" &&
+		["特等奖", "一等奖", "金奖", "金牌"].includes(award.awardLevel));
+
+/** 拉取奖项数据，后端仅按关键词过滤，其余筛选在前端完成。 */
 const load = async () => {
 	loading.value = true;
 	try {
 		const data = await getAdminAwards({ keyword: keyword.value });
-		awards.value = Array.isArray(data) ? data : [];
+		awards.value = Array.isArray(data)
+			? data.map((item) => ({
+					...item,
+					year: Number(item.year),
+					winners: Array.isArray(item.winners) ? item.winners : [],
+				}))
+			: [];
 	} catch (error) {
 		ElMessage.error("获取奖项信息失败");
 		console.error(error);
@@ -160,7 +226,7 @@ const load = async () => {
 	}
 };
 const applyFilters = () => {
-	current.value = 1;
+	load();
 };
 const reset = () => {
 	keyword.value = "";
@@ -169,11 +235,8 @@ const reset = () => {
 		awardLevel: "",
 		year: "",
 		competitionName: "",
-		competitionTrack: "",
 	});
-	sortBy.value = "competitionLevel";
-	sortOrder.value = "desc";
-	applyFilters();
+	load();
 };
 const openAdd = () => {
 	editingId.value = null;
@@ -247,7 +310,6 @@ const remove = async (id) => {
 		});
 		await deleteAward(id);
 		ElMessage.success("删除奖项成功");
-		if (paged.value.length === 1 && current.value > 1) current.value--;
 		load();
 	} catch (error) {
 		if (error !== "cancel") {
@@ -256,15 +318,47 @@ const remove = async (id) => {
 		}
 	}
 };
-watch(
-	() => filter.competitionName,
-	() => {
-		filter.competitionTrack = "";
-	},
-);
 onMounted(load);
 </script>
 
 <style scoped>
-:deep(.danger-item) { color: var(--el-color-danger); } .winner-input { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; } .winner-input .el-input { flex: 1; min-width: 160px; } @media (max-width: 768px) { :deep(.admin-dialog) { width: calc(100% - 24px) !important; margin: 12px auto; } }
+.award-list { min-height: 120px; }
+.award-year-section { margin-bottom: 28px; }
+.award-year-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.award-year-header h2 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 700; }
+.award-year-line { height: 1px; flex: 1; background: #e5e7eb; }
+.award-year-count { color: #9ca3af; font-size: 14px; white-space: nowrap; }
+.award-list-card { overflow: hidden; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; }
+.award-item { display: flex; width: 100%; min-height: 52px; align-items: center; gap: 12px; border-bottom: 1px solid #f3f4f6; padding: 8px 16px; }
+.award-item:last-child { border-bottom: 0; }
+.award-item:hover { background: #f8fafc; }
+.award-item-highlight { border-left: 4px solid #d4a72c; background: rgb(255 215 0 / 0.05); }
+.award-item-highlight:hover { background: rgb(255 215 0 / 0.1); }
+.competition-badge { flex-shrink: 0; min-width: 3.75rem; border-radius: 9999px; padding: 4px 8px; font-size: 12px; font-weight: 700; line-height: 1.25; text-align: center; }
+.competition-national { background: linear-gradient(135deg, #7f1d1d, #eab308); color: #fff; }
+.competition-national::before { content: "🏆 "; }
+.competition-provincial { background: #0f766e; color: #fff; }
+.competition-campus { border: 1px solid #d1d5db; color: #6b7280; }
+.award-badge { flex-shrink: 0; font-size: 13px; font-weight: 700; line-height: 1; }
+.award-gold { color: #ca8a04; }
+.award-silver { color: #64748b; }
+.award-bronze { color: #b45309; }
+.award-default { color: #6b7280; }
+.award-name { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151; font-weight: 500; }
+.award-winners { flex-shrink: 0; color: #6b7280; font-size: 14px; }
+.award-winners-label { color: #9ca3af; }
+.award-actions { flex-shrink: 0; display: flex; align-items: center; gap: 2px; }
+.award-empty { padding: 48px 0; text-align: center; color: #6b7280; }
+.winner-input { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+.winner-input .el-input { flex: 1; min-width: 160px; }
+@media (max-width: 768px) {
+  .award-year-header h2 { font-size: 17px; }
+  .award-item { flex-wrap: wrap; gap: 6px 10px; padding: 10px 12px; }
+  .award-winners { order: 2; flex: 1 1 auto; min-width: 0; font-size: 13px; }
+  .award-actions { order: 3; }
+  .award-actions :deep(.el-button) { min-height: 36px; }
+  .competition-badge { min-width: 3rem; padding: 4px; }
+  .award-winners-label { display: none; }
+}
+@media (max-width: 420px) { .award-badge { display: none; } }
 </style>
