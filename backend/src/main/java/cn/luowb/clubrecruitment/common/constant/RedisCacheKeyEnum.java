@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 /** Redis 缓存键模板。 */
 @AllArgsConstructor
 public enum RedisCacheKeyEnum {
-    /** 留言点赞冷却。 */
-    MESSAGE_LIKE_KEY("club:like:message:%s:ip:%s"),
+    /** 留言点赞状态。 */
+    MESSAGE_LIKE_KEY("club:like:message:%s:token:%s"),
 
     /** 专业映射缓存。 */
     MAJOR_MAPPING_KEY("club:major:mapping");

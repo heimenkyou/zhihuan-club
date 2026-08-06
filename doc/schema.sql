@@ -110,11 +110,13 @@ CREATE TABLE `message` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '留言ID',
   `nickname` VARCHAR(50) NOT NULL COMMENT '用户昵称',
   `content` TEXT NOT NULL COMMENT '留言内容',
+  `author_token_hash` BINARY(32) NULL COMMENT '留言作者匿名令牌摘要',
   `like_count` INT NOT NULL DEFAULT 0 COMMENT '点赞数量',
-  `ip_address` VARCHAR(45) NULL COMMENT '用户IP地址',
+  `ip_address` VARCHAR(45) NULL COMMENT '用户IP地址，仅用于安全审计',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_message_author_token_hash` (`author_token_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户留言';
 
 CREATE TABLE `project` (

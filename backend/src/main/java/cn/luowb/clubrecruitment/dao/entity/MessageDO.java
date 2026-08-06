@@ -34,13 +34,19 @@ public class MessageDO {
     private String content;
 
     /**
+     * 留言作者匿名令牌摘要（HMAC-SHA256 计算结果，不保存明文令牌）
+     */
+    @TableField(value = "author_token_hash")
+    private byte[] authorTokenHash;
+
+    /**
      * 点赞数量
      */
     @TableField(value = "like_count")
     private Integer likeCount;
 
     /**
-     * 用户IP地址，用于防刷赞和安全审计
+     * 用户IP地址，仅用于安全审计
      */
     @TableField(value = "ip_address")
     private String ipAddress;

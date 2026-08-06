@@ -8,6 +8,7 @@
         <id property="id" column="id"/>
         <result property="nickname" column="nickname"/>
         <result property="content" column="content"/>
+        <result property="authorTokenHash" column="author_token_hash"/>
         <result property="likeCount" column="like_count"/>
         <result property="ipAddress" column="ip_address"/>
         <result property="createTime" column="create_time"/>
@@ -16,7 +17,7 @@
 
     <sql id="Base_Column_List">
         id
-        ,nickname,content,like_count,ip_address,create_time,
+        ,nickname,content,author_token_hash,like_count,ip_address,create_time,
         update_time
     </sql>
 </mapper>

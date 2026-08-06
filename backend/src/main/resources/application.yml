@@ -83,6 +83,11 @@ app:
     domain: ${QINIU_DOMAIN:}
   attachment:
     max-image-size: ${ATTACHMENT_MAX_IMAGE_SIZE:1MB}
-  # 点赞防刷时间间隔(秒)
-  like-interval-seconds: 86400
+  visitor-token:
+    # 访客令牌签名密钥，生产环境务必通过 VISITOR_TOKEN_SECRET 覆盖
+    secret: ${VISITOR_TOKEN_SECRET:zhihuan-club-visitor-token-secret}
+    # 访客令牌 Cookie 是否启用 Secure 标记，HTTPS 部署应保持为 true
+    cookie-secure: ${VISITOR_TOKEN_COOKIE_SECURE:true}
+  # 点赞状态保存时长(天)
+  like-expire-days: 30
 
