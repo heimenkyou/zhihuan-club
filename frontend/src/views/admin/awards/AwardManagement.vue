@@ -407,8 +407,8 @@ onMounted(load);
 .winner-input .el-input { flex: 1; min-width: 160px; }
 @media (max-width: 768px) {
   .award-year-header h2 { font-size: 17px; }
-  .award-item { flex-wrap: wrap; gap: 6px 10px; padding: 10px 12px; }
-  .award-winners { order: 2; flex: 1 1 auto; min-width: 0; font-size: 13px; }
+  .award-item { gap: 8px; padding: 8px 12px; }
+  .award-winners { max-width: 5.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
   .competition-badge { min-width: 3rem; padding: 4px; }
   .award-winners-label { display: none; }
 }
