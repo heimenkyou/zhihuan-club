@@ -62,11 +62,11 @@
 
   <el-dialog v-model="visible" :title="dialogTitle" :width="isMobile ? 'calc(100% - 24px)' : '560px'" class="admin-dialog">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
-      <el-form-item label="姓名" prop="name"><el-input v-model="form.name" /></el-form-item>
       <el-form-item label="学号" prop="studentId">
         <el-input v-model="form.studentId" @input="autoFillFromStudentId" />
-        <div class="form-tip">输入 11 位学号后自动填充专业与班级，可手动修改</div>
+        <div class="form-tip">输入 11 位学号后自动填充专业、班级与入学年份，并可预填报名记录，均可手动修改</div>
       </el-form-item>
+      <el-form-item label="姓名" prop="name"><el-input v-model="form.name" /></el-form-item>
       <el-form-item label="班级" prop="className"><el-input v-model="form.className" /></el-form-item>
       <el-form-item label="专业" prop="major"><el-input v-model="form.major" /></el-form-item>
       <el-form-item label="电话" prop="phone"><el-input v-model="form.phone" /></el-form-item>
@@ -139,6 +139,7 @@ import { useAdminMobile } from "@/composables/useAdminMobile";
 import { getMajorMapping } from "@/services/applicationsService";
 import {
 	createMember,
+	getApplications,
 	getMember,
 	getMembers,
 	updateMember,
@@ -199,16 +200,33 @@ const rules = {
 };
 
 /**
- * 依据 11 位学号自动填充专业与班级。
- * 专业取学号第 5-8 位查映射表全称，班级与后端报名逻辑一致（B+入学年份后两位+班级序号）。
- * 仅在做输入时计算，不覆盖用户手动修改的值。
+ * 依据 11 位学号自动填充专业、班级与入学年份，并静默查询报名记录预填基础信息。
+ * 专业取学号第 5-8 位查映射表全称，班级与后端报名逻辑一致（B+入学年份后两位+班级序号），
+ * 入学年份取学号前四位；报名记录命中时预填姓名、电话、QQ号（仅填空字段）。
+ * 只在做输入时计算，搜不到报名记录则不改变现有值。
  */
-const autoFillFromStudentId = () => {
+const autoFillFromStudentId = async () => {
 	const studentId = form.studentId?.trim() ?? "";
 	if (!/^\d{11}$/.test(studentId)) return;
 	const major = majorMapping.value[studentId.substring(4, 8)];
 	if (major?.fullName) form.major = major.fullName;
 	form.className = `B${studentId.substring(2, 4)}${studentId.charAt(8)}`;
+	form.joinYear = Number(studentId.substring(0, 4));
+	// 静默查询报名记录，命中且学号未再变化时才预填，避免快速输入时的竞态
+	try {
+		const data = await getApplications({
+			current: 1,
+			size: 1,
+			studentId,
+		});
+		const record = data?.records?.[0];
+		if (!record || form.studentId?.trim() !== studentId) return;
+		if (!form.name) form.name = record.name ?? "";
+		if (!form.phone) form.phone = record.phone ?? "";
+		if (!form.QQNumber) form.QQNumber = record.QQNumber ?? "";
+	} catch (error) {
+		console.error("查询报名记录失败:", error);
+	}
 };
 
 const load = async () => {
