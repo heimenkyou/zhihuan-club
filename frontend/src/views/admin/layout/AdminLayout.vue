@@ -1,16 +1,75 @@
 <template>
   <div class="admin-container">
-    <el-header class="admin-header">
-      <div class="header-left">
+    <el-aside
+      class="admin-aside"
+      :width="isMobile ? (isMenuCollapsed ? '0' : '200px') : '200px'"
+      :class="{ collapsed: isMobile && isMenuCollapsed }"
+    >
+      <div class="sidebar-brand" @click="router.push('/')" aria-label="返回前台首页">
+        <i-fa6-solid-code class="brand-icon" /><span>智环学创融合协会</span>
+      </div>
+      <el-menu
+        :default-active="currentRoutePath"
+        class="el-menu-vertical-demo"
+        @select="handleMenuSelect"
+      >
+        <el-menu-item index="/admin/dashboard">
+          <template #title>
+            <el-icon><i-ep-house /></el-icon>
+            <span>后台首页</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item v-if="!isSubmitter" index="/admin/applications">
+          <template #title>
+            <el-icon><i-ep-user /></el-icon>
+            <span>报名信息管理</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item v-if="!isSubmitter" index="/admin/members">
+          <template #title>
+            <el-icon><i-ep-user-filled /></el-icon>
+            <span>成员管理</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item v-if="!isSubmitter" index="/admin/messages">
+          <template #title>
+            <el-icon><i-ep-message /></el-icon>
+            <span>留言板管理</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item index="/admin/awards">
+          <template #title>
+            <el-icon><i-ep-trophy /></el-icon>
+            <span>奖项管理</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item index="/admin/projects">
+          <template #title>
+            <el-icon><i-ep-box /></el-icon>
+            <span>项目管理</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item v-if="!isSubmitter" index="/admin/attachments">
+          <template #title>
+            <el-icon><i-ep-picture /></el-icon>
+            <span>附件库</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item v-if="adminStore.isSuperAdmin()" index="/admin/admins">
+          <template #title>
+            <el-icon><i-ep-key /></el-icon>
+            <span>管理员管理</span>
+          </template>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
+    <div class="admin-content">
+      <el-header class="admin-header">
         <el-icon class="menu-toggle" @click="toggleMenu" v-if="isMobile">
           <i-ep-expand v-if="isMenuCollapsed" />
           <i-ep-fold v-else />
         </el-icon>
-        <div class="admin-brand" @click="router.push('/')" aria-label="返回前台首页">
-          <i-fa6-solid-code class="brand-icon" />智环学创融合协会
-        </div>
-      </div>
-      <div class="header-right">
+        <div class="header-right">
         <el-dropdown
           :trigger="isMobile ? 'click' : 'hover'"
           @command="handleCommand"
@@ -39,73 +98,12 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-      </div>
-    </el-header>
-    <el-container>
-      <el-aside
-        class="admin-aside"
-        :width="isMobile ? (isMenuCollapsed ? '0' : '200px') : '200px'"
-        :class="{ collapsed: isMobile && isMenuCollapsed }"
-      >
-        <el-menu
-          :default-active="currentRoutePath"
-          class="el-menu-vertical-demo"
-          @select="handleMenuSelect"
-        >
-          <el-menu-item index="/admin/dashboard">
-            <template #title>
-              <el-icon><i-ep-house /></el-icon>
-              <span>后台首页</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item v-if="!isSubmitter" index="/admin/applications">
-            <template #title>
-              <el-icon><i-ep-user /></el-icon>
-              <span>报名信息管理</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item v-if="!isSubmitter" index="/admin/members">
-            <template #title>
-              <el-icon><i-ep-user-filled /></el-icon>
-              <span>成员管理</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item v-if="!isSubmitter" index="/admin/messages">
-            <template #title>
-              <el-icon><i-ep-message /></el-icon>
-              <span>留言板管理</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item index="/admin/awards">
-            <template #title>
-              <el-icon><i-ep-trophy /></el-icon>
-              <span>奖项管理</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item index="/admin/projects">
-            <template #title>
-              <el-icon><i-ep-box /></el-icon>
-              <span>项目管理</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item v-if="!isSubmitter" index="/admin/attachments">
-            <template #title>
-              <el-icon><i-ep-picture /></el-icon>
-              <span>附件库</span>
-            </template>
-          </el-menu-item>
-          <el-menu-item v-if="adminStore.isSuperAdmin()" index="/admin/admins">
-            <template #title>
-              <el-icon><i-ep-key /></el-icon>
-              <span>管理员管理</span>
-            </template>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
+        </div>
+      </el-header>
       <el-main class="admin-main">
         <router-view></router-view>
       </el-main>
-    </el-container>
+    </div>
   </div>
 </template>
 
@@ -207,9 +205,8 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
 
 <style scoped>
    .admin-container {
-      height: 100vh;
      display: flex;
-     flex-direction: column;
+     height: 100vh;
      --el-color-primary: #3b82f6;
   }
   .admin-header {
@@ -227,37 +224,35 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
      top: 0;
      z-index: 20;
   }
-   .header-left {
-     display: flex;
-     align-items: center;
-     min-width: 0;
-   }
   .menu-toggle {
     font-size: 24px;
     margin-right: 15px;
     cursor: pointer;
     display: none;
   }
-  .admin-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 20px;
-    font-weight: 700;
-    color: #3b82f6;
+   .sidebar-brand {
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     height: 60px;
+     padding: 0 14px;
+     font-size: 17px;
+     font-weight: 700;
+     color: #fff;
     white-space: nowrap;
     cursor: pointer;
     transition: transform 0.2s ease;
   }
-  .admin-brand:hover {
-    transform: scale(1.05);
+   .sidebar-brand:hover {
+     transform: scale(1.05);
   }
-  .brand-icon {
-    transition: all 0.3s ease;
+   .brand-icon {
+     flex: none;
+     transition: all 0.3s ease;
   }
-  .admin-brand:hover .brand-icon {
-    transform: rotate(10deg);
-    color: #2563eb;
+   .sidebar-brand:hover .brand-icon {
+     transform: rotate(10deg);
+     color: #93c5fd;
   }
   .header-right {
     display: flex;
@@ -301,8 +296,9 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
   .el-dropdown:hover .dropdown-icon {
     transform: rotate(180deg);
   }
-  .admin-aside {
-    background-color: #304156;
+   .admin-aside {
+     flex: none;
+     background-color: #304156;
     color: white;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     transition: width 0.3s ease;
@@ -311,11 +307,11 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
   .admin-aside.collapsed {
     width: 0;
   }
-  .el-menu-vertical-demo {
+   .el-menu-vertical-demo {
     background-color: #304156;
     color: white;
     border-right: none;
-    height: 100%;
+     height: calc(100% - 60px);
   }
   .el-menu-item {
     color: #bfcbd9;
@@ -333,12 +329,14 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
      color: white;
      font-weight: 500;
   }
-  .admin-main {
+   .admin-main {
+     flex: 1;
     padding: 24px;
     overflow-y: auto;
     background-color: #f5f7fa;
-    min-height: calc(100vh - 60px);
-  }
+     min-height: 0;
+   }
+   .admin-content { display: flex; min-width: 0; flex: 1; flex-direction: column; }
 
   /* 移动端样式 */
   @media (max-width: 768px) {
@@ -346,19 +344,11 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
       display: block;
     }
 
-    .admin-header {
+     .admin-header {
+       justify-content: space-between;
       padding: 0 15px;
       height: 50px;
     }
-
-     .admin-brand {
-       font-size: 16px;
-       max-width: 150px;
-       overflow: hidden;
-       text-overflow: ellipsis;
-       gap: 6px;
-     }
-
 
     .user-icon {
       font-size: 16px;
@@ -378,10 +368,12 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
       padding: 15px;
     }
 
-    .admin-aside {
-      position: absolute;
-      z-index: 1000;
-      height: calc(100vh - 50px);
+     .admin-aside {
+       position: fixed;
+       top: 0;
+       left: 0;
+       z-index: 1000;
+       height: 100vh;
       transition: width 0.3s ease;
     }
   }
@@ -389,11 +381,6 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
   @media (max-width: 480px) {
     .admin-header {
       padding: 0 10px;
-    }
-
-    .admin-brand {
-      font-size: 15px;
-      max-width: 130px;
     }
 
     .username {
