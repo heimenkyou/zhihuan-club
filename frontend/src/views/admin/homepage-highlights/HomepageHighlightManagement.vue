@@ -6,6 +6,10 @@
 
     <AdminToolbar>
       <span class="manage-tip">拖拽可调整展示顺序，保存后前台轮播立即生效</span>
+      <template v-if="dirty">
+        <span class="dirty-tip">有未保存的排序调整</span>
+        <el-button type="primary" size="small" @click="saveOrder">保存排序</el-button>
+      </template>
     </AdminToolbar>
 
     <!-- 列表 -->
@@ -49,8 +53,10 @@
             </p>
           </div>
           <div v-if="!isSubmitter" class="highlight-actions">
-            <el-button v-if="item.type === 'activity'" text size="small" @click="openEdit(item)">编辑</el-button>
-            <el-button text type="danger" size="small" @click="remove(item)">移除</el-button>
+            <AdminActionMenu>
+              <el-dropdown-item v-if="item.type === 'activity'" @click="openEdit(item)">编辑</el-dropdown-item>
+              <el-dropdown-item class="danger-item" @click="remove(item)">移除</el-dropdown-item>
+            </AdminActionMenu>
           </div>
         </li>
       </ul>
@@ -131,7 +137,9 @@
 
 <script setup>
 import { ElMessage, ElMessageBox } from "element-plus";
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
+import AdminActionMenu from "@/components/admin/AdminActionMenu.vue";
 import AdminPage from "@/components/admin/AdminPage.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import AttachmentPicker from "@/components/admin/AttachmentPicker.vue";
@@ -294,6 +302,8 @@ const remove = async (item) => {
 // —— 原生 HTML5 拖拽排序 ——
 const dragIndex = ref(null);
 const dragOverIndex = ref(null);
+/** 是否存在未保存的排序调整。 */
+const dirty = ref(false);
 
 const handleDragStart = (index) => {
 	dragIndex.value = index;
@@ -319,8 +329,8 @@ const handleDrop = (index) => {
 	list.splice(to, 0, moved);
 	highlights.value = list;
 	handleDragEnd();
-	// 拖拽完成调用全量排序 API
-	saveOrder();
+	// 仅标记未保存，等待用户点击保存
+	dirty.value = true;
 };
 
 const handleDragEnd = () => {
@@ -334,19 +344,56 @@ const saveOrder = async () => {
 	if (ids.length === 0) return;
 	try {
 		await reorderHighlights(ids);
+		dirty.value = false;
 		ElMessage.success("排序已保存");
 	} catch (error) {
 		ElMessage.error(error instanceof Error ? error.message : "排序保存失败");
 		console.error(error);
-		load();
+		// 保存失败后回退到服务端顺序，本地不再有未保存的调整
+		await load();
+		dirty.value = false;
 	}
 };
 
-onMounted(load);
+/** 路由离开前，若有未保存的排序调整则提示确认。 */
+onBeforeRouteLeave(async () => {
+	if (!dirty.value) return true;
+	try {
+		await ElMessageBox.confirm(
+			"排序调整尚未保存，确定离开吗？",
+			"未保存的调整",
+			{
+				confirmButtonText: "仍要离开",
+				cancelButtonText: "留下继续编辑",
+				type: "warning",
+			},
+		);
+		return true;
+	} catch {
+		return false;
+	}
+});
+
+/** 刷新或关闭页面前，若有未保存的排序调整则触发浏览器原生提示。 */
+const handleBeforeUnload = (event) => {
+	if (!dirty.value) return;
+	event.preventDefault();
+	event.returnValue = "";
+};
+
+onMounted(() => {
+	window.addEventListener("beforeunload", handleBeforeUnload);
+	load();
+});
+onBeforeUnmount(() => {
+	window.removeEventListener("beforeunload", handleBeforeUnload);
+});
 </script>
 
 <style scoped>
 .manage-tip { color: #667085; font-size: 13px; }
+.dirty-tip { color: #d97706; font-size: 13px; }
+:deep(.danger-item) { color: var(--el-color-danger); }
 .highlight-list { min-height: 120px; }
 .highlight-error { padding: 48px 0; text-align: center; color: #6b7280; }
 .highlight-sort-list { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }

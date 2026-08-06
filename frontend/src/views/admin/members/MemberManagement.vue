@@ -25,6 +25,7 @@
         <el-table-column prop="name" label="姓名" width="110" />
         <el-table-column prop="studentId" label="学号" width="130" />
         <el-table-column prop="major" label="专业" min-width="150" />
+        <el-table-column prop="className" label="班级" min-width="120" />
         <el-table-column prop="department" label="部门" width="130" />
         <el-table-column prop="joinYear" label="加入年份" width="100" />
         <el-table-column label="状态" width="90">
@@ -47,7 +48,7 @@
       <article v-for="row in page.records" :key="row.id" class="admin-result-card" @click="view(row)">
         <div>
           <strong>{{ row.name }}</strong>
-          <span>{{ row.studentId }} · {{ row.major }}</span>
+          <span>{{ row.studentId }} · {{ row.major }} · {{ row.className || '—' }}</span>
           <span>{{ row.department }} · {{ row.joinYear }} 年 · {{ row.status === 'active' ? '活跃' : '非活跃' }}</span>
         </div>
         <AdminActionMenu>
@@ -62,7 +63,10 @@
   <el-dialog v-model="visible" :title="dialogTitle" :width="isMobile ? 'calc(100% - 24px)' : '560px'" class="admin-dialog">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
       <el-form-item label="姓名" prop="name"><el-input v-model="form.name" /></el-form-item>
-      <el-form-item label="学号" prop="studentId"><el-input v-model="form.studentId" /></el-form-item>
+      <el-form-item label="学号" prop="studentId">
+        <el-input v-model="form.studentId" @input="autoFillFromStudentId" />
+        <div class="form-tip">输入 11 位学号后自动填充专业与班级，可手动修改</div>
+      </el-form-item>
       <el-form-item label="班级" prop="className"><el-input v-model="form.className" /></el-form-item>
       <el-form-item label="专业" prop="major"><el-input v-model="form.major" /></el-form-item>
       <el-form-item label="电话" prop="phone"><el-input v-model="form.phone" /></el-form-item>
@@ -132,6 +136,7 @@ import AdminTable from "@/components/admin/AdminTable.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import ApplicationPicker from "@/components/admin/ApplicationPicker.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
+import { getMajorMapping } from "@/services/applicationsService";
 import {
 	createMember,
 	getMember,
@@ -180,14 +185,30 @@ const emptyForm = () => ({
 	remark: "",
 });
 const form = reactive(emptyForm());
+/** 专业代号到专业信息的映射表，用于学号自动填充专业。 */
+const majorMapping = ref({});
 const rules = {
 	name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
 	studentId: [{ required: true, message: "请输入学号", trigger: "blur" }],
+	className: [{ required: true, message: "请输入班级", trigger: "blur" }],
 	major: [{ required: true, message: "请输入专业", trigger: "blur" }],
 	department: [
 		{ required: true, message: "请选择所属部门", trigger: "change" },
 	],
 	joinYear: [{ required: true, message: "请选择加入年份", trigger: "change" }],
+};
+
+/**
+ * 依据 11 位学号自动填充专业与班级。
+ * 专业取学号第 5-8 位查映射表全称，班级与后端报名逻辑一致（B+入学年份后两位+班级序号）。
+ * 仅在做输入时计算，不覆盖用户手动修改的值。
+ */
+const autoFillFromStudentId = () => {
+	const studentId = form.studentId?.trim() ?? "";
+	if (!/^\d{11}$/.test(studentId)) return;
+	const major = majorMapping.value[studentId.substring(4, 8)];
+	if (major?.fullName) form.major = major.fullName;
+	form.className = `B${studentId.substring(2, 4)}${studentId.charAt(8)}`;
 };
 
 const load = async () => {
@@ -317,11 +338,19 @@ const fillFromApplication = (row) => {
 	});
 	visible.value = true;
 };
-onMounted(load);
+onMounted(async () => {
+	try {
+		majorMapping.value = await getMajorMapping();
+	} catch (error) {
+		console.error("获取专业映射表失败:", error);
+	}
+	load();
+});
 </script>
 
 <style scoped>
 .multiline { white-space: pre-wrap; word-break: break-word; }
+.form-tip { margin-top: 4px; color: #98a2b3; font-size: 12px; line-height: 1.5; }
 :deep(.danger-item) { color: var(--el-color-danger); }
 /* 固定表格列宽，保证窄屏下长内容可折行 */
 .detail-descriptions :deep(.el-descriptions__table) {

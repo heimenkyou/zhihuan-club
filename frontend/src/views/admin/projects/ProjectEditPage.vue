@@ -67,9 +67,17 @@
         <el-form-item label="项目封面" prop="coverImage">
           <div class="upload-container">
             <div class="upload-main">
-              <img v-if="projectForm.coverImage" :src="projectForm.coverImage" class="avatar" />
+              <img
+                v-if="projectForm.coverImage"
+                :src="projectForm.coverImage"
+                class="avatar"
+                @click="coverPickerVisible = true"
+              />
                <div v-else class="upload-placeholder" @click="coverPickerVisible = true"><el-icon><i-ep-plus /></el-icon><div>请选择封面图片</div></div>
-
+            </div>
+            <div v-if="projectForm.coverImage" class="cover-actions">
+              <el-button size="small" @click="coverPickerVisible = true">更换</el-button>
+              <el-button size="small" @click="projectForm.coverImage = ''">移除</el-button>
             </div>
           </div>
         </el-form-item>
@@ -695,10 +703,16 @@ onMounted(() => {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
+    cursor: pointer;
   }
 
-  .avatar-uploader .avatar:hover {
+  .avatar:hover {
     transform: scale(1.02);
+  }
+
+  .cover-actions {
+    display: flex;
+    gap: 8px;
   }
 
   .upload-placeholder {
