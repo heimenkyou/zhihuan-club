@@ -37,6 +37,12 @@ public class ApplicationDO {
     private String studentId;
 
     /**
+     * 招新批次年份
+     */
+    @TableField(value = "application_year")
+    private Integer applicationYear;
+
+    /**
      * 班级名称
      */
     @TableField(value = "class_name")
@@ -73,22 +79,16 @@ public class ApplicationDO {
     private String secondDepartment;
 
     /**
-     * 兴趣方向
+     * 第一阶段尝试方向（JSON 数组字符串）
      */
-    @TableField(value = "interests")
-    private String interests;
+    @TableField(value = "initial_directions")
+    private String initialDirections;
 
     /**
      * 个人介绍
      */
     @TableField(value = "introduction")
     private String introduction;
-
-    /**
-     * 加入原因
-     */
-    @TableField(value = "reason")
-    private String reason;
 
     /**
      * 创建时间

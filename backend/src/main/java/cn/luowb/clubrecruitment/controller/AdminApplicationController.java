@@ -66,4 +66,15 @@ public class AdminApplicationController {
     public Result<List<String>> majors() {
         return Results.success(applicationService.getApplicationMajors());
     }
+
+    /**
+     * 查询报名数据中使用过的招新批次年份。
+     *
+     * @return 年份列表
+     */
+    @Operation(summary = "查询报名年份")
+    @GetMapping("/years")
+    public Result<List<Integer>> years() {
+        return Results.success(applicationService.getApplicationYears());
+    }
 }

@@ -35,6 +35,12 @@ public class ApplicationPageReqDTO {
     private String studentId;
 
     /**
+     * 招新批次年份
+     */
+    @Schema(description = "招新批次年份")
+    private Integer applicationYear;
+
+    /**
      * QQ号
      */
     @Schema(description = "QQ号")

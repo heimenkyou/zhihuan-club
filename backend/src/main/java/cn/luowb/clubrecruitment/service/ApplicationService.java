@@ -40,4 +40,11 @@ public interface ApplicationService extends IService<ApplicationDO> {
      * @return 专业名称列表
      */
     List<String> getApplicationMajors();
+
+    /**
+     * 获取报名信息中所有不重复的招新批次年份
+     *
+     * @return 年份列表
+     */
+    List<Integer> getApplicationYears();
 }

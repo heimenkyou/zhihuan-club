@@ -29,6 +29,12 @@ public class ApplicationPageDTO {
     private String studentId;
 
     /**
+     * 招新批次年份
+     */
+    @Schema(description = "招新批次年份")
+    private Integer applicationYear;
+
+    /**
      * 班级名称
      */
     @Schema(description = "班级名称")
@@ -66,22 +72,16 @@ public class ApplicationPageDTO {
     private String secondDepartment;
 
     /**
-     * 兴趣方向
+     * 第一阶段尝试方向
      */
-    @Schema(description = "兴趣方向")
-    private List<String> interests;
+    @Schema(description = "第一阶段尝试方向")
+    private List<String> initialDirections;
 
     /**
      * 个人介绍
      */
     @Schema(description = "个人介绍")
     private String introduction;
-
-    /**
-     * 加入原因
-     */
-    @Schema(description = "加入原因")
-    private String reason;
 
     /**
      * 创建时间

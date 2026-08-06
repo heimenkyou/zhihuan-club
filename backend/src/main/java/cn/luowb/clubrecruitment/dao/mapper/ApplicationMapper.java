@@ -16,6 +16,14 @@ public interface ApplicationMapper extends BaseMapper<ApplicationDO> {
      */
     @Select("SELECT DISTINCT major FROM application WHERE TRIM(major) != '' ORDER BY major")
     List<String> selectDistinctMajors();
+
+    /**
+     * 查询所有不同的招新批次年份
+     *
+     * @return 年份列表（倒序）
+     */
+    @Select("SELECT DISTINCT application_year FROM application ORDER BY application_year DESC")
+    List<Integer> selectDistinctYears();
 }
 
 

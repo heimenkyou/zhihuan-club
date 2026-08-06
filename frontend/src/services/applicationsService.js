@@ -32,17 +32,14 @@ export const getMajorMapping = async () => {
  *   QQNumber: string,
  *   department: string,
  *   secondDepartment: string,
- *   interests: string[],
- *   reason: string,
+ *   initialDirections: string[],
  *   introduction: string,
  *   createTime?: string
  * }} params
  */
 export const submitApplication = async params => {
   try {
-    console.log('发送请求参数:', params)
     const response = await api.post('/applications', params)
-    console.log('响应数据:', response.data)
     return response.data
   } catch (error) {
     console.error('提交申请失败:', error)

@@ -66,11 +66,11 @@ public class ApplicationReqDTO {
     private String secondDepartment;
 
     /**
-     * 兴趣方向
+     * 第一阶段尝试方向
      */
-    @Schema(description = "兴趣方向")
-    @NotEmpty(message = "兴趣方向不能为空")
-    private List<String> interests;
+    @Schema(description = "第一阶段尝试方向")
+    @NotEmpty(message = "第一阶段尝试方向不能为空")
+    private List<String> initialDirections;
 
     /**
      * 个人介绍
@@ -78,10 +78,4 @@ public class ApplicationReqDTO {
     @Schema(description = "个人介绍")
     @NotBlank(message = "个人介绍不能为空")
     private String introduction;
-
-    /**
-     * 加入原因
-     */
-    @Schema(description = "加入原因")
-    private String reason;
 }

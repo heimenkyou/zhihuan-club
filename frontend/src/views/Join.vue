@@ -68,7 +68,7 @@
               <p class="mb-3 text-sm text-gray-500">最多选 2 项</p>
               <div class="grid gap-3 sm:grid-cols-2">
                 <label v-for="interest in interests" :key="interest.value" :class="{ 'interest-option-disabled': isInterestDisabled(interest.value) }" class="interest-option">
-                  <input type="checkbox" :checked="formData.interests.includes(interest.value)" :disabled="isInterestDisabled(interest.value)" @change="toggleInterest(interest.value, $event.target.checked)" />
+                  <input type="checkbox" :checked="formData.initialDirections.includes(interest.value)" :disabled="isInterestDisabled(interest.value)" @change="toggleInterest(interest.value, $event.target.checked)" />
                   <span><strong>{{ interest.label }}</strong><small>{{ interest.description }}</small></span>
                 </label>
               </div>
@@ -210,8 +210,7 @@ const formData = ref({
 	QQNumber: "",
 	department: "",
 	secondDepartment: "",
-	interests: [],
-	reason: "",
+	initialDirections: [],
 	introduction: "",
 });
 const majorMapping = ref({});
@@ -222,8 +221,8 @@ const copyButtonText = ref("复制");
 const undecidedInterest = "还没想好，先看看";
 const hasReachedInterestLimit = computed(
 	() =>
-		!formData.value.interests.includes(undecidedInterest) &&
-		formData.value.interests.length >= 2,
+		!formData.value.initialDirections.includes(undecidedInterest) &&
+		formData.value.initialDirections.length >= 2,
 );
 
 const toggleFaq = (index) => {
@@ -232,21 +231,21 @@ const toggleFaq = (index) => {
 /** 限制常规方向最多选择两项，“还没想好”作为独立选择。 */
 const toggleInterest = (value, checked) => {
 	if (value === undecidedInterest) {
-		formData.value.interests = checked ? [value] : [];
+		formData.value.initialDirections = checked ? [value] : [];
 		return;
 	}
 
-	const selected = formData.value.interests.filter(
+	const selected = formData.value.initialDirections.filter(
 		(item) => item !== undecidedInterest && item !== value,
 	);
 	if (checked && selected.length < 2) selected.push(value);
-	formData.value.interests = selected;
+	formData.value.initialDirections = selected;
 };
 const isInterestDisabled = (value) =>
-	!formData.value.interests.includes(value) &&
+	!formData.value.initialDirections.includes(value) &&
 	(value !== undecidedInterest
-		? formData.value.interests.includes(undecidedInterest) ||
-			formData.value.interests.length >= 2
+		? formData.value.initialDirections.includes(undecidedInterest) ||
+			formData.value.initialDirections.length >= 2
 		: false);
 const validateQQNumber = () => {
 	const qq = formData.value.QQNumber;
@@ -264,7 +263,7 @@ const handleSubmit = async () => {
 	if (qqNumberError.value) return;
 	isSubmitting.value = true;
 	try {
-		await submitApplication({ ...formData.value, reason: "" });
+		await submitApplication(formData.value);
 		showSuccessModal.value = true;
 		formData.value = {
 			name: "",
@@ -274,8 +273,7 @@ const handleSubmit = async () => {
 			QQNumber: "",
 			department: "",
 			secondDepartment: "",
-			interests: [],
-			reason: "",
+			initialDirections: [],
 			introduction: "",
 		};
 	} catch (error) {

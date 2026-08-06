@@ -16,8 +16,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /** 报名服务实现。 */
@@ -33,28 +35,49 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
 
     @Override
     public void createApplication(ApplicationReqDTO requestParam) {
+        // 招新批次年份由后端按当前年份填入，不接收前端传值
+        int applicationYear = LocalDate.now().getYear();
         ApplicationDO applicationDO = this.getOne(
-                new LambdaQueryWrapper<ApplicationDO>().eq(ApplicationDO::getStudentId, requestParam.getStudentId())
+                new LambdaQueryWrapper<ApplicationDO>()
+                        .eq(ApplicationDO::getStudentId, requestParam.getStudentId())
+                        .eq(ApplicationDO::getApplicationYear, applicationYear)
         );
         ApplicationDO newApplicationDO = BeanUtil.toBean(requestParam, ApplicationDO.class);
+        newApplicationDO.setApplicationYear(applicationYear);
         // 从学号中获取班级 例如20230613109 -> B231
         String studentId = requestParam.getStudentId();
         String className = "B" + studentId.substring(2, 4) + studentId.charAt(8);
         newApplicationDO.setClassName(className);
-        // 兴趣方向转换为JSON数组字符串
-        if (requestParam.getInterests() != null) {
-            newApplicationDO.setInterests(JSONArray.toJSONString(requestParam.getInterests()));
+        // 第一阶段尝试方向转换为JSON数组字符串
+        if (requestParam.getInitialDirections() != null) {
+            newApplicationDO.setInitialDirections(JSONArray.toJSONString(requestParam.getInitialDirections()));
         }
         if (applicationDO != null) {
-            // 该学号已经报名, 则修改
+            // 该学号同年已报名，覆盖更新；不同年份则走新增
             newApplicationDO.setId(applicationDO.getId());
             if (!this.updateById(newApplicationDO)) {
                 throw new ServiceException("修改报名信息失败");
             }
         } else {
-            // 该学号未报名, 则新增
-            if (!this.save(newApplicationDO)) {
-                throw new ServiceException("保存报名信息失败");
+            // 该学号同年未报名，则新增
+            try {
+                if (!this.save(newApplicationDO)) {
+                    throw new ServiceException("保存报名信息失败");
+                }
+            } catch (DuplicateKeyException ex) {
+                // 并发报名时先查后插的查询结果已过期，唯一键冲突改走覆盖更新
+                ApplicationDO exist = this.getOne(
+                        new LambdaQueryWrapper<ApplicationDO>()
+                                .eq(ApplicationDO::getStudentId, newApplicationDO.getStudentId())
+                                .eq(ApplicationDO::getApplicationYear, newApplicationDO.getApplicationYear())
+                );
+                if (exist == null) {
+                    throw new ServiceException("保存报名信息失败");
+                }
+                newApplicationDO.setId(exist.getId());
+                if (!this.updateById(newApplicationDO)) {
+                    throw new ServiceException("修改报名信息失败");
+                }
             }
         }
     }
@@ -65,6 +88,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
         queryWrapper
                 .like(StrUtil.isNotBlank(requestParam.getName()), ApplicationDO::getName, requestParam.getName())
                 .like(StrUtil.isNotBlank(requestParam.getStudentId()), ApplicationDO::getStudentId, requestParam.getStudentId())
+                .eq(requestParam.getApplicationYear() != null, ApplicationDO::getApplicationYear, requestParam.getApplicationYear())
                 .in(CollectionUtil.isNotEmpty(requestParam.getMajors()), ApplicationDO::getMajor, requestParam.getMajors())
                 .like(StrUtil.isNotBlank(requestParam.getQQNumber()), ApplicationDO::getQQNumber, requestParam.getQQNumber())
                 .orderByDesc(ApplicationDO::getCreateTime);
@@ -99,9 +123,9 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
         return PageData.of(page,
                 each -> {
                     ApplicationPageDTO pageDTO = BeanUtil.toBean(each, ApplicationPageDTO.class);
-                    // 兴趣方向转换为JSON数组字符串
-                    if (each.getInterests() != null) {
-                        pageDTO.setInterests(JSONArray.parseArray(each.getInterests(), String.class));
+                    // 第一阶段尝试方向转换为JSON数组
+                    if (each.getInitialDirections() != null) {
+                        pageDTO.setInitialDirections(JSONArray.parseArray(each.getInitialDirections(), String.class));
                     }
                     return pageDTO;
                 });
@@ -117,5 +141,10 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     @Override
     public List<String> getApplicationMajors() {
         return applicationMapper.selectDistinctMajors();
+    }
+
+    @Override
+    public List<Integer> getApplicationYears() {
+        return applicationMapper.selectDistinctYears();
     }
 }
