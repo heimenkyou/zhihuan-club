@@ -41,12 +41,18 @@
 
 - **Python 后端**：Flask、FastAPI
 - **Java 后端**：Spring Boot 框架、MySQL 数据库、Redis。
-- **前端 / 小程序 / 手机 APP**：Vue.js（写网页的）、uni-app（写手机软件的，一套代码到多个平台）。
+- **前端 / 小程序 / 手机 APP**：Vue.js（写网页的）、uni-app（写手机软件的，一套代码到多个平台）、Flutter（多平台支持，Android，iOS，桌面，Web）。
 - **桌面应用**：Tauri（轻量级、跨平台、Rust+Web 技术栈）、Electron（跨平台、成熟、生态好）
 - **AI 应用开发**：先学大模型 API 和结构化输出，再学工具调用、RAG、MCP，最后接触 Agent、多智能体和 Agent Skill。
+- **游戏开发**：Unity（C#，主流）、Unreal Engine（C++，次世代）、Godot（GDScript，轻量）。
 
 ### 3.2 硬件与物联网 (IoT)
 
+- **电路基础**：各种元器件
+- **单片机入门**：例如STM32和ESP32
+- **云平台**：阿里云，华为云各种
+- **嵌入式实时操作系统**：FreeRTOS和嵌入式Linux
+- **边缘ai**：视觉相关
 - *(待补充更多资源...)*
 
 ### 3.3 算法与逻辑基础
