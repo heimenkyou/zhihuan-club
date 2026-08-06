@@ -16,6 +16,11 @@ const adminRoutes = [
         meta: { title: '报名管理', allowedRoles: ['normal', 'super'] },
       },
       {
+        path: 'members',
+        component: () => import('@/views/admin/members/MemberManagement.vue'),
+        meta: { title: '成员管理', allowedRoles: ['normal', 'super'] },
+      },
+      {
         path: 'awards',
         component: () => import('@/views/admin/awards/AwardManagement.vue'),
         meta: { title: '奖项管理', allowedRoles: ['normal', 'super', 'submitter'] },

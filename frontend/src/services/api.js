@@ -45,7 +45,11 @@ api.interceptors.response.use(
       return response
     }
 
-    return Promise.reject(new Error(message || '请求失败'))
+    // 附加错误码与附加数据，供业务页面识别并定位关联数据
+    const err = new Error(message || '请求失败')
+    err.code = code
+    err.data = data
+    return Promise.reject(err)
   },
   error => {
     const message = getErrorMessage(error)

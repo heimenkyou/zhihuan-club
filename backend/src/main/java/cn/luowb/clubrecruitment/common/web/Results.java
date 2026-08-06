@@ -58,4 +58,20 @@ public final class Results {
                 .setCode(errorCode)
                 .setMessage(errorMessage);
     }
+
+    /**
+     * 构建带附加数据的失败响应，用于前端需要根据错误码定位关联数据的场景
+     *
+     * @param errorCode    错误码
+     * @param errorMessage 错误信息
+     * @param data         附加数据
+     * @param <T>          附加数据类型
+     * @return 失败响应
+     */
+    public static <T> Result<T> failureWithData(String errorCode, String errorMessage, T data) {
+        return new Result<T>()
+                .setCode(errorCode)
+                .setMessage(errorMessage)
+                .setData(data);
+    }
 }

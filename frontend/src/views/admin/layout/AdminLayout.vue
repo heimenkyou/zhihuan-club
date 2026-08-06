@@ -61,6 +61,12 @@
               <span>报名信息管理</span>
             </template>
           </el-menu-item>
+          <el-menu-item v-if="!isSubmitter" index="/admin/members">
+            <template #title>
+              <el-icon><i-ep-user-filled /></el-icon>
+              <span>成员管理</span>
+            </template>
+          </el-menu-item>
           <el-menu-item v-if="!isSubmitter" index="/admin/messages">
             <template #title>
               <el-icon><i-ep-message /></el-icon>
@@ -87,7 +93,7 @@
           </el-menu-item>
           <el-menu-item v-if="adminStore.isSuperAdmin()" index="/admin/admins">
             <template #title>
-              <el-icon><i-ep-user-filled /></el-icon>
+              <el-icon><i-ep-key /></el-icon>
               <span>管理员管理</span>
             </template>
           </el-menu-item>

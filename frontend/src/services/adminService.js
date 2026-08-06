@@ -281,6 +281,27 @@ export const getApplicationMajors = async () => {
 }
 
 /**
+ * 获取报名招新批次年份列表。
+ *
+ * @returns {Promise<number[]>}
+ */
+export const getApplicationYears = async () => {
+  try {
+    const response = await api.get('/admin/applications/years')
+    const data = getResultData(getBody(response))
+
+    if (!data) {
+      throw new Error('获取报名年份列表失败')
+    }
+
+    return data
+  } catch (error) {
+    console.error('获取报名年份列表失败:', error)
+    throw error
+  }
+}
+
+/**
  * 获取报名分页数据。
  *
  * @param {Object} [params={}]
@@ -346,4 +367,58 @@ export const getAdminMessages = async params => {
  */
 export const deleteAdminMessage = async id => {
   await api.delete(`/admin/messages/${id}`)
+}
+
+/**
+ * 获取成员分页数据。
+ *
+ * @param {Object} [params={}]
+ * @returns {Promise<any>}
+ */
+export const getMembers = async (params = {}) => {
+  const response = await api.get('/admin/members', { params })
+  return getResultData(getBody(response))
+}
+
+/**
+ * 获取成员详情。
+ *
+ * @param {number} id
+ * @returns {Promise<any>}
+ */
+export const getMember = async id => {
+  const response = await api.get(`/admin/members/${id}`)
+  return getResultData(getBody(response))
+}
+
+/**
+ * 新增成员。
+ *
+ * @param {Object} params
+ * @returns {Promise<void>}
+ */
+export const createMember = async params => {
+  await api.post('/admin/members', params)
+}
+
+/**
+ * 编辑成员。
+ *
+ * @param {number} id
+ * @param {Object} params
+ * @returns {Promise<void>}
+ */
+export const updateMember = async (id, params) => {
+  await api.put(`/admin/members/${id}`, params)
+}
+
+/**
+ * 切换成员状态。
+ *
+ * @param {number} id
+ * @param {'active'|'inactive'} status
+ * @returns {Promise<void>}
+ */
+export const updateMemberStatus = async (id, status) => {
+  await api.put(`/admin/members/${id}/status`, { status })
 }

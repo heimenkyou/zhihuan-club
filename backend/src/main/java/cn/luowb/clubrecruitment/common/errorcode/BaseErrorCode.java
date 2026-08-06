@@ -31,6 +31,9 @@ public enum BaseErrorCode implements IErrorCode {
     NO_HANDLE_ERROR("A000400", "无效请求"),
     NOT_FOUND_ERROR("A000400", "未找到数据"),
 
+    // ========== 二级宏观错误码 成员管理错误 ==========
+    MEMBER_STUDENT_ID_EXIST("A000500", "该学号已是社团成员"),
+
     // ========== 一级宏观错误码 系统执行出错 ==========
     SERVICE_ERROR("B000001", "系统执行出错"),
     // ========== 二级宏观错误码 系统执行超时 ==========

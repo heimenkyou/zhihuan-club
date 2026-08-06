@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.luowb.clubrecruitment.common.errorcode.BaseErrorCode;
 import cn.luowb.clubrecruitment.common.exception.AbstractException;
+import cn.luowb.clubrecruitment.common.exception.MemberExistException;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotRoleException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -64,6 +66,15 @@ public class GlobalExceptionHandler {
     public Result<Void> abstractException(HttpServletRequest request, AbstractException ex) {
         log.error("[{}] {} 业务异常: {}", request.getMethod(), getUrl(request), ex.getErrorMessage(), ex);
         return Results.failure(ex);
+    }
+
+    /**
+     * 拦截成员学号重复异常，携带已有成员ID返回，便于前端直接定位既有成员
+     */
+    @ExceptionHandler(MemberExistException.class)
+    public Result<Map<String, Long>> memberExistException(HttpServletRequest request, MemberExistException ex) {
+        log.error("[{}] {} 成员学号重复: {}", request.getMethod(), getUrl(request), ex.getErrorMessage(), ex);
+        return Results.failureWithData(ex.getErrorCode(), ex.getErrorMessage(), Map.of("id", ex.getMemberId()));
     }
 
     /**
