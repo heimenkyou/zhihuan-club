@@ -10,22 +10,32 @@
             <span class="award-year-count">{{ groupedAwards[year].length }} 项</span>
           </div>
           <div class="award-list-card">
-            <div v-for="award in groupedAwards[year]" :key="award.id" :class="{ 'award-item-highlight': isMajorAward(award) }" class="award-item">
+            <button v-for="award in groupedAwards[year]" :key="award.id" type="button" :class="{ 'award-item-highlight': isMajorAward(award) }" class="award-item" @click="showAwardDetail(award)">
               <span :class="getCompetitionClass(award.competitionLevel)" class="competition-badge">{{ award.competitionLevel || '未分类' }}</span>
               <span :class="getAwardTextClass(award.awardLevel)" class="award-badge">{{ award.awardLevel }}</span>
               <span class="award-name">{{ award.competitionName }}<template v-if="award.competitionTrack"> · {{ award.competitionTrack }}</template></span>
               <span class="award-winners"><span class="award-winners-label">获奖人：</span>{{ award.winners.join('、') || '未填写' }}</span>
-              <div v-if="!isSubmitter" class="award-actions">
-                <el-button size="small" text type="primary" @click="edit(award)">编辑</el-button>
-                <el-button size="small" text type="danger" @click="remove(award.id)">删除</el-button>
-              </div>
-            </div>
+              <span class="award-arrow">›</span>
+            </button>
           </div>
         </section>
       </template>
       <div v-else class="award-empty">暂无符合条件的奖项数据</div>
     </div>
   </AdminPage>
+  <el-dialog v-model="detailVisible" :title="undefined" :width="isMobile ? 'calc(100% - 24px)' : '520px'" class="award-detail-dialog" align-center>
+    <div v-if="selectedAward" class="award-detail">
+      <div :class="getHonorClass(selectedAward.awardLevel)" class="honor-badge">🏆 {{ selectedAward.competitionLevel }} · {{ selectedAward.awardLevel }}</div>
+      <h2 class="award-detail-title">{{ selectedAward.competitionName }}</h2>
+      <p class="award-detail-meta"><template v-if="selectedAward.competitionTrack">{{ selectedAward.competitionTrack }}赛道 · </template>{{ selectedAward.awardDate || `${selectedAward.year}年` }} 获奖</p>
+      <div class="award-detail-divider"></div>
+      <section class="award-winners-section"><h3>🎖️ 荣誉得主</h3><div class="winner-tags"><span v-for="winner in selectedAward.winners" :key="winner" class="winner-tag">👨‍💻 {{ winner }}</span></div></section>
+    </div>
+    <template #footer>
+      <el-button @click="detailVisible = false">关闭</el-button>
+      <template v-if="!isSubmitter"><el-button type="primary" @click="editFromDetail">编辑</el-button><el-button type="danger" @click="removeFromDetail">删除</el-button></template>
+    </template>
+  </el-dialog>
   <el-dialog v-model="visible" :title="dialogTitle" :width="isMobile ? 'calc(100% - 24px)' : '560px'"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项名称" prop="competitionName"><el-input v-model="form.competitionName" /></el-form-item><el-form-item label="赛道"><el-input v-model="form.competitionTrack" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-input v-model="form.awardLevel" /></el-form-item><el-form-item label="获奖人员" prop="winners"><div class="winner-input"><el-tag v-for="winner in form.winners" :key="winner" closable @close="removeWinner(winner)">{{ winner }}</el-tag><el-input v-model="winnerInput" placeholder="输入姓名后按回车添加" @keydown.enter.prevent="addWinner" /></div></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
 </template>
 
@@ -73,6 +83,8 @@ const filter = reactive({
 const awards = ref([]);
 const loading = ref(false);
 const visible = ref(false);
+const detailVisible = ref(false);
+const selectedAward = ref();
 const editingId = ref(null);
 const dialogTitle = ref("添加奖项");
 const formRef = ref();
@@ -206,6 +218,26 @@ const isMajorAward = (award) =>
 	(award.competitionLevel === "省级" &&
 		["特等奖", "一等奖", "金奖", "金牌"].includes(award.awardLevel));
 
+/** 根据奖项等级返回详情主视觉样式。 */
+const getHonorClass = (level) =>
+	({
+		一等奖: "honor-gold",
+		金奖: "honor-gold",
+		金牌: "honor-gold",
+		二等奖: "honor-silver",
+		银奖: "honor-silver",
+		银牌: "honor-silver",
+		三等奖: "honor-bronze",
+		铜奖: "honor-bronze",
+		铜牌: "honor-bronze",
+	})[level] || "honor-default";
+
+/** 打开奖项详情，管理操作在详情中进行，避免破坏列表视觉。 */
+const showAwardDetail = (award) => {
+	selectedAward.value = award;
+	detailVisible.value = true;
+};
+
 /** 拉取奖项数据，后端仅按关键词过滤，其余筛选在前端完成。 */
 const load = async () => {
 	loading.value = true;
@@ -259,6 +291,10 @@ const edit = (row) => {
 	Object.assign(form, row);
 	winnerInput.value = "";
 	visible.value = true;
+};
+const editFromDetail = () => {
+	detailVisible.value = false;
+	edit(selectedAward.value);
 };
 const addWinner = () => {
 	const winner = winnerInput.value.trim();
@@ -318,6 +354,12 @@ const remove = async (id) => {
 		}
 	}
 };
+const removeFromDetail = async () => {
+	const id = selectedAward.value?.id;
+	if (!id) return;
+	detailVisible.value = false;
+	await remove(id);
+};
 onMounted(load);
 </script>
 
@@ -329,7 +371,7 @@ onMounted(load);
 .award-year-line { height: 1px; flex: 1; background: #e5e7eb; }
 .award-year-count { color: #9ca3af; font-size: 14px; white-space: nowrap; }
 .award-list-card { overflow: hidden; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; }
-.award-item { display: flex; width: 100%; min-height: 52px; align-items: center; gap: 12px; border-bottom: 1px solid #f3f4f6; padding: 8px 16px; }
+.award-item { display: flex; width: 100%; min-height: 52px; align-items: center; gap: 12px; border: 0; border-bottom: 1px solid #f3f4f6; padding: 8px 16px; background: transparent; text-align: left; cursor: pointer; }
 .award-item:last-child { border-bottom: 0; }
 .award-item:hover { background: #f8fafc; }
 .award-item-highlight { border-left: 4px solid #d4a72c; background: rgb(255 215 0 / 0.05); }
@@ -347,16 +389,26 @@ onMounted(load);
 .award-name { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151; font-weight: 500; }
 .award-winners { flex-shrink: 0; color: #6b7280; font-size: 14px; }
 .award-winners-label { color: #9ca3af; }
-.award-actions { flex-shrink: 0; display: flex; align-items: center; gap: 2px; }
+.award-arrow { flex-shrink: 0; color: #cbd5e1; font-size: 20px; }
 .award-empty { padding: 48px 0; text-align: center; color: #6b7280; }
+.award-detail { padding: 24px 16px; border: 1px solid #d6b76e; background: linear-gradient(135deg, #fffdf5, #fff 55%, #f7f0d8); box-shadow: inset 0 0 0 6px #fff, inset 0 0 0 7px #e5d09a; text-align: center; }
+.honor-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 12px 20px; font-size: 20px; font-weight: 800; }
+.honor-gold { background: linear-gradient(135deg, #fef3c7, #f59e0b); color: #78350f; }
+.honor-silver { background: linear-gradient(135deg, #e2e8f0, #94a3b8); color: #1e3a5f; }
+.honor-bronze { background: linear-gradient(135deg, #fed7aa, #9a3412); color: #fff7ed; }
+.honor-default { background: linear-gradient(135deg, #dbeafe, #60a5fa); color: #1e3a8a; }
+.award-detail-title { margin: 24px 0 0; color: #1f2937; font-size: 24px; line-height: 1.4; }
+.award-detail-meta { margin: 8px 0 0; color: #64748b; }
+.award-detail-divider { height: 1px; margin: 24px 0; background: #e5e7eb; }
+.award-winners-section h3 { margin: 0 0 12px; color: #374151; }
+.winner-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.winner-tag { border-radius: 999px; background: #dbeafe; padding: 7px 12px; color: #1d4ed8; font-weight: 600; }
 .winner-input { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
 .winner-input .el-input { flex: 1; min-width: 160px; }
 @media (max-width: 768px) {
   .award-year-header h2 { font-size: 17px; }
   .award-item { flex-wrap: wrap; gap: 6px 10px; padding: 10px 12px; }
   .award-winners { order: 2; flex: 1 1 auto; min-width: 0; font-size: 13px; }
-  .award-actions { order: 3; }
-  .award-actions :deep(.el-button) { min-height: 36px; }
   .competition-badge { min-width: 3rem; padding: 4px; }
   .award-winners-label { display: none; }
 }
