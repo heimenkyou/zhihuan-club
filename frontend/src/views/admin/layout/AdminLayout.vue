@@ -207,9 +207,10 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
 
 <style scoped>
    .admin-container {
-     height: 100vh;
-    display: flex;
-    flex-direction: column;
+      height: 100vh;
+     display: flex;
+     flex-direction: column;
+     --el-color-primary: #3b82f6;
   }
   .admin-header {
     background: #fff;
@@ -326,10 +327,11 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
     background-color: rgba(255, 255, 255, 0.1);
     color: #fff;
   }
-  .el-menu-item.is-active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 500;
+   .el-menu-item.is-active {
+     background: #1f2d3d;
+     border-left: 3px solid #3b82f6;
+     color: white;
+     font-weight: 500;
   }
   .admin-main {
     padding: 24px;
