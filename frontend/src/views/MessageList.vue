@@ -326,7 +326,8 @@ const formatTime = (timeString) => {
 		if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
 		if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
 		if (diff < 172800000) return "昨天";
-		if (diff < 31536000000) {
+		// 非今年或超过一年的留言显示完整日期，避免跨年误以为今年发布
+		if (date.getFullYear() === now.getFullYear() && diff < 31536000000) {
 			return date
 				.toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" })
 				.replace("/", "-");
