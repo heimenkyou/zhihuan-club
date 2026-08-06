@@ -19,54 +19,63 @@
             <span>后台首页</span>
           </template>
         </el-menu-item>
-        <el-menu-item v-if="!isSubmitter" index="/admin/applications">
-          <template #title>
-            <el-icon><i-ep-user /></el-icon>
-            <span>报名信息管理</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item v-if="!isSubmitter" index="/admin/members">
-          <template #title>
-            <el-icon><i-ep-user-filled /></el-icon>
-            <span>成员管理</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item v-if="!isSubmitter" index="/admin/messages">
-          <template #title>
-            <el-icon><i-ep-message /></el-icon>
-            <span>留言板管理</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/admin/awards">
-          <template #title>
-            <el-icon><i-ep-trophy /></el-icon>
-            <span>奖项管理</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/admin/projects">
-          <template #title>
-            <el-icon><i-ep-box /></el-icon>
-            <span>项目管理</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="/admin/homepage-highlights">
-          <template #title>
-            <el-icon><i-ep-star /></el-icon>
-            <span>首页高光管理</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item v-if="!isSubmitter" index="/admin/attachments">
-          <template #title>
-            <el-icon><i-ep-picture /></el-icon>
-            <span>附件库</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item v-if="adminStore.isSuperAdmin()" index="/admin/admins">
-          <template #title>
-            <el-icon><i-ep-key /></el-icon>
-            <span>管理员管理</span>
-          </template>
-        </el-menu-item>
+
+        <el-menu-item-group v-if="!isSubmitter" class="menu-group group-op" title="业务运营">
+          <el-menu-item index="/admin/applications">
+            <template #title>
+              <el-icon><i-ep-user /></el-icon>
+              <span>报名信息管理</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/admin/members">
+            <template #title>
+              <el-icon><i-ep-user-filled /></el-icon>
+              <span>成员管理</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/admin/messages">
+            <template #title>
+              <el-icon><i-ep-message /></el-icon>
+              <span>留言板管理</span>
+            </template>
+          </el-menu-item>
+        </el-menu-item-group>
+
+        <el-menu-item-group class="menu-group group-content" title="内容展示">
+          <el-menu-item index="/admin/projects">
+            <template #title>
+              <el-icon><i-ep-box /></el-icon>
+              <span>项目管理</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/admin/awards">
+            <template #title>
+              <el-icon><i-ep-trophy /></el-icon>
+              <span>奖项管理</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/admin/homepage-highlights">
+            <template #title>
+              <el-icon><i-ep-star /></el-icon>
+              <span>首页高光管理</span>
+            </template>
+          </el-menu-item>
+        </el-menu-item-group>
+
+        <el-menu-item-group v-if="!isSubmitter || adminStore.isSuperAdmin()" class="menu-group group-asset" title="素材与系统">
+          <el-menu-item v-if="!isSubmitter" index="/admin/attachments">
+            <template #title>
+              <el-icon><i-ep-picture /></el-icon>
+              <span>附件库</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item v-if="adminStore.isSuperAdmin()" index="/admin/admins">
+            <template #title>
+              <el-icon><i-ep-key /></el-icon>
+              <span>管理员管理</span>
+            </template>
+          </el-menu-item>
+        </el-menu-item-group>
       </el-menu>
     </el-aside>
     <div class="admin-content">
@@ -335,6 +344,32 @@ const currentRoutePath = computed(() => router.currentRoute.value.path);
      color: white;
      font-weight: 500;
   }
+  /* 菜单分组标题：加宽字距的小号层级标签，顶部细线分隔，左侧色条与标题同色区分层级 */
+  :deep(.menu-group .el-menu-item-group__title) {
+    position: relative;
+    margin-top: 8px;
+    padding: 10px 16px 4px 22px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    color: #7f8ba1;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+  :deep(.menu-group .el-menu-item-group__title::before) {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    width: 4px;
+    height: 12px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: translateY(-50%);
+  }
+  :deep(.group-op .el-menu-item-group__title) { color: #60a5fa; }
+  :deep(.group-content .el-menu-item-group__title) { color: #fbbf24; }
+  :deep(.group-asset .el-menu-item-group__title) { color: #34d399; }
    .admin-main {
      flex: 1;
     padding: 24px;
