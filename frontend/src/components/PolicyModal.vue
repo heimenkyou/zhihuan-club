@@ -52,74 +52,74 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue"
-import { useRouter } from "vue-router"
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
-const visible = ref(false)
+const router = useRouter();
+const visible = ref(false);
 
 // 保存原始的body样式，用于弹窗关闭时恢复
-let originalBodyStyle = ""
+let originalBodyStyle = "";
 
 // 监听组件挂载，检查是否已同意协议
 onMounted(() => {
-  const hasAgreed = localStorage.getItem("hasAgreedToPolicies")
-  if (!hasAgreed) {
-    visible.value = true
-    // 禁止背景滚动
-    disableBodyScroll()
-  }
-})
+	const hasAgreed = localStorage.getItem("hasAgreedToPolicies");
+	if (!hasAgreed) {
+		visible.value = true;
+		// 禁止背景滚动
+		disableBodyScroll();
+	}
+});
 
 // 监听弹窗关闭，恢复背景滚动
 onUnmounted(() => {
-  enableBodyScroll()
-})
+	enableBodyScroll();
+});
 
 // 禁止背景滚动的函数
 const disableBodyScroll = () => {
-  // 保存原始的body样式
-  originalBodyStyle = document.body.style.cssText
+	// 保存原始的body样式
+	originalBodyStyle = document.body.style.cssText;
 
-  // 禁止body滚动
-  document.body.style.overflow = "hidden"
-  document.body.style.position = "fixed"
-  document.body.style.width = "100%"
-  document.body.style.height = "100%"
+	// 禁止body滚动
+	document.body.style.overflow = "hidden";
+	document.body.style.position = "fixed";
+	document.body.style.width = "100%";
+	document.body.style.height = "100%";
 
-  // 对于移动设备，防止触摸滚动
-  document.body.style.touchAction = "none"
+	// 对于移动设备，防止触摸滚动
+	document.body.style.touchAction = "none";
 
-  // 同时禁止html滚动
-  document.documentElement.style.overflow = "hidden"
-}
+	// 同时禁止html滚动
+	document.documentElement.style.overflow = "hidden";
+};
 
 // 恢复背景滚动的函数
 const enableBodyScroll = () => {
-  // 恢复原始的body样式
-  document.body.style.cssText = originalBodyStyle
+	// 恢复原始的body样式
+	document.body.style.cssText = originalBodyStyle;
 
-  // 恢复html的滚动
-  document.documentElement.style.overflow = ""
-}
+	// 恢复html的滚动
+	document.documentElement.style.overflow = "";
+};
 
 // 打开隐私政策页面
 const openPrivacyPolicy = () => {
-  router.push("/privacy-policy")
-}
+	router.push("/privacy-policy");
+};
 
 // 打开服务条款页面
 const openTermsOfService = () => {
-  router.push("/terms-of-service")
-}
+	router.push("/terms-of-service");
+};
 
 // 处理同意操作
 const handleAgree = () => {
-  localStorage.setItem("hasAgreedToPolicies", "true")
-  visible.value = false
-  // 恢复背景滚动
-  enableBodyScroll()
-}
+	localStorage.setItem("hasAgreedToPolicies", "true");
+	visible.value = false;
+	// 恢复背景滚动
+	enableBodyScroll();
+};
 </script>
 
 <style scoped>

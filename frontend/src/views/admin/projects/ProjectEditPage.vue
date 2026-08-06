@@ -284,6 +284,7 @@
 </template>
 
 <script setup>
+import { ElMessage } from "element-plus";
 import {
 	computed,
 	defineAsyncComponent,
@@ -292,15 +293,14 @@ import {
 	reactive,
 	ref,
 } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { ElMessage } from "element-plus";
+import { useRoute, useRouter } from "vue-router";
 import AttachmentPicker from "@/components/admin/AttachmentPicker.vue";
+import { getAdminAwards } from "@/services/adminService";
 import {
-	getProjectForEdit,
 	createProject,
+	getProjectForEdit,
 	updateProject,
 } from "@/services/projectService";
-import { getAdminAwards } from "@/services/adminService";
 
 const EditorLoading = {
 	render: () => h("div", { class: "editor-loading" }, "编辑器加载中…"),
@@ -607,7 +607,6 @@ const loadProjectDetail = async () => {
 				dateRange.value = [rangeParts[0], rangeParts[1]];
 			}
 		}
-
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : "未知错误";
 		ElMessage.error(`获取项目详情失败: ${errorMessage}`);

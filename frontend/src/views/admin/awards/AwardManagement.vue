@@ -40,18 +40,18 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { computed, onMounted, reactive, ref } from "vue";
 import AdminPage from "@/components/admin/AdminPage.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
-import { useAdminStore } from "@/stores/adminStore";
 import {
 	createAward,
 	deleteAward,
 	getAdminAwards,
 	updateAward,
 } from "@/services/adminService";
+import { useAdminStore } from "@/stores/adminStore";
 
 /** 奖项等级排序优先级，用于组内排序。 */
 const awardLevelPriority = {
@@ -184,7 +184,10 @@ const groupedAwards = computed(() =>
 		)
 		.reduce((groups, award) => {
 			const year = String(award.year);
-			(groups[year] ||= []).push(award);
+			if (!groups[year]) {
+				groups[year] = [];
+			}
+			groups[year].push(award);
 			return groups;
 		}, {}),
 );

@@ -85,80 +85,80 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useAdminStore } from '@/stores/adminStore'
-import { updateCurrentAdmin } from '@/services/adminService'
+import { ElMessage, ElMessageBox } from "element-plus";
+import { computed, onMounted, ref } from "vue";
+import { updateCurrentAdmin } from "@/services/adminService";
+import { useAdminStore } from "@/stores/adminStore";
 
-const adminStore = useAdminStore()
-const loading = ref(false)
-const saving = ref(false)
-const changingPassword = ref(false)
-const isEditing = ref(false)
+const adminStore = useAdminStore();
+const loading = ref(false);
+const saving = ref(false);
+const changingPassword = ref(false);
+const isEditing = ref(false);
 
-const profileFormRef = ref(null)
-const passwordFormRef = ref(null)
+const profileFormRef = ref(null);
+const passwordFormRef = ref(null);
 
 const profileForm = ref({
-  id: 0,
-  username: '',
-  role: '',
-  createTime: '',
-  updateTime: '',
-})
+	id: 0,
+	username: "",
+	role: "",
+	createTime: "",
+	updateTime: "",
+});
 
 const originalProfile = ref({
-  id: 0,
-  username: '',
-  role: '',
-  createTime: '',
-  updateTime: '',
-})
+	id: 0,
+	username: "",
+	role: "",
+	createTime: "",
+	updateTime: "",
+});
 
 const passwordForm = ref({
-  newPassword: '',
-  confirmPassword: '',
-})
+	newPassword: "",
+	confirmPassword: "",
+});
 
 const profileRules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    {
-      min: 3,
-      max: 20,
-      message: '用户名长度应在3-20个字符之间',
-      trigger: 'blur',
-    },
-  ],
-}
+	username: [
+		{ required: true, message: "请输入用户名", trigger: "blur" },
+		{
+			min: 3,
+			max: 20,
+			message: "用户名长度应在3-20个字符之间",
+			trigger: "blur",
+		},
+	],
+};
 
 const passwordRules = {
-  newPassword: [
-    { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' },
-  ],
-  confirmPassword: [
-    { required: true, message: '请确认新密码', trigger: 'blur' },
-    {
-      validator: (_rule, value, callback) => {
-        if (value !== passwordForm.value.newPassword) {
-          callback(new Error('两次输入的密码不一致'))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'blur',
-    },
-  ],
-}
+	newPassword: [
+		{ required: true, message: "请输入新密码", trigger: "blur" },
+		{ min: 6, message: "密码长度至少6位", trigger: "blur" },
+	],
+	confirmPassword: [
+		{ required: true, message: "请确认新密码", trigger: "blur" },
+		{
+			validator: (_rule, value, callback) => {
+				if (value !== passwordForm.value.newPassword) {
+					callback(new Error("两次输入的密码不一致"));
+				} else {
+					callback();
+				}
+			},
+			trigger: "blur",
+		},
+	],
+};
 
 const roleTagType = computed(() => {
-  return profileForm.value.role === 'super' ? 'danger' : 'primary'
-})
+	return profileForm.value.role === "super" ? "danger" : "primary";
+});
 
 const roleText = computed(() => {
-  return profileForm.value.role === 'super' ? '超级管理员' : '管理员'
-})
+	return profileForm.value.role === "super" ? "超级管理员" : "管理员";
+});
 
 /**
  * 格式化时间字段，避免后台原始时间字符串直接暴露给界面。
@@ -166,114 +166,114 @@ const roleText = computed(() => {
  * @param {string} dateString
  * @returns {string}
  */
-const formatDate = dateString => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleString('zh-CN')
-}
+const formatDate = (dateString) => {
+	if (!dateString) return "-";
+	return new Date(dateString).toLocaleString("zh-CN");
+};
 
 /**
  * 加载当前管理员资料；若 store 为空则主动向后端补拉一次。
  */
 const loadProfile = async () => {
-  loading.value = true
+	loading.value = true;
 
-  if (!adminStore.userInfo) {
-    try {
-      await adminStore.fetchUserInfo()
-    } catch (error) {
-      loading.value = false
-      throw error
-    }
-  }
+	if (!adminStore.userInfo) {
+		try {
+			await adminStore.fetchUserInfo();
+		} catch (error) {
+			loading.value = false;
+			throw error;
+		}
+	}
 
-  if (adminStore.userInfo) {
-    profileForm.value = {
-      id: adminStore.userInfo.id,
-      username: adminStore.userInfo.username,
-      role: adminStore.userInfo.role,
-      createTime: adminStore.userInfo.createTime,
-      updateTime: adminStore.userInfo.updateTime,
-    }
-    originalProfile.value = { ...profileForm.value }
-  }
+	if (adminStore.userInfo) {
+		profileForm.value = {
+			id: adminStore.userInfo.id,
+			username: adminStore.userInfo.username,
+			role: adminStore.userInfo.role,
+			createTime: adminStore.userInfo.createTime,
+			updateTime: adminStore.userInfo.updateTime,
+		};
+		originalProfile.value = { ...profileForm.value };
+	}
 
-  loading.value = false
-}
+	loading.value = false;
+};
 
 /**
  * 进入编辑态，允许当前管理员修改用户名。
  */
 const handleEdit = () => {
-  isEditing.value = true
-}
+	isEditing.value = true;
+};
 
 /**
  * 放弃本次编辑并恢复到加载时的原始资料。
  */
 const cancelEdit = () => {
-  profileForm.value = { ...originalProfile.value }
-  isEditing.value = false
-  profileFormRef.value?.clearValidate()
-}
+	profileForm.value = { ...originalProfile.value };
+	isEditing.value = false;
+	profileFormRef.value?.clearValidate();
+};
 
 /**
  * 保存个人资料，并同步更新 store 中的用户名显示。
  */
 const saveProfile = async () => {
-  if (!profileFormRef.value) return
+	if (!profileFormRef.value) return;
 
-  await profileFormRef.value.validate()
-  saving.value = true
+	await profileFormRef.value.validate();
+	saving.value = true;
 
-  try {
-    await updateCurrentAdmin({
-      username: profileForm.value.username,
-    })
+	try {
+		await updateCurrentAdmin({
+			username: profileForm.value.username,
+		});
 
-    ElMessage.success('个人资料更新成功')
-    originalProfile.value = { ...profileForm.value }
-    isEditing.value = false
+		ElMessage.success("个人资料更新成功");
+		originalProfile.value = { ...profileForm.value };
+		isEditing.value = false;
 
-    if (adminStore.userInfo) {
-      adminStore.userInfo.username = profileForm.value.username
-    }
-  } finally {
-    saving.value = false
-  }
-}
+		if (adminStore.userInfo) {
+			adminStore.userInfo.username = profileForm.value.username;
+		}
+	} finally {
+		saving.value = false;
+	}
+};
 
 /**
  * 修改当前管理员密码，并复用现有更新管理员接口落库。
  */
 const changePassword = async () => {
-  if (!passwordFormRef.value) return
+	if (!passwordFormRef.value) return;
 
-  await passwordFormRef.value.validate()
+	await passwordFormRef.value.validate();
 
-  await ElMessageBox.confirm('确定要修改密码吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
+	await ElMessageBox.confirm("确定要修改密码吗？", "提示", {
+		confirmButtonText: "确定",
+		cancelButtonText: "取消",
+		type: "warning",
+	});
 
-  changingPassword.value = true
+	changingPassword.value = true;
 
-  try {
-    await updateCurrentAdmin({
-      username: profileForm.value.username,
-      password: passwordForm.value.newPassword,
-    })
+	try {
+		await updateCurrentAdmin({
+			username: profileForm.value.username,
+			password: passwordForm.value.newPassword,
+		});
 
-    ElMessage.success('密码修改成功')
-    passwordFormRef.value.resetFields()
-  } finally {
-    changingPassword.value = false
-  }
-}
+		ElMessage.success("密码修改成功");
+		passwordFormRef.value.resetFields();
+	} finally {
+		changingPassword.value = false;
+	}
+};
 
 onMounted(() => {
-  loadProfile()
-})
+	loadProfile();
+});
 </script>
 
 <style scoped>

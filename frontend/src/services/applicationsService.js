@@ -1,4 +1,4 @@
-import api from '@/services/api'
+import api from "@/services/api";
 
 /**
  * @typedef {Object.<string, {
@@ -13,15 +13,15 @@ import api from '@/services/api'
  * @returns {Promise<MajorMapping>}
  */
 export const getMajorMapping = async () => {
-  try {
-    const response = await api.get('/majors')
-    return response.data.data
-  } catch (error) {
-    console.error('获取专业映射表失败:', error)
-    const msg = error instanceof Error ? error.message : String(error)
-    throw new Error(`获取专业映射表失败：${msg}`)
-  }
-}
+	try {
+		const response = await api.get("/majors");
+		return response.data.data;
+	} catch (error) {
+		console.error("获取专业映射表失败:", error);
+		const msg = error instanceof Error ? error.message : String(error);
+		throw new Error(`获取专业映射表失败：${msg}`);
+	}
+};
 
 /**
  * @param {{
@@ -37,13 +37,13 @@ export const getMajorMapping = async () => {
  *   createTime?: string
  * }} params
  */
-export const submitApplication = async params => {
-  try {
-    const response = await api.post('/applications', params)
-    return response.data
-  } catch (error) {
-    console.error('提交申请失败:', error)
-    const msg = error instanceof Error ? error.message : String(error)
-    throw new Error(`提交申请失败：${msg}`)
-  }
-}
+export const submitApplication = async (params) => {
+	try {
+		const response = await api.post("/applications", params);
+		return response.data;
+	} catch (error) {
+		console.error("提交申请失败:", error);
+		const msg = error instanceof Error ? error.message : String(error);
+		throw new Error(`提交申请失败：${msg}`);
+	}
+};

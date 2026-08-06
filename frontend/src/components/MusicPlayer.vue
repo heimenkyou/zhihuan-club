@@ -106,370 +106,375 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick, computed, reactive } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 
 // 核心状态定义
-const audioRef = ref(null)
-const isPlaying = ref(false)
-const volume = ref(0.3)
-const playerRef = ref(null)
-const navbarHeight = ref(0)
-const isExpanded = ref(false)
-const isDragging = ref(false)
-const showVolumeControl = ref(false)
-const hasAttemptedAutoPlay = ref(false)
-const showClickTip = ref(true) // 首次进入"点我"提示
+const audioRef = ref(null);
+const isPlaying = ref(false);
+const volume = ref(0.3);
+const playerRef = ref(null);
+const navbarHeight = ref(0);
+const isExpanded = ref(false);
+const isDragging = ref(false);
+const showVolumeControl = ref(false);
+const hasAttemptedAutoPlay = ref(false);
+const showClickTip = ref(true); // 首次进入"点我"提示
 
 // 播放器位置状态（使用Vue响应式替代直接DOM操作）
 const playerPosition = reactive({
-  left: '10px',
-  top: '110px',
-  right: 'auto',
-  bottom: 'auto'
-})
+	left: "10px",
+	top: "110px",
+	right: "auto",
+	bottom: "auto",
+});
 
 // 子按钮位置状态
 const buttonPositions = reactive({
-  playPause: {},
-  volume: {},
-  move: {}
-})
+	playPause: {},
+	volume: {},
+	move: {},
+});
 
 // 音量百分比计算属性
 const volumePercent = computed({
-  get: () => Math.round(volume.value * 100),
-  set: value => {
-    volume.value = value / 100
-    if (audioRef.value) audioRef.value.volume = volume.value
-    storePlayState({ isPlaying: isPlaying.value, volume: volume.value })
-  }
-})
+	get: () => Math.round(volume.value * 100),
+	set: (value) => {
+		volume.value = value / 100;
+		if (audioRef.value) audioRef.value.volume = volume.value;
+		storePlayState({ isPlaying: isPlaying.value, volume: volume.value });
+	},
+});
 
 // 从localStorage获取存储的播放状态
 const getStoredPlayState = () => {
-  try {
-    const storedState = localStorage.getItem('musicPlayerState')
-    if (storedState) {
-      const parsedState = JSON.parse(storedState)
-      return {
-        isPlaying: parsedState.isPlaying || false,
-        volume: parsedState.volume || 0.3
-      }
-    }
-  } catch (error) {
-    console.warn('读取音乐播放器状态失败:', error)
-  }
-  return { isPlaying: false, volume: 0.3 }
-}
+	try {
+		const storedState = localStorage.getItem("musicPlayerState");
+		if (storedState) {
+			const parsedState = JSON.parse(storedState);
+			return {
+				isPlaying: parsedState.isPlaying || false,
+				volume: parsedState.volume || 0.3,
+			};
+		}
+	} catch (error) {
+		console.warn("读取音乐播放器状态失败:", error);
+	}
+	return { isPlaying: false, volume: 0.3 };
+};
 
 // 存储播放状态到localStorage
-const storePlayState = state => {
-  try {
-    localStorage.setItem('musicPlayerState', JSON.stringify(state))
-  } catch (error) {
-    console.warn('存储音乐播放器状态失败:', error)
-  }
-}
+const storePlayState = (state) => {
+	try {
+		localStorage.setItem("musicPlayerState", JSON.stringify(state));
+	} catch (error) {
+		console.warn("存储音乐播放器状态失败:", error);
+	}
+};
 
 // 歌曲列表
-import manboSrc from '@/assets/audios/manbo.mp3'
-const songs = ref([{ id: 1, name: '曼波', src: manboSrc }])
-const currentSongIndex = ref(0)
+import manboSrc from "@/assets/audios/manbo.mp3";
+
+const songs = ref([{ id: 1, name: "曼波", src: manboSrc }]);
+const currentSongIndex = ref(0);
 
 // 播放/暂停控制
 const togglePlay = () => {
-  if (!audioRef.value) return
+	if (!audioRef.value) return;
 
-  try {
-    if (isPlaying.value) {
-      audioRef.value.pause()
-      isPlaying.value = false
-    } else {
-      audioRef.value
-        .play()
-        .then(() => {
-          isPlaying.value = true
-        })
-        .catch(err => {
-          console.error('播放失败:', err)
-        })
-    }
-    // 存储当前播放状态
-    storePlayState({ isPlaying: isPlaying.value, volume: volume.value })
-  } catch (err) {
-    console.error('音乐控制失败:', err)
-  }
-}
+	try {
+		if (isPlaying.value) {
+			audioRef.value.pause();
+			isPlaying.value = false;
+		} else {
+			audioRef.value
+				.play()
+				.then(() => {
+					isPlaying.value = true;
+				})
+				.catch((err) => {
+					console.error("播放失败:", err);
+				});
+		}
+		// 存储当前播放状态
+		storePlayState({ isPlaying: isPlaying.value, volume: volume.value });
+	} catch (err) {
+		console.error("音乐控制失败:", err);
+	}
+};
 
 // 播放指定歌曲
-const playSong = index => {
-  if (!audioRef.value) return
+const playSong = (index) => {
+	if (!audioRef.value) return;
 
-  currentSongIndex.value = index
-  audioRef.value.src = songs.value[index].src
-  audioRef.value.volume = volume.value
+	currentSongIndex.value = index;
+	audioRef.value.src = songs.value[index].src;
+	audioRef.value.volume = volume.value;
 
-  audioRef.value
-    .play()
-    .then(() => {
-      isPlaying.value = true
-    })
-    .catch(err => {
-      console.error('播放失败:', err)
-    })
-  
-  // 存储当前播放状态
-  storePlayState({ isPlaying: true, volume: volume.value })
-}
+	audioRef.value
+		.play()
+		.then(() => {
+			isPlaying.value = true;
+		})
+		.catch((err) => {
+			console.error("播放失败:", err);
+		});
+
+	// 存储当前播放状态
+	storePlayState({ isPlaying: true, volume: volume.value });
+};
 
 // 下一首
 const nextSong = () => {
-  let newIndex = currentSongIndex.value + 1
-  if (newIndex >= songs.value.length) newIndex = 0
-  playSong(newIndex)
-}
+	let newIndex = currentSongIndex.value + 1;
+	if (newIndex >= songs.value.length) newIndex = 0;
+	playSong(newIndex);
+};
 
 // 音量控制（使用Element Plus滑块）
-const changeVolume = value => {
-  const volumeValue = Array.isArray(value) ? value[0] : value
-  volume.value = volumeValue / 100
-  if (audioRef.value) audioRef.value.volume = volume.value
-  storePlayState({ isPlaying: isPlaying.value, volume: volume.value })
-}
+const changeVolume = (value) => {
+	const volumeValue = Array.isArray(value) ? value[0] : value;
+	volume.value = volumeValue / 100;
+	if (audioRef.value) audioRef.value.volume = volume.value;
+	storePlayState({ isPlaying: isPlaying.value, volume: volume.value });
+};
 
 // 切换按钮展开/收起（隐藏"点我"提示）
 const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value
-  showClickTip.value = false // 点击后隐藏提示
-}
+	isExpanded.value = !isExpanded.value;
+	showClickTip.value = false; // 点击后隐藏提示
+};
 
 // 开始拖拽（使用Vue响应式系统替代直接DOM操作）
-const startDrag = e => {
-  e.stopPropagation()
-  isDragging.value = true
+const startDrag = (e) => {
+	e.stopPropagation();
+	isDragging.value = true;
 
-  // 获取鼠标/触摸位置
-  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+	// 获取鼠标/触摸位置
+	const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+	const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
 
-  // 获取当前位置（从响应式状态读取）
-  const currentLeft = parseInt(playerPosition.left, 10) || 20
-  const currentBottom = parseInt(playerPosition.bottom, 10) || 30
-  const windowHeight = window.innerHeight
-  const playerHeight = 80
-  
-  // 将bottom坐标转换为top坐标用于拖拽计算
-  const currentTop = windowHeight - currentBottom - playerHeight
+	// 获取当前位置（从响应式状态读取）
+	const currentLeft = parseInt(playerPosition.left, 10) || 20;
+	const currentBottom = parseInt(playerPosition.bottom, 10) || 30;
+	const windowHeight = window.innerHeight;
+	const playerHeight = 80;
 
-  // 计算偏移量
-  const offsetX = clientX - currentLeft
-  const offsetY = clientY - currentTop
+	// 将bottom坐标转换为top坐标用于拖拽计算
+	const currentTop = windowHeight - currentBottom - playerHeight;
 
-  // 处理拖拽移动
-  const handleMove = moveEvent => {
-    const e = moveEvent
-    if (!isDragging.value) return
+	// 计算偏移量
+	const offsetX = clientX - currentLeft;
+	const offsetY = clientY - currentTop;
 
-    // 阻止移动端屏幕滚动
-    if ('touches' in e) e.preventDefault()
+	// 处理拖拽移动
+	const handleMove = (moveEvent) => {
+		const e = moveEvent;
+		if (!isDragging.value) return;
 
-    const moveClientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const moveClientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+		// 阻止移动端屏幕滚动
+		if ("touches" in e) e.preventDefault();
 
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    const playerWidth = 80 // 主按钮宽度
-    const playerHeight = 80 // 主按钮高度
+		const moveClientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+		const moveClientY = "touches" in e ? e.touches[0].clientY : e.clientY;
 
-    // 计算新位置（边界限制：适配左下角拖拽）
-    let newX = moveClientX - offsetX
-    let newY = moveClientY - offsetY
+		const windowWidth = window.innerWidth;
+		const windowHeight = window.innerHeight;
+		const playerWidth = 80; // 主按钮宽度
+		const playerHeight = 80; // 主按钮高度
 
-    newX = Math.max(10, Math.min(newX, windowWidth - playerWidth - 10))
-    newY = Math.max(10, Math.min(newY, windowHeight - playerHeight - 10))
+		// 计算新位置（边界限制：适配左下角拖拽）
+		let newX = moveClientX - offsetX;
+		let newY = moveClientY - offsetY;
 
-    // 使用Vue响应式系统更新位置
-    playerPosition.left = `${newX}px`
-    playerPosition.bottom = `${windowHeight - newY - playerHeight}px`
-    playerPosition.top = 'auto'
-    playerPosition.right = 'auto'
-  }
+		newX = Math.max(10, Math.min(newX, windowWidth - playerWidth - 10));
+		newY = Math.max(10, Math.min(newY, windowHeight - playerHeight - 10));
 
-  // 结束拖拽
-  const handleEnd = () => {
-    isDragging.value = false
-    document.removeEventListener('mousemove', handleMove)
-    document.removeEventListener('mouseup', handleEnd)
-    document.removeEventListener('touchmove', handleMove)
-    document.removeEventListener('touchend', handleEnd)
-  }
+		// 使用Vue响应式系统更新位置
+		playerPosition.left = `${newX}px`;
+		playerPosition.bottom = `${windowHeight - newY - playerHeight}px`;
+		playerPosition.top = "auto";
+		playerPosition.right = "auto";
+	};
 
-  // 添加事件监听器
-  document.addEventListener('mousemove', handleMove)
-  document.addEventListener('mouseup', handleEnd)
-  document.addEventListener('touchmove', handleMove, {
-    passive: false,
-  })
-  document.addEventListener('touchend', handleEnd)
-}
+	// 结束拖拽
+	const handleEnd = () => {
+		isDragging.value = false;
+		document.removeEventListener("mousemove", handleMove);
+		document.removeEventListener("mouseup", handleEnd);
+		document.removeEventListener("touchmove", handleMove);
+		document.removeEventListener("touchend", handleEnd);
+	};
 
-
+	// 添加事件监听器
+	document.addEventListener("mousemove", handleMove);
+	document.addEventListener("mouseup", handleEnd);
+	document.addEventListener("touchmove", handleMove, {
+		passive: false,
+	});
+	document.addEventListener("touchend", handleEnd);
+};
 
 // 获取导航栏高度
 const getNavbarHeight = () => {
-  const navbar = document.querySelector('.navbar')
-  navbarHeight.value = navbar
-    ? navbar.getBoundingClientRect().height || 60
-    : 60
-}
+	const navbar = document.querySelector(".navbar");
+	navbarHeight.value = navbar
+		? navbar.getBoundingClientRect().height || 60
+		: 60;
+};
 
 // 更新子按钮位置（使用Vue响应式系统）
 const updateButtonPositions = () => {
-  const windowWidth = window.innerWidth
-  const mainBtnCenterX = 40 // 主按钮中心X坐标（相对于容器）
-  const mainBtnCenterY = 40 // 主按钮中心Y坐标（相对于容器）
-  const mainBtnRadius = 40 // 主按钮半径
-  const subBtnRadius = 20 // 子按钮半径
-  const arcRadius = mainBtnRadius + subBtnRadius + 35 // 弧形半径
+	const windowWidth = window.innerWidth;
+	const mainBtnCenterX = 40; // 主按钮中心X坐标（相对于容器）
+	const mainBtnCenterY = 40; // 主按钮中心Y坐标（相对于容器）
+	const mainBtnRadius = 40; // 主按钮半径
+	const subBtnRadius = 20; // 子按钮半径
+	const arcRadius = mainBtnRadius + subBtnRadius + 35; // 弧形半径
 
-  // 判断弹出方向（基于当前播放器位置）
-  const currentLeft = parseInt(playerPosition.left, 10) || 10
-  const mainBtnScreenX = currentLeft + mainBtnCenterX
-  const leftSpace = mainBtnScreenX - 10
-  const rightSpace = windowWidth - mainBtnScreenX - 10
-  const isRightArc = leftSpace < rightSpace
+	// 判断弹出方向（基于当前播放器位置）
+	const currentLeft = parseInt(playerPosition.left, 10) || 10;
+	const mainBtnScreenX = currentLeft + mainBtnCenterX;
+	const leftSpace = mainBtnScreenX - 10;
+	const rightSpace = windowWidth - mainBtnScreenX - 10;
+	const isRightArc = leftSpace < rightSpace;
 
-  // 角度设置
-  const startAngle = Math.PI / 2
-  const endAngle = isRightArc ? -Math.PI / 6 : (Math.PI * 7) / 6
+	// 角度设置
+	const startAngle = Math.PI / 2;
+	const endAngle = isRightArc ? -Math.PI / 6 : (Math.PI * 7) / 6;
 
-  // 按钮配置
-  const buttons = [
-    { key: 'move', order: 0 },
-    { key: 'playPause', order: 2 }, // 注意：跳过了prev和next，因为我们只有3个按钮
-    { key: 'volume', order: 4 }
-  ]
-  
-  const btnCount = 5 // 总按钮数（包括未显示的）
-  const angleStep = (endAngle - startAngle) / (btnCount - 1)
+	// 按钮配置
+	const buttons = [
+		{ key: "move", order: 0 },
+		{ key: "playPause", order: 2 }, // 注意：跳过了prev和next，因为我们只有3个按钮
+		{ key: "volume", order: 4 },
+	];
 
-  // 清空位置
-  Object.keys(buttonPositions).forEach(key => {
-    buttonPositions[key] = {}
-  })
+	const btnCount = 5; // 总按钮数（包括未显示的）
+	const angleStep = (endAngle - startAngle) / (btnCount - 1);
 
-  // 计算每个按钮的位置
-  buttons.forEach(btn => {
-    const currentAngle = startAngle + angleStep * btn.order
-    const targetX = mainBtnCenterX + Math.cos(currentAngle) * arcRadius
-    const targetY = mainBtnCenterY + Math.sin(currentAngle) * arcRadius
+	// 清空位置
+	Object.keys(buttonPositions).forEach((key) => {
+		buttonPositions[key] = {};
+	});
 
-    // 转换为相对位置
-    const relLeft = targetX - subBtnRadius
-    const relTop = targetY - subBtnRadius
+	// 计算每个按钮的位置
+	buttons.forEach((btn) => {
+		const currentAngle = startAngle + angleStep * btn.order;
+		const targetX = mainBtnCenterX + Math.cos(currentAngle) * arcRadius;
+		const targetY = mainBtnCenterY + Math.sin(currentAngle) * arcRadius;
 
-    buttonPositions[btn.key] = {
-      left: `${relLeft}px`,
-      top: `${relTop}px`
-    }
-  })
-}
+		// 转换为相对位置
+		const relLeft = targetX - subBtnRadius;
+		const relTop = targetY - subBtnRadius;
+
+		buttonPositions[btn.key] = {
+			left: `${relLeft}px`,
+			top: `${relTop}px`,
+		};
+	});
+};
 
 // 用户首次交互自动播放
 const handleUserInteraction = async () => {
-  if (hasAttemptedAutoPlay.value || !audioRef.value) return
-  hasAttemptedAutoPlay.value = true
+	if (hasAttemptedAutoPlay.value || !audioRef.value) return;
+	hasAttemptedAutoPlay.value = true;
 
-  // 只有当存储的状态是播放时才自动播放
-  const storedState = getStoredPlayState()
-  if (!storedState.isPlaying) return
+	// 只有当存储的状态是播放时才自动播放
+	const storedState = getStoredPlayState();
+	if (!storedState.isPlaying) return;
 
-  await nextTick()
+	await nextTick();
 
-  try {
-    await audioRef.value.play()
-    isPlaying.value = true
-    // 存储播放状态
-    storePlayState({ isPlaying: true, volume: volume.value })
-  } catch (err) {
-    console.warn('自动播放被浏览器限制，请用户手动点击播放按钮')
-    // 即使自动播放失败，也要存储当前状态
-    storePlayState({ isPlaying: false, volume: volume.value })
-  }
-}
+	try {
+		await audioRef.value.play();
+		isPlaying.value = true;
+		// 存储播放状态
+		storePlayState({ isPlaying: true, volume: volume.value });
+	} catch (err) {
+		console.warn("自动播放被浏览器限制，请用户手动点击播放按钮");
+		// 即使自动播放失败，也要存储当前状态
+		storePlayState({ isPlaying: false, volume: volume.value });
+	}
+};
 
 // 点击页面其他地方关闭音量控制和展开的按钮
-const handleDocumentClick = e => {
-  const target = e.target
-  if (playerRef.value && target && !playerRef.value.contains(target)) {
-    showVolumeControl.value = false
-    isExpanded.value = false
-  }
-}
+const handleDocumentClick = (e) => {
+	const target = e.target;
+	if (playerRef.value && target && !playerRef.value.contains(target)) {
+		showVolumeControl.value = false;
+		isExpanded.value = false;
+	}
+};
 
 // 设置播放器初始位置到左下角
 const setInitialPlayerPosition = () => {
-  playerPosition.left = '20px'
-  playerPosition.bottom = '30px'
-  playerPosition.top = 'auto'
-  playerPosition.right = 'auto'
-}
+	playerPosition.left = "20px";
+	playerPosition.bottom = "30px";
+	playerPosition.top = "auto";
+	playerPosition.right = "auto";
+};
 
 // 生命周期
 onMounted(() => {
-  // 初始化播放状态
-  const storedState = getStoredPlayState()
-  isPlaying.value = storedState.isPlaying
-  volume.value = storedState.volume
-  
-  getNavbarHeight()
-  nextTick(() => {
-    setInitialPlayerPosition()
-    updateButtonPositions() // 初始化按钮位置
-  })
+	// 初始化播放状态
+	const storedState = getStoredPlayState();
+	isPlaying.value = storedState.isPlaying;
+	volume.value = storedState.volume;
 
-  window.addEventListener('resize', () => {
-    getNavbarHeight()
-    // 窗口大小改变时保持左下角位置，只在必要时调整边界
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    const playerWidth = 80
-    const playerHeight = 80
-    
-    const currentLeft = parseInt(playerPosition.left, 10) || 20
-    const currentBottom = parseInt(playerPosition.bottom, 10) || 30
-    
-    // 确保不会超出边界
-    const newLeft = Math.max(10, Math.min(currentLeft, windowWidth - playerWidth - 10))
-    const newBottom = Math.max(10, Math.min(currentBottom, windowHeight - playerHeight - 10))
-    
-    playerPosition.left = `${newLeft}px`
-    playerPosition.bottom = `${newBottom}px`
-    playerPosition.top = 'auto'
-    playerPosition.right = 'auto'
-    
-    updateButtonPositions() // 窗口大小改变时重新计算按钮位置
-  })
+	getNavbarHeight();
+	nextTick(() => {
+		setInitialPlayerPosition();
+		updateButtonPositions(); // 初始化按钮位置
+	});
 
-  document.addEventListener('click', handleUserInteraction, {
-    once: true,
-    passive: true,
-  })
-  document.addEventListener('touchstart', handleUserInteraction, {
-    once: true,
-    passive: true,
-  })
+	window.addEventListener("resize", () => {
+		getNavbarHeight();
+		// 窗口大小改变时保持左下角位置，只在必要时调整边界
+		const windowWidth = window.innerWidth;
+		const windowHeight = window.innerHeight;
+		const playerWidth = 80;
+		const playerHeight = 80;
 
-  document.addEventListener('click', handleDocumentClick)
-})
+		const currentLeft = parseInt(playerPosition.left, 10) || 20;
+		const currentBottom = parseInt(playerPosition.bottom, 10) || 30;
+
+		// 确保不会超出边界
+		const newLeft = Math.max(
+			10,
+			Math.min(currentLeft, windowWidth - playerWidth - 10),
+		);
+		const newBottom = Math.max(
+			10,
+			Math.min(currentBottom, windowHeight - playerHeight - 10),
+		);
+
+		playerPosition.left = `${newLeft}px`;
+		playerPosition.bottom = `${newBottom}px`;
+		playerPosition.top = "auto";
+		playerPosition.right = "auto";
+
+		updateButtonPositions(); // 窗口大小改变时重新计算按钮位置
+	});
+
+	document.addEventListener("click", handleUserInteraction, {
+		once: true,
+		passive: true,
+	});
+	document.addEventListener("touchstart", handleUserInteraction, {
+		once: true,
+		passive: true,
+	});
+
+	document.addEventListener("click", handleDocumentClick);
+});
 
 onUnmounted(() => {
-  if (audioRef.value) audioRef.value.pause()
-  window.removeEventListener('resize', getNavbarHeight)
-  document.removeEventListener('click', handleUserInteraction)
-  document.removeEventListener('touchstart', handleUserInteraction)
-  document.removeEventListener('click', handleDocumentClick)
-})
+	if (audioRef.value) audioRef.value.pause();
+	window.removeEventListener("resize", getNavbarHeight);
+	document.removeEventListener("click", handleUserInteraction);
+	document.removeEventListener("touchstart", handleUserInteraction);
+	document.removeEventListener("click", handleDocumentClick);
+});
 </script>
 
 <style scoped>

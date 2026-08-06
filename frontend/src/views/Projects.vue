@@ -122,93 +122,93 @@
 </template>
 
 <script setup>
-import CommonFooter from '@/components/CommonFooter.vue'
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import CommonNavbar from '@/components/CommonNavbar.vue'
-import { getProjects } from '@/services/projectService'
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import CommonFooter from "@/components/CommonFooter.vue";
+import CommonNavbar from "@/components/CommonNavbar.vue";
+import { getProjects } from "@/services/projectService";
 
-const router = useRouter()
-const pageSize = ref(8)
-const current = ref(1)
-const projects = ref([])
-const totalProjects = ref(0)
-const totalPages = ref(0)
-const loading = ref(false)
-const error = ref('')
+const router = useRouter();
+const pageSize = ref(8);
+const current = ref(1);
+const projects = ref([]);
+const totalProjects = ref(0);
+const totalPages = ref(0);
+const loading = ref(false);
+const error = ref("");
 
 // 技术标签颜色映射
 const tagStyles = {
-  物联网: { bg: '#dbeafe', text: '#1e40af' },
-  传感器: { bg: '#dcfce7', text: '#166534' },
-  嵌入式: { bg: '#f3e8ff', text: '#6b21a8' },
-  机器人: { bg: '#fef9c3', text: '#854d0e' },
-  计算机视觉: { bg: '#fee2e2', text: '#991b1b' },
-  语音识别: { bg: '#e0e7ff', text: '#3730a3' },
-  移动端: { bg: '#fce7f3', text: '#9d174d' },
-  'React Native': { bg: '#cffafe', text: '#155e75' },
-  'Node.js': { bg: '#ffedd5', text: '#9a3412' },
-  机器学习: { bg: '#f3e8ff', text: '#6b21a8' },
-  Python: { bg: '#dcfce7', text: '#166534' },
-  TensorFlow: { bg: '#dbeafe', text: '#1e40af' },
-  后端: { bg: '#dbeafe', text: '#1e40af' },
-  Java: { bg: '#fef9c3', text: '#854d0e' },
-  开源: { bg: '#f3f4f6', text: '#1f2937' },
-  硬件: { bg: '#dcfce7', text: '#166534' },
-  Arduino: { bg: '#fee2e2', text: '#991b1b' },
-  教育: { bg: '#ffedd5', text: '#9a3412' },
-  VR: { bg: '#fce7f3', text: '#9d174d' },
-  Unity: { bg: '#f3e8ff', text: '#6b21a8' },
-  Web前端: { bg: '#dbeafe', text: '#1e40af' },
-  大数据: { bg: '#dcfce7', text: '#166534' },
-  可视化: { bg: '#fef9c3', text: '#854d0e' },
-}
+	物联网: { bg: "#dbeafe", text: "#1e40af" },
+	传感器: { bg: "#dcfce7", text: "#166534" },
+	嵌入式: { bg: "#f3e8ff", text: "#6b21a8" },
+	机器人: { bg: "#fef9c3", text: "#854d0e" },
+	计算机视觉: { bg: "#fee2e2", text: "#991b1b" },
+	语音识别: { bg: "#e0e7ff", text: "#3730a3" },
+	移动端: { bg: "#fce7f3", text: "#9d174d" },
+	"React Native": { bg: "#cffafe", text: "#155e75" },
+	"Node.js": { bg: "#ffedd5", text: "#9a3412" },
+	机器学习: { bg: "#f3e8ff", text: "#6b21a8" },
+	Python: { bg: "#dcfce7", text: "#166534" },
+	TensorFlow: { bg: "#dbeafe", text: "#1e40af" },
+	后端: { bg: "#dbeafe", text: "#1e40af" },
+	Java: { bg: "#fef9c3", text: "#854d0e" },
+	开源: { bg: "#f3f4f6", text: "#1f2937" },
+	硬件: { bg: "#dcfce7", text: "#166534" },
+	Arduino: { bg: "#fee2e2", text: "#991b1b" },
+	教育: { bg: "#ffedd5", text: "#9a3412" },
+	VR: { bg: "#fce7f3", text: "#9d174d" },
+	Unity: { bg: "#f3e8ff", text: "#6b21a8" },
+	Web前端: { bg: "#dbeafe", text: "#1e40af" },
+	大数据: { bg: "#dcfce7", text: "#166534" },
+	可视化: { bg: "#fef9c3", text: "#854d0e" },
+};
 
 /**
  * 拉取项目分页数据，并在失败时清空当前列表。
  */
 const fetchProjects = async () => {
-  loading.value = true
-  error.value = ''
+	loading.value = true;
+	error.value = "";
 
-  try {
-    const params = {
-      current: current.value,
-      size: pageSize.value,
-    }
+	try {
+		const params = {
+			current: current.value,
+			size: pageSize.value,
+		};
 
-    const response = await getProjects(params)
-    const pageData = response?.data
+		const response = await getProjects(params);
+		const pageData = response?.data;
 
-    if (!pageData?.records) {
-      throw new Error('获取项目列表失败')
-    }
+		if (!pageData?.records) {
+			throw new Error("获取项目列表失败");
+		}
 
-    projects.value = pageData.records
-    totalProjects.value = pageData.total || 0
-    totalPages.value = pageData.pages || 0
-    current.value = pageData.current || 1
-  } catch (err) {
-    error.value =
-      err instanceof Error ? err.message : '获取项目列表失败，请稍后重试'
-    console.error('获取项目列表失败:', err)
-    projects.value = []
-    totalProjects.value = 0
-    totalPages.value = 0
-  } finally {
-    loading.value = false
-  }
-}
+		projects.value = pageData.records;
+		totalProjects.value = pageData.total || 0;
+		totalPages.value = pageData.pages || 0;
+		current.value = pageData.current || 1;
+	} catch (err) {
+		error.value =
+			err instanceof Error ? err.message : "获取项目列表失败，请稍后重试";
+		console.error("获取项目列表失败:", err);
+		projects.value = [];
+		totalProjects.value = 0;
+		totalPages.value = 0;
+	} finally {
+		loading.value = false;
+	}
+};
 
 /**
  * 切换分页后重新拉取列表。
  *
  * @param {number} page
  */
-const handleCurrentChange = page => {
-  current.value = page
-  fetchProjects()
-}
+const handleCurrentChange = (page) => {
+	current.value = page;
+	fetchProjects();
+};
 
 /**
  * 根据技术标签返回背景色。
@@ -216,9 +216,9 @@ const handleCurrentChange = page => {
  * @param {string} tag
  * @returns {string}
  */
-const getTagBg = tag => {
-  return tagStyles[tag]?.bg || '#f3f4f6'
-}
+const getTagBg = (tag) => {
+	return tagStyles[tag]?.bg || "#f3f4f6";
+};
 
 /**
  * 根据技术标签返回文字色。
@@ -226,22 +226,22 @@ const getTagBg = tag => {
  * @param {string} tag
  * @returns {string}
  */
-const getTagText = tag => {
-  return tagStyles[tag]?.text || '#1f2937'
-}
+const getTagText = (tag) => {
+	return tagStyles[tag]?.text || "#1f2937";
+};
 
 /**
  * 跳转到项目详情页。
  *
  * @param {number} projectId
  */
-const goToDetail = projectId => {
-  router.push({ path: '/projectdetail', query: { id: projectId } })
-}
+const goToDetail = (projectId) => {
+	router.push({ path: "/projectdetail", query: { id: projectId } });
+};
 
 onMounted(() => {
-  fetchProjects()
-})
+	fetchProjects();
+});
 </script>
 
 <style scoped>

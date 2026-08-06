@@ -1,4 +1,4 @@
-import api from '@/services/api'
+import api from "@/services/api";
 
 /**
  * 读取接口响应体。
@@ -6,7 +6,7 @@ import api from '@/services/api'
  * @param {import('axios').AxiosResponse<any>=} response
  * @returns {any}
  */
-const getBody = response => response?.data
+const getBody = (response) => response?.data;
 
 /**
  * 读取标准响应体中的 data 字段。
@@ -14,12 +14,12 @@ const getBody = response => response?.data
  * @param {any} body
  * @returns {any}
  */
-const getResultData = body => {
-  if (!body || typeof body !== 'object') {
-    return undefined
-  }
-  return body.data
-}
+const getResultData = (body) => {
+	if (!body || typeof body !== "object") {
+		return undefined;
+	}
+	return body.data;
+};
 
 /**
  * 从响应体中提取数组数据。
@@ -27,23 +27,23 @@ const getResultData = body => {
  * @param {any} body
  * @returns {any[]}
  */
-const getArrayData = body => {
-  const data = getResultData(body)
+const getArrayData = (body) => {
+	const data = getResultData(body);
 
-  if (Array.isArray(data)) {
-    return data
-  }
+	if (Array.isArray(data)) {
+		return data;
+	}
 
-  if (data && Array.isArray(data.awards)) {
-    return data.awards
-  }
+	if (data && Array.isArray(data.awards)) {
+		return data.awards;
+	}
 
-  if (Array.isArray(body)) {
-    return body
-  }
+	if (Array.isArray(body)) {
+		return body;
+	}
 
-  return []
-}
+	return [];
+};
 
 /**
  * 获取奖项列表。
@@ -52,30 +52,32 @@ const getArrayData = body => {
  * @returns {Promise<any[]>}
  */
 export const getAwards = async (params = {}) => {
-  try {
-    const response = await api.get('/awards')
-    const rawAwards = getArrayData(getBody(response))
+	try {
+		const response = await api.get("/awards");
+		const rawAwards = getArrayData(getBody(response));
 
-    if (!params.keyword) {
-      return rawAwards
-    }
+		if (!params.keyword) {
+			return rawAwards;
+		}
 
-    const keyword = params.keyword.toLowerCase()
-    return rawAwards.filter(
-      award =>
-        award.competitionName?.toLowerCase().includes(keyword) ||
-        award.competitionLevel?.toLowerCase().includes(keyword) ||
-        award.awardLevel?.toLowerCase().includes(keyword) ||
-        (Array.isArray(award.winners)
-          ? award.winners.some(winner => winner?.toLowerCase().includes(keyword))
-          : false) ||
-        award.year?.toString().includes(keyword)
-    )
-  } catch (error) {
-    console.error('获取奖项列表失败:', error)
-    return []
-  }
-}
+		const keyword = params.keyword.toLowerCase();
+		return rawAwards.filter(
+			(award) =>
+				award.competitionName?.toLowerCase().includes(keyword) ||
+				award.competitionLevel?.toLowerCase().includes(keyword) ||
+				award.awardLevel?.toLowerCase().includes(keyword) ||
+				(Array.isArray(award.winners)
+					? award.winners.some((winner) =>
+							winner?.toLowerCase().includes(keyword),
+						)
+					: false) ||
+				award.year?.toString().includes(keyword),
+		);
+	} catch (error) {
+		console.error("获取奖项列表失败:", error);
+		return [];
+	}
+};
 
 /**
  * 获取后台奖项列表。
@@ -84,20 +86,22 @@ export const getAwards = async (params = {}) => {
  * @returns {Promise<any[]>}
  */
 export const getAdminAwards = async (params = {}) => {
-  const response = await api.get('/admin/awards')
-  const awards = getArrayData(getBody(response))
-  if (!params.keyword) return awards
+	const response = await api.get("/admin/awards");
+	const awards = getArrayData(getBody(response));
+	if (!params.keyword) return awards;
 
-  const keyword = params.keyword.toLowerCase()
-  return awards.filter(
-    award =>
-      award.competitionName?.toLowerCase().includes(keyword) ||
-      award.competitionLevel?.toLowerCase().includes(keyword) ||
-      award.awardLevel?.toLowerCase().includes(keyword) ||
-      award.winners?.some?.(winner => winner?.toLowerCase().includes(keyword)) ||
-      award.year?.toString().includes(keyword)
-  )
-}
+	const keyword = params.keyword.toLowerCase();
+	return awards.filter(
+		(award) =>
+			award.competitionName?.toLowerCase().includes(keyword) ||
+			award.competitionLevel?.toLowerCase().includes(keyword) ||
+			award.awardLevel?.toLowerCase().includes(keyword) ||
+			award.winners?.some?.((winner) =>
+				winner?.toLowerCase().includes(keyword),
+			) ||
+			award.year?.toString().includes(keyword),
+	);
+};
 
 /**
  * 创建奖项。
@@ -105,24 +109,24 @@ export const getAdminAwards = async (params = {}) => {
  * @param {Object} params
  * @returns {Promise<Object>}
  */
-export const createAward = async params => {
-  try {
-    const response = await api.post('/admin/awards', params)
-    const body = getBody(response)
+export const createAward = async (params) => {
+	try {
+		const response = await api.post("/admin/awards", params);
+		const body = getBody(response);
 
-    if (!body) {
-      throw new Error('创建奖项失败')
-    }
+		if (!body) {
+			throw new Error("创建奖项失败");
+		}
 
-    return {
-      id: getResultData(body)?.id,
-      ...params,
-    }
-  } catch (error) {
-    console.error('创建奖项失败:', error)
-    throw error
-  }
-}
+		return {
+			id: getResultData(body)?.id,
+			...params,
+		};
+	} catch (error) {
+		console.error("创建奖项失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 更新奖项。
@@ -132,17 +136,17 @@ export const createAward = async params => {
  * @returns {Promise<Object>}
  */
 export const updateAward = async (id, params) => {
-  try {
-    await api.put(`/admin/awards/${id}`, params)
-    return {
-      id,
-      ...params,
-    }
-  } catch (error) {
-    console.error('更新奖项失败:', error)
-    throw error
-  }
-}
+	try {
+		await api.put(`/admin/awards/${id}`, params);
+		return {
+			id,
+			...params,
+		};
+	} catch (error) {
+		console.error("更新奖项失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 删除奖项。
@@ -150,14 +154,14 @@ export const updateAward = async (id, params) => {
  * @param {number} id
  * @returns {Promise<void>}
  */
-export const deleteAward = async id => {
-  try {
-    await api.delete(`/admin/awards/${id}`)
-  } catch (error) {
-    console.error('删除奖项失败:', error)
-    throw error
-  }
-}
+export const deleteAward = async (id) => {
+	try {
+		await api.delete(`/admin/awards/${id}`);
+	} catch (error) {
+		console.error("删除奖项失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 获取管理员分页数据。
@@ -165,14 +169,14 @@ export const deleteAward = async id => {
  * @returns {Promise<any>}
  */
 export const getAdmins = async (params = {}) => {
-  try {
-    const response = await api.get('/admin/admins', { params })
-    return getResultData(getBody(response))
-  } catch (error) {
-    console.error('获取管理员列表失败:', error)
-    throw error
-  }
-}
+	try {
+		const response = await api.get("/admin/admins", { params });
+		return getResultData(getBody(response));
+	} catch (error) {
+		console.error("获取管理员列表失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 创建管理员。
@@ -180,15 +184,15 @@ export const getAdmins = async (params = {}) => {
  * @param {Object} params
  * @returns {Promise<any>}
  */
-export const createAdmin = async params => {
-  try {
-    const response = await api.post('/admin/admins', params)
-    return getResultData(getBody(response))
-  } catch (error) {
-    console.error('添加管理员失败:', error)
-    throw error
-  }
-}
+export const createAdmin = async (params) => {
+	try {
+		const response = await api.post("/admin/admins", params);
+		return getResultData(getBody(response));
+	} catch (error) {
+		console.error("添加管理员失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 删除管理员。
@@ -196,14 +200,14 @@ export const createAdmin = async params => {
  * @param {number} id
  * @returns {Promise<void>}
  */
-export const deleteAdmin = async id => {
-  try {
-    await api.delete(`/admin/admins/${id}`)
-  } catch (error) {
-    console.error('删除管理员失败:', error)
-    throw error
-  }
-}
+export const deleteAdmin = async (id) => {
+	try {
+		await api.delete(`/admin/admins/${id}`);
+	} catch (error) {
+		console.error("删除管理员失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 更新管理员信息。
@@ -213,9 +217,9 @@ export const deleteAdmin = async id => {
  * @returns {Promise<any>}
  */
 export const updateAdmin = async (id, params) => {
-  const response = await api.put(`/admin/admins/${id}`, params)
-  return getResultData(getBody(response))
-}
+	const response = await api.put(`/admin/admins/${id}`, params);
+	return getResultData(getBody(response));
+};
 
 /**
  * 获取当前登录管理员信息。
@@ -223,14 +227,14 @@ export const updateAdmin = async (id, params) => {
  * @returns {Promise<any>}
  */
 export const getCurrentAdmin = async () => {
-  try {
-    const response = await api.get('/admin/auth/me')
-    return getResultData(getBody(response))
-  } catch (error) {
-    console.error('获取当前管理员信息失败:', error)
-    throw error
-  }
-}
+	try {
+		const response = await api.get("/admin/auth/me");
+		return getResultData(getBody(response));
+	} catch (error) {
+		console.error("获取当前管理员信息失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 登录管理员。
@@ -238,17 +242,17 @@ export const getCurrentAdmin = async () => {
  * @param {{ username: string, password: string }} params
  * @returns {Promise<any>}
  */
-export const login = async params => {
-  try {
-    const response = await api.post('/admin/auth/login', params)
-    const data = getResultData(getBody(response))
-    return data
-  } catch (error) {
-    const message = error instanceof Error ? error.message : '登录失败'
-    console.error('登录失败:', message)
-    throw new Error(message)
-  }
-}
+export const login = async (params) => {
+	try {
+		const response = await api.post("/admin/auth/login", params);
+		const data = getResultData(getBody(response));
+		return data;
+	} catch (error) {
+		const message = error instanceof Error ? error.message : "登录失败";
+		console.error("登录失败:", message);
+		throw new Error(message);
+	}
+};
 
 /**
  * 登出管理员。
@@ -256,8 +260,8 @@ export const login = async params => {
  * @returns {Promise<void>}
  */
 export const logout = async () => {
-  await api.post('/admin/auth/logout')
-}
+	await api.post("/admin/auth/logout");
+};
 
 /**
  * 获取报名专业列表。
@@ -265,20 +269,20 @@ export const logout = async () => {
  * @returns {Promise<any>}
  */
 export const getApplicationMajors = async () => {
-  try {
-    const response = await api.get('/admin/applications/majors')
-    const data = getResultData(getBody(response))
+	try {
+		const response = await api.get("/admin/applications/majors");
+		const data = getResultData(getBody(response));
 
-    if (!data) {
-      throw new Error('获取专业名称列表失败')
-    }
+		if (!data) {
+			throw new Error("获取专业名称列表失败");
+		}
 
-    return data
-  } catch (error) {
-    console.error('获取专业名称列表失败:', error)
-    throw error
-  }
-}
+		return data;
+	} catch (error) {
+		console.error("获取专业名称列表失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 获取报名招新批次年份列表。
@@ -286,20 +290,20 @@ export const getApplicationMajors = async () => {
  * @returns {Promise<number[]>}
  */
 export const getApplicationYears = async () => {
-  try {
-    const response = await api.get('/admin/applications/years')
-    const data = getResultData(getBody(response))
+	try {
+		const response = await api.get("/admin/applications/years");
+		const data = getResultData(getBody(response));
 
-    if (!data) {
-      throw new Error('获取报名年份列表失败')
-    }
+		if (!data) {
+			throw new Error("获取报名年份列表失败");
+		}
 
-    return data
-  } catch (error) {
-    console.error('获取报名年份列表失败:', error)
-    throw error
-  }
-}
+		return data;
+	} catch (error) {
+		console.error("获取报名年份列表失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 获取报名分页数据。
@@ -308,20 +312,20 @@ export const getApplicationYears = async () => {
  * @returns {Promise<any>}
  */
 export const getApplications = async (params = {}) => {
-  try {
-    const response = await api.get('/admin/applications', { params })
-    const data = getResultData(getBody(response))
+	try {
+		const response = await api.get("/admin/applications", { params });
+		const data = getResultData(getBody(response));
 
-    if (!data) {
-      throw new Error('获取报名信息失败')
-    }
+		if (!data) {
+			throw new Error("获取报名信息失败");
+		}
 
-    return data
-  } catch (error) {
-    console.error('获取报名信息失败:', error)
-    throw error
-  }
-}
+		return data;
+	} catch (error) {
+		console.error("获取报名信息失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 删除报名信息。
@@ -329,14 +333,14 @@ export const getApplications = async (params = {}) => {
  * @param {number} id
  * @returns {Promise<void>}
  */
-export const deleteApplication = async id => {
-  try {
-    await api.delete(`/admin/applications/${id}`)
-  } catch (error) {
-    console.error('删除报名信息失败:', error)
-    throw error
-  }
-}
+export const deleteApplication = async (id) => {
+	try {
+		await api.delete(`/admin/applications/${id}`);
+	} catch (error) {
+		console.error("删除报名信息失败:", error);
+		throw error;
+	}
+};
 
 /**
  * 更新当前管理员资料或密码。
@@ -344,9 +348,9 @@ export const deleteApplication = async id => {
  * @param {Object} params
  * @returns {Promise<void>}
  */
-export const updateCurrentAdmin = async params => {
-  await api.put('/admin/auth/me', params)
-}
+export const updateCurrentAdmin = async (params) => {
+	await api.put("/admin/auth/me", params);
+};
 
 /**
  * 获取后台留言分页数据。
@@ -354,10 +358,10 @@ export const updateCurrentAdmin = async params => {
  * @param {Object} params
  * @returns {Promise<any>}
  */
-export const getAdminMessages = async params => {
-  const response = await api.get('/admin/messages', { params })
-  return getResultData(getBody(response))
-}
+export const getAdminMessages = async (params) => {
+	const response = await api.get("/admin/messages", { params });
+	return getResultData(getBody(response));
+};
 
 /**
  * 删除后台留言。
@@ -365,9 +369,9 @@ export const getAdminMessages = async params => {
  * @param {number} id
  * @returns {Promise<void>}
  */
-export const deleteAdminMessage = async id => {
-  await api.delete(`/admin/messages/${id}`)
-}
+export const deleteAdminMessage = async (id) => {
+	await api.delete(`/admin/messages/${id}`);
+};
 
 /**
  * 获取成员分页数据。
@@ -376,9 +380,9 @@ export const deleteAdminMessage = async id => {
  * @returns {Promise<any>}
  */
 export const getMembers = async (params = {}) => {
-  const response = await api.get('/admin/members', { params })
-  return getResultData(getBody(response))
-}
+	const response = await api.get("/admin/members", { params });
+	return getResultData(getBody(response));
+};
 
 /**
  * 获取成员详情。
@@ -386,10 +390,10 @@ export const getMembers = async (params = {}) => {
  * @param {number} id
  * @returns {Promise<any>}
  */
-export const getMember = async id => {
-  const response = await api.get(`/admin/members/${id}`)
-  return getResultData(getBody(response))
-}
+export const getMember = async (id) => {
+	const response = await api.get(`/admin/members/${id}`);
+	return getResultData(getBody(response));
+};
 
 /**
  * 新增成员。
@@ -397,9 +401,9 @@ export const getMember = async id => {
  * @param {Object} params
  * @returns {Promise<void>}
  */
-export const createMember = async params => {
-  await api.post('/admin/members', params)
-}
+export const createMember = async (params) => {
+	await api.post("/admin/members", params);
+};
 
 /**
  * 编辑成员。
@@ -409,8 +413,8 @@ export const createMember = async params => {
  * @returns {Promise<void>}
  */
 export const updateMember = async (id, params) => {
-  await api.put(`/admin/members/${id}`, params)
-}
+	await api.put(`/admin/members/${id}`, params);
+};
 
 /**
  * 切换成员状态。
@@ -420,5 +424,5 @@ export const updateMember = async (id, params) => {
  * @returns {Promise<void>}
  */
 export const updateMemberStatus = async (id, status) => {
-  await api.put(`/admin/members/${id}/status`, { status })
-}
+	await api.put(`/admin/members/${id}/status`, { status });
+};

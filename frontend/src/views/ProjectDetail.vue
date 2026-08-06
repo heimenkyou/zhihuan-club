@@ -231,42 +231,49 @@
 </template>
 
 <script setup>
-import CommonFooter from '@/components/CommonFooter.vue'
-import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getProjectDetail } from '@/services/projectService'
+import {
+	computed,
+	defineAsyncComponent,
+	onMounted,
+	onUnmounted,
+	ref,
+	watch,
+} from "vue";
+import { useRoute, useRouter } from "vue-router";
+import CommonFooter from "@/components/CommonFooter.vue";
+import { getProjectDetail } from "@/services/projectService";
 
 const MdPreview = defineAsyncComponent(async () => {
-  await import('md-editor-v3/lib/style.css')
-  return (await import('md-editor-v3')).MdPreview
-})
+	await import("md-editor-v3/lib/style.css");
+	return (await import("md-editor-v3")).MdPreview;
+});
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 const projectId = computed(() => {
-  const id = route.query.id
-  return id ? String(id) : ''
-})
+	const id = route.query.id;
+	return id ? String(id) : "";
+});
 
-const isMobile = ref(false)
-const loading = ref(false)
-const error = ref('')
-const projectDetail = ref(null)
-const tagTypes = ['primary', 'info', 'success', 'warning', 'danger', 'primary']
+const isMobile = ref(false);
+const loading = ref(false);
+const error = ref("");
+const projectDetail = ref(null);
+const tagTypes = ["primary", "info", "success", "warning", "danger", "primary"];
 
 /**
  * 汇总预览图片，保证点击任意图片都能进入同一组预览。
  */
 const previewImageList = computed(() => {
-  return projectDetail.value?.imageUrls || []
-})
+	return projectDetail.value?.imageUrls || [];
+});
 
 /**
  * 根据窗口宽度切换轮播图展示模式。
  */
 const handleCarouselResize = () => {
-  isMobile.value = window.innerWidth < 768
-}
+	isMobile.value = window.innerWidth < 768;
+};
 
 /**
  * 将团队分工压成标题区可读的一行文本。
@@ -274,14 +281,17 @@ const handleCarouselResize = () => {
  * @param {{ name?: string, role?: string }[]=} members
  * @returns {string}
  */
-const formatTeamMembers = members => {
-  if (!members || members.length === 0) {
-    return '暂无团队成员信息'
-  }
-  return members
-    .map(member => `${member.name || '匿名成员'}（${member.role || '暂无职责'}）`)
-    .join('、')
-}
+const formatTeamMembers = (members) => {
+	if (!members || members.length === 0) {
+		return "暂无团队成员信息";
+	}
+	return members
+		.map(
+			(member) =>
+				`${member.name || "匿名成员"}（${member.role || "暂无职责"}）`,
+		)
+		.join("、");
+};
 
 /**
  * 将奖项等级映射到 Element Plus 标签类型。
@@ -289,67 +299,67 @@ const formatTeamMembers = members => {
  * @param {string=} type
  * @returns {'primary' | 'success' | 'warning' | 'info' | 'danger'}
  */
-const getAwardType = type => {
-  const typeMap = {
-    primary: 'primary',
-    success: 'success',
-    warning: 'warning',
-    info: 'info',
-    danger: 'danger',
-    一等奖: 'success',
-    金奖: 'warning',
-    二等奖: 'primary',
-    银奖: 'primary',
-    三等奖: 'info',
-    铜奖: 'info',
-    优秀奖: 'danger',
-  }
-  return typeMap[type || 'primary'] || 'primary'
-}
+const getAwardType = (type) => {
+	const typeMap = {
+		primary: "primary",
+		success: "success",
+		warning: "warning",
+		info: "info",
+		danger: "danger",
+		一等奖: "success",
+		金奖: "warning",
+		二等奖: "primary",
+		银奖: "primary",
+		三等奖: "info",
+		铜奖: "info",
+		优秀奖: "danger",
+	};
+	return typeMap[type || "primary"] || "primary";
+};
 
 /**
  * 拉取项目详情；失败时保留错误信息，便于页面重试。
  */
 const fetchProjectDetail = async () => {
-  if (!projectId.value) {
-    error.value = '项目ID不存在'
-    return
-  }
+	if (!projectId.value) {
+		error.value = "项目ID不存在";
+		return;
+	}
 
-  loading.value = true
-  error.value = ''
+	loading.value = true;
+	error.value = "";
 
-  try {
-    const data = await getProjectDetail(projectId.value)
-    projectDetail.value = data
-  } catch (err) {
-    error.value =
-      err instanceof Error ? err.message : '获取项目详情失败，请稍后重试'
-    console.error('获取项目详情失败:', err)
-    console.log('完整错误对象:', JSON.stringify(err, null, 2))
-  } finally {
-    loading.value = false
-  }
-}
+	try {
+		const data = await getProjectDetail(projectId.value);
+		projectDetail.value = data;
+	} catch (err) {
+		error.value =
+			err instanceof Error ? err.message : "获取项目详情失败，请稍后重试";
+		console.error("获取项目详情失败:", err);
+		console.log("完整错误对象:", JSON.stringify(err, null, 2));
+	} finally {
+		loading.value = false;
+	}
+};
 
 onMounted(() => {
-  handleCarouselResize()
-  window.addEventListener('resize', handleCarouselResize)
-  fetchProjectDetail()
-})
+	handleCarouselResize();
+	window.addEventListener("resize", handleCarouselResize);
+	fetchProjectDetail();
+});
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleCarouselResize)
-})
+	window.removeEventListener("resize", handleCarouselResize);
+});
 
 watch(
-  () => route.query.id,
-  newId => {
-    if (newId) {
-      fetchProjectDetail()
-    }
-  }
-)
+	() => route.query.id,
+	(newId) => {
+		if (newId) {
+			fetchProjectDetail();
+		}
+	},
+);
 </script>
 
 <style scoped lang="scss">

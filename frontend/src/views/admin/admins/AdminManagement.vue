@@ -8,20 +8,20 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
+import { onMounted, reactive, ref } from "vue";
 import AdminActionMenu from "@/components/admin/AdminActionMenu.vue";
 import AdminPage from "@/components/admin/AdminPage.vue";
 import AdminResultCards from "@/components/admin/AdminResultCards.vue";
 import AdminTable from "@/components/admin/AdminTable.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
-import { useAdminStore } from "@/stores/adminStore";
 import {
 	createAdmin,
 	deleteAdmin,
 	getAdmins,
 	updateAdmin,
 } from "@/services/adminService";
+import { useAdminStore } from "@/stores/adminStore";
 
 const { isMobile } = useAdminMobile();
 const isSuperAdmin = useAdminStore().isSuperAdmin();
@@ -47,7 +47,10 @@ const rules = {
 	newPassword: [{ min: 6, message: "密码长度不能少于6位", trigger: "blur" }],
 };
 const dialogTitle = ref("添加管理员");
-const roleLabel = (role) => ({ super: "超级管理员", normal: "普通管理员", submitter: "内容提交员" })[role] || role;
+const roleLabel = (role) =>
+	({ super: "超级管理员", normal: "普通管理员", submitter: "内容提交员" })[
+		role
+	] || role;
 const load = async () => {
 	try {
 		admins.value = (await getAdmins())?.records ?? [];

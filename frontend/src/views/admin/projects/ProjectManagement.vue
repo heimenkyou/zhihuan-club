@@ -8,8 +8,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import AdminActionMenu from "@/components/admin/AdminActionMenu.vue";
 import AdminPage from "@/components/admin/AdminPage.vue";
@@ -18,8 +18,8 @@ import AdminResultCards from "@/components/admin/AdminResultCards.vue";
 import AdminTable from "@/components/admin/AdminTable.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
-import { useAdminStore } from "@/stores/adminStore";
 import { deleteProject, getAdminProjects } from "@/services/projectService";
+import { useAdminStore } from "@/stores/adminStore";
 
 const router = useRouter();
 const { isMobile } = useAdminMobile();

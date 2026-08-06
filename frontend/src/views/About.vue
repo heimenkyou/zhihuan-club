@@ -73,11 +73,11 @@
 </template>
 
 <script setup>
+import algorithmImg from "@/assets/images/department-algorithm.webp";
+import generalAdminImg from "@/assets/images/department-general-admin.webp";
+import projectCompetitionImg from "@/assets/images/department-project-competition.webp";
 import CommonFooter from "@/components/CommonFooter.vue";
 import CommonNavbar from "@/components/CommonNavbar.vue";
-import algorithmImg from "@/assets/images/department-algorithm.webp";
-import projectCompetitionImg from "@/assets/images/department-project-competition.webp";
-import generalAdminImg from "@/assets/images/department-general-admin.webp";
 
 const timeline = [
 	{

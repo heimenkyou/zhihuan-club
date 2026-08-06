@@ -88,8 +88,8 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import {
 	getAttachments,
 	prepareImage,
@@ -97,10 +97,10 @@ import {
 } from "@/services/attachmentService";
 
 const props = defineProps({
-  modelValue: { type: [String, Array], default: "" },
-  multiple: Boolean,
-  confirm: Boolean,
-  selectable: { type: Boolean, default: true },
+	modelValue: { type: [String, Array], default: "" },
+	multiple: Boolean,
+	confirm: Boolean,
+	selectable: { type: Boolean, default: true },
 });
 const emit = defineEmits(["update:modelValue", "uploaded", "selected"]);
 const visible = defineModel("visible", { default: false });
@@ -111,7 +111,11 @@ const uploadQueue = ref([]);
 const page = ref({ current: 1, size: 24, total: 0 });
 const pendingUrls = ref([]);
 const selectedUrls = computed(() =>
-	props.confirm ? pendingUrls.value : props.multiple ? props.modelValue || [] : [props.modelValue],
+	props.confirm
+		? pendingUrls.value
+		: props.multiple
+			? props.modelValue || []
+			: [props.modelValue],
 );
 
 /** 加载附件库当前页。 */
@@ -134,7 +138,11 @@ const loadAttachments = async () => {
 /** 将本地选择的文件加入上传队列。 */
 const addToQueue = async (uploadFile) => {
 	const originalFile = uploadFile.raw;
-	if (!originalFile || uploadQueue.value.some((item) => item.id === uploadFile.uid)) return;
+	if (
+		!originalFile ||
+		uploadQueue.value.some((item) => item.id === uploadFile.uid)
+	)
+		return;
 	try {
 		const file = await prepareImage(originalFile);
 		uploadQueue.value.push({
@@ -213,7 +221,9 @@ const uploadStatusText = (item) =>
 
 watch(visible, (value) => {
 	if (value) {
-		pendingUrls.value = props.multiple ? [...(props.modelValue || [])] : [props.modelValue];
+		pendingUrls.value = props.multiple
+			? [...(props.modelValue || [])]
+			: [props.modelValue];
 		loadAttachments();
 	}
 });

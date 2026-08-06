@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { showWarning } from '@/utils/notification'
+import { showWarning } from "@/utils/notification";
 </script>
 
 <style scoped>

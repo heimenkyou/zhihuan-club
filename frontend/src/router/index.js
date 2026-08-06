@@ -1,7 +1,7 @@
+import { ElLoading, ElMessage, ElMessageBox } from "element-plus";
 import { createRouter, createWebHistory } from "vue-router";
 import adminRoutes from "@/router/adminRoutes";
 import { useAdminStore } from "@/stores/adminStore";
-import { ElLoading, ElMessage, ElMessageBox } from "element-plus";
 
 const routes = [
 	{ path: "/", name: "home", component: () => import("@/views/Home.vue") },
@@ -112,7 +112,11 @@ router.beforeEach(async (to, from, next) => {
 		return;
 	}
 
-	if (to.name === "ProjectEdit" && to.params.id && adminStore.hasRole(["submitter"])) {
+	if (
+		to.name === "ProjectEdit" &&
+		to.params.id &&
+		adminStore.hasRole(["submitter"])
+	) {
 		ElMessage.error("内容提交员不能编辑已有项目");
 		next("/admin/projects");
 		return;

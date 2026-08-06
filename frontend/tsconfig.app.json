@@ -1,23 +1,23 @@
 {
-  "extends": "./node_modules/@vue/tsconfig/tsconfig.dom.json",
-  "compilerOptions": {
-    // 设置基础路径
-    "baseUrl": ".",
-    "types": ["element-plus/global", "unplugin-icons/types/vue"],
-    // 允许逐步引入 JS 文件，但不对 JS 做类型检查
-    "allowJs": true,
-    "checkJs": false,
-    // 配置路径别名
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
-  },
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.vue"]
+	"extends": "./node_modules/@vue/tsconfig/tsconfig.dom.json",
+	"compilerOptions": {
+		// 设置基础路径
+		"baseUrl": ".",
+		"types": ["element-plus/global", "unplugin-icons/types/vue"],
+		// 允许逐步引入 JS 文件，但不对 JS 做类型检查
+		"allowJs": true,
+		"checkJs": false,
+		// 配置路径别名
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
+	},
+	"include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.vue"]
 }

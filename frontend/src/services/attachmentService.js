@@ -42,10 +42,14 @@ const createImageCanvas = async (file) => {
  */
 const exportWebp = (canvas, quality) =>
 	new Promise((resolve, reject) => {
-		canvas.toBlob((blob) => {
-			if (blob) resolve(blob);
-			else reject(new Error("浏览器不支持图片转换"));
-		}, "image/webp", quality);
+		canvas.toBlob(
+			(blob) => {
+				if (blob) resolve(blob);
+				else reject(new Error("浏览器不支持图片转换"));
+			},
+			"image/webp",
+			quality,
+		);
 	});
 
 /**

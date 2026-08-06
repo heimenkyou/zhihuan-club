@@ -271,7 +271,10 @@ const groupedAwards = computed(() =>
 		)
 		.reduce((groups, award) => {
 			const year = String(award.year);
-			(groups[year] ||= []).push(award);
+			if (!groups[year]) {
+				groups[year] = [];
+			}
+			groups[year].push(award);
 			return groups;
 		}, {}),
 );

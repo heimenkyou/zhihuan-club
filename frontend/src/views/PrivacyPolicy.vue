@@ -91,16 +91,16 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
 /**
  * 返回首页，避免条款页形成无出口的独立浏览路径。
  */
 const navigateToHome = () => {
-  router.push('/')
-}
+	router.push("/");
+};
 </script>
 
 <style scoped>

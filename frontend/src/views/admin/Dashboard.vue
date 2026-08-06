@@ -30,87 +30,87 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useAdminStore } from '@/stores/adminStore'
+import { ElMessage } from "element-plus";
+import { computed, onMounted, ref } from "vue";
 import {
-  getAdminAwards,
-  getAdminMessages,
-  getApplications,
-} from '@/services/adminService'
-import { ElMessage } from 'element-plus'
+	getAdminAwards,
+	getAdminMessages,
+	getApplications,
+} from "@/services/adminService";
+import { useAdminStore } from "@/stores/adminStore";
 
 const isMobile = computed(() => {
-  return window.innerWidth <= 768
-})
+	return window.innerWidth <= 768;
+});
 
-const adminStore = useAdminStore()
-const userInfo = computed(() => adminStore.userInfo)
-const applicationCount = ref(0)
-const messageCount = ref(0)
-const awardCount = ref(0)
-const lastAward = ref('暂无')
-const stats = ref([])
+const adminStore = useAdminStore();
+const userInfo = computed(() => adminStore.userInfo);
+const applicationCount = ref(0);
+const messageCount = ref(0);
+const awardCount = ref(0);
+const lastAward = ref("暂无");
+const stats = ref([]);
 
 /**
  * 加载后台真实统计数据，失败的统计项保持为零。
  */
 onMounted(async () => {
-  try {
-    try {
-      const awardData = await getAdminAwards()
-      awardCount.value = awardData.length
-      if (awardData.length > 0) {
-        lastAward.value = awardData[0].competitionName ?? '暂无'
-      }
-    } catch (e) {
-      console.warn('获取奖项数据失败', e)
-      ElMessage.warning('获取奖项数据失败')
-    }
+	try {
+		try {
+			const awardData = await getAdminAwards();
+			awardCount.value = awardData.length;
+			if (awardData.length > 0) {
+				lastAward.value = awardData[0].competitionName ?? "暂无";
+			}
+		} catch (e) {
+			console.warn("获取奖项数据失败", e);
+			ElMessage.warning("获取奖项数据失败");
+		}
 
-    try {
-      const msgResponse = await getAdminMessages({ size: 1 })
-      messageCount.value = msgResponse.total
-    } catch (e) {
-      console.warn('获取留言数据失败', e)
-      ElMessage.warning('获取留言数据失败')
-    }
+		try {
+			const msgResponse = await getAdminMessages({ size: 1 });
+			messageCount.value = msgResponse.total;
+		} catch (e) {
+			console.warn("获取留言数据失败", e);
+			ElMessage.warning("获取留言数据失败");
+		}
 
-    try {
-      const appResponse = await getApplications({ size: 1 })
-      applicationCount.value = appResponse.total
-    } catch (e) {
-      console.warn('获取报名数据失败', e)
-      ElMessage.warning('获取报名数据失败')
-    }
+		try {
+			const appResponse = await getApplications({ size: 1 });
+			applicationCount.value = appResponse.total;
+		} catch (e) {
+			console.warn("获取报名数据失败", e);
+			ElMessage.warning("获取报名数据失败");
+		}
 
-    stats.value = [
-      {
-        title: '报名总数',
-        value: applicationCount.value,
-        desc: '当前累计报名数',
-        icon: '📝',
-        color: '#4096ff',
-      },
-      {
-        title: '留言总数',
-        value: messageCount.value,
-        desc: '当前累计留言数',
-        icon: '💬',
-        color: '#10b981',
-      },
-      {
-        title: '奖项总数',
-        value: awardCount.value,
-        desc: `最新奖项: ${lastAward.value}`,
-        icon: '🏆',
-        color: '#f59e0b',
-      },
-    ]
-  } catch (error) {
-    console.error('获取统计数据失败', error)
-    ElMessage.error('加载数据失败，请稍后重试')
-  }
-})
+		stats.value = [
+			{
+				title: "报名总数",
+				value: applicationCount.value,
+				desc: "当前累计报名数",
+				icon: "📝",
+				color: "#4096ff",
+			},
+			{
+				title: "留言总数",
+				value: messageCount.value,
+				desc: "当前累计留言数",
+				icon: "💬",
+				color: "#10b981",
+			},
+			{
+				title: "奖项总数",
+				value: awardCount.value,
+				desc: `最新奖项: ${lastAward.value}`,
+				icon: "🏆",
+				color: "#f59e0b",
+			},
+		];
+	} catch (error) {
+		console.error("获取统计数据失败", error);
+		ElMessage.error("加载数据失败，请稍后重试");
+	}
+});
 </script>
 
 <style scoped>

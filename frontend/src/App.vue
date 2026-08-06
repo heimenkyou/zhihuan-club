@@ -7,12 +7,14 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent } from 'vue'
-import { useRoute } from 'vue-router'
-import PolicyModal from './components/PolicyModal.vue'
-import { ElConfigProvider } from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { ElConfigProvider } from "element-plus";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+import { defineAsyncComponent } from "vue";
+import { useRoute } from "vue-router";
+import PolicyModal from "./components/PolicyModal.vue";
 
-const route = useRoute()
-const MusicPlayer = defineAsyncComponent(() => import('./components/MusicPlayer.vue'))
+const route = useRoute();
+const MusicPlayer = defineAsyncComponent(
+	() => import("./components/MusicPlayer.vue"),
+);
 </script>

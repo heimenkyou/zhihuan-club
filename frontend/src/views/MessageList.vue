@@ -1,406 +1,406 @@
 <script setup>
-  import { onMounted, ref, computed, onUnmounted, nextTick, watch } from 'vue'
-  import { useMessageStore } from '@/stores/messageStore'
-  import { showSuccess } from '@/utils/notification'
-  import { useRouter } from 'vue-router'
-  import { ElMessageBox } from 'element-plus'
-  import CommonFooter from '@/components/CommonFooter.vue'
+import { ElMessageBox } from "element-plus";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import CommonFooter from "@/components/CommonFooter.vue";
+import { useMessageStore } from "@/stores/messageStore";
+import { showSuccess } from "@/utils/notification";
 
-  const messageStore = useMessageStore()
-  const debugInfo = ref('')
-  const router = useRouter() // 初始化router
+const messageStore = useMessageStore();
+const debugInfo = ref("");
+const router = useRouter(); // 初始化router
 
-  // 根元素引用
-  const messageBoard = ref(null)
+// 根元素引用
+const messageBoard = ref(null);
 
-  // 分页相关数据
-  const currentPage = ref(1)
-  const pageSize = ref(6)
-  const totalCount = ref(0)
-  const totalPages = ref(1)
-  const jumpPage = ref('')
+// 分页相关数据
+const currentPage = ref(1);
+const pageSize = ref(6);
+const totalCount = ref(0);
+const totalPages = ref(1);
+const jumpPage = ref("");
 
-  // 新增留言数据
-  const newMessage = ref({
-    nickname: '',
-    content: '',
-  })
+// 新增留言数据
+const newMessage = ref({
+	nickname: "",
+	content: "",
+});
 
-  // 下拉刷新相关
-  const isRefreshing = ref(false)
-  const startY = ref(0)
-  const currentY = ref(0)
-  const pullDistance = ref(0)
-  const threshold = 80 // 下拉刷新阈值
+// 下拉刷新相关
+const isRefreshing = ref(false);
+const startY = ref(0);
+const currentY = ref(0);
+const pullDistance = ref(0);
+const threshold = 80; // 下拉刷新阈值
 
-  // 点赞按钮加载状态（防止重复点击，仅防重复请求，不是防刷）
-  const likeLoading = ref({})
+// 点赞按钮加载状态（防止重复点击，仅防重复请求，不是防刷）
+const likeLoading = ref({});
 
-  // 控制留言内容展开/收起状态
-  const expandedMessages = ref({})
+// 控制留言内容展开/收起状态
+const expandedMessages = ref({});
 
-  // 存储每个留言内容元素的引用
-  const contentRefs = ref({})
+// 存储每个留言内容元素的引用
+const contentRefs = ref({});
 
-  // 存储每个留言是否需要展开按钮的状态
-  const showExpandButtons = ref({})
+// 存储每个留言是否需要展开按钮的状态
+const showExpandButtons = ref({});
 
-  // 计算可见的页码
-  const visiblePages = computed(() => {
-    const pages = []
-    const maxVisible = 7
+// 计算可见的页码
+const visiblePages = computed(() => {
+	const pages = [];
+	const maxVisible = 7;
 
-    if (totalPages.value <= maxVisible) {
-      for (let i = 1; i <= totalPages.value; i++) {
-        pages.push(i)
-      }
-    } else {
-      if (currentPage.value <= 4) {
-        for (let i = 1; i <= 5; i++) {
-          pages.push(i)
-        }
-        pages.push('...')
-        pages.push(totalPages.value)
-      } else if (currentPage.value >= totalPages.value - 3) {
-        pages.push(1)
-        pages.push('...')
-        for (let i = totalPages.value - 4; i <= totalPages.value; i++) {
-          pages.push(i)
-        }
-      } else {
-        pages.push(1)
-        pages.push('...')
-        for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
-          pages.push(i)
-        }
-        pages.push('...')
-        pages.push(totalPages.value)
-      }
-    }
+	if (totalPages.value <= maxVisible) {
+		for (let i = 1; i <= totalPages.value; i++) {
+			pages.push(i);
+		}
+	} else {
+		if (currentPage.value <= 4) {
+			for (let i = 1; i <= 5; i++) {
+				pages.push(i);
+			}
+			pages.push("...");
+			pages.push(totalPages.value);
+		} else if (currentPage.value >= totalPages.value - 3) {
+			pages.push(1);
+			pages.push("...");
+			for (let i = totalPages.value - 4; i <= totalPages.value; i++) {
+				pages.push(i);
+			}
+		} else {
+			pages.push(1);
+			pages.push("...");
+			for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
+				pages.push(i);
+			}
+			pages.push("...");
+			pages.push(totalPages.value);
+		}
+	}
 
-    return pages
-  })
+	return pages;
+});
 
-  // 下拉刷新处理 - 使用Vue 3响应式方式
-  const pullDistanceStyle = ref('0px')
+// 下拉刷新处理 - 使用Vue 3响应式方式
+const pullDistanceStyle = ref("0px");
 
-  const handleTouchStart = e => {
-    if (window.scrollY === 0) {
-      startY.value = e.touches[0].clientY
-    }
-  }
+const handleTouchStart = (e) => {
+	if (window.scrollY === 0) {
+		startY.value = e.touches[0].clientY;
+	}
+};
 
-  const handleTouchMove = e => {
-    // 下拉刷新处理 - 优化为仅在页面顶部时触发
-    if (messageBoard.value && window.scrollY === 0 && startY.value > 0) {
-      currentY.value = e.touches[0].clientY
-      pullDistance.value = Math.max(0, currentY.value - startY.value)
-      if (pullDistance.value > 0) {
-        pullDistanceStyle.value = `${Math.min(pullDistance.value, threshold)}px`
-      }
-    }
-  }
+const handleTouchMove = (e) => {
+	// 下拉刷新处理 - 优化为仅在页面顶部时触发
+	if (messageBoard.value && window.scrollY === 0 && startY.value > 0) {
+		currentY.value = e.touches[0].clientY;
+		pullDistance.value = Math.max(0, currentY.value - startY.value);
+		if (pullDistance.value > 0) {
+			pullDistanceStyle.value = `${Math.min(pullDistance.value, threshold)}px`;
+		}
+	}
+};
 
-  const handleTouchEnd = async () => {
-    if (pullDistance.value >= threshold && !isRefreshing.value) {
-      isRefreshing.value = true
-      await handleRefresh()
-      isRefreshing.value = false
-    }
-    startY.value = 0
-    currentY.value = 0
-    pullDistance.value = 0
-    pullDistanceStyle.value = '0px'
-  }
+const handleTouchEnd = async () => {
+	if (pullDistance.value >= threshold && !isRefreshing.value) {
+		isRefreshing.value = true;
+		await handleRefresh();
+		isRefreshing.value = false;
+	}
+	startY.value = 0;
+	currentY.value = 0;
+	pullDistance.value = 0;
+	pullDistanceStyle.value = "0px";
+};
 
-  // 分页处理方法
-  const handlePrevPage = async () => {
-    if (currentPage.value > 1) {
-      currentPage.value--
-      await fetchMessages()
-    }
-  }
+// 分页处理方法
+const handlePrevPage = async () => {
+	if (currentPage.value > 1) {
+		currentPage.value--;
+		await fetchMessages();
+	}
+};
 
-  const handleNextPage = async () => {
-    if (currentPage.value < totalPages.value) {
-      currentPage.value++
-      await fetchMessages()
-    }
-  }
+const handleNextPage = async () => {
+	if (currentPage.value < totalPages.value) {
+		currentPage.value++;
+		await fetchMessages();
+	}
+};
 
-  const handlePageChange = async page => {
-    if (typeof page === 'number') {
-      currentPage.value = page
-      await fetchMessages()
-    }
-  }
+const handlePageChange = async (page) => {
+	if (typeof page === "number") {
+		currentPage.value = page;
+		await fetchMessages();
+	}
+};
 
-  const handleJumpPage = async () => {
-    const page = parseInt(jumpPage.value, 10)
-    if (page >= 1 && page <= totalPages.value) {
-      currentPage.value = page
-      jumpPage.value = ''
-      await fetchMessages()
-    }
-  }
+const handleJumpPage = async () => {
+	const page = parseInt(jumpPage.value, 10);
+	if (page >= 1 && page <= totalPages.value) {
+		currentPage.value = page;
+		jumpPage.value = "";
+		await fetchMessages();
+	}
+};
 
-  // 获取留言数据的方法
-  const fetchMessages = async () => {
-    debugInfo.value = `正在获取第 ${currentPage.value} 页数据...`
-    try {
-      const response = await messageStore.fetchMessages({
-        current: currentPage.value,
-        size: pageSize.value,
-      })
-      if (response?.current && response.total) {
-        totalCount.value = response.total
-        totalPages.value = response.pages
-        currentPage.value = response.current
-        debugInfo.value = `成功获取第 ${currentPage.value} 页，共 ${totalCount.value} 条留言`
-      }
-    } catch (error) {
-      debugInfo.value = `获取留言失败: ${
-        error instanceof Error ? error.message : '未知错误'
-      }`
-      console.error('获取留言失败:', error)
-      throw error
-    }
-  }
+// 获取留言数据的方法
+const fetchMessages = async () => {
+	debugInfo.value = `正在获取第 ${currentPage.value} 页数据...`;
+	try {
+		const response = await messageStore.fetchMessages({
+			current: currentPage.value,
+			size: pageSize.value,
+		});
+		if (response?.current && response.total) {
+			totalCount.value = response.total;
+			totalPages.value = response.pages;
+			currentPage.value = response.current;
+			debugInfo.value = `成功获取第 ${currentPage.value} 页，共 ${totalCount.value} 条留言`;
+		}
+	} catch (error) {
+		debugInfo.value = `获取留言失败: ${
+			error instanceof Error ? error.message : "未知错误"
+		}`;
+		console.error("获取留言失败:", error);
+		throw error;
+	}
+};
 
-  // 在组件挂载时获取消息数据
-  onMounted(async () => {
-    try {
-      const savedNickname = localStorage.getItem('message_board_nickname')
-      if (savedNickname) {
-        newMessage.value.nickname = savedNickname
-        console.log('👤 已加载保存的昵称:', savedNickname)
-      }
-      debugInfo.value = '开始获取留言数据...'
-      await fetchMessages()
-    } catch (error) {
-      debugInfo.value = `初始化失败: ${
-        error instanceof Error ? error.message : '未知错误'
-      }`
-      console.error('组件初始化失败:', error)
-      throw error
-    }
-  })
+// 在组件挂载时获取消息数据
+onMounted(async () => {
+	try {
+		const savedNickname = localStorage.getItem("message_board_nickname");
+		if (savedNickname) {
+			newMessage.value.nickname = savedNickname;
+			console.log("👤 已加载保存的昵称:", savedNickname);
+		}
+		debugInfo.value = "开始获取留言数据...";
+		await fetchMessages();
+	} catch (error) {
+		debugInfo.value = `初始化失败: ${
+			error instanceof Error ? error.message : "未知错误"
+		}`;
+		console.error("组件初始化失败:", error);
+		throw error;
+	}
+});
 
-  // 组件卸载时清理资源
-  onUnmounted(() => {
-    startY.value = 0
-    currentY.value = 0
-    pullDistance.value = 0
-    pullDistanceStyle.value = '0px'
-  })
+// 组件卸载时清理资源
+onUnmounted(() => {
+	startY.value = 0;
+	currentY.value = 0;
+	pullDistance.value = 0;
+	pullDistanceStyle.value = "0px";
+});
 
-  // 点赞/取消点赞
-  const handleLike = async messageId => {
-    // 防止重复点击（仅阻止短时间内重复请求，不是防刷）
-    if (likeLoading.value[messageId]) return
-    likeLoading.value[messageId] = true
-    debugInfo.value = `正在处理留言 ${messageId} 的点赞操作...`
+// 点赞/取消点赞
+const handleLike = async (messageId) => {
+	// 防止重复点击（仅阻止短时间内重复请求，不是防刷）
+	if (likeLoading.value[messageId]) return;
+	likeLoading.value[messageId] = true;
+	debugInfo.value = `正在处理留言 ${messageId} 的点赞操作...`;
 
-    try {
-      // 直接调用store方法，不做额外状态验证（避免同步延迟导致的错误）
-      const result = await messageStore.handleLike(messageId)
+	try {
+		// 直接调用store方法，不做额外状态验证（避免同步延迟导致的错误）
+		const result = await messageStore.handleLike(messageId);
 
-      // 基于store返回结果提示（不再查找组件内状态，减少同步问题）
-      const actionText = result === 'LIKED' ? '点赞' : '取消点赞'
-      const successText = result === 'LIKED' ? '已点赞' : '已取消点赞'
+		// 基于store返回结果提示（不再查找组件内状态，减少同步问题）
+		const actionText = result === "LIKED" ? "点赞" : "取消点赞";
+		const successText = result === "LIKED" ? "已点赞" : "已取消点赞";
 
-      debugInfo.value = `${actionText}成功: 留言 ${messageId}`
-      console.log(`👍 ${actionText}成功:`, messageId)
-      showSuccess(successText)
-    } catch (error) {
-      // 仅在store调用真失败时提示（如网络错误），消除状态同步延迟导致的误提示
-      const errorMsg =
-        error instanceof Error ? error.message : '网络异常，操作失败'
-      // 简化错误提示，避免用户困惑
-      if (errorMsg.includes('与预期不符')) {
-        debugInfo.value = `点赞操作状态同步中，请稍候再试`
-        console.warn('点赞状态同步延迟，忽略提示:', error)
-        return // 不弹错误框
-      }
-      debugInfo.value = `点赞/取消点赞失败: ${errorMsg}`
-      console.error('点赞操作异常:', error)
-      // showError(`操作失败: ${errorMsg}`)
-      throw new Error(`点赞/取消点赞失败: ${errorMsg}`)
-    } finally {
-      // 无论成功失败，都释放加载状态
-      likeLoading.value[messageId] = false
-    }
-  }
+		debugInfo.value = `${actionText}成功: 留言 ${messageId}`;
+		console.log(`👍 ${actionText}成功:`, messageId);
+		showSuccess(successText);
+	} catch (error) {
+		// 仅在store调用真失败时提示（如网络错误），消除状态同步延迟导致的误提示
+		const errorMsg =
+			error instanceof Error ? error.message : "网络异常，操作失败";
+		// 简化错误提示，避免用户困惑
+		if (errorMsg.includes("与预期不符")) {
+			debugInfo.value = `点赞操作状态同步中，请稍候再试`;
+			console.warn("点赞状态同步延迟，忽略提示:", error);
+			return; // 不弹错误框
+		}
+		debugInfo.value = `点赞/取消点赞失败: ${errorMsg}`;
+		console.error("点赞操作异常:", error);
+		// showError(`操作失败: ${errorMsg}`)
+		throw new Error(`点赞/取消点赞失败: ${errorMsg}`);
+	} finally {
+		// 无论成功失败，都释放加载状态
+		likeLoading.value[messageId] = false;
+	}
+};
 
-  // 实现删除功能 - 使用Vue 3的方式处理确认对话框
-  const handleDelete = async messageId => {
-    try {
-      await ElMessageBox.confirm(
-        '确定要删除这条留言吗？此操作不可恢复。',
-        '删除确认',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }
-      )
+// 实现删除功能 - 使用Vue 3的方式处理确认对话框
+const handleDelete = async (messageId) => {
+	try {
+		await ElMessageBox.confirm(
+			"确定要删除这条留言吗？此操作不可恢复。",
+			"删除确认",
+			{
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
+				type: "warning",
+			},
+		);
 
-      debugInfo.value = `正在删除留言 ${messageId}...`
-      try {
-        await messageStore.handleDeleteMessage(messageId)
-        debugInfo.value = `留言 ${messageId} 删除成功`
-        console.log(`🗑️ 留言删除成功:`, messageId)
-        showSuccess('删除成功')
-        await fetchMessages()
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : '删除失败'
-        debugInfo.value = `删除留言失败: ${errorMsg}`
-        console.error('删除留言异常:', error)
-        // showError(`删除失败: ${errorMsg}`)
-        throw new Error(`删除留言失败: ${errorMsg}`)
-      }
-    } catch (error) {
-      // 用户点击取消
-      if (error?.msg !== 'cancel') {
-        console.error('删除确认框异常:', error)
-      }
-    }
-  }
+		debugInfo.value = `正在删除留言 ${messageId}...`;
+		try {
+			await messageStore.handleDeleteMessage(messageId);
+			debugInfo.value = `留言 ${messageId} 删除成功`;
+			console.log(`🗑️ 留言删除成功:`, messageId);
+			showSuccess("删除成功");
+			await fetchMessages();
+		} catch (error) {
+			const errorMsg = error instanceof Error ? error.message : "删除失败";
+			debugInfo.value = `删除留言失败: ${errorMsg}`;
+			console.error("删除留言异常:", error);
+			// showError(`删除失败: ${errorMsg}`)
+			throw new Error(`删除留言失败: ${errorMsg}`);
+		}
+	} catch (error) {
+		// 用户点击取消
+		if (error?.msg !== "cancel") {
+			console.error("删除确认框异常:", error);
+		}
+	}
+};
 
-  // 新增留言
-  const handleAddMessage = async () => {
-    if (!newMessage.value.nickname.trim() || !newMessage.value.content.trim()) {
-      debugInfo.value = '昵称或留言内容不能为空'
-      // 只抛出错误，不直接显示通知，避免重复提示
-      throw new Error('昵称或留言内容不能为空')
-    }
+// 新增留言
+const handleAddMessage = async () => {
+	if (!newMessage.value.nickname.trim() || !newMessage.value.content.trim()) {
+		debugInfo.value = "昵称或留言内容不能为空";
+		// 只抛出错误，不直接显示通知，避免重复提示
+		throw new Error("昵称或留言内容不能为空");
+	}
 
-    debugInfo.value = '正在发送留言...'
-    try {
-      await messageStore.handleCreateMessage({
-        nickname: newMessage.value.nickname.trim(),
-        content: newMessage.value.content.trim(),
-      })
-      localStorage.setItem(
-        'message_board_nickname',
-        newMessage.value.nickname.trim()
-      )
-      console.log('💾 已保存昵称到本地存储:', newMessage.value.nickname.trim())
-      newMessage.value.content = ''
-      debugInfo.value = '留言发布成功'
-      console.log('📝 留言发布成功')
-      showSuccess('新增留言成功')
-      await fetchMessages()
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '发布失败'
-      debugInfo.value = `留言发布失败: ${errorMsg}`
-      console.error('发布留言异常:', error)
-      // showError(`操作失败: ${errorMsg}`)
-      throw error
-    }
-  }
+	debugInfo.value = "正在发送留言...";
+	try {
+		await messageStore.handleCreateMessage({
+			nickname: newMessage.value.nickname.trim(),
+			content: newMessage.value.content.trim(),
+		});
+		localStorage.setItem(
+			"message_board_nickname",
+			newMessage.value.nickname.trim(),
+		);
+		console.log("💾 已保存昵称到本地存储:", newMessage.value.nickname.trim());
+		newMessage.value.content = "";
+		debugInfo.value = "留言发布成功";
+		console.log("📝 留言发布成功");
+		showSuccess("新增留言成功");
+		await fetchMessages();
+	} catch (error) {
+		const errorMsg = error instanceof Error ? error.message : "发布失败";
+		debugInfo.value = `留言发布失败: ${errorMsg}`;
+		console.error("发布留言异常:", error);
+		// showError(`操作失败: ${errorMsg}`)
+		throw error;
+	}
+};
 
-  // 刷新留言
-  const handleRefresh = async () => {
-    debugInfo.value = '正在刷新留言数据...'
-    try {
-      await fetchMessages()
-      debugInfo.value = '留言数据刷新成功'
-      showSuccess('刷新成功')
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '刷新失败'
-      debugInfo.value = `刷新留言失败: ${errorMsg}`
-      // showError(`刷新失败: ${errorMsg}`)
-      throw error
-    }
-  }
+// 刷新留言
+const handleRefresh = async () => {
+	debugInfo.value = "正在刷新留言数据...";
+	try {
+		await fetchMessages();
+		debugInfo.value = "留言数据刷新成功";
+		showSuccess("刷新成功");
+	} catch (error) {
+		const errorMsg = error instanceof Error ? error.message : "刷新失败";
+		debugInfo.value = `刷新留言失败: ${errorMsg}`;
+		// showError(`刷新失败: ${errorMsg}`)
+		throw error;
+	}
+};
 
-  // 格式化时间显示
-  const formatTime = timeString => {
-    try {
-      const date = new Date(timeString)
-      const now = new Date()
-      const diff = now.getTime() - date.getTime()
+// 格式化时间显示
+const formatTime = (timeString) => {
+	try {
+		const date = new Date(timeString);
+		const now = new Date();
+		const diff = now.getTime() - date.getTime();
 
-      if (diff < 60000) return '刚刚'
-      if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-      if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-      if (diff < 172800000) return '昨天'
-      if (diff < 31536000000) {
-        return date
-          .toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' })
-          .replace('/', '-')
-      }
-      return date
-        .toLocaleDateString('zh-CN', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        })
-        .replace(/\//g, '-')
-    } catch (error) {
-      return timeString
-    }
-  }
+		if (diff < 60000) return "刚刚";
+		if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
+		if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
+		if (diff < 172800000) return "昨天";
+		if (diff < 31536000000) {
+			return date
+				.toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" })
+				.replace("/", "-");
+		}
+		return date
+			.toLocaleDateString("zh-CN", {
+				year: "numeric",
+				month: "numeric",
+				day: "numeric",
+			})
+			.replace(/\//g, "-");
+	} catch (error) {
+		return timeString;
+	}
+};
 
-  // 检测留言是否被截断
-  const checkTruncatedMessages = async () => {
-    await nextTick()
-    messageStore.messages.forEach(msg => {
-      const contentElement = contentRefs.value[msg.id]
-      if (contentElement) {
-        // 检查元素是否被截断（scrollHeight > clientHeight）
-        const isTruncated =
-          contentElement.scrollHeight > contentElement.clientHeight
-        showExpandButtons.value[msg.id] = isTruncated
-      }
-    })
-  }
+// 检测留言是否被截断
+const checkTruncatedMessages = async () => {
+	await nextTick();
+	messageStore.messages.forEach((msg) => {
+		const contentElement = contentRefs.value[msg.id];
+		if (contentElement) {
+			// 检查元素是否被截断（scrollHeight > clientHeight）
+			const isTruncated =
+				contentElement.scrollHeight > contentElement.clientHeight;
+			showExpandButtons.value[msg.id] = isTruncated;
+		}
+	});
+};
 
-  // 切换留言内容展开/收起状态
-  const toggleMessageExpansion = messageId => {
-    expandedMessages.value[messageId] = !expandedMessages.value[messageId]
-  }
+// 切换留言内容展开/收起状态
+const toggleMessageExpansion = (messageId) => {
+	expandedMessages.value[messageId] = !expandedMessages.value[messageId];
+};
 
-  // 在组件挂载时检测留言截断状态
-  onMounted(async () => {
-    try {
-      const savedNickname = localStorage.getItem('message_board_nickname')
-      if (savedNickname) {
-        newMessage.value.nickname = savedNickname
-        console.log('👤 已加载保存的昵称:', savedNickname)
-      }
-      debugInfo.value = '开始获取留言数据...'
-      await fetchMessages()
-      // 检测留言截断状态
-      await checkTruncatedMessages()
-    } catch (error) {
-      debugInfo.value = `初始化失败: ${
-        error instanceof Error ? error.message : '未知错误'
-      }`
-      console.error('组件初始化失败:', error)
-      throw error
-    }
-  })
+// 在组件挂载时检测留言截断状态
+onMounted(async () => {
+	try {
+		const savedNickname = localStorage.getItem("message_board_nickname");
+		if (savedNickname) {
+			newMessage.value.nickname = savedNickname;
+			console.log("👤 已加载保存的昵称:", savedNickname);
+		}
+		debugInfo.value = "开始获取留言数据...";
+		await fetchMessages();
+		// 检测留言截断状态
+		await checkTruncatedMessages();
+	} catch (error) {
+		debugInfo.value = `初始化失败: ${
+			error instanceof Error ? error.message : "未知错误"
+		}`;
+		console.error("组件初始化失败:", error);
+		throw error;
+	}
+});
 
-  // 监听消息变化，重新检测截断状态
-  watch(
-    () => messageStore.messages,
-    async () => {
-      await checkTruncatedMessages()
-    },
-    { deep: true }
-  )
+// 监听消息变化，重新检测截断状态
+watch(
+	() => messageStore.messages,
+	async () => {
+		await checkTruncatedMessages();
+	},
+	{ deep: true },
+);
 
-  // 监听expandedMessages变化，但不需要重新检测截断状态
-  // 因为展开/收起状态不影响内容是否被截断的判断
-  watch(
-    expandedMessages,
-    () => {
-      // 不需要执行任何操作，只需保持响应式更新
-    },
-    { deep: true }
-  )
+// 监听expandedMessages变化，但不需要重新检测截断状态
+// 因为展开/收起状态不影响内容是否被截断的判断
+watch(
+	expandedMessages,
+	() => {
+		// 不需要执行任何操作，只需保持响应式更新
+	},
+	{ deep: true },
+);
 </script>
 
 <template>

@@ -1,7 +1,7 @@
+import { createPinia } from "pinia";
 import { createApp } from "vue";
 import App from "@/App.vue";
 import router from "@/router";
-import { createPinia } from "pinia";
 import { useAdminStore } from "@/stores/adminStore";
 import { showError } from "@/utils/notification";
 import "element-plus/es/components/loading/style/css";
