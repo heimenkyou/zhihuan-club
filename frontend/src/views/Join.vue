@@ -40,8 +40,9 @@
           <form class="mt-8" @submit.prevent="handleSubmit">
             <div class="grid gap-5 sm:grid-cols-2">
               <label class="block font-medium">姓名 <span class="text-red-500">*</span><input v-model="formData.name" required placeholder="请输入您的姓名" class="form-input mt-2" /></label>
-              <label class="block font-medium">学号 <span class="text-red-500">*</span><input v-model="formData.studentId" required placeholder="输入后将自动填充专业" class="form-input mt-2" @input="autoFillMajor" /></label>
-              <label class="block font-medium">专业 <span class="text-red-500">*</span><input v-model="formData.major" required placeholder="请输入您的专业" class="form-input mt-2" /></label>
+              <label class="block font-medium">学号 <span class="text-red-500">*</span><input v-model="formData.studentId" required placeholder="输入后将自动填充专业与班级" class="form-input mt-2" @input="autoFillFromStudentId" /></label>
+              <label class="block font-medium">专业 <span class="text-red-500">*</span><input v-model="formData.major" required placeholder="请输入您的专业（自动识别）" class="form-input mt-2" /></label>
+              <label class="block font-medium">班级 <span class="text-red-500">*</span><input v-model="formData.className" required placeholder="请输入您的班级（自动识别）" class="form-input mt-2" /></label>
               <label class="block font-medium">手机号码 <span class="text-red-500">*</span><input v-model="formData.phone" required type="tel" placeholder="请输入手机号码" class="form-input mt-2" /></label>
               <label class="block font-medium">QQ号 <span class="text-red-500">*</span><input v-model="formData.QQNumber" required placeholder="请输入QQ号" class="form-input mt-2" @input="validateQQNumber" /><p v-if="qqNumberError" class="mt-1 text-xs text-red-500">{{ qqNumberError }}</p></label>
             </div>
@@ -206,6 +207,7 @@ const formData = ref({
 	name: "",
 	studentId: "",
 	major: "",
+	className: "",
 	phone: "",
 	QQNumber: "",
 	department: "",
@@ -251,11 +253,16 @@ const validateQQNumber = () => {
 	const qq = formData.value.QQNumber;
 	qqNumberError.value = !/^\d{5,11}$/.test(qq) ? "QQ号应为 5-11 位数字" : "";
 };
-const autoFillMajor = () => {
+/**
+ * 依据 11 位学号自动填充专业与班级。
+ * 专业取学号第 5-8 位查映射表全称，班级格式 B+入学年份后两位+班级序号。
+ */
+const autoFillFromStudentId = () => {
 	const studentId = formData.value.studentId;
 	if (/^\d{11}$/.test(studentId)) {
 		const major = majorMapping.value[studentId.substring(4, 8)];
 		if (major) formData.value.major = major.fullName;
+		formData.value.className = `B${studentId.substring(2, 4)}${studentId.charAt(8)}`;
 	}
 };
 const handleSubmit = async () => {
@@ -269,6 +276,7 @@ const handleSubmit = async () => {
 			name: "",
 			studentId: "",
 			major: "",
+			className: "",
 			phone: "",
 			QQNumber: "",
 			department: "",

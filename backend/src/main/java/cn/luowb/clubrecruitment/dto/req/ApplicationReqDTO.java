@@ -36,6 +36,13 @@ public class ApplicationReqDTO {
     private String major;
 
     /**
+     * 班级，由前端依据学号识别后传入
+     */
+    @Schema(description = "班级")
+    @NotBlank(message = "班级不能为空")
+    private String className;
+
+    /**
      * 联系电话
      */
     @Schema(description = "联系电话")

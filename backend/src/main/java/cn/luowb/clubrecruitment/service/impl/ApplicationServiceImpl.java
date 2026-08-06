@@ -44,10 +44,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
         );
         ApplicationDO newApplicationDO = BeanUtil.toBean(requestParam, ApplicationDO.class);
         newApplicationDO.setApplicationYear(applicationYear);
-        // 从学号中获取班级 例如20230613109 -> B231
-        String studentId = requestParam.getStudentId();
-        String className = "B" + studentId.substring(2, 4) + studentId.charAt(8);
-        newApplicationDO.setClassName(className);
+        // 班级已由前端按学号识别后传入，后端不再计算
         // 第一阶段尝试方向转换为JSON数组字符串
         if (requestParam.getInitialDirections() != null) {
             newApplicationDO.setInitialDirections(JSONArray.toJSONString(requestParam.getInitialDirections()));
