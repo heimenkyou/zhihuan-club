@@ -13,20 +13,41 @@ CREATE TABLE `application` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '报名ID',
   `name` VARCHAR(50) NOT NULL COMMENT '姓名',
   `student_id` VARCHAR(20) NOT NULL COMMENT '学号',
+  `application_year` SMALLINT UNSIGNED NOT NULL COMMENT '招新批次年份',
   `class_name` VARCHAR(50) NOT NULL COMMENT '班级名称',
   `major` VARCHAR(50) NOT NULL COMMENT '专业名称',
   `phone` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '联系电话',
   `qq_number` VARCHAR(20) NOT NULL DEFAULT '' COMMENT 'QQ账号',
   `department` VARCHAR(50) NOT NULL COMMENT '第一意向部门',
   `second_department` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '第二意向部门',
-  `interests` JSON NOT NULL COMMENT '兴趣方向',
+  `initial_directions` JSON NOT NULL COMMENT '第一阶段尝试方向',
   `introduction` TEXT NOT NULL COMMENT '个人介绍',
-  `reason` TEXT NOT NULL COMMENT '加入原因',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_application_student_id` (`student_id`)
+  UNIQUE KEY `uk_application_student_year` (`student_id`, `application_year`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户报名';
+
+CREATE TABLE `member` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '成员ID',
+  `name` VARCHAR(50) NOT NULL COMMENT '姓名',
+  `student_id` VARCHAR(20) NOT NULL COMMENT '学号',
+  `class_name` VARCHAR(50) NULL COMMENT '班级名称',
+  `major` VARCHAR(50) NOT NULL COMMENT '专业名称',
+  `phone` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '联系电话',
+  `qq_number` VARCHAR(20) NOT NULL DEFAULT '' COMMENT 'QQ账号',
+  `department` VARCHAR(50) NOT NULL COMMENT '所属部门',
+  `join_year` SMALLINT UNSIGNED NOT NULL COMMENT '加入年份',
+  `status` VARCHAR(16) NOT NULL DEFAULT 'active' COMMENT '成员状态：active/inactive',
+  `remark` VARCHAR(255) NULL COMMENT '备注',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_member_student_id` (`student_id`),
+  KEY `idx_member_join_year` (`join_year`),
+  KEY `idx_member_department` (`department`),
+  KEY `idx_member_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='社团成员';
 
 CREATE TABLE `award` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '奖项ID',
