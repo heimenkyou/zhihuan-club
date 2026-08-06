@@ -56,7 +56,7 @@ public class AdminController {
     @SaCheckRole(value = {"super", "submitter"}, mode = SaMode.OR)
     @GetMapping("/admins")
     public Result<PageData<AdminPageRespDTO>> getAdminPage(@ParameterObject PageReqDTO requestParam) {
-        log.debug("分页查询管理员: 第{}页{}条", requestParam.getCurrent(), requestParam.getSize());
+        log.info("分页查询管理员: 第{}页{}条", requestParam.getCurrent(), requestParam.getSize());
         PageData<AdminPageRespDTO> adminPage = adminService.getAdminPage(requestParam);
         return Results.success(adminPage);
     }

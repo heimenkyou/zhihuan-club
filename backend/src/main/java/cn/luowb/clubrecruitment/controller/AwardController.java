@@ -50,7 +50,7 @@ public class AwardController {
                     return respDTO;
                 })
                 .toList();
-        log.debug("查询所有奖项, 数量={}", awardRespDTOS.size());
+        log.info("查询所有奖项, 数量={}", awardRespDTOS.size());
         return awardRespDTOS;
     }
 
@@ -58,7 +58,7 @@ public class AwardController {
     @SaCheckRole(value = {"normal", "super", "submitter"}, mode = SaMode.OR)
     @PostMapping("/admin/awards")
     public Result<Void> add(@RequestBody @Validated({AwardReqDTO.Create.class, Default.class}) AwardReqDTO awardReqDTO) {
-        log.debug("添加奖项, awardReqDTO={}", awardReqDTO);
+        log.info("添加奖项, awardReqDTO={}", awardReqDTO);
         awardService.add(awardReqDTO);
         return Results.success();
     }
@@ -67,7 +67,7 @@ public class AwardController {
     @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @DeleteMapping("/admin/awards/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        log.debug("删除奖项, id={}", id);
+        log.info("删除奖项, id={}", id);
         awardService.delete(id);
         return Results.success();
     }
@@ -76,7 +76,7 @@ public class AwardController {
     @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
     @PutMapping("/admin/awards/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody @Valid AwardReqDTO awardReqDTO) {
-        log.debug("更新奖项, id={}, awardReqDTO={}", id, awardReqDTO);
+        log.info("更新奖项, id={}, awardReqDTO={}", id, awardReqDTO);
         awardService.update(id, awardReqDTO);
         return Results.success();
     }

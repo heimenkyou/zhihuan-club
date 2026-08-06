@@ -28,7 +28,7 @@ public class MessageController {
     @Operation(summary = "添加留言")
     @PostMapping
     public Result<Void> createMessage(@RequestBody @Valid MessageReqDTO requestParam) {
-        log.debug("添加留言: {}", requestParam);
+        log.info("添加留言: {}", requestParam);
         messageService.createMessage(requestParam);
         return Results.success();
     }
@@ -36,7 +36,7 @@ public class MessageController {
     @Operation(summary = "分页获取留言列表")
     @GetMapping
     public Result<PageData<MessagePageRespDTO>> getMessageList(@ParameterObject PageReqDTO requestParam) {
-        log.debug("分页获取留言: {}", requestParam);
+        log.info("分页获取留言: {}", requestParam);
         PageData<MessagePageRespDTO> messageList = messageService.getMessageList(requestParam);
         return Results.success(messageList);
     }
@@ -44,7 +44,7 @@ public class MessageController {
     @Operation(summary = "点赞/取消点赞")
     @PostMapping("/{id}/like")
     public Result<LikeAction> likeMessage(@PathVariable Long id) {
-        log.debug("点赞留言：{}", id);
+        log.info("点赞留言：{}", id);
         LikeAction action = messageService.toggleLikeMessage(id);
         return Results.success(action);
     }
@@ -52,7 +52,7 @@ public class MessageController {
     @Operation(summary = "删除留言", description = "只有留言对应的 IP 才能删除留言")
     @DeleteMapping("/{id}")
     public Result<Void> deleteMessage(@Schema(description = "留言ID") @PathVariable Long id) {
-        log.debug("删除留言：{}", id);
+        log.info("删除留言：{}", id);
         messageService.deleteMessage(id);
         return Results.success();
     }
