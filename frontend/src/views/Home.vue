@@ -150,58 +150,81 @@
         </div>
         <!-- 轮播图区域 -->
         <div class="relative">
-          <el-carousel
-            ref="carouselRef"
-            :interval="4000"
-            :type="isSmallScreen ? undefined : 'card'"
-            :height="isSmallScreen ? '260px' : '400px'"
-            autoplay
-            indicator-position="none"
+          <div v-if="highlightsLoading" v-loading="true" class="highlights-loading"></div>
+          <el-empty
+            v-else-if="highlightsError"
+            :description="highlightsError"
           >
-            <!-- 渲染高光时刻卡片 -->
-            <el-carousel-item
-              v-for="moment in highlightMoments"
-              :key="moment.id"
+            <el-button type="primary" @click="loadHighlights">重新加载</el-button>
+          </el-empty>
+          <el-empty v-else-if="highlightMoments.length === 0" description="暂无高光内容" />
+          <template v-else>
+            <el-carousel
+              ref="carouselRef"
+              :interval="4000"
+              :type="isSmallScreen ? undefined : 'card'"
+              :height="isSmallScreen ? '260px' : '400px'"
+              autoplay
+              indicator-position="none"
             >
-              <div
-                class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
+              <!-- 渲染高光时刻卡片 -->
+              <el-carousel-item
+                v-for="moment in highlightMoments"
+                :key="moment.id"
               >
-                <el-image
-                  :src="moment.image"
-                  :alt="moment.alt"
-                  class="w-full h-48 object-contain cursor-zoom-in bg-gray-100"
-                  :preview-src-list="[moment.image]"
-                  :initial-index="0"
-                  :preview-teleported="true"
-                  fit="cover"
-                />
-                <div class="p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold text-dark">
-                      {{ moment.title }}
-                    </h3>
+                <div
+                  class="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden"
+                  :class="{ 'cursor-pointer': isProjectMoment(moment) }"
+                  role="button"
+                  :tabindex="isProjectMoment(moment) ? 0 : -1"
+                  :aria-label="isProjectMoment(moment) ? `查看项目：${moment.title}` : undefined"
+                  @click="openProject(moment)"
+                  @keydown.enter="openProject(moment)"
+                  @keydown.space.prevent="openProject(moment)"
+                >
+                  <el-image
+                    :src="moment.coverImage"
+                    :alt="moment.title"
+                    class="w-full h-48 object-contain cursor-zoom-in bg-gray-100"
+                    :preview-src-list="[moment.coverImage]"
+                    :initial-index="0"
+                    :preview-teleported="true"
+                    fit="cover"
+                    @click.stop
+                  />
+                  <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                      <h3 class="text-xl font-bold text-dark">
+                        <el-tag v-if="moment.type === 'project'" size="small" class="mr-2" type="primary">项目</el-tag>
+                        <el-tag v-else size="small" class="mr-2" type="success">活动</el-tag>
+                        {{ moment.title }}
+                      </h3>
+                    </div>
+                    <p class="text-gray-600 mb-6 line-clamp-6">
+                      {{ moment.description }}
+                    </p>
+                    <p v-if="moment.type === 'activity' && moment.activityDate" class="text-gray-400 text-sm">
+                      活动日期：{{ moment.activityDate }}
+                    </p>
                   </div>
-                  <p class="text-gray-600 mb-6 line-clamp-6">
-                    {{ moment.description }}
-                  </p>
                 </div>
-              </div>
-            </el-carousel-item>
-          </el-carousel>
+              </el-carousel-item>
+            </el-carousel>
 
-          <!-- 左右导航按钮 -->
-          <button
-            class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
-            @click="prev"
-          >
-            <el-icon><i-ep-arrow-left /></el-icon>
-          </button>
-          <button
-            class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
-            @click="next"
-          >
-            <el-icon><i-ep-arrow-right /></el-icon>
-          </button>
+            <!-- 左右导航按钮 -->
+            <button
+              class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
+              @click="prev"
+            >
+              <el-icon><i-ep-arrow-left /></el-icon>
+            </button>
+            <button
+              class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-all duration-300 border border-gray-200"
+              @click="next"
+            >
+              <el-icon><i-ep-arrow-right /></el-icon>
+            </button>
+          </template>
         </div>
 
         <!-- 查看更多按钮 -->
@@ -524,130 +547,93 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onUnmounted } from 'vue'
-  import { useRouter } from 'vue-router'
-  import CommonNavbar from '@/components/CommonNavbar.vue'
-  import CommonFooter from '@/components/CommonFooter.vue'
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import CommonFooter from "@/components/CommonFooter.vue";
+import CommonNavbar from "@/components/CommonNavbar.vue";
+import { getHomepageHighlights } from "@/services/homepageHighlightService";
 
-  // 添加 carouselRef 引用
-  const carouselRef = ref()
-  const isSmallScreen = ref(false)
+// 添加 carouselRef 引用
+const carouselRef = ref();
+const isSmallScreen = ref(false);
 
-  /** 根据屏幕宽度切换轮播展示模式。 */
-  const updateCarouselLayout = () => {
-    isSmallScreen.value = window.innerWidth < 640
-  }
+/** 根据屏幕宽度切换轮播展示模式。 */
+const updateCarouselLayout = () => {
+	isSmallScreen.value = window.innerWidth < 640;
+};
 
-  // 添加导航方法
-  const prev = () => {
-    carouselRef.value?.prev()
-  }
+// 添加导航方法
+const prev = () => {
+	carouselRef.value?.prev();
+};
 
-  const next = () => {
-    carouselRef.value?.next()
-  }
+const next = () => {
+	carouselRef.value?.next();
+};
 
-  const router = useRouter()
+const router = useRouter();
 
-  // 高光时刻数据
-  const highlightMoments = ref([
-    {
-      id: 1,
-      image: new URL('@/assets/images/hightligh/校圈主页.jpg', import.meta.url)
-        .href,
-      alt: '校圈（微信小程序）',
-      title: '校圈（微信小程序）',
-      description:
-        '校圈是一个基于微信小程序的大学生社交平台，为学生提供了一个交流、分享和发现的平台。',
-    },
-    {
-      id: 2,
-      image: new URL('@/assets/images/hightligh/活集贸.gif', import.meta.url)
-        .href,
-      alt: '招新网',
-      title: '招新网',
-      description: '没错孩子，就是这个网站。',
-    },
-    {
-      id: 3,
-      image: new URL(
-        '@/assets/images/hightligh/第九届CCPC铜奖颁奖.webp',
-        import.meta.url
-      ).href,
-      alt: '第九届CCPC铜奖颁奖',
-      title: '第九届CCPC铜奖颁奖',
-      description:
-        '我们在第九届中国大学生程序设计竞赛中荣获铜奖，这是对我们团队协作和编程能力的肯定。',
-    },
-    {
-      id: 4,
-      image: new URL('@/assets/images/hightligh/智慧药箱.webp', import.meta.url)
-        .href,
-      alt: '智慧药箱',
-      title: '智慧药箱',
-      description: '挑战杯校赛一等奖作品',
-    },
-    {
-      id: 5,
-      image: new URL('@/assets/images/hightligh/ccpc.jpg', import.meta.url)
-        .href,
-      alt: '河北省大学生程序设计竞赛',
-      title: '河北省大学生程序设计竞赛',
-      description: '参加中国大学生程序设计竞赛河北省赛，',
-    },
-    {
-      id: 6,
-      image: new URL(
-        '@/assets/images/hightligh/挑战杯路演.webp',
-        import.meta.url
-      ).href,
-      alt: '挑战杯路演',
-      title: '挑战杯路演',
-      description: '参加2025年挑战杯河北省大学生课外学术科技作品校内赛',
-    },
-    {
-      id: 7,
-      image: new URL(
-        '@/assets/images/hightligh/十六届蓝桥杯国赛.webp',
-        import.meta.url
-      ).href,
-      alt: '十六届蓝桥杯国赛',
-      title: '十六届蓝桥杯国赛',
-      description:
-        '参加十六届蓝桥杯全国软件和信息技术专业人才大赛国赛，与全国优秀选手同台竞技。',
-    },
-  ])
+// 高光时刻数据
+const highlightMoments = ref([]);
+const highlightsLoading = ref(true);
+const highlightsError = ref("");
 
-  // 导航函数
-  const toabout = () => {
-    router.push('/about')
-  }
+/** 判断是否为项目类型高光。 */
+const isProjectMoment = (moment) =>
+	moment?.type === "project" && moment?.projectId;
 
-  const tojoin = () => {
-    router.push('/join')
-  }
+/** 项目卡片点击跳转项目详情，活动不跳转。 */
+const openProject = (moment) => {
+	if (!isProjectMoment(moment)) return;
+	router.push({ path: "/projectdetail", query: { id: moment.projectId } });
+};
 
-  const toproject = () => {
-    router.push('/projects')
-  }
+/** 加载首页高光列表。 */
+const loadHighlights = async () => {
+	highlightsLoading.value = true;
+	highlightsError.value = "";
+	try {
+		highlightMoments.value = await getHomepageHighlights();
+	} catch (error) {
+		highlightsError.value =
+			error instanceof Error ? error.message : "高光时刻加载失败";
+		console.error("加载首页高光失败:", error);
+	} finally {
+		highlightsLoading.value = false;
+	}
+};
 
-  const toawards = () => {
-    router.push('/awards')
-  }
+// 导航函数
+const toabout = () => {
+	router.push("/about");
+};
 
-  // 跳转到留言板的方法
-  const toMessageBoard = () => {
-    router.push('/messages')
-  }
+const tojoin = () => {
+	router.push("/join");
+};
 
-  onMounted(() => {
-    updateCarouselLayout()
-    window.addEventListener('resize', updateCarouselLayout)
-  })
+const toproject = () => {
+	router.push("/projects");
+};
 
-  onUnmounted(() => {
-    window.removeEventListener('resize', updateCarouselLayout)
-  })
+const toawards = () => {
+	router.push("/awards");
+};
+
+// 跳转到留言板的方法
+const toMessageBoard = () => {
+	router.push("/messages");
+};
+
+onMounted(() => {
+	updateCarouselLayout();
+	window.addEventListener("resize", updateCarouselLayout);
+	loadHighlights();
+});
+
+onUnmounted(() => {
+	window.removeEventListener("resize", updateCarouselLayout);
+});
 </script>
 
 <style scoped lang="scss">
@@ -1963,6 +1949,10 @@
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }
+  }
+
+  .highlights-loading {
+    min-height: 400px;
   }
 
   /* 加入我们部分样式 */

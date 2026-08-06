@@ -49,6 +49,12 @@
             <span>项目管理</span>
           </template>
         </el-menu-item>
+        <el-menu-item index="/admin/homepage-highlights">
+          <template #title>
+            <el-icon><i-ep-star /></el-icon>
+            <span>首页高光管理</span>
+          </template>
+        </el-menu-item>
         <el-menu-item v-if="!isSubmitter" index="/admin/attachments">
           <template #title>
             <el-icon><i-ep-picture /></el-icon>
@@ -108,11 +114,11 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { useAdminStore } from "@/stores/adminStore";
-import { ref, onMounted, computed, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { logout as logoutApi } from "@/services/adminService";
+import { useAdminStore } from "@/stores/adminStore";
 
 const router = useRouter();
 const adminStore = useAdminStore();

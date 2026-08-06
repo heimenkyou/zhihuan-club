@@ -16,6 +16,7 @@ import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.ProjectSaveReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.*;
 import cn.luowb.clubrecruitment.service.AwardService;
+import cn.luowb.clubrecruitment.service.HomepageHighlightService;
 import cn.luowb.clubrecruitment.service.ProjectService;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -37,6 +38,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
     private final ProjectDetailMapper projectDetailMapper;
     private final ProjectAwardMapper projectAwardMapper;
     private final AwardService awardService;
+    private final HomepageHighlightService homepageHighlightService;
 
     @Override
     public PageData<ProjectRespDTO> getPage(PageReqDTO requestParam) {
@@ -169,6 +171,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
     @Override
     @Transactional
     public void delete(Long projectId) {
+        // 同事务清理首页高光中的项目记录，避免残留引用
+        homepageHighlightService.deleteByProjectId(projectId);
         projectAwardMapper.delete(new LambdaQueryWrapper<ProjectAwardDO>()
                 .eq(ProjectAwardDO::getProjectId, projectId));
         // 删除项目详情

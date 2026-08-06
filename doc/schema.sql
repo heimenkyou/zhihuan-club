@@ -130,6 +130,22 @@ CREATE TABLE `project` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='项目基本信息';
 
+CREATE TABLE `homepage_highlight` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '高光ID',
+  `item_type` VARCHAR(16) NOT NULL COMMENT '类型：project/activity',
+  `project_id` BIGINT NULL COMMENT '项目ID（项目类型使用）',
+  `title` VARCHAR(100) NULL COMMENT '标题（活动类型使用）',
+  `description` VARCHAR(500) NULL COMMENT '简介（活动类型使用）',
+  `cover_image` VARCHAR(512) NULL COMMENT '封面图片URL（活动类型使用）',
+  `activity_date` DATE NULL COMMENT '活动日期（活动类型使用，可空）',
+  `sort_order` INT NOT NULL DEFAULT 0 COMMENT '展示顺序',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_homepage_highlight_project_id` (`project_id`),
+  KEY `idx_homepage_highlight_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='首页高光配置';
+
 CREATE TABLE `project_detail` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '项目详情ID',
   `project_id` BIGINT NOT NULL COMMENT '项目ID',
