@@ -41,6 +41,12 @@ public class MemberPageReqDTO {
     private String major;
 
     /**
+     * QQ号
+     */
+    @Schema(description = "QQ号")
+    private String QQNumber;
+
+    /**
      * 所属部门
      */
     @Schema(description = "所属部门")

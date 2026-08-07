@@ -7,6 +7,8 @@
     <AdminToolbar>
       <el-input v-model="search.name" placeholder="姓名" clearable @keyup.enter="searchList" />
       <el-input v-model="search.studentId" placeholder="学号" clearable @keyup.enter="searchList" />
+      <el-input v-model="search.major" placeholder="专业" clearable @keyup.enter="searchList" />
+      <el-input v-model="search.QQNumber" placeholder="QQ号" clearable @keyup.enter="searchList" />
       <el-select v-model="search.department" placeholder="部门" clearable @change="searchList">
         <el-option v-for="item in departments" :key="item" :label="item" :value="item" />
       </el-select>
@@ -151,6 +153,8 @@ const departments = ["算法部", "项目竞赛部", "综合管理部"];
 const search = reactive({
 	name: "",
 	studentId: "",
+	major: "",
+	QQNumber: "",
 	department: "",
 	joinYear: null,
 	// 默认只展示活跃成员，管理员可清空状态筛选查看全部
@@ -254,6 +258,8 @@ const reset = () => {
 	Object.assign(search, {
 		name: "",
 		studentId: "",
+		major: "",
+		QQNumber: "",
 		department: "",
 		joinYear: null,
 		status: "active",

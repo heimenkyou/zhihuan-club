@@ -39,6 +39,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, MemberDO>
                 .like(StrUtil.isNotBlank(requestParam.getName()), MemberDO::getName, requestParam.getName())
                 .like(StrUtil.isNotBlank(requestParam.getStudentId()), MemberDO::getStudentId, requestParam.getStudentId())
                 .like(StrUtil.isNotBlank(requestParam.getMajor()), MemberDO::getMajor, requestParam.getMajor())
+                .like(StrUtil.isNotBlank(requestParam.getQQNumber()), MemberDO::getQQNumber, requestParam.getQQNumber())
                 .eq(StrUtil.isNotBlank(requestParam.getDepartment()), MemberDO::getDepartment, requestParam.getDepartment())
                 .eq(requestParam.getJoinYear() != null, MemberDO::getJoinYear, requestParam.getJoinYear())
                 .eq(StrUtil.isNotBlank(requestParam.getStatus()), MemberDO::getStatus, requestParam.getStatus())
