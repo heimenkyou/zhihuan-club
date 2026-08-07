@@ -67,6 +67,7 @@ declare module 'vue' {
     IEpArrowLeft: typeof import('~icons/ep/arrow-left')['default']
     IEpArrowRight: typeof import('~icons/ep/arrow-right')['default']
     IEpBox: typeof import('~icons/ep/box')['default']
+    IEpCheck: typeof import('~icons/ep/check')['default']
     IEpClose: typeof import('~icons/ep/close')['default']
     IEpCpu: typeof import('~icons/ep/cpu')['default']
     IEpDelete: typeof import('~icons/ep/delete')['default']
