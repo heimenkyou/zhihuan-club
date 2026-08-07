@@ -36,7 +36,7 @@
       <template v-if="!isSubmitter"><el-button type="primary" @click="editFromDetail">编辑</el-button><el-button type="danger" @click="removeFromDetail">删除</el-button></template>
     </template>
   </el-dialog>
-  <el-dialog v-model="visible" :title="dialogTitle" :width="isMobile ? 'calc(100% - 24px)' : '560px'"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项名称" prop="competitionName"><el-input v-model="form.competitionName" /></el-form-item><el-form-item label="赛道"><el-input v-model="form.competitionTrack" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-input v-model="form.awardLevel" /></el-form-item><el-form-item label="获奖人员" prop="winners"><div class="winner-input"><el-tag v-for="winner in form.winners" :key="winner" closable @close="removeWinner(winner)">{{ winner }}</el-tag><el-input v-model="winnerInput" placeholder="输入姓名后按回车添加" @keydown.enter.prevent="addWinner" /></div></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
+  <el-dialog v-model="visible" :title="dialogTitle" :width="isMobile ? 'calc(100% - 24px)' : '560px'"><el-form ref="formRef" :model="form" :rules="rules" label-position="top"><el-form-item label="奖项/竞赛名称" prop="competitionName"><el-autocomplete v-model="form.competitionName" class="form-autocomplete" :fetch-suggestions="queryCompetitionNames" placeholder="选择或输入奖项/竞赛名称" /></el-form-item><el-form-item label="赛道"><el-autocomplete v-model="form.competitionTrack" class="form-autocomplete" :fetch-suggestions="queryTracks" placeholder="选择或输入赛道" /></el-form-item><el-form-item label="竞赛级别" prop="competitionLevel"><el-select v-model="form.competitionLevel" placeholder="请选择竞赛级别"><el-option v-for="item in levels" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item label="获奖等级" prop="awardLevel"><el-autocomplete v-model="form.awardLevel" class="form-autocomplete" :fetch-suggestions="queryAwardLevels" placeholder="选择或输入获奖等级" /></el-form-item><el-form-item label="获奖人员" prop="winners"><div class="winner-input"><el-tag v-for="winner in form.winners" :key="winner" closable @close="removeWinner(winner)">{{ winner }}</el-tag><el-input v-model="winnerInput" placeholder="输入姓名后按回车添加" @keydown.enter.prevent="addWinner" /></div></el-form-item><el-form-item label="获奖日期" prop="awardDate"><el-date-picker v-model="form.awardDate" type="month" value-format="YYYY-MM" /></el-form-item></el-form><template #footer><el-button @click="visible = false">取消</el-button><el-button type="primary" @click="submit">确定</el-button></template></el-dialog>
 </template>
 
 <script setup>
@@ -92,9 +92,9 @@ const winnerInput = ref("");
 const namePattern = /^[\u4E00-\u9FFF]+$/;
 const form = reactive({
 	competitionName: "",
-	competitionLevel: "国家级",
+	competitionLevel: "",
 	competitionTrack: "",
-	awardLevel: "一等奖",
+	awardLevel: "",
 	winners: [],
 	year: new Date().getFullYear(),
 	awardDate: new Date().toISOString().slice(0, 7),
@@ -109,8 +109,9 @@ const rules = {
 	awardLevel: [{ required: true, message: "请输入获奖等级", trigger: "blur" }],
 	winners: [
 		{
-			validator: (_, value, callback) =>
-				value?.length ? callback() : callback(new Error("请输入获奖人员")),
+			required: true,
+			type: "array",
+			message: "请输入获奖人员",
 			trigger: "blur",
 		},
 	],
@@ -145,6 +146,45 @@ const yearOptions = computed(() =>
 		),
 	].sort((a, b) => b - a),
 );
+/** 联想建议：按输入过滤已有竞赛名称。 */
+const queryCompetitionNames = (queryString, cb) => {
+	const query = queryString?.trim().toLowerCase();
+	cb(
+		competitionNames.value
+			.filter((name) => !query || name.toLowerCase().includes(query))
+			.map((value) => ({ value })),
+	);
+};
+
+/** 联想建议：当前所选奖项名称下已存在的赛道，无则返回空。 */
+const queryTracks = (queryString, cb) => {
+	const name = form.competitionName?.trim();
+	if (!name) return cb([]);
+	const query = queryString?.trim().toLowerCase();
+	cb(
+		[
+			...new Set(
+				awards.value
+					.filter((item) => item.competitionName === name)
+					.map((item) => item.competitionTrack)
+					.filter(Boolean),
+			),
+		]
+			.sort()
+			.filter((track) => !query || track.toLowerCase().includes(query))
+			.map((value) => ({ value })),
+	);
+};
+
+/** 联想建议：按输入过滤已有获奖等级。 */
+const queryAwardLevels = (queryString, cb) => {
+	const query = queryString?.trim().toLowerCase();
+	cb(
+		awardLevelOptions.value
+			.filter((level) => !query || level.toLowerCase().includes(query))
+			.map((value) => ({ value })),
+	);
+};
 
 /** 筛选后的奖项列表，筛选语义与前台奖项页保持一致。 */
 const filteredAwards = computed(() =>
@@ -241,11 +281,11 @@ const showAwardDetail = (award) => {
 	detailVisible.value = true;
 };
 
-/** 拉取奖项数据，后端仅按关键词过滤，其余筛选在前端完成。 */
+/** 拉取全部奖项数据，关键词与其余筛选均在前端完成，保证下拉建议基于全量数据。 */
 const load = async () => {
 	loading.value = true;
 	try {
-		const data = await getAdminAwards({ keyword: keyword.value });
+		const data = await getAdminAwards();
 		awards.value = Array.isArray(data)
 			? data.map((item) => ({
 					...item,
@@ -278,9 +318,9 @@ const openAdd = () => {
 	dialogTitle.value = "添加奖项";
 	Object.assign(form, {
 		competitionName: "",
-		competitionLevel: "国家级",
+		competitionLevel: "",
 		competitionTrack: "",
-		awardLevel: "一等奖",
+		awardLevel: "",
 		winners: [],
 		year: new Date().getFullYear(),
 		awardDate: new Date().toISOString().slice(0, 7),
@@ -328,9 +368,9 @@ const submit = async () => {
 	try {
 		const payload = {
 			...form,
-			awardDate: form.awardDate.endsWith("-01")
-				? form.awardDate
-				: `${form.awardDate}-01`,
+			// date-picker 输出 yyyy-MM（7位），后端需要 yyyy-MM-dd，统一补天
+			awardDate:
+				form.awardDate.length === 7 ? `${form.awardDate}-01` : form.awardDate,
 		};
 		if (editingId.value) await updateAward(editingId.value, payload);
 		else await createAward(payload);
@@ -408,6 +448,7 @@ onMounted(load);
 .winner-tag { border-radius: 999px; background: #dbeafe; padding: 7px 12px; color: #1d4ed8; font-weight: 600; }
 .winner-input { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
 .winner-input .el-input { flex: 1; min-width: 160px; }
+.form-autocomplete { width: 100%; }
 @media (max-width: 768px) {
   .award-year-header h2 { font-size: 17px; }
   .award-item { gap: 8px; padding: 8px 12px; }

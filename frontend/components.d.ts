@@ -22,6 +22,7 @@ declare module 'vue' {
     CommonFooter: typeof import('./src/components/CommonFooter.vue')['default']
     CommonNavbar: typeof import('./src/components/CommonNavbar.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
+    ElAutocomplete: typeof import('element-plus/es')['ElAutocomplete']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
