@@ -59,7 +59,12 @@ knife4j:
 sa-token:
   token-name: Authorization
   token-prefix: Bearer
-  timeout: 1800
+  # 绝对有效期 7 天，作为兜底防止 Redis 中会话长期残留
+  timeout: 604800
+  # 最低活跃频率 4 小时，无操作则冻结会话
+  active-timeout: 14400
+  # 会话活跃期间自动续期，避免后台登录被中途登出
+  auto-renew: true
   is-concurrent: false
   is-share: false
 
