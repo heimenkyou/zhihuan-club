@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 项目详情编辑回显响应参数
@@ -55,6 +56,12 @@ public class ProjectEditRespDTO {
 
     @Schema(description = "轮播图片URL列表")
     private List<String> imageUrls;
+
+    /**
+     * 轮播图片URL到附件库原始文件名的映射，附件中不存在的图片不含对应键
+     */
+    @Schema(description = "轮播图片URL到附件库原始文件名的映射")
+    private Map<String, String> imageNameMap;
 
     /**
      * Markdown格式的项目介绍

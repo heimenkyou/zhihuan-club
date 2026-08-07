@@ -2,12 +2,17 @@ package cn.luowb.clubrecruitment.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollUtil;
 import cn.luowb.clubrecruitment.common.exception.ClientException;
+import cn.luowb.clubrecruitment.common.properties.QiniuProperties;
 import cn.luowb.clubrecruitment.common.result.PageData;
+import cn.luowb.clubrecruitment.common.util.QiniuStorageService;
+import cn.luowb.clubrecruitment.dao.entity.AttachmentDO;
 import cn.luowb.clubrecruitment.dao.entity.AwardDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectAwardDO;
 import cn.luowb.clubrecruitment.dao.entity.ProjectDetailDO;
+import cn.luowb.clubrecruitment.dao.mapper.AttachmentMapper;
 import cn.luowb.clubrecruitment.dao.mapper.ProjectDetailMapper;
 import cn.luowb.clubrecruitment.dao.mapper.ProjectMapper;
 import cn.luowb.clubrecruitment.dao.mapper.ProjectAwardMapper;
@@ -25,10 +30,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /** 项目服务实现。 */
 @Service
@@ -39,6 +48,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
     private final ProjectAwardMapper projectAwardMapper;
     private final AwardService awardService;
     private final HomepageHighlightService homepageHighlightService;
+    private final AttachmentMapper attachmentMapper;
+    private final QiniuStorageService qiniuStorageService;
+    private final QiniuProperties qiniuProperties;
 
     @Override
     public PageData<ProjectRespDTO> getPage(PageReqDTO requestParam) {
@@ -163,9 +175,56 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectDO>
         // 反序列化 开发团队成员
         List<TeamDivisionDTO> teamDivisions = JSON.parseArray(detailDO.getTeamDivision(), TeamDivisionDTO.class);
         respDTO.setTeamDivisions(teamDivisions);
-        respDTO.setImageUrls(JSON.parseArray(detailDO.getImageUrls(), String.class));
+        List<String> imageUrls = JSON.parseArray(detailDO.getImageUrls(), String.class);
+        respDTO.setImageUrls(imageUrls);
+        respDTO.setImageNameMap(resolveImageNameMap(imageUrls));
         respDTO.setAwards(toAwardResponses(projectAwardMapper.selectAwardsByProjectId(projectId)));
         return respDTO;
+    }
+
+    /**
+     * 按 URL 反查附件库，得到轮播图片到附件库原始文件名的映射。
+     *
+     * @param imageUrls 轮播图片 URL 列表
+     * @return url → originalName 映射，附件库中找不到的图片不包含对应键
+     */
+    private Map<String, String> resolveImageNameMap(List<String> imageUrls) {
+        Map<String, String> nameMap = new HashMap<>();
+        if (CollUtil.isEmpty(imageUrls)) {
+            return nameMap;
+        }
+        // 七牛对象键由域名前缀拼接，先按前缀拆分出 objectKey 与旧版遗留 URL，再批量反查附件
+        // domain 未配置时退化为仅按 legacyUrl 精确匹配，避免构造访问地址失败
+        String domainPrefix = StringUtils.hasText(qiniuProperties.getDomain())
+                ? qiniuProperties.getDomain().replaceAll("/+$", "") + "/"
+                : null;
+        Set<String> objectKeys = new LinkedHashSet<>();
+        Set<String> legacyUrls = new LinkedHashSet<>();
+        for (String url : imageUrls) {
+            if (domainPrefix != null && StringUtils.hasText(url) && url.startsWith(domainPrefix)) {
+                objectKeys.add(url.substring(domainPrefix.length()));
+            } else {
+                legacyUrls.add(url);
+            }
+        }
+        List<AttachmentDO> attachments = new ArrayList<>();
+        if (!objectKeys.isEmpty()) {
+            attachments.addAll(attachmentMapper.selectList(new LambdaQueryWrapper<AttachmentDO>()
+                    .in(AttachmentDO::getObjectKey, objectKeys)));
+        }
+        if (!legacyUrls.isEmpty()) {
+            attachments.addAll(attachmentMapper.selectList(new LambdaQueryWrapper<AttachmentDO>()
+                    .in(AttachmentDO::getLegacyUrl, legacyUrls)));
+        }
+        for (AttachmentDO attachment : attachments) {
+            String url = StringUtils.hasText(attachment.getLegacyUrl())
+                    ? attachment.getLegacyUrl()
+                    : (domainPrefix != null ? qiniuStorageService.buildPublicUrl(attachment.getObjectKey()) : null);
+            if (StringUtils.hasText(url) && StringUtils.hasText(attachment.getOriginalName())) {
+                nameMap.put(url, attachment.getOriginalName());
+            }
+        }
+        return nameMap;
     }
 
     @Override

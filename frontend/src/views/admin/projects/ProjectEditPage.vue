@@ -618,6 +618,9 @@ const loadProjectDetail = async () => {
 			awardIds: awards.map((item) => item.id),
 		});
 
+		// 回显附件库中的轮播图名称，避免从 URL 拆出 UUID 文件名
+		imageNames.value = projectDetail.imageNameMap || {};
+
 		if (projectDetail.timeRange) {
 			const rangeParts = projectDetail.timeRange.split("-");
 			if (rangeParts.length === 2) {
