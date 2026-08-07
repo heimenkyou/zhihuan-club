@@ -65,20 +65,29 @@
           />
         </el-form-item>
         <el-form-item label="项目封面" prop="coverImage">
-          <div class="upload-container">
-            <div class="upload-main">
-              <img
-                v-if="projectForm.coverImage"
-                :src="projectForm.coverImage"
-                class="avatar"
-                @click="coverPickerVisible = true"
-              />
-               <div v-else class="upload-placeholder" @click="coverPickerVisible = true"><el-icon><i-ep-plus /></el-icon><div>请选择封面图片</div></div>
+          <div class="cover-upload">
+            <img
+              v-if="projectForm.coverImage"
+              :src="projectForm.coverImage"
+              class="avatar"
+              @click="coverPickerVisible = true"
+            />
+            <div v-else class="upload-placeholder" @click="coverPickerVisible = true">
+              <el-icon><i-ep-plus /></el-icon>
+              <div>请选择封面图片</div>
             </div>
-            <div v-if="projectForm.coverImage" class="cover-actions">
-              <el-button size="small" @click="coverPickerVisible = true">更换</el-button>
-              <el-button size="small" @click="projectForm.coverImage = ''">移除</el-button>
-            </div>
+            <el-button
+              v-if="projectForm.coverImage"
+              type="danger"
+              text
+              circle
+              size="small"
+              class="cover-remove-btn"
+              :aria-label="'移除封面图片'"
+              @click="projectForm.coverImage = ''"
+            >
+              <i-ep-close />
+            </el-button>
           </div>
         </el-form-item>
         <el-form-item label="详细介绍" prop="descriptionMd">
@@ -681,22 +690,13 @@ onMounted(() => {
      min-width: 0;
    }
 
-  .upload-container {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .upload-main {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    flex-wrap: wrap;
+  .cover-upload {
+    position: relative;
+    width: 250px;
   }
 
   .avatar {
-    width: 250px;
+    width: 100%;
     height: 250px;
     display: block;
     object-fit: cover;
@@ -710,13 +710,15 @@ onMounted(() => {
     transform: scale(1.02);
   }
 
-  .cover-actions {
-    display: flex;
-    gap: 8px;
+  .cover-remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgb(255 255 255 / 88%);
   }
 
   .upload-placeholder {
-    width: 250px;
+    width: 100%;
     height: 250px;
     display: flex;
     align-items: center;
@@ -1025,15 +1027,15 @@ onMounted(() => {
        max-width: 100%;
      }
 
-    .upload-main {
-      flex-direction: column;
-      align-items: stretch;
+    .cover-upload {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
     }
 
      .avatar,
      .upload-placeholder {
        width: 100%;
-       max-width: 300px;
       margin: 0 auto;
     }
 
