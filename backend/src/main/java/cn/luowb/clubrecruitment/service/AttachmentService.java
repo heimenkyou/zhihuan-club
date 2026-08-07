@@ -44,6 +44,15 @@ public interface AttachmentService extends IService<AttachmentDO> {
     void delete(Long id);
 
     /**
+     * 修改附件名称。
+     *
+     * @param id           附件ID
+     * @param originalName 新名称
+     * @return 更新后的附件信息
+     */
+    AttachmentRespDTO rename(Long id, String originalName);
+
+    /**
      * 将附件记录转换为包含访问地址的响应。
      *
      * @param attachment 附件记录

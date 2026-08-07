@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
+import cn.luowb.clubrecruitment.dto.req.AttachmentRenameReqDTO;
 import cn.luowb.clubrecruitment.dto.req.AttachmentUploadTokenReqDTO;
 import cn.luowb.clubrecruitment.dto.req.PageReqDTO;
 import cn.luowb.clubrecruitment.dto.resp.AttachmentRespDTO;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,5 +87,20 @@ public class AttachmentController {
     public Result<Void> delete(@PathVariable Long id) {
         attachmentService.delete(id);
         return Results.success();
+    }
+
+    /**
+     * 修改附件名称。
+     *
+     * @param id           附件ID
+     * @param requestParam 新名称
+     * @return 更新后的附件信息
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "修改附件名称")
+    @SaCheckRole(value = {"normal", "super"}, mode = SaMode.OR)
+    public Result<AttachmentRespDTO> rename(@PathVariable Long id,
+            @RequestBody @Valid AttachmentRenameReqDTO requestParam) {
+        return Results.success(attachmentService.rename(id, requestParam.getOriginalName()));
     }
 }

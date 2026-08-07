@@ -106,6 +106,17 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
     }
 
     @Override
+    public AttachmentRespDTO rename(Long id, String originalName) {
+        AttachmentDO attachment = getById(id);
+        if (attachment == null) {
+            throw new ClientException("附件不存在");
+        }
+        attachment.setOriginalName(originalName);
+        updateById(attachment);
+        return toResponse(attachment);
+    }
+
+    @Override
     public AttachmentRespDTO toResponse(AttachmentDO attachment) {
         AttachmentRespDTO response = BeanUtil.toBean(attachment, AttachmentRespDTO.class);
         response.setUrl(StringUtils.hasText(attachment.getLegacyUrl())

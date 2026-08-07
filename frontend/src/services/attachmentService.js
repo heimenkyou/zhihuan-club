@@ -164,3 +164,14 @@ export const getAttachments = async (params) => {
 export const deleteAttachment = async (id) => {
 	await api.delete(`/admin/attachments/${id}`);
 };
+
+/**
+ * 修改附件名称。
+ *
+ * @param {number} id 附件 ID
+ * @param {string} originalName 新名称
+ * @returns {Promise<Object>} 更新后的附件
+ */
+export const renameAttachment = async (id, originalName) => {
+	return getData(await api.put(`/admin/attachments/${id}`, { originalName }));
+};
