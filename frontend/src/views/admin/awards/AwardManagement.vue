@@ -27,7 +27,7 @@
     <div v-if="selectedAward" class="award-detail">
       <div :class="getHonorClass(selectedAward.awardLevel)" class="honor-badge">🏆 {{ selectedAward.competitionLevel }} · {{ selectedAward.awardLevel }}</div>
       <h2 class="award-detail-title">{{ selectedAward.competitionName }}</h2>
-      <p class="award-detail-meta"><template v-if="selectedAward.competitionTrack">{{ selectedAward.competitionTrack }}赛道 · </template>{{ selectedAward.awardDate || `${selectedAward.year}年` }} 获奖</p>
+      <p class="award-detail-meta"><template v-if="selectedAward.competitionTrack">{{ selectedAward.competitionTrack }} · </template>{{ selectedAward.awardDate || `${selectedAward.year}年` }} 获奖</p>
       <div class="award-detail-divider"></div>
       <section class="award-winners-section"><h3>🎖️ 荣誉得主</h3><div class="winner-tags"><span v-for="winner in selectedAward.winners" :key="winner" class="winner-tag">👨‍💻 {{ winner }}</span></div></section>
     </div>

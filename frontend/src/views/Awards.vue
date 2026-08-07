@@ -76,7 +76,7 @@
         </div>
         <h2 class="award-detail-title">{{ selectedAward.competitionName }}</h2>
         <p class="award-detail-meta">
-          <template v-if="selectedAward.competitionTrack">{{ selectedAward.competitionTrack }}赛道 · </template>
+          <template v-if="selectedAward.competitionTrack">{{ selectedAward.competitionTrack }} · </template>
           {{ selectedAward.awardDate || `${selectedAward.year}年` }} 获奖
         </p>
         <div class="award-detail-divider"></div>
