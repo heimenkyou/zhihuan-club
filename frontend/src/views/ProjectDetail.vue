@@ -463,11 +463,6 @@ $font-weight-bold: 600;
   padding: $spacing-md 0;
   margin-bottom: $spacing-md;
 
-  .back-to-list-container {
-    margin-bottom: $spacing-md;
-    text-align: left;
-  }
-
   @media (max-width: 768px) {
     padding: $spacing-sm 0;
   }
@@ -804,32 +799,6 @@ $font-weight-bold: 600;
   @media (max-width: 480px) {
     padding: $spacing-sm $spacing-xs;
     font-size: $font-size-sm;
-  }
-
-  .intro-paragraph {
-    margin-bottom: $spacing-sm;
-    line-height: 1.7;
-
-    &:last-of-type {
-      margin-bottom: $spacing-md;
-    }
-  }
-
-  .intro-subtitle {
-    font-size: $font-size-md;
-    font-weight: $font-weight-bold;
-    color: $color-neutral-900;
-    margin-bottom: $spacing-xs;
-  }
-
-  .intro-list {
-    margin-left: $spacing-sm;
-    line-height: 1.7;
-
-    li {
-      margin-bottom: $spacing-xs;
-      list-style-type: disc;
-    }
   }
 }
 

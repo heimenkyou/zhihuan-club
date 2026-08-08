@@ -245,14 +245,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  .bg-primary {
-    background-color: #3b82f6;
-  }
   .text-primary {
     color: #3b82f6;
-  }
-  .bg-accent {
-    background-color: #f59e0b;
   }
   .text-accent {
     color: #f59e0b;

@@ -376,7 +376,6 @@ onMounted(async () => {
 <style scoped>
 .multiline { white-space: pre-wrap; word-break: break-word; }
 .form-tip { margin-top: 4px; color: #98a2b3; font-size: 12px; line-height: 1.5; }
-:deep(.danger-item) { color: var(--el-color-danger); }
 /* 固定表格列宽，保证窄屏下长内容可折行 */
 .detail-descriptions :deep(.el-descriptions__table) {
 	table-layout: fixed;

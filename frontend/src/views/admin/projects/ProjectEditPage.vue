@@ -749,7 +749,6 @@ onMounted(() => {
     font-size: 14px;
   }
 
-   .cover-image-input,
    .award-input {
      width: 100%;
    }
@@ -770,76 +769,6 @@ onMounted(() => {
 
   .team-member-input {
     margin-right: 12px;
-  }
-
-  .media-upload-button {
-    margin-left: 0;
-  }
-
-  .selected-label-button {
-    color: #67c23a;
-  }
-
-  .image-library {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
-    max-height: 450px;
-    overflow-y: auto;
-    padding: 15px;
-  }
-
-  .image-item {
-    cursor: pointer;
-    border: 2px solid transparent;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-
-  .image-item:hover {
-    border-color: #4096ff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .image-item.selected {
-    border-color: #4096ff;
-  }
-
-  .image-item img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
-
-  .image-info {
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .image-title {
-    font-size: 12px;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .image-actions {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .no-images {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: #909399;
-    padding: 60px 0;
-    font-size: 14px;
   }
 
    .markdown-editor-container {
