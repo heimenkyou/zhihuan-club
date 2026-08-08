@@ -36,7 +36,7 @@
 
         <section id="form" class="rounded-2xl bg-white p-5 shadow-lg sm:p-8">
           <h2 class="text-2xl font-bold">在线报名</h2>
-          <p class="mt-2 text-sm text-gray-500">认真填完这份表单，随后我们会联系你。</p>
+          <p class="mt-2 text-sm text-gray-500">认真填完这份表单，随后可以加入QQ群。</p>
           <form class="mt-8" @submit.prevent="handleSubmit">
             <div class="grid gap-5 sm:grid-cols-2">
               <label class="block font-medium">姓名 <span class="text-red-500">*</span><input v-model="formData.name" required placeholder="请输入您的姓名" class="form-input mt-2" /></label>
@@ -138,7 +138,7 @@ const departments = [
 	{
 		value: "综合管理部",
 		label: "综合管理部",
-		description: "主攻：社团外联、活动策划、文案与视觉设计，不敲代码",
+		description: "主攻：社团管理、活动策划、文案与视觉设计",
 	},
 ];
 const secondDepartments = [
