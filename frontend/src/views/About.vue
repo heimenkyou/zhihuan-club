@@ -147,8 +147,6 @@ const departments = [
 <style scoped>
 .about-page { background-color: #f8fafc; color: #1e293b; }
 .text-dark { color: #1e293b; }
-.bg-primary { background-color: #3b82f6; }
-.text-primary { color: #3b82f6; }
 .animate-fade-in { animation: fade-in 0.5s ease-out; }
 .animate-slide-up { animation: slide-up 0.5s ease-out both; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

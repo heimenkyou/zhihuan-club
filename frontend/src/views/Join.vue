@@ -321,16 +321,13 @@ onMounted(async () => {
 <style scoped>
 .join-page { color: #1f2937; }
 .text-dark { color: #1f2937; }
-.text-primary { color: #4f46e5; }
-.bg-primary { background-color: #4f46e5; }
-.hover\:bg-primary-dark:hover { background-color: #4338ca; }
 .form-input { width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.625rem 0.75rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-.form-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgb(79 70 229 / 0.12); }
+.form-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgb(59 130 246 / 0.12); }
 .department-option, .interest-option { display: flex; gap: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
-.department-option:hover, .interest-option:hover { border-color: #a5b4fc; background: #f5f3ff; }
+.department-option:hover, .interest-option:hover { border-color: #93c5fd; background: #eff6ff; }
 .interest-option-disabled { cursor: not-allowed; opacity: 0.45; }
 .interest-option-disabled:hover { border-color: #e5e7eb; background: transparent; }
-.department-option input, .interest-option input, .second-department-option input { accent-color: #4f46e5; }
+.department-option input, .interest-option input, .second-department-option input { accent-color: #3b82f6; }
 .department-option small, .interest-option small { display: block; margin-top: 0.2rem; color: #6b7280; font-size: 0.75rem; line-height: 1.4; }
 .second-department-option { border: 1px solid #e5e7eb; border-radius: 9999px; padding: 0.4rem 0.65rem; color: #4b5563; font-size: 0.875rem; cursor: pointer; }
 .second-department-option input { margin-right: 0.35rem; }

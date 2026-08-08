@@ -245,13 +245,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  .text-primary {
-    color: #3b82f6;
-  }
-  .text-accent {
-    color: #f59e0b;
-  }
-
   .animate-fade-in {
     opacity: 0;
     animation: fadeIn 0.8s ease-in-out forwards;
