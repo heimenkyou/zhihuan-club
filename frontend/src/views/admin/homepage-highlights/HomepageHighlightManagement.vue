@@ -1,5 +1,5 @@
 <template>
-  <AdminPage title="首页高光管理">
+  <AdminPage title="首页轮播图管理">
     <template #action>
       <el-button type="primary" @click="showAddMenu = true">添加内容</el-button>
     </template>
@@ -14,12 +14,12 @@
 
     <!-- 列表 -->
     <div v-loading="loading" class="highlight-list">
-      <el-empty v-if="!loading && highlights.length === 0" description="暂无高光内容，点击右上角添加" />
+      <el-empty v-if="!loading && highlights.length === 0" description="暂无轮播内容，点击右上角添加" />
       <div v-else-if="!loading && loadError" class="highlight-error">
         <p>{{ loadError }}</p>
         <el-button type="primary" @click="load">重新加载</el-button>
       </div>
-      <ul v-else class="highlight-sort-list">
+      <ul v-else ref="listRef" class="highlight-sort-list">
         <li
           v-for="(item, index) in highlights"
           :key="item.id"
@@ -33,7 +33,12 @@
           @dragend="handleDragEnd"
         >
           <span class="order-badge">{{ index + 1 }}</span>
-          <span v-if="!isSubmitter" class="drag-handle" title="拖拽排序"><el-icon><i-ep-rank /></el-icon></span>
+          <span
+            v-if="!isSubmitter"
+            class="drag-handle"
+            title="拖拽排序"
+            @touchstart="startTouchDrag($event, index)"
+          ><el-icon><i-ep-rank /></el-icon></span>
           <div class="highlight-cover">
             <el-image v-if="item.coverImage" :src="item.coverImage" fit="cover" class="cover-image">
               <template #error><div class="cover-placeholder"><el-icon><i-ep-picture /></el-icon></div></template>
@@ -64,7 +69,7 @@
   </AdminPage>
 
   <!-- 添加入口选择 -->
-  <el-dialog v-model="showAddMenu" title="添加高光内容" width="min(440px, calc(100% - 24px))" align-center>
+  <el-dialog v-model="showAddMenu" title="添加轮播内容" width="min(440px, calc(100% - 24px))" align-center>
     <div class="add-menu">
       <button type="button" class="add-menu-card" @click="openProjectPicker">
         <el-icon><i-ep-box /></el-icon>
@@ -199,7 +204,7 @@ const load = async () => {
 		highlights.value = await getAdminHomepageHighlights();
 	} catch (error) {
 		loadError.value =
-			error instanceof Error ? error.message : "获取高光列表失败";
+			error instanceof Error ? error.message : "获取轮播图列表失败";
 		console.error(error);
 	} finally {
 		loading.value = false;
@@ -251,12 +256,12 @@ const submitProject = async () => {
 	if (!selectedProjectId.value) return;
 	try {
 		await addProjectHighlight({ projectId: selectedProjectId.value });
-		ElMessage.success("添加项目高光成功");
+		ElMessage.success("添加项目到轮播图成功");
 		projectPickerVisible.value = false;
 		load();
 	} catch (error) {
 		ElMessage.error(
-			error instanceof Error ? error.message : "添加项目高光失败",
+			error instanceof Error ? error.message : "添加项目到轮播图失败",
 		);
 		console.error(error);
 	}
@@ -284,7 +289,7 @@ const submitActivity = async () => {
 const remove = async (item) => {
 	try {
 		await ElMessageBox.confirm(
-			`确定移除这条${item.type === "project" ? "项目" : "活动"}高光吗？`,
+			`确定移除这条${item.type === "project" ? "项目" : "活动"}轮播图吗？`,
 			"确认移除",
 			{ type: "warning" },
 		);
@@ -338,6 +343,57 @@ const handleDragEnd = () => {
 	dragOverIndex.value = null;
 };
 
+// —— 移动端触摸排序：原生拖拽事件不兼容触屏，改为从拖拽把手触发 touch 事件 ——
+const listRef = ref(null);
+
+/**
+ * 触摸开始：从拖拽把手激活排序，并在全局监听移动与结束事件，
+ * 保证手指移出把手后仍可继续拖动。
+ *
+ * @param {PointerEvent} event 触摸开始事件
+ * @param {number} index 当前列表项下标
+ */
+const startTouchDrag = (event, index) => {
+	if (isSubmitter) return;
+	event.preventDefault();
+	dragIndex.value = index;
+	dragOverIndex.value = index;
+	document.addEventListener("touchmove", onTouchMove, { passive: false });
+	document.addEventListener("touchend", endTouchDrag);
+	document.addEventListener("touchcancel", endTouchDrag);
+};
+
+/** 触摸移动：按手指纵向位置实时重排列表项。 */
+const onTouchMove = (event) => {
+	if (dragIndex.value === null) return;
+	event.preventDefault();
+	const touchY = event.touches[0].clientY;
+	const items = listRef.value?.querySelectorAll(".highlight-sort-item");
+	if (!items?.length) return;
+	const from = dragIndex.value;
+	let to = from;
+	items.forEach((el, i) => {
+		const rect = el.getBoundingClientRect();
+		if (touchY >= rect.top && touchY < rect.bottom) to = i;
+	});
+	if (to !== from) {
+		const list = [...highlights.value];
+		const [moved] = list.splice(from, 1);
+		list.splice(to, 0, moved);
+		highlights.value = list;
+		dragIndex.value = to;
+		dirty.value = true;
+	}
+};
+
+/** 触摸结束：清理排序状态与全局监听。 */
+const endTouchDrag = () => {
+	handleDragEnd();
+	document.removeEventListener("touchmove", onTouchMove);
+	document.removeEventListener("touchend", endTouchDrag);
+	document.removeEventListener("touchcancel", endTouchDrag);
+};
+
 /** 将当前列表顺序提交给后端。 */
 const saveOrder = async () => {
 	const ids = highlights.value.map((item) => item.id);
@@ -387,6 +443,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
 	window.removeEventListener("beforeunload", handleBeforeUnload);
+	endTouchDrag();
 });
 </script>
 
@@ -402,7 +459,7 @@ onBeforeUnmount(() => {
 .highlight-sort-item[draggable="true"] { cursor: grab; }
 .highlight-sort-item[draggable="true"]:active { cursor: grabbing; }
 .order-badge { flex: none; display: grid; width: 26px; height: 26px; place-items: center; border-radius: 50%; background: #3b82f6; color: #fff; font-size: 13px; font-weight: 600; }
-.drag-handle { flex: none; color: #98a2b3; cursor: grab; }
+.drag-handle { flex: none; color: #98a2b3; cursor: grab; touch-action: none; }
 .highlight-cover { flex: none; width: 88px; height: 60px; overflow: hidden; border-radius: 6px; }
 .cover-image { width: 100%; height: 100%; }
 .cover-placeholder { display: grid; width: 100%; height: 100%; place-items: center; gap: 4px; color: #98a2b3; background: #f8fafc; border: 1px dashed #d0d5dd; border-radius: 6px; font-size: 12px; cursor: pointer; }

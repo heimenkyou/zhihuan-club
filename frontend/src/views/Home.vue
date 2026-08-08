@@ -163,7 +163,7 @@
               ref="carouselRef"
               :interval="4000"
               :type="isSmallScreen ? undefined : 'card'"
-              :height="isSmallScreen ? '260px' : '400px'"
+              :height="isSmallScreen ? '320px' : '400px'"
               autoplay
               indicator-position="none"
             >
@@ -185,22 +185,22 @@
                   <el-image
                     :src="moment.coverImage"
                     :alt="moment.title"
-                    class="w-full h-48 object-contain cursor-zoom-in bg-gray-100"
+                    class="w-full h-36 sm:h-48 object-contain cursor-zoom-in bg-gray-100"
                     :preview-src-list="[moment.coverImage]"
                     :initial-index="0"
                     :preview-teleported="true"
                     fit="cover"
                     @click.stop
                   />
-                  <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                      <h3 class="text-xl font-bold text-dark">
+                  <div class="p-4 sm:p-6">
+                    <div class="flex justify-between items-start mb-2 sm:mb-4">
+                      <h3 class="text-lg sm:text-xl font-bold text-dark line-clamp-2">
                         <el-tag v-if="moment.type === 'project'" size="small" class="mr-2" type="primary">项目</el-tag>
                         <el-tag v-else size="small" class="mr-2" type="success">活动</el-tag>
                         {{ moment.title }}
                       </h3>
                     </div>
-                    <p class="text-gray-600 mb-6 line-clamp-6">
+                    <p class="text-gray-600 mb-2 sm:mb-6 line-clamp-2 sm:line-clamp-6">
                       {{ moment.description }}
                     </p>
                     <p v-if="moment.type === 'activity' && moment.activityDate" class="text-gray-400 text-sm">

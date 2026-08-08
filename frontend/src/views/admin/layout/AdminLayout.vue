@@ -57,7 +57,7 @@
           <el-menu-item index="/admin/homepage-highlights">
             <template #title>
               <el-icon><i-ep-star /></el-icon>
-              <span>首页高光管理</span>
+              <span>首页轮播图管理</span>
             </template>
           </el-menu-item>
         </el-menu-item-group>

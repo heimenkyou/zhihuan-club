@@ -65,7 +65,7 @@ const adminRoutes = [
 						"@/views/admin/homepage-highlights/HomepageHighlightManagement.vue"
 					),
 				meta: {
-					title: "首页高光管理",
+					title: "首页轮播图管理",
 					allowedRoles: ["normal", "super", "submitter"],
 				},
 			},
