@@ -31,23 +31,10 @@
     </nav>
   </div>
 
-  <!-- 2. 移动端布局：仅导航相关（状态栏+顶部导航+侧边栏，无内容区） -->
+  <!-- 2. 移动端布局：仅导航相关（顶部导航+下拉菜单，无内容区） -->
   <div v-else class="mobile-layout fixed top-0 left-0 right-0 z-50">
-    <!-- iOS 状态栏：仅iOS显示 -->
-    <div v-if="isIosDevice" class="ios-status-bar sticky top-0 z-20 bg-white">
-      <span>{{ currentTime }}</span>
-      <div class="flex items-center gap-1">
-        <i-fa6-solid-signal class="fa-signal" />
-        <i-fa6-solid-wifi class="fa-wifi" />
-        <i-fa6-solid-battery-three-quarters class="fa-battery-three-quarters" />
-      </div>
-    </div>
-
     <!-- 移动端顶部导航：固定在顶部 -->
-    <div
-      class="mobile-top-nav bg-white px-4 py-3 shadow-sm sticky z-20 flex items-center justify-between"
-      :style="{ top: isIosDevice ? '44px' : '0' }"
-    >
+    <div class="mobile-top-nav bg-white px-4 py-3 shadow-sm sticky z-20 flex items-center justify-between">
       <!-- 非首页显示返回箭头 -->
       <div
         v-if="currentRoutePath !== '/'"
@@ -67,7 +54,7 @@
       </button>
     </div>
 
-    <!-- 移动端侧边栏 -->
+    <!-- 移动端导航下拉菜单 -->
     <div
       class="sidebar-backdrop"
       :class="{ visible: isSidebarOpen }"
@@ -80,7 +67,7 @@
           <i-fa6-solid-xmark class="fa-times" />
         </button>
       </div>
-      <nav class="py-2">
+      <nav class="py-1">
         <div
           v-for="item in navItems"
           :key="item.id"
@@ -91,7 +78,7 @@
           {{ item.text }}
         </div>
       </nav>
-      <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
+      <div class="p-4 border-t">
         <button
           type="button"
           @click="handleJoinClick()"
@@ -132,10 +119,7 @@ const navItems = [
 
 // 3. 响应式状态
 const isMobile = ref(false); // 是否移动端
-const isSidebarOpen = ref(false); // 侧边栏是否打开
-const currentTime = ref(""); // iOS状态栏时间
-const isIosDevice = ref(false); // 是否iOS设备
-let timeInterval = null;
+const isSidebarOpen = ref(false); // 导航菜单是否打开
 let previousBodyOverflow = null;
 
 // 4. 核心交互
@@ -151,7 +135,7 @@ const handleJoinClick = () => {
 	closeSidebar();
 };
 
-/** 打开侧边栏 */
+/** 打开导航菜单 */
 const openSidebar = () => {
 	if (isSidebarOpen.value) return;
 
@@ -160,27 +144,13 @@ const openSidebar = () => {
 	document.body.style.overflow = "hidden"; // 禁止页面滚动
 };
 
-/** 关闭侧边栏 */
+/** 关闭导航菜单 */
 const closeSidebar = () => {
 	isSidebarOpen.value = false;
 	if (previousBodyOverflow !== null) {
 		document.body.style.overflow = previousBodyOverflow;
 		previousBodyOverflow = null;
 	}
-};
-
-/** 更新iOS状态栏时间 */
-const updateTime = () => {
-	const now = new Date();
-	const hours = now.getHours().toString().padStart(2, "0");
-	const minutes = now.getMinutes().toString().padStart(2, "0");
-	currentTime.value = `${hours}:${minutes}`;
-};
-
-/** 检测是否为iOS设备（适配状态栏） */
-const checkIosDevice = () => {
-	const userAgent = window.navigator.userAgent;
-	isIosDevice.value = /iPhone|iPad|iPod/.test(userAgent);
 };
 
 /** 检测屏幕尺寸：切换移动端/桌面端 */
@@ -193,16 +163,12 @@ const checkScreenSize = () => {
 
 // 生命周期钩子
 onMounted(() => {
-	checkIosDevice();
 	checkScreenSize();
-	updateTime();
-	timeInterval = setInterval(updateTime, 60000);
 	window.addEventListener("resize", checkScreenSize);
 	window.addEventListener("orientationchange", checkScreenSize);
 });
 
 onUnmounted(() => {
-	if (timeInterval) clearInterval(timeInterval);
 	window.removeEventListener("resize", checkScreenSize);
 	window.removeEventListener("orientationchange", checkScreenSize);
 	closeSidebar();
@@ -293,20 +259,6 @@ const currentPageTitle = computed(() => {
     background: transparent;
   }
 
-  /* iOS状态栏 */
-  .ios-status-bar {
-    height: 44px;
-    background-color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #1e293b;
-    box-sizing: border-box;
-  }
-
   /* 移动端顶部导航 */
   .mobile-top-nav {
     height: 50px;
@@ -314,26 +266,36 @@ const currentPageTitle = computed(() => {
     box-sizing: border-box;
   }
 
-  /* 移动端侧边栏 */
+  /* 移动端导航下拉菜单：从导航条下方展开，高度自适应内容 */
   .mobile-sidebar {
     position: fixed;
-    top: 0;
-    right: -80%;
+    top: 50px;
+    right: 12px;
     width: 80%;
-    height: 100vh;
+    max-width: 320px;
+    max-height: calc(100vh - 60px);
     background-color: white;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.15);
     z-index: 100;
-    transition: right 0.3s ease;
     overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0.25s;
     box-sizing: border-box;
   }
 
   .mobile-sidebar.open {
-    right: 0;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
 
-  /* 侧边栏遮罩层 */
+  /* 导航菜单遮罩层 */
   .sidebar-backdrop {
     position: fixed;
     top: 0;
@@ -354,7 +316,7 @@ const currentPageTitle = computed(() => {
 
   /* 移动端导航项 */
   .mobile-nav-item {
-    padding: 16px 24px;
+    padding: 13px 20px;
     border-bottom: 1px solid #f0f0f0;
     color: #1e293b;
     font-weight: 500;

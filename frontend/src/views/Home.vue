@@ -3,7 +3,7 @@
     <CommonNavbar />
 
     <!-- Hero：深色首屏，定位语 + 双 CTA -->
-    <section class="hero relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
+    <section class="hero relative flex min-h-screen items-center justify-center overflow-hidden pt-14">
       <div class="hero-grid-overlay pointer-events-none absolute inset-0" aria-hidden="true"></div>
 
       <div class="relative z-10 max-w-5xl px-4 py-20 text-center sm:px-6">
