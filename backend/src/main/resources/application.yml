@@ -88,6 +88,7 @@ app:
     domain: ${QINIU_DOMAIN:}
   attachment:
     max-image-size: ${ATTACHMENT_MAX_IMAGE_SIZE:1MB}
+  bot-api-token: ${BOT_API_TOKEN:}
   visitor-token:
     # 访客令牌签名密钥，生产环境务必通过 VISITOR_TOKEN_SECRET 覆盖
     secret: ${VISITOR_TOKEN_SECRET:zhihuan-club-visitor-token-secret}
