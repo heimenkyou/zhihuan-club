@@ -24,6 +24,15 @@ public interface ApplicationMapper extends BaseMapper<ApplicationDO> {
      */
     @Select("SELECT DISTINCT application_year FROM application ORDER BY application_year DESC")
     List<Integer> selectDistinctYears();
+
+    /**
+     * 查询专业尚未建立映射的报名记录。
+     *
+     * @return 未映射报名记录
+     */
+    @Select("SELECT a.* FROM application a LEFT JOIN major_mapping m ON m.full_name = a.major "
+            + "WHERE TRIM(a.major) != '' AND m.code IS NULL ORDER BY a.update_time DESC")
+    List<ApplicationDO> selectUnmappedApplications();
 }
 
 

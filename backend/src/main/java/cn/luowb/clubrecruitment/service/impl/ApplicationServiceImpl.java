@@ -144,4 +144,19 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     public List<Integer> getApplicationYears() {
         return applicationMapper.selectDistinctYears();
     }
+
+    @Override
+    public List<ApplicationPageDTO> getUnmappedApplications() {
+        return applicationMapper.selectUnmappedApplications().stream()
+                .map(this::toPageDTO)
+                .toList();
+    }
+
+    private ApplicationPageDTO toPageDTO(ApplicationDO application) {
+        ApplicationPageDTO pageDTO = BeanUtil.toBean(application, ApplicationPageDTO.class);
+        if (application.getInitialDirections() != null) {
+            pageDTO.setInitialDirections(JSONArray.parseArray(application.getInitialDirections(), String.class));
+        }
+        return pageDTO;
+    }
 }

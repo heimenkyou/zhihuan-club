@@ -47,4 +47,11 @@ public interface ApplicationService extends IService<ApplicationDO> {
      * @return 年份列表
      */
     List<Integer> getApplicationYears();
+
+    /**
+     * 获取专业尚未建立映射的报名记录。
+     *
+     * @return 未映射报名记录
+     */
+    List<ApplicationPageDTO> getUnmappedApplications();
 }

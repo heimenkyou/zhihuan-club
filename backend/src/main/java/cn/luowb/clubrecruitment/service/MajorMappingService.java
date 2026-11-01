@@ -14,4 +14,10 @@ public interface MajorMappingService extends IService<MajorMappingDO> {
      * @return 专业列表
      */
     Map<String, MajorMappingDO> majors();
+
+    /** 新增专业映射。 */
+    void createMapping(MajorMappingDO mapping);
+
+    /** 更新专业映射。 */
+    void updateMapping(String code, MajorMappingDO mapping);
 }

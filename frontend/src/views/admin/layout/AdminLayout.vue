@@ -33,6 +33,12 @@
               <span>成员管理</span>
             </template>
           </el-menu-item>
+          <el-menu-item index="/admin/major-mappings">
+            <template #title>
+              <el-icon><i-ep-collection-tag /></el-icon>
+              <span>专业映射</span>
+            </template>
+          </el-menu-item>
           <el-menu-item index="/admin/messages">
             <template #title>
               <el-icon><i-ep-message /></el-icon>

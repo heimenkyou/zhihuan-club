@@ -426,3 +426,25 @@ export const updateMember = async (id, params) => {
 export const updateMemberStatus = async (id, status) => {
 	await api.put(`/admin/members/${id}/status`, { status });
 };
+
+/** 获取后台专业映射列表。 */
+export const getAdminMajorMappings = async () => {
+	const response = await api.get("/admin/major-mappings");
+	return getResultData(getBody(response));
+};
+
+/** 获取报名信息中尚未建立专业映射的记录。 */
+export const getUnmappedMajorApplications = async () => {
+	const response = await api.get("/admin/major-mappings/unmapped-applications");
+	return getResultData(getBody(response));
+};
+
+/** 新增专业映射。 */
+export const createMajorMapping = async (params) => {
+	await api.post("/admin/major-mappings", params);
+};
+
+/** 更新专业映射。 */
+export const updateMajorMapping = async (code, params) => {
+	await api.put(`/admin/major-mappings/${code}`, params);
+};

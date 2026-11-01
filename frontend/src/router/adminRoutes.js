@@ -25,6 +25,12 @@ const adminRoutes = [
 				meta: { title: "成员管理", allowedRoles: ["normal", "super"] },
 			},
 			{
+				path: "major-mappings",
+				component: () =>
+					import("@/views/admin/major-mappings/MajorMappingManagement.vue"),
+				meta: { title: "专业映射", allowedRoles: ["normal", "super"] },
+			},
+			{
 				path: "awards",
 				component: () => import("@/views/admin/awards/AwardManagement.vue"),
 				meta: {
