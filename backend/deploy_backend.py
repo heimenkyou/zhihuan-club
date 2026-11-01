@@ -17,6 +17,7 @@ Spring Boot 后端部署脚本。
 
 from __future__ import annotations
 
+import os
 import shlex
 import shutil
 import subprocess
@@ -354,6 +355,8 @@ def cleanup_remote_files(*remote_files: str) -> None:
 
 
 def main() -> int:
+    # 统一以脚本所在目录为工作目录，保证 Maven 能找到 pom.xml
+    os.chdir(Path(__file__).resolve().parent)
     command_path("ssh")
     command_path("scp")
 

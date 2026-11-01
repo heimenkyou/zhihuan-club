@@ -15,6 +15,7 @@ Vue 3 前端部署脚本。
 
 from __future__ import annotations
 
+import os
 import shlex
 import shutil
 import subprocess
@@ -279,6 +280,8 @@ def cleanup_remote_archive(remote_archive: str) -> None:
 
 
 def main() -> int:
+    # 统一以脚本所在目录为工作目录，避免从仓库根目录运行时找不到锁文件与 dist
+    os.chdir(Path(__file__).resolve().parent)
     package_manager = detect_package_manager()
     seven_zip = command_path(SEVEN_ZIP)
     command_path("ssh")
