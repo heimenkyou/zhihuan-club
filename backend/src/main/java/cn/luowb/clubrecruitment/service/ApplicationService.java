@@ -54,4 +54,12 @@ public interface ApplicationService extends IService<ApplicationDO> {
      * @return 未映射报名记录
      */
     List<ApplicationPageDTO> getUnmappedApplications();
+
+    /**
+     * 按学号批量查询报名记录，按报名年份与创建时间倒序。
+     *
+     * @param studentIds 学号列表
+     * @return 报名记录列表
+     */
+    List<ApplicationPageDTO> getApplicationsByStudentIds(List<String> studentIds);
 }

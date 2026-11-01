@@ -3,6 +3,7 @@
     <template #action>
       <el-button type="primary" @click="openAdd">添加成员</el-button>
       <el-button type="primary" plain @click="pickVisible = true">从报名记录添加</el-button>
+      <el-button type="primary" plain @click="batchVisible = true">批量添加</el-button>
     </template>
     <AdminToolbar>
       <el-input v-model="search.name" placeholder="姓名" clearable @keyup.enter="searchList" />
@@ -97,7 +98,7 @@
     </template>
   </el-dialog>
 
-  <el-dialog v-model="detailVisible" title="成员详情" :width="isMobile ? 'calc(100% - 24px)' : '600px'" class="admin-dialog">
+  <el-dialog v-model="detailVisible" title="成员详情" :width="isMobile ? 'calc(100% - 24px)' : '600px'" class="admin-dialog" append-to-body>
     <el-descriptions :column="1" border class="detail-descriptions">
       <el-descriptions-item label="姓名">{{ detail?.name }}</el-descriptions-item>
       <el-descriptions-item label="学号">{{ detail?.studentId }}</el-descriptions-item>
@@ -122,7 +123,14 @@
     <ApplicationPicker selectable @select="fillFromApplication" />
   </el-dialog>
 
-  <el-dialog v-model="viewApplicationsVisible" title="查看报名记录" :width="isMobile ? 'calc(100% - 24px)' : '800px'" class="admin-dialog">
+  <MemberBatchAddDialog
+    v-model="batchVisible"
+    :major-mapping="majorMapping"
+    @added="searchList"
+    @view-member="viewMemberById"
+  />
+
+  <el-dialog v-model="viewApplicationsVisible" title="查看报名记录" :width="isMobile ? 'calc(100% - 24px)' : '800px'" class="admin-dialog" append-to-body>
     <ApplicationPicker :preset-student-id="detail?.studentId" />
   </el-dialog>
 </template>
@@ -137,6 +145,7 @@ import AdminResultCards from "@/components/admin/AdminResultCards.vue";
 import AdminTable from "@/components/admin/AdminTable.vue";
 import AdminToolbar from "@/components/admin/AdminToolbar.vue";
 import ApplicationPicker from "@/components/admin/ApplicationPicker.vue";
+import MemberBatchAddDialog from "@/components/admin/MemberBatchAddDialog.vue";
 import { useAdminMobile } from "@/composables/useAdminMobile";
 import { getMajorMapping } from "@/services/applicationsService";
 import {
@@ -165,6 +174,7 @@ const loading = ref(false);
 const visible = ref(false);
 const detailVisible = ref(false);
 const pickVisible = ref(false);
+const batchVisible = ref(false);
 const viewApplicationsVisible = ref(false);
 const editingId = ref(null);
 const dialogTitle = ref("添加成员");
@@ -296,6 +306,16 @@ const view = async (row) => {
 	detail.value = row;
 	detailVisible.value = true;
 };
+/** 从批量添加结果中查看已存在成员的完整资料 */
+const viewMemberById = async (id) => {
+	try {
+		detail.value = await getMember(id);
+		detailVisible.value = true;
+	} catch (error) {
+		ElMessage.error("获取成员详情失败");
+		console.error(error);
+	}
+};
 const editFromDetail = () => {
 	detailVisible.value = false;
 	edit(detail.value);
@@ -394,5 +414,12 @@ onMounted(async () => {
 }
 :deep(.el-dialog__footer .el-button + .el-button) {
 	margin-left: 0;
+}
+/* 窄屏下三个入口按钮允许换行，避免横向溢出 */
+@media (max-width: 768px) {
+	:deep(.admin-page__action) {
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
 }
 </style>

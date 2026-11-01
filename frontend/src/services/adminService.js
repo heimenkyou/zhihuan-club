@@ -385,6 +385,17 @@ export const getMembers = async (params = {}) => {
 };
 
 /**
+ * 按学号批量匹配成员与报名记录。
+ *
+ * @param {string[]} studentIds
+ * @returns {Promise<any[]>}
+ */
+export const matchMembersByStudentIds = async (studentIds) => {
+	const response = await api.post("/admin/members/batch-match", { studentIds });
+	return getResultData(getBody(response)) || [];
+};
+
+/**
  * 获取成员详情。
  *
  * @param {number} id

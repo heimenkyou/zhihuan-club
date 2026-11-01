@@ -9,7 +9,10 @@ import cn.luowb.clubrecruitment.dao.entity.MemberDO;
 import cn.luowb.clubrecruitment.dao.mapper.MemberMapper;
 import cn.luowb.clubrecruitment.dto.req.MemberPageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MemberReqDTO;
+import cn.luowb.clubrecruitment.dto.resp.ApplicationPageDTO;
+import cn.luowb.clubrecruitment.dto.resp.MemberBatchMatchRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.MemberPageRespDTO;
+import cn.luowb.clubrecruitment.service.ApplicationService;
 import cn.luowb.clubrecruitment.service.MemberService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -19,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** 成员服务实现。 */
 @Service
@@ -31,6 +36,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, MemberDO>
     private static final Set<String> VALID_STATUS = Set.of("active", "inactive");
 
     private final MemberMapper memberMapper;
+    private final ApplicationService applicationService;
 
     @Override
     public PageData<MemberPageRespDTO> getMemberPage(MemberPageReqDTO requestParam) {
@@ -113,6 +119,36 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, MemberDO>
         if (!this.updateById(memberDO)) {
             throw new ClientException("更新成员状态失败");
         }
+    }
+
+    @Override
+    public List<MemberBatchMatchRespDTO> batchMatchMembers(List<String> studentIds) {
+        List<String> normalizedIds = studentIds.stream()
+                .filter(StrUtil::isNotBlank)
+                .map(String::trim)
+                .distinct()
+                .toList();
+        if (normalizedIds.isEmpty()) {
+            return List.of();
+        }
+        Map<String, MemberDO> memberMap = this.list(new LambdaQueryWrapper<MemberDO>()
+                        .in(MemberDO::getStudentId, normalizedIds))
+                .stream()
+                .collect(Collectors.toMap(MemberDO::getStudentId, item -> item, (first, second) -> first));
+        Map<String, List<ApplicationPageDTO>> applicationMap = applicationService
+                .getApplicationsByStudentIds(normalizedIds)
+                .stream()
+                .collect(Collectors.groupingBy(ApplicationPageDTO::getStudentId));
+        return normalizedIds.stream().map(studentId -> {
+            MemberBatchMatchRespDTO matchDTO = new MemberBatchMatchRespDTO();
+            matchDTO.setStudentId(studentId);
+            MemberDO memberDO = memberMap.get(studentId);
+            if (memberDO != null) {
+                matchDTO.setMember(BeanUtil.toBean(memberDO, MemberPageRespDTO.class));
+            }
+            matchDTO.setApplications(applicationMap.getOrDefault(studentId, List.of()));
+            return matchDTO;
+        }).toList();
     }
 
     /**

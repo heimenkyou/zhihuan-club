@@ -152,6 +152,20 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
                 .toList();
     }
 
+    @Override
+    public List<ApplicationPageDTO> getApplicationsByStudentIds(List<String> studentIds) {
+        if (CollectionUtil.isEmpty(studentIds)) {
+            return List.of();
+        }
+        return this.list(new LambdaQueryWrapper<ApplicationDO>()
+                        .in(ApplicationDO::getStudentId, studentIds)
+                        .orderByDesc(ApplicationDO::getApplicationYear)
+                        .orderByDesc(ApplicationDO::getCreateTime))
+                .stream()
+                .map(this::toPageDTO)
+                .toList();
+    }
+
     private ApplicationPageDTO toPageDTO(ApplicationDO application) {
         ApplicationPageDTO pageDTO = BeanUtil.toBean(application, ApplicationPageDTO.class);
         if (application.getInitialDirections() != null) {

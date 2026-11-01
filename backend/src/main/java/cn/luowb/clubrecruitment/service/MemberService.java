@@ -4,8 +4,11 @@ import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.dao.entity.MemberDO;
 import cn.luowb.clubrecruitment.dto.req.MemberPageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MemberReqDTO;
+import cn.luowb.clubrecruitment.dto.resp.MemberBatchMatchRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.MemberPageRespDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /** 成员服务。 */
 public interface MemberService extends IService<MemberDO> {
@@ -48,4 +51,12 @@ public interface MemberService extends IService<MemberDO> {
      * @param status 目标状态（active/inactive）
      */
     void updateMemberStatus(Long id, String status);
+
+    /**
+     * 按学号批量匹配已存在的成员与报名记录，用于批量添加前预检重复情况。
+     *
+     * @param studentIds 学号列表
+     * @return 与学号顺序一致的匹配结果
+     */
+    List<MemberBatchMatchRespDTO> batchMatchMembers(List<String> studentIds);
 }

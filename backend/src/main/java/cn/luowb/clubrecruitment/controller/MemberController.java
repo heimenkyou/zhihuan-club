@@ -5,9 +5,11 @@ import cn.dev33.satoken.annotation.SaMode;
 import cn.luowb.clubrecruitment.common.result.PageData;
 import cn.luowb.clubrecruitment.common.result.Result;
 import cn.luowb.clubrecruitment.common.web.Results;
+import cn.luowb.clubrecruitment.dto.req.MemberBatchMatchReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MemberPageReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MemberReqDTO;
 import cn.luowb.clubrecruitment.dto.req.MemberStatusReqDTO;
+import cn.luowb.clubrecruitment.dto.resp.MemberBatchMatchRespDTO;
 import cn.luowb.clubrecruitment.dto.resp.MemberPageRespDTO;
 import cn.luowb.clubrecruitment.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 成员后台管理接口。
@@ -97,5 +101,17 @@ public class MemberController {
     public Result<Void> updateStatus(@PathVariable Long id, @RequestBody @Valid MemberStatusReqDTO requestParam) {
         memberService.updateMemberStatus(id, requestParam.getStatus());
         return Results.success();
+    }
+
+    /**
+     * 按学号批量匹配成员与报名记录，用于批量添加前预检重复与信息差异。
+     *
+     * @param requestParam 学号列表
+     * @return 匹配结果
+     */
+    @Operation(summary = "批量匹配成员与报名记录")
+    @PostMapping("/batch-match")
+    public Result<List<MemberBatchMatchRespDTO>> batchMatch(@RequestBody @Valid MemberBatchMatchReqDTO requestParam) {
+        return Results.success(memberService.batchMatchMembers(requestParam.getStudentIds()));
     }
 }
