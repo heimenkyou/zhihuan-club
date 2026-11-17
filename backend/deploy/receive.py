@@ -69,6 +69,11 @@ def main():
                 actual = hashlib.file_digest(source, "sha256").hexdigest()
             if actual != expected:
                 raise ValueError("JAR 校验失败")
+            with (ROOT / "app.jar").open("rb") as source:
+                current = hashlib.file_digest(source, "sha256").hexdigest()
+            if current == actual and (ROOT / "application-prod.yml").read_bytes() == (stage / "application-prod.yml").read_bytes():
+                print("后端内容未变化，跳过重启")
+                return
             backup = ROOT / ".deploy-backups" / time.strftime("actions-%Y%m%d-%H%M%S")
             backup.mkdir(parents=True, mode=0o700)
             for name in ("app.jar", "application-prod.yml"):

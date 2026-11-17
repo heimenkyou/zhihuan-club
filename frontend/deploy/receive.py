@@ -2,6 +2,7 @@
 """接收前端发布包，并在文件切换失败时恢复站点。"""
 
 import fcntl
+import hashlib
 import os
 from pathlib import Path, PurePosixPath
 import shutil
@@ -13,6 +14,24 @@ import time
 
 ROOT = Path("/opt/1panel/www/sites/club.luowb.cn/index")
 MAX_SIZE = 200 * 1024 * 1024
+
+
+def fingerprint(root):
+    """根据相对路径和文件内容生成站点指纹。"""
+    digest = hashlib.sha256()
+    for entry in sorted(root.rglob("*"), key=lambda path: path.relative_to(root).as_posix()):
+        if entry.is_symlink():
+            raise ValueError("站点包含不支持的符号链接")
+        if entry.is_file():
+            name = entry.relative_to(root).as_posix().encode("utf-8")
+            digest.update(len(name).to_bytes(4, "big"))
+            digest.update(name)
+            file_hash = hashlib.sha256()
+            with entry.open("rb") as source:
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    file_hash.update(chunk)
+            digest.update(file_hash.digest())
+    return digest.hexdigest()
 
 
 def replace_contents(source, target):
@@ -77,4 +96,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    command = os.environ.get("SSH_ORIGINAL_COMMAND", "")
+    if command == "fingerprint":
+        print(fingerprint(ROOT))
+    elif not command and len(sys.argv) == 3 and sys.argv[1] == "--fingerprint":
+        print(fingerprint(Path(sys.argv[2])))
+    elif not command and len(sys.argv) == 1:
+        main()
+    else:
+        raise ValueError("不支持的发布命令")
