@@ -1,0 +1,34 @@
+app:
+  mysql:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: 127.0.0.1
+    port: 3306
+    database: ${DATABASE_NAME:club}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: ${REDIS_PASSWORD}
+    database: 1
+  qiniu:
+    access-key: ${QINIU_ACCESS_KEY}
+    secret-key: ${QINIU_SECRET_KEY}
+    bucket: club-images-luowb
+    domain: https://club-img.luowb.cn
+  attachment:
+    max-image-size: ${ATTACHMENT_MAX_IMAGE_SIZE:1MB}
+  bot-api-token: ${BOT_API_TOKEN}
+  like-interval-seconds: 86400
+logging:
+  level:
+    cn.luowb.clubrecruitment: info
+sa-token:
+  is-concurrent: true
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+knife4j:
+  enable: false

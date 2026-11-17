@@ -65,7 +65,7 @@ sa-token:
   active-timeout: 14400
   # 会话活跃期间自动续期，避免后台登录被中途登出
   auto-renew: true
-  is-concurrent: false
+  is-concurrent: true
   is-share: false
 
 app:

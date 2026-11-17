@@ -1,0 +1,138 @@
+name: 持续集成
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: club-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  backend:
+    name: 后端构建
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: 构建后端
+        working-directory: backend
+        run: mvn --batch-mode --no-transfer-progress clean package -DskipTests
+      - name: 检查环境配置未打包
+        working-directory: backend
+        run: |
+          if jar tf target/app.jar | grep -E '^BOOT-INF/classes/application-(dev|prod)\.yml$'; then
+            exit 1
+          fi
+      - name: 准备后端发布包
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p release/backend
+          cp backend/target/app.jar release/backend/app.jar
+          cp backend/deploy/production.yml release/backend/application-prod.yml
+          tar -C release/backend -czf release/backend.tar.gz app.jar application-prod.yml
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: backend-release
+          path: release/backend.tar.gz
+          retention-days: 7
+
+  frontend:
+    name: 前端构建
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: 安装依赖
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: 构建前端
+        working-directory: frontend
+        run: pnpm run build
+      - name: 准备前端发布包
+        if: github.event_name != 'pull_request'
+        run: tar -C frontend/dist -czf frontend.tar.gz .
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: frontend-release
+          path: frontend.tar.gz
+          retention-days: 7
+
+  deploy:
+    name: 发布生产环境
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-release
+          path: release
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-release
+          path: release
+      - name: 配置部署连接
+        env:
+          JUMP_KEY: ${{ secrets.DEPLOY_JUMP_KEY }}
+          BACKEND_KEY: ${{ secrets.DEPLOY_BACKEND_KEY }}
+          FRONTEND_KEY: ${{ secrets.DEPLOY_FRONTEND_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          JUMP_HOST: ${{ vars.DEPLOY_JUMP_HOST }}
+          JUMP_PORT: ${{ vars.DEPLOY_JUMP_PORT }}
+          BACKEND_PORT: ${{ vars.DEPLOY_BACKEND_PORT }}
+        run: |
+          set -eu
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$JUMP_KEY" > ~/.ssh/jump
+          printf '%s\n' "$BACKEND_KEY" > ~/.ssh/backend
+          printf '%s\n' "$FRONTEND_KEY" > ~/.ssh/frontend
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host club-jump
+            HostName $JUMP_HOST
+            Port $JUMP_PORT
+            User heimenkyou
+            IdentityFile ~/.ssh/jump
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          Host club-backend
+            HostName localhost
+            Port $BACKEND_PORT
+            User club-deploy
+            ProxyJump club-jump
+            IdentityFile ~/.ssh/backend
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          Host club-frontend
+            HostName $JUMP_HOST
+            Port $JUMP_PORT
+            User heimenkyou
+            IdentityFile ~/.ssh/frontend
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+      - name: 发布后端
+        run: ssh -T club-backend < release/backend.tar.gz
+      - name: 发布前端
+        run: ssh -T club-frontend < release/frontend.tar.gz

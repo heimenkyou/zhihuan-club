@@ -128,6 +128,15 @@
     <build>
         <finalName>app</finalName>
         <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>application-dev.yml</exclude>
+                        <exclude>application-prod.yml</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
             <!-- Spring Boot 打包插件 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
