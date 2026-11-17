@@ -2,10 +2,12 @@
 """接收后端发布包，并在健康检查失败时恢复上一版本。"""
 
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -15,7 +17,8 @@ import urllib.error
 import urllib.request
 
 ROOT = Path("/opt/services/club")
-FILES = {"app.jar": 200 * 1024 * 1024, "application-prod.yml": 1024 * 1024}
+STAGED_JAR = Path("/home/club-deploy/staging/app.jar")
+FILES = {"manifest.json": 4096, "application-prod.yml": 1024 * 1024}
 
 
 def healthy():
@@ -52,12 +55,26 @@ def main():
                         shutil.copyfileobj(source, dest)
             if seen != FILES.keys():
                 raise ValueError("发布文件不完整")
+            with (stage / "manifest.json").open(encoding="utf-8") as source:
+                expected = json.load(source)["sha256"]
+            if not isinstance(expected, str) or len(expected) != 64:
+                raise ValueError("发布包校验值不合法")
+            descriptor = os.open(STAGED_JAR, os.O_RDONLY | os.O_NOFOLLOW)
+            with os.fdopen(descriptor, "rb") as source, (stage / "app.jar").open("wb") as dest:
+                info = os.fstat(source.fileno())
+                if not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= 200 * 1024 * 1024:
+                    raise ValueError("暂存 JAR 不合法")
+                shutil.copyfileobj(source, dest)
+            with (stage / "app.jar").open("rb") as source:
+                actual = hashlib.file_digest(source, "sha256").hexdigest()
+            if actual != expected:
+                raise ValueError("JAR 校验失败")
             backup = ROOT / ".deploy-backups" / time.strftime("actions-%Y%m%d-%H%M%S")
             backup.mkdir(parents=True, mode=0o700)
-            for name in FILES:
+            for name in ("app.jar", "application-prod.yml"):
                 shutil.copy2(ROOT / name, backup / name)
             try:
-                for name in FILES:
+                for name in ("app.jar", "application-prod.yml"):
                     os.chmod(stage / name, 0o640 if name.endswith(".yml") else 0o644)
                     shutil.chown(stage / name, user="heimenkyou", group="heimenkyou")
                     os.replace(stage / name, ROOT / name)
@@ -65,7 +82,7 @@ def main():
                 if not healthy():
                     raise RuntimeError("后端健康检查失败")
             except Exception:
-                for name in FILES:
+                for name in ("app.jar", "application-prod.yml"):
                     shutil.copy2(backup / name, ROOT / name)
                 subprocess.run(["/usr/bin/systemctl", "restart", "club.service"], check=False)
                 raise

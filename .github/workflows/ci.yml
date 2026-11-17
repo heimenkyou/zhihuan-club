@@ -37,14 +37,18 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p release/backend
-          cp backend/target/app.jar release/backend/app.jar
+          cp backend/target/app.jar release/app.jar
           cp backend/deploy/production.yml release/backend/application-prod.yml
-          tar -C release/backend -czf release/backend.tar.gz app.jar application-prod.yml
+          printf '{"sha256":"%s"}\n' "$(sha256sum release/app.jar | cut -d' ' -f1)" > release/backend/manifest.json
+          tar -C release/backend -czf release/backend.tar.gz manifest.json application-prod.yml
       - uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
           name: backend-release
-          path: release/backend.tar.gz
+          path: |
+            release/app.jar
+            release/backend.tar.gz
+          compression-level: 0
           retention-days: 7
 
   frontend:
@@ -95,6 +99,7 @@ jobs:
         env:
           JUMP_KEY: ${{ secrets.DEPLOY_JUMP_KEY }}
           BACKEND_KEY: ${{ secrets.DEPLOY_BACKEND_KEY }}
+          BACKEND_SYNC_KEY: ${{ secrets.DEPLOY_BACKEND_SYNC_KEY }}
           FRONTEND_KEY: ${{ secrets.DEPLOY_FRONTEND_KEY }}
           KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
           JUMP_HOST: ${{ vars.DEPLOY_JUMP_HOST }}
@@ -106,6 +111,7 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$JUMP_KEY" > ~/.ssh/jump
           printf '%s\n' "$BACKEND_KEY" > ~/.ssh/backend
+          printf '%s\n' "$BACKEND_SYNC_KEY" > ~/.ssh/backend-sync
           printf '%s\n' "$FRONTEND_KEY" > ~/.ssh/frontend
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           cat > ~/.ssh/config <<EOF
@@ -131,8 +137,21 @@ jobs:
             IdentityFile ~/.ssh/frontend
             IdentitiesOnly yes
             StrictHostKeyChecking yes
+          Host club-backend-sync
+            HostName localhost
+            Port $BACKEND_PORT
+            User club-deploy
+            ProxyJump club-jump
+            IdentityFile ~/.ssh/backend-sync
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
           EOF
+      - name: 增量上传后端
+        timeout-minutes: 10
+        run: rsync --checksum --no-whole-file --stats --timeout=180 release/app.jar club-backend-sync:app.jar
       - name: 发布后端
+        timeout-minutes: 4
         run: ssh -T club-backend < release/backend.tar.gz
       - name: 发布前端
+        timeout-minutes: 10
         run: ssh -T club-frontend < release/frontend.tar.gz
